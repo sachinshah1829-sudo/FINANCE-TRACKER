@@ -1145,8 +1145,8 @@ function renderTxnTable(rows){
     const amt = Number(r.amount), pos = amt >= 0;
     const amtStr = (pos?'+':'')+rs(amt);
     h += '<tr class="txn-tr txn-clickable" data-row="'+r.row+'" style="animation-delay:'+(Math.min(i,40)*0.015)+'s"'
-      + ' onclick="openTxnEdit(event,\\''+r.row+'\\')"'
-      + ' ondblclick="confirmDeleteTxn(event,\\''+r.row+'\\')"'
+      + ' onclick="openTxnEdit(event,'+r.row+')"'
+      + ' ondblclick="confirmDeleteTxn(event,'+r.row+')"'
       + ' title="Click to edit · Double-click to delete">'
       + '<td class="td-date">'+(r.date||'—')+'</td>'
       + '<td class="td-acc">'+(r.account||'—')+'</td>'
@@ -1156,8 +1156,8 @@ function renderTxnTable(rows){
       + '<td class="ra"><span class="'+(pos?'td-pos':'td-neg')+'">'+amtStr+'</span></td>'
       + '<td class="ra td-bal">'+rs(r.closingBalance||0)+'</td>'
       + '<td class="td-acts" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()">'
-        + '<button class="act-btn" onclick="openTxnEdit(event,\\''+r.row+'\\')" title="Edit">✎</button>'
-        + '<button class="act-btn del" onclick="confirmDeleteTxn(event,\\''+r.row+'\\')" title="Delete (or double-click row)">✕</button>'
+        + '<button class="act-btn" onclick="openTxnEdit(event,'+r.row+')" title="Edit">✎</button>'
+        + '<button class="act-btn del" onclick="confirmDeleteTxn(event,'+r.row+')" title="Delete (or double-click row)">✕</button>'
       + '</td>'
       + '</tr>';
   });
