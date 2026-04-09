@@ -340,7 +340,7 @@ EXPENSE	BANANA	HDFC BANK	FOOD	BANANA		FLIPKART MINUTES`;
 
         // 1. ACCOUNTS
         log("\\n>> Uploading Accounts");
-        const accLines = rawAccounts.split('\\n').map(l=>l.trim()).filter(Boolean);
+        const accLines = rawAccounts.split('\n').map(l=>l.trim()).filter(Boolean);
         for (let line of accLines) {
            let parts = line.split('\\t');
            if(parts.length < 3) parts = line.split(/\\s{2,}/); // fallback if spaces
@@ -356,7 +356,7 @@ EXPENSE	BANANA	HDFC BANK	FOOD	BANANA		FLIPKART MINUTES`;
 
         // 2. CATEGORIES
         log("\\n>> Uploading Categories");
-        const catLines = rawCategories.split('\\n').map(l=>l.trim()).filter(Boolean);
+        const catLines = rawCategories.split('\n').map(l=>l.trim()).filter(Boolean);
         for (let line of catLines) {
            let parts = line.split('\\t');
            if(parts.length < 2) parts = line.split(/\\s{2,}/);
@@ -369,7 +369,7 @@ EXPENSE	BANANA	HDFC BANK	FOOD	BANANA		FLIPKART MINUTES`;
 
         // 3. TEMPLATES
         log("\\n>> Uploading Templates");
-        const tplLines = rawTemplates.split('\\n').map(l=>l.trim()).filter(Boolean);
+        const tplLines = rawTemplates.split('\n').map(l=>l.trim()).filter(Boolean);
         for (let line of tplLines) {
            let parts = line.split('\\t');
            if(parts.length < 5) parts = line.split(/\\s{2,}/);
@@ -383,7 +383,7 @@ EXPENSE	BANANA	HDFC BANK	FOOD	BANANA		FLIPKART MINUTES`;
 
         // 4. TRANSACTIONS
         log("\\n>> Uploading Transactions & Gathering Items/People");
-        const txnLines = rawTransactionsStr.split('\\n').map(l=>l.trim()).filter(Boolean);
+        const txnLines = rawTransactionsStr.split('\n').map(l=>l.trim()).filter(Boolean);
         let batchNo = 1;
         for (let line of txnLines) {
            let parts = line.split('\\t');
