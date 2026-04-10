@@ -142,17 +142,28 @@ api.webSaveTemplate = async (type, name, account, category, item, amount, tofrom
 };
 
 /* Transactions */
+async function ensureCategory(name, type) {
+  if(!name) return;
+  const nameUp = name.toUpperCase().trim();
+  const cats = await getDocs(collection(db, "users", getUid(), "categories"));
+  if(!cats.docs.some(d => d.data().name.toUpperCase().trim() === nameUp)) {
+    await api.addCategory(nameUp, type);
+  }
+}
+
 api.webCreateExpense = async (account, category, amount, item, toFrom) => {
   await addDoc(collection(db, "users", getUid(), "transactions"), {
     date: new Date().toISOString(), account, category, item, amount: -Math.abs(Number(amount)), toFrom
   });
   await recalcAccount(account);
+  await ensureCategory(category, 'EXPENSE');
 };
 api.webCreateIncome = async (account, category, amount, item, toFrom) => {
   await addDoc(collection(db, "users", getUid(), "transactions"), {
     date: new Date().toISOString(), account, category, item, amount: Math.abs(Number(amount)), toFrom
   });
   await recalcAccount(account);
+  await ensureCategory(category, 'INCOME');
 };
 api.webCreateTransfer = async (from, to, amount, item) => {
   const amt = Math.abs(Number(amount));
@@ -202,8 +213,10 @@ async function recalcAccount(accName) {
 }
 
 api.getDashboardData = async (month, year) => {
-  const txns = await getDocs(collection(db, "users", getUid(), "transactions"));
-  const accs = await api.getAccountsFull();
+  const [txns, accs] = await Promise.all([
+    getDocs(collection(db, "users", getUid(), "transactions")),
+    api.getAccountsFull()
+  ]);
   
   const sd = new Date(year, month - 1, 1).getTime();
   const ed = new Date(year, month, 0, 23, 59, 59).getTime();
