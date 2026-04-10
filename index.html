@@ -528,14 +528,14 @@ function accItemClick(el){
   }
 }
 function editAccFromEl(el){
-  const row=+el.dataset.row;
+  const row=el.dataset.row;
   const name=el.dataset.name.replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   const opening=parseFloat(el.dataset.opening)||0;
   const type=el.dataset.type||'BANK';
   editAcc(row,name,opening,type);
 }
 function deleteAccFromEl(el){
-  const row=+el.dataset.row;
+  const row=el.dataset.row;
   const name=el.dataset.name.replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
   deleteAcc(row,name);
 }
