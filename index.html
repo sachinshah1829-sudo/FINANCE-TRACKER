@@ -565,7 +565,7 @@ function saveAccountModal(){
   const name=document.getElementById('acc-m-name').value.trim();
   const bal=document.getElementById('acc-m-bal').value;
   const type=document.getElementById('acc-m-type').value;
-  const row=+document.getElementById('acc-m-row').value;
+  const row=document.getElementById('acc-m-row').value;
   if(!name){document.getElementById('acc-m-name').classList.add('invalid');return;}
   if(row){
     window.server.withSuccessHandler(()=>{closeM('accModal');loadAll();}).updateAccount(row,name,bal,type);
@@ -1181,7 +1181,7 @@ function openTxnEdit(e, rowNum){
 }
 
 function saveTxnEdit(){
-  const rowNum = +document.getElementById('txn-edit-row').value;
+  const rowNum = document.getElementById('txn-edit-row').value;
   const acc    = document.getElementById('txn-edit-acc').value.trim();
   const cat    = document.getElementById('txn-edit-cat').value.trim();
   const item   = document.getElementById('txn-edit-item').value.trim();
@@ -1219,7 +1219,7 @@ function setupSwipe(){
     sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now();
     // Block page-swipe if touch starts inside any scrollable table area
     const el=e.target;
-    blocked=!!(el.closest('.txn-tbl-wrap')||el.closest('#ldrTblWrap')||el.closest('.card table'));
+    blocked=!!(el.closest('#ldrTblWrap')||el.closest('.card table'));
   },{passive:true});
   main.addEventListener('touchend',e=>{
     if(blocked)return;
