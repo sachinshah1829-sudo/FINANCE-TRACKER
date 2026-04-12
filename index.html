@@ -2155,7 +2155,7 @@ Respond with ONLY a valid JSON array of 3 objects. No markdown, no explanation. 
   try {
     let apiKey = localStorage.getItem('v_fintrack_gemini_key');
     if (!apiKey || apiKey === 'AIzaSyBFkrZ3B288iA6XmRNJKgcOrLLSnZem_xU') {
-      apiKey = prompt('Please enter your Gemini API key (the previous hardcoded key was revoked by Google for being leaked on GitHub):');
+      apiKey = window.prompt('Please enter your Gemini API key (the previous hardcoded key was revoked by Google for being leaked on GitHub):');
       if (!apiKey) throw new Error('No API key provided');
       localStorage.setItem('v_fintrack_gemini_key', apiKey);
     }
