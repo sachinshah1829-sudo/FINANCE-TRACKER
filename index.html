@@ -1102,9 +1102,15 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
       <div class="add-form active" id="form-expense">
         <div class="form-row"><label class="form-label">Template</label><div class="form-input-wrap"><input class="form-input" id="e-tpl" placeholder="Choose template (optional)" autocomplete="off"><div class="form-dropdown" id="dd-e-tpl"></div></div></div>
         <div class="form-row"><label class="form-label">Account</label><div class="form-input-wrap"><input class="form-input" id="e-acc" placeholder="Select account" autocomplete="off"><div class="form-dropdown" id="dd-e-acc"></div></div></div>
-        <div class="form-row"><label class="form-label">Category</label><div class="form-input-wrap"><input class="form-input" id="e-cat" placeholder="Select or type new category" autocomplete="off"><div class="form-dropdown" id="dd-e-cat"></div></div></div>
         <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input" id="e-amt" type="number" placeholder="0.00"></div>
-        <div class="form-row"><label class="form-label">Item</label><div class="form-input-wrap" style="position:relative"><input class="form-input" id="e-item" placeholder="Type or select item" autocomplete="off"><div class="form-dropdown" id="dd-e-item"></div><span class="auto-cat-badge" id="auto-cat-badge">AI ✦</span></div></div>
+        <div class="form-row"><label class="form-label">Item</label><div class="form-input-wrap"><input class="form-input" id="e-item" placeholder="Type or select item" autocomplete="off"><div class="form-dropdown" id="dd-e-item"></div></div></div>
+        <div class="form-row" id="e-cat-row">
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Category</span>
+            <span id="auto-cat-suggest" style="display:none;font-size:9px;font-weight:700;letter-spacing:0.5px;cursor:pointer;background:var(--dark);color:#f0efe9;border-radius:20px;padding:2px 10px;transition:all 0.16s">✦ AI: <span id="auto-cat-value"></span> → Apply</span>
+          </label>
+          <div class="form-input-wrap"><input class="form-input" id="e-cat" placeholder="Select or type new category" autocomplete="off"><div class="form-dropdown" id="dd-e-cat"></div></div>
+        </div>
         <div class="form-row"><label class="form-label">Paid To</label><div class="form-input-wrap"><input class="form-input" id="e-to" placeholder="Type or select person" autocomplete="off"><div class="form-dropdown" id="dd-e-to"></div></div></div>
         
         <div class="form-row" style="margin-top:16px;">
