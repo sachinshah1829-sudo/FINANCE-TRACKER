@@ -952,6 +952,58 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
   .add-tabs { width: 100%; }
   .add-tab { flex: 1; text-align: center; padding: 8px 4px; }
 }
+
+/* ══════════════════════════════════════
+   AI CHAT
+══════════════════════════════════════ */
+.ai-chat-wrap { display:flex; flex-direction:column; height:calc(100vh - 200px); min-height:400px; max-width:680px; }
+.ai-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding:4px 0 16px; scroll-behavior:smooth; }
+.ai-msgs::-webkit-scrollbar { width:3px; }
+.ai-msgs::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.08); border-radius:2px; }
+.ai-msg { display:flex; gap:10px; animation:mIn 0.22s ease both; }
+.ai-msg.user { flex-direction:row-reverse; }
+.ai-avatar { width:30px; height:30px; border-radius:var(--r-xs); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; font-family:var(--font); font-weight:700; }
+.ai-msg.ai .ai-avatar { background:var(--dark); color:#f0efe9; }
+.ai-msg.user .ai-avatar { background:rgba(0,0,0,0.08); color:var(--t1); }
+.ai-bubble { max-width:82%; padding:12px 16px; border-radius:var(--r); font-size:13px; line-height:1.65; font-family:var(--font); }
+.ai-msg.ai .ai-bubble { background:var(--glass-white); border:1px solid var(--glass-border); box-shadow:var(--glass-shadow); color:var(--t1); border-radius:var(--r-xs) var(--r) var(--r) var(--r); }
+.ai-msg.user .ai-bubble { background:var(--dark); color:#f0efe9; border-radius:var(--r) var(--r-xs) var(--r) var(--r); }
+.ai-bubble b { font-weight:700; }
+.ai-bubble ul { padding-left:18px; margin-top:6px; }
+.ai-bubble li { margin-bottom:3px; }
+.ai-typing { display:flex; align-items:center; gap:4px; padding:10px 14px; }
+.ai-dot { width:6px; height:6px; border-radius:50%; background:var(--t3); animation:aiDot 1.2s infinite ease-in-out; }
+.ai-dot:nth-child(2){animation-delay:0.2s;}
+.ai-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes aiDot { 0%,80%,100%{transform:scale(0.6);opacity:0.4;} 40%{transform:scale(1);opacity:1;} }
+.ai-input-row { display:flex; gap:8px; padding-top:14px; border-top:1px solid var(--glass-border); }
+.ai-inp { flex:1; background:var(--glass-white); border:1px solid var(--glass-border); border-radius:var(--r-sm); padding:12px 14px; font-family:var(--font); font-size:13px; color:var(--t1); outline:none; transition:all var(--t-fast); resize:none; min-height:46px; max-height:120px; overflow-y:auto; }
+.ai-inp:focus { border-color:var(--dark); box-shadow:0 0 0 3px rgba(0,0,0,0.06); }
+.ai-send-btn { padding:10px 18px; background:var(--dark); color:#f0efe9; border:none; border-radius:var(--r-sm); font-family:var(--font); font-size:12px; font-weight:700; cursor:pointer; transition:all var(--t-fast); letter-spacing:0.5px; white-space:nowrap; align-self:flex-end; }
+.ai-send-btn:hover { background:var(--black); box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+.ai-send-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.ai-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.ai-chip { padding:6px 12px; background:rgba(0,0,0,0.05); border:1px solid var(--glass-border); border-radius:20px; font-size:11px; font-weight:700; color:var(--t2); cursor:pointer; transition:all var(--t-fast); font-family:var(--font); }
+.ai-chip:hover { background:var(--dark); color:#f0efe9; border-color:transparent; }
+
+/* Floating chat button */
+.ai-fab { position:fixed; bottom:28px; right:28px; z-index:50; width:52px; height:52px; border-radius:50%; background:var(--dark); color:#f0efe9; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 24px rgba(0,0,0,0.22); transition:all var(--t-spring); }
+.ai-fab:hover { transform:scale(1.1) translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,0.3); }
+.ai-fab:active { transform:scale(0.95); }
+
+/* Insights card */
+.insights-card { background:var(--glass-white); backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); border:1px solid var(--glass-border); border-radius:var(--r); box-shadow:var(--glass-shadow); padding:20px 22px; margin-bottom:24px; position:relative; overflow:hidden; }
+.insights-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.insights-title { font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--t3); font-family:var(--font); }
+.insights-refresh { width:24px; height:24px; border-radius:var(--r-xs); border:1px solid var(--glass-border-thin); background:var(--glass-white-thin); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--t2); transition:all var(--t-fast); }
+.insights-refresh:hover { background:rgba(0,0,0,0.07); }
+.insight-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.04); animation:brIn 0.3s ease both; }
+.insight-item:last-child { border-bottom:none; }
+.insight-icon { font-size:16px; flex-shrink:0; width:26px; text-align:center; margin-top:1px; }
+.insight-text { font-size:12px; color:var(--t1); font-family:var(--font); line-height:1.55; }
+.insight-text b { font-weight:700; }
+.ai-badge { position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--dark),var(--mid),var(--light)); }
+.auto-cat-badge { display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:9px; font-weight:700; letter-spacing:1px; color:var(--t3); background:rgba(0,0,0,0.05); border:1px solid var(--glass-border-thin); border-radius:20px; padding:2px 8px; font-family:var(--font); pointer-events:none; }
 </style>
 </head>
 <body>
@@ -1013,6 +1065,7 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
       <div class="nav-item" id="nav-manage" onclick="nav('manage',this)"><div class="nav-ico">⚙</div>Manage</div>
       <div class="nav-item" id="nav-templates" onclick="nav('templates',this)"><div class="nav-ico">⊡</div>Templates</div>
       <div class="nav-item" id="nav-import" onclick="nav('import',this)"><div class="nav-ico">⬆</div>Import Data</div>
+      <div class="nav-item" id="nav-ai" onclick="nav('ai',this)"><div class="nav-ico">✦</div>AI Advisor</div>
     </div>
     <div class="sb-period">
       <div class="period-label">Period</div>
@@ -1051,7 +1104,7 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
         <div class="form-row"><label class="form-label">Account</label><div class="form-input-wrap"><input class="form-input" id="e-acc" placeholder="Select account" autocomplete="off"><div class="form-dropdown" id="dd-e-acc"></div></div></div>
         <div class="form-row"><label class="form-label">Category</label><div class="form-input-wrap"><input class="form-input" id="e-cat" placeholder="Select or type new category" autocomplete="off"><div class="form-dropdown" id="dd-e-cat"></div></div></div>
         <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input" id="e-amt" type="number" placeholder="0.00"></div>
-        <div class="form-row"><label class="form-label">Item</label><div class="form-input-wrap"><input class="form-input" id="e-item" placeholder="Type or select item" autocomplete="off"><div class="form-dropdown" id="dd-e-item"></div></div></div>
+        <div class="form-row"><label class="form-label">Item</label><div class="form-input-wrap" style="position:relative"><input class="form-input" id="e-item" placeholder="Type or select item" autocomplete="off"><div class="form-dropdown" id="dd-e-item"></div><span class="auto-cat-badge" id="auto-cat-badge">AI ✦</span></div></div>
         <div class="form-row"><label class="form-label">Paid To</label><div class="form-input-wrap"><input class="form-input" id="e-to" placeholder="Type or select person" autocomplete="off"><div class="form-dropdown" id="dd-e-to"></div></div></div>
         
         <div class="form-row" style="margin-top:16px;">
@@ -1095,6 +1148,14 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
     <!-- ACCOUNTS -->
     <div class="page" id="page-accounts">
       <div class="pg-header"><div class="pg-title">Accounts</div><div class="pg-sub" id="acc-period">—</div></div>
+      <div class="insights-card" id="insightsCard">
+        <div class="ai-badge"></div>
+        <div class="insights-hdr">
+          <div class="insights-title">✦ Smart Insights</div>
+          <button class="insights-refresh" onclick="generateInsights()" title="Refresh insights">↺</button>
+        </div>
+        <div id="insightsList"><div class="empty-s" style="padding:12px 0">Loading insights…</div></div>
+      </div>
       <div class="stats-row">
         <div class="stat-tile t-red"><div class="stat-bar"></div><div class="s-eye">Total Spent</div><div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div></div>
         <div class="stat-tile t-blue"><div class="stat-bar"></div><div class="s-eye">Daily Average</div><div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div></div>
@@ -1278,8 +1339,35 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
       </div>
     </div>
 
+    <!-- AI ADVISOR -->
+    <div class="page" id="page-ai">
+      <div class="pg-header"><div class="pg-title">AI Advisor</div><div class="pg-sub">Ask anything about your finances · Powered by Gemini</div></div>
+      <div class="ai-chat-wrap">
+        <div class="ai-chips" id="ai-chips">
+          <div class="ai-chip" onclick="aiChip(this)">Where did I spend the most?</div>
+          <div class="ai-chip" onclick="aiChip(this)">How can I save ₹2000?</div>
+          <div class="ai-chip" onclick="aiChip(this)">Show unnecessary expenses</div>
+          <div class="ai-chip" onclick="aiChip(this)">Top 3 spending categories</div>
+          <div class="ai-chip" onclick="aiChip(this)">Am I overspending?</div>
+          <div class="ai-chip" onclick="aiChip(this)">Give me a budget plan</div>
+        </div>
+        <div class="ai-msgs" id="ai-msgs">
+          <div class="ai-msg ai">
+            <div class="ai-avatar">✦</div>
+            <div class="ai-bubble">Hi! I'm your AI Finance Advisor, powered by Gemini. I have full access to your transaction history, accounts, and spending patterns.<br><br>Ask me anything — like <b>"Where am I overspending?"</b> or <b>"Give me a savings plan for this month."</b></div>
+          </div>
+        </div>
+        <div class="ai-input-row">
+          <textarea class="ai-inp" id="ai-inp" placeholder="Ask about your finances…" rows="1" onkeydown="aiEnterKey(event)"></textarea>
+          <button class="ai-send-btn" id="ai-send" onclick="sendAIMessage()">Send ↗</button>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
+
+<!-- Floating AI button -->
+<button class="ai-fab" id="ai-fab" onclick="nav('ai',document.getElementById('nav-ai'))" title="AI Advisor" style="display:none">✦</button>
 
 <!-- MODALS -->
 <div class="modal-ov" id="personModal" onclick="if(event.target===this)closeM('personModal')">
@@ -1355,7 +1443,7 @@ const MO_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov
 const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 // Greyscale pie colors
 const PC=['#0a0a0a','#222222','#3a3a3a','#555555','#6e6e6e','#888888','#9e9e9e','#b4b4b4','#c6c6c6','#d6d6d6','#e4e4e4','#eeeeee'];
-const PAGE_ORDER=['add','accounts','heatmap','analytics','ledger','transactions','manage','templates','import'];
+const PAGE_ORDER=['add','accounts','heatmap','analytics','ledger','transactions','manage','templates','import','ai'];
 const FIELD_ORDER = { expense:['e-tpl','e-acc','e-cat','e-amt','e-item','e-to'], income:['i-tpl','i-acc','i-cat','i-amt','i-item','i-from'], transfer:['t-from','t-to','t-amt','t-item'] };
 
 let curM, curY;
@@ -1363,6 +1451,10 @@ let _accounts=[], _categories=[], _items=[], _people=[], _templates=[], _allTxns
 let expTpls=[], incTpls=[];
 const _mselState={type:new Set(),account:new Set(),cat:new Set(),item:new Set(),tofrom:new Set()};
 let _importRows = [];
+const GEMINI_KEY = 'AIzaSyBFkrZ3B288iA6XmRNJKgcOrLLSnZem_xU';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+let _aiHistory = []; // chat history
+let _autoCatTimer = null;
 
 /* ── TOAST ── */
 window.toast = function(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); };
@@ -1459,6 +1551,10 @@ async function loadAllData(){
   await Promise.all([loadAccounts(),loadCategories(),loadItems(),loadPeople(),loadTemplates()]);
   setupAddFormDropdowns();
   await loadPeriodData();
+  generateInsights();
+  setupAutoCat();
+  // Show floating AI button after load
+  setTimeout(()=>{const fab=document.getElementById('ai-fab');if(fab)fab.style.display='';},1000);
 }
 async function loadAccounts(){const snap=await getDocs(uRef('accounts'));_accounts=snap.docs.map(d=>({id:d.id,...d.data()}));}
 async function loadCategories(){const snap=await getDocs(uRef('categories'));_categories=snap.docs.map(d=>({id:d.id,...d.data()}));}
@@ -2310,6 +2406,205 @@ function setupSwipe(){const main=document.getElementById('mainArea');let sx=0,sy
 /* ═══ MODAL HELPERS ═══ */
 window.openM=id=>{document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';};
 window.closeM=id=>{document.getElementById(id).classList.remove('open');document.body.style.overflow='';};
+
+/* ═══════════════════════════════════════
+   GEMINI AI CORE
+═══════════════════════════════════════ */
+async function callGemini(prompt, history=[]){
+  const contents = [];
+  history.forEach(h=>contents.push({role:h.role,parts:[{text:h.text}]}));
+  contents.push({role:'user',parts:[{text:prompt}]});
+  try{
+    const res = await fetch(GEMINI_URL, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents,
+        generationConfig:{maxOutputTokens:700, temperature:0.7}
+      })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
+  } catch(e){
+    console.error('Gemini error:',e);
+    return '⚠ AI unavailable right now: '+e.message;
+  }
+}
+
+function buildFinanceContext(){
+  const sd=new Date(curY,curM-1,1), ed=new Date(curY,curM,0,23,59,59);
+  const periodTxns=_allTxns.filter(t=>{const d=t.date?.toDate?t.date.toDate():new Date(t.date);return d>=sd&&d<=ed;});
+  const expenses=periodTxns.filter(t=>Number(t.amount)<0&&t.category?.toUpperCase()!=='TRANSFER');
+  const income=periodTxns.filter(t=>Number(t.amount)>0&&t.category?.toUpperCase()!=='TRANSFER');
+  const totalExp=expenses.reduce((s,t)=>s+Math.abs(Number(t.amount)),0);
+  const totalInc=income.reduce((s,t)=>s+Number(t.amount),0);
+  const catTotals={};
+  expenses.forEach(t=>{const c=(t.category||'OTHER').toUpperCase();catTotals[c]=(catTotals[c]||0)+Math.abs(Number(t.amount));});
+  const catBreakdown=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`${c}: ₹${v.toFixed(0)}`).join(', ');
+  const accBalances=_accounts.map(a=>`${a.name}(${a.type}): ₹${(a.currentBalance||0).toFixed(0)}`).join(', ');
+  const recentTxns=expenses.slice(-10).map(t=>`${t.item}/${t.category}/₹${Math.abs(Number(t.amount))}`).join(', ');
+  return `You are a smart personal finance advisor for an Indian user. Current period: ${MO_LONG[curM-1]} ${curY}.
+Accounts: ${accBalances}
+Total Expenses this month: ₹${totalExp.toFixed(0)}
+Total Income this month: ₹${totalInc.toFixed(0)}
+Category Breakdown: ${catBreakdown}
+Recent Expenses: ${recentTxns}
+Total Transactions: ${periodTxns.length}
+Provide concise, actionable advice. Use ₹ for amounts. Be specific with numbers from the data above.`;
+}
+
+/* ═══ AI CHAT ═══ */
+window.aiEnterKey = function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAIMessage();}
+};
+window.aiChip = function(el){
+  document.getElementById('ai-inp').value = el.textContent;
+  sendAIMessage();
+};
+window.sendAIMessage = async function(){
+  const inp = document.getElementById('ai-inp');
+  const msg = inp.value.trim();
+  if(!msg) return;
+  inp.value = '';
+  const msgs = document.getElementById('ai-msgs');
+  const btn = document.getElementById('ai-send');
+  // Add user bubble
+  msgs.insertAdjacentHTML('beforeend',`<div class="ai-msg user" style="animation-delay:0s"><div class="ai-avatar">U</div><div class="ai-bubble">${escH(msg)}</div></div>`);
+  // Add typing indicator
+  const typingId = 'ai-typing-'+Date.now();
+  msgs.insertAdjacentHTML('beforeend',`<div class="ai-msg ai" id="${typingId}"><div class="ai-avatar">✦</div><div class="ai-bubble"><div class="ai-typing"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div></div></div>`);
+  msgs.scrollTop = msgs.scrollHeight;
+  btn.disabled = true;
+  const systemCtx = buildFinanceContext();
+  const fullPrompt = systemCtx + '\n\nUser question: ' + msg;
+  const response = await callGemini(fullPrompt, []);
+  _aiHistory.push({role:'user',text:msg},{role:'model',text:response});
+  if(_aiHistory.length>20) _aiHistory=_aiHistory.slice(-20);
+  // Replace typing with response
+  const typingEl = document.getElementById(typingId);
+  if(typingEl) typingEl.outerHTML = `<div class="ai-msg ai"><div class="ai-avatar">✦</div><div class="ai-bubble">${formatAIResponse(response)}</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  btn.disabled = false;
+};
+function formatAIResponse(text){
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+    .replace(/\*(.+?)\*/g,'<i>$1</i>')
+    .replace(/^\* (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
+
+/* ═══ SMART INSIGHTS ═══ */
+window.generateInsights = async function(){
+  const el = document.getElementById('insightsList');
+  if(!el||!_allTxns.length) return;
+  el.innerHTML = '<div class="empty-s" style="padding:10px 0"><div class="sp" style="margin:0 auto"></div></div>';
+  // Rule-based fast insights
+  const sd=new Date(curY,curM-1,1),ed=new Date(curY,curM,0,23,59,59);
+  const prevSd=new Date(curY,curM-2,1),prevEd=new Date(curY,curM-1,0,23,59,59);
+  const thisMonth=_allTxns.filter(t=>{const d=t.date?.toDate?t.date.toDate():new Date(t.date);return d>=sd&&d<=ed&&Number(t.amount)<0&&t.category?.toUpperCase()!=='TRANSFER';});
+  const lastMonth=_allTxns.filter(t=>{const d=t.date?.toDate?t.date.toDate():new Date(t.date);return d>=prevSd&&d<=prevEd&&Number(t.amount)<0&&t.category?.toUpperCase()!=='TRANSFER';});
+  const thisTotal=thisMonth.reduce((s,t)=>s+Math.abs(Number(t.amount)),0);
+  const lastTotal=lastMonth.reduce((s,t)=>s+Math.abs(Number(t.amount)),0);
+  const catTotals={};
+  thisMonth.forEach(t=>{const c=(t.category||'OTHER').toUpperCase();catTotals[c]=(catTotals[c]||0)+Math.abs(Number(t.amount));});
+  const topCat=Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
+  const ruleInsights=[];
+  if(lastTotal>0){
+    const diff=((thisTotal-lastTotal)/lastTotal*100).toFixed(0);
+    const icon=diff>0?'📈':'📉', word=diff>0?'more':'less';
+    ruleInsights.push({icon, text:`<b>${Math.abs(diff)}% ${word}</b> than last month (₹${thisTotal.toFixed(0)} vs ₹${lastTotal.toFixed(0)})`});
+  }
+  if(topCat) ruleInsights.push({icon:'🏷️', text:`Highest spending: <b>${topCat[0]}</b> at <b>₹${topCat[1].toFixed(0)}</b> this month`});
+  const today=new Date(), daysPassed=Math.max(today.getDate(),1);
+  const dailyRate=(thisTotal/daysPassed).toFixed(0);
+  const projected=(Number(dailyRate)*new Date(curY,curM,0).getDate()).toFixed(0);
+  ruleInsights.push({icon:'📅', text:`Daily avg: <b>₹${dailyRate}</b> — projected month total: <b>₹${projected}</b>`});
+  const creditCards=_accounts.filter(a=>a.type==='CREDIT_CARD');
+  creditCards.forEach(cc=>{
+    const limit=cc.openingBalance||0;
+    if(limit>0){
+      const used=limit-(cc.currentBalance||0);
+      const pct=((used/limit)*100).toFixed(0);
+      if(pct>70) ruleInsights.push({icon:'💳', text:`<b>${cc.name}</b> is at <b>${pct}%</b> utilization (₹${used.toFixed(0)}/${limit.toFixed(0)})`});
+    }
+  });
+  // Render rule-based first
+  el.innerHTML = ruleInsights.map((ins,i)=>`<div class="insight-item" style="animation-delay:${i*0.08}s"><div class="insight-icon">${ins.icon}</div><div class="insight-text">${ins.text}</div></div>`).join('');
+  // Then get AI insight  
+  try{
+    const ctx = buildFinanceContext();
+    const aiPrompt = ctx + '\n\nGive exactly 2 short, sharp, specific financial insights or tips based on this data. Each insight should be on its own line starting with an emoji. Max 25 words each. No intro text.';
+    const aiTxt = await callGemini(aiPrompt);
+    const aiLines = aiTxt.split('\n').filter(l=>l.trim().length>10).slice(0,2);
+    const aiItems = aiLines.map((l,i)=>{
+      const clean=l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'$1');
+      return `<div class="insight-item" style="animation-delay:${(ruleInsights.length+i)*0.08}s"><div class="insight-icon">✦</div><div class="insight-text">${clean}</div></div>`;
+    }).join('');
+    el.innerHTML += aiItems;
+  } catch(e){console.warn('AI insights failed',e);}
+};
+
+/* ═══ AUTO CATEGORIZATION ═══ */
+const KEYWORD_CATS = {
+  'zomato':'FOOD','swiggy':'FOOD','dunzo':'FOOD','blinkit':'FOOD','zepto':'FOOD','dominos':'FOOD','pizza':'FOOD','mcdonald':'FOOD','kfc':'FOOD','starbucks':'FOOD','cafe':'FOOD','restaurant':'FOOD','food':'FOOD','lunch':'FOOD','dinner':'FOOD','breakfast':'FOOD','coffee':'FOOD','chai':'FOOD',
+  'uber':'TRAVEL','ola':'TRAVEL','rapido':'TRAVEL','metro':'TRAVEL','bus':'TRAVEL','train':'TRAVEL','flight':'TRAVEL','airline':'TRAVEL','fuel':'TRAVEL','petrol':'TRAVEL','diesel':'TRAVEL','parking':'TRAVEL','toll':'TRAVEL','cab':'TRAVEL','auto':'TRAVEL','ticket':'TRAVEL',
+  'amazon':'SHOPPING','flipkart':'SHOPPING','myntra':'SHOPPING','ajio':'SHOPPING','nykaa':'FASHION','shopping':'SHOPPING','clothes':'FASHION','shoes':'FASHION','fashion':'FASHION',
+  'netflix':'ENTERTAINMENT','prime':'ENTERTAINMENT','hotstar':'ENTERTAINMENT','spotify':'ENTERTAINMENT','youtube':'ENTERTAINMENT','movie':'ENTERTAINMENT','cinema':'ENTERTAINMENT','game':'ENTERTAINMENT','subscription':'ENTERTAINMENT',
+  'gym':'HEALTH','pharmacy':'HEALTH','medicine':'HEALTH','doctor':'HEALTH','hospital':'HEALTH','clinic':'HEALTH','health':'HEALTH','medical':'HEALTH','tira':'HEALTH',
+  'electricity':'GROCERIES','grocery':'GROCERIES','vegetables':'GROCERIES','milk':'GROCERIES','bread':'GROCERIES','bigbasket':'GROCERIES','dmart':'GROCERIES','jiomart':'GROCERIES',
+  'course':'EDUCATION','book':'EDUCATION','tuition':'EDUCATION','school':'EDUCATION','college':'EDUCATION','udemy':'EDUCATION','coursera':'EDUCATION',
+  'salary':'SALARY','freelance':'FREELANCE','investment':'INVESTMENT','mutual':'INVESTMENT','stock':'INVESTMENT','sip':'INVESTMENT',
+  'recharge':'TECH','phone':'TECH','laptop':'TECH','gadget':'TECH','tech':'TECH','software':'TECH','apple':'TECH',
+  'rent':'BILLS','water':'BILLS','internet':'BILLS','broadband':'BILLS','postpaid':'BILLS','prepaid':'BILLS'
+};
+function keywordAutocat(item){
+  if(!item) return null;
+  const lc=item.toLowerCase();
+  for(const [kw,cat] of Object.entries(KEYWORD_CATS)){
+    if(lc.includes(kw)) return cat;
+  }
+  return null;
+}
+async function aiAutocat(item){
+  if(!item||item.length<3) return null;
+  const cats=_categories.map(c=>c.name).join(',');
+  const prompt=`Given the expense item "${item}", pick the most fitting category from this list: ${cats}||FOOD,TRAVEL,SHOPPING,ENTERTAINMENT,HEALTH,GROCERIES,EDUCATION,BILLS,TECH,FASHION,OTHER. Reply with ONLY the category name, nothing else.`;
+  try{
+    const r=await callGemini(prompt);
+    const clean=r.trim().toUpperCase().replace(/[^A-Z_&]/g,'');
+    return clean||null;
+  }catch(e){return null;}
+}
+function setupAutoCat(){
+  const eItem=document.getElementById('e-item');
+  const eCat=document.getElementById('e-cat');
+  const badge=document.getElementById('auto-cat-badge');
+  if(!eItem||!eCat) return;
+  eItem.addEventListener('input',()=>{
+    clearTimeout(_autoCatTimer);
+    const val=eItem.value.trim();
+    if(!val||eCat.value.trim()) return; // don't override if user already set category
+    // Keyword first
+    const kwCat=keywordAutocat(val);
+    if(kwCat){
+      eCat.value=kwCat; badge.style.display=''; badge.textContent='Auto ✦'; return;
+    }
+    // AI fallback after 800ms debounce  
+    _autoCatTimer=setTimeout(async()=>{
+      if(eCat.value.trim()) return;
+      badge.style.display=''; badge.textContent='AI …';
+      const aiCat=await aiAutocat(val);
+      if(aiCat&&!eCat.value.trim()){
+        eCat.value=aiCat; badge.textContent='AI ✦';
+        setTimeout(()=>{badge.style.display='none';},3000);
+      } else { badge.style.display='none'; }
+    },800);
+  });
+  eCat.addEventListener('input',()=>{badge.style.display='none';});
+}
 
 /* Enter handlers */
 document.addEventListener('keydown',e=>{
