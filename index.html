@@ -1342,6 +1342,12 @@
             align-items: center;
             gap: 7px;
             animation: plIn 0.25s ease both;
+            cursor: pointer;
+            transition: transform var(--t-fast);
+        }
+
+        .pl-row:hover {
+            transform: translateX(4px);
         }
 
         @keyframes plIn {
@@ -3531,6 +3537,23 @@
             <div class="modal-bd" id="dm-body"></div>
         </div>
     </div>
+    <div class="modal-ov" id="catModal" onclick="if(event.target===this)closeM('catModal')">
+        <div class="modal-box">
+            <div class="modal-hd">
+                <div>
+                    <div class="mhd-name" id="cm-title">—</div>
+                    <div class="mhd-sub">Expenses in this category</div>
+                </div>
+                <div class="mhd-right">
+                    <div class="mhd-total">
+                        <div class="mhd-amt" id="cm-total">₹0</div>
+                        <div class="mhd-albl">Total</div>
+                    </div><button class="m-close" onclick="closeM('catModal')">✕</button>
+                </div>
+            </div>
+            <div class="modal-bd" id="cm-body"></div>
+        </div>
+    </div>
     <div class="modal-ov" id="accModal" onclick="if(event.target===this)closeM('accModal')">
         <div class="modal-box">
             <div class="modal-hd">
@@ -3926,7 +3949,7 @@
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const bgFill = isDark ? '#111' : '#f5f5f0';
             (function draw(now) { const p = Math.min((now - t0) / 750, 1), ez = 1 - Math.pow(1 - p, 3); ctx.clearRect(0, 0, W, H); sl.forEach(s => { const ea = s.s + (s.e - s.s) * ez; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s.s, ea); ctx.closePath(); ctx.fillStyle = s.col; ctx.fill(); }); ctx.beginPath(); ctx.arc(cx, cy, iR, 0, 2 * Math.PI); ctx.fillStyle = bgFill; ctx.fill(); if (p > 0.65) { const al = Math.min((p - 0.65) / 0.35, 1); ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = isDark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.85)'; ctx.font = 'bold 15px Courier Prime, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('₹' + fmt(total), cx, cy - 5); ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.38)'; ctx.font = '700 8px Courier Prime, monospace'; ctx.fillText('TOTAL', cx, cy + 9); ctx.restore(); } if (p < 1) requestAnimationFrame(draw); })(t0);
-            document.getElementById('pieLegend').innerHTML = cats.map((c, i) => '<div class="pl-row" style="animation-delay:' + (i * 0.05) + 's"><div class="pl-dot" style="background:' + PC[i % PC.length] + '"></div><div class="pl-name">' + c.category + '</div><div class="pl-pct">' + ((c.total / total) * 100).toFixed(1) + '%</div><div class="pl-amt">' + rs(c.total) + '</div></div>').join('');
+            document.getElementById('pieLegend').innerHTML = cats.map((c, i) => '<div class="pl-row" style="animation-delay:' + (i * 0.05) + 's" onclick="openCategoryM(\'' + escH(c.category) + '\')"><div class="pl-dot" style="background:' + PC[i % PC.length] + '"></div><div class="pl-name">' + c.category + '</div><div class="pl-pct">' + ((c.total / total) * 100).toFixed(1) + '%</div><div class="pl-amt">' + rs(c.total) + '</div></div>').join('');
         }
 
         /* ═══ LEDGER ═══ */
@@ -4028,6 +4051,15 @@
             const total = txns.reduce((s, t) => s + Math.abs(Number(t.amount)), 0); document.getElementById('dm-total').textContent = rs(total);
             document.getElementById('dm-body').innerHTML = txns.map((t, i) => { const idx = PC[['FOOD', 'TRAVEL', 'TECH', 'FASHION', 'HEALTH', 'ENTERTAINMENT', 'EDUCATION', 'GROCERIES'].indexOf((t.category || '').toUpperCase()) % PC.length] || PC[8]; return '<div class="m-txn" style="animation-delay:' + (i * 0.04) + 's"><div class="m-dot" style="background:' + idx + '"></div><div class="m-info"><div class="m-item">' + escH(t.item || '—') + '</div><div class="m-sub">' + escH(t.category || '') + (t.toFrom ? ' · ' + escH(t.toFrom) : '') + '</div></div><div><div class="m-amt">−' + rs(Math.abs(Number(t.amount))) + '</div><div class="m-xtra">' + escH(t.account || '') + '</div></div></div>'; }).join('');
             openM('dayModal');
+        };
+        window.openCategoryM = function (catName) {
+            document.getElementById('cm-title').textContent = catName;
+            const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
+            const txns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed && (t.category || '').toUpperCase() === catName.toUpperCase() && Number(t.amount) < 0; });
+            if (!txns.length) { document.getElementById('cm-total').textContent = '₹0'; document.getElementById('cm-body').innerHTML = '<div class="m-empty">No expenses for this category.</div>'; openM('catModal'); return; }
+            const total = txns.reduce((s, t) => s + Math.abs(Number(t.amount)), 0); document.getElementById('cm-total').textContent = rs(total);
+            document.getElementById('cm-body').innerHTML = txns.map((t, i) => { const col = PC[['FOOD', 'TRAVEL', 'TECH', 'FASHION', 'HEALTH', 'ENTERTAINMENT', 'EDUCATION', 'GROCERIES'].indexOf((t.category || '').toUpperCase()) % PC.length] || PC[8]; return '<div class="m-txn" style="animation-delay:' + (i * 0.04) + 's"><div class="m-dot" style="background:' + col + '"></div><div class="m-info"><div class="m-item">' + escH(t.item || '—') + '</div><div class="m-sub">' + fmtDate(t.date) + (t.toFrom ? ' · ' + escH(t.toFrom) : '') + '</div></div><div><div class="m-amt">−' + rs(Math.abs(Number(t.amount))) + '</div><div class="m-xtra">' + escH(t.account || '') + '</div></div></div>'; }).join('');
+            openM('catModal');
         };
 
         /* ═══ ADD ENTRY — AUTO-CREATE IN MANAGE ═══ */
