@@ -1075,6 +1075,7 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
         <div class="sb-user-name" id="sbUserName">—</div>
         <div class="sb-user-email" id="sbUserEmail">—</div>
       </div>
+      <button class="sb-logout" onclick="changeGeminiKey()" title="Change AI Key" style="font-size:13px; margin-right: 2px;">✨</button>
       <button class="sb-logout" onclick="doLogout()" title="Sign out">↩</button>
     </div>
   </nav>
@@ -2153,11 +2154,14 @@ Generate exactly 3 concise, actionable financial insights. Each insight must be 
 Respond with ONLY a valid JSON array of 3 objects. No markdown, no explanation. Be specific, use the actual numbers provided, and be encouraging but honest.`;
 
   try {
-    let apiKey = localStorage.getItem('v_fintrack_gemini_key');
+    let prefsRef = uDoc('settings', 'prefs');
+    let prefsSnap = await getDoc(prefsRef);
+    let apiKey = prefsSnap.exists() ? prefsSnap.data().geminiKey : null;
+
     if (!apiKey || apiKey === 'AIzaSyBFkrZ3B288iA6XmRNJKgcOrLLSnZem_xU') {
       apiKey = window.prompt('Please enter your Gemini API key (the previous hardcoded key was revoked by Google for being leaked on GitHub):');
       if (!apiKey) throw new Error('No API key provided');
-      localStorage.setItem('v_fintrack_gemini_key', apiKey);
+      await setDoc(prefsRef, {geminiKey: apiKey}, {merge: true});
     }
 
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -2167,9 +2171,9 @@ Respond with ONLY a valid JSON array of 3 objects. No markdown, no explanation. 
     });
     
     if (!res.ok) {
-      if(res.status === 403 || res.status === 400) {
-        localStorage.removeItem('v_fintrack_gemini_key');
-        throw new Error('API Key rejected');
+      if(res.status === 403 || res.status === 401) {
+        await setDoc(prefsRef, {geminiKey: null}, {merge: true});
+        throw new Error('API Key rejected (Unauthorized)');
       }
       throw new Error('API Error: ' + res.status);
     }
@@ -2194,6 +2198,19 @@ window.refreshInsights = async function(){
   if(btn){ btn.textContent='…'; btn.disabled=true; }
   await fetchAIInsights();
   if(btn){ btn.textContent='↻ Refresh'; btn.disabled=false; }
+};
+
+window.changeGeminiKey = async function() {
+  const newKey = window.prompt('Enter new Gemini API Key (leave empty to cancel):');
+  if(newKey) {
+    try {
+      await setDoc(uDoc('settings', 'prefs'), {geminiKey: newKey.trim()}, {merge: true});
+      toast('AI Key updated');
+      refreshInsights();
+    } catch(e) {
+      toast('Failed to update API Key: ' + e.message);
+    }
+  }
 };
 
 /* ═══ MANAGE ═══ */
