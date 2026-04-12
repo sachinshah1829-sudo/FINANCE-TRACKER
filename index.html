@@ -610,7 +610,7 @@ body::after {
 .tbl-scroll-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .txn-tbl { width: 100%; border-collapse: collapse; font-family: var(--font); }
 .txn-tbl thead th {
-  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--t3); padding: 0 12px 10px; text-align: left;
   border-bottom: 1px solid var(--glass-border); white-space: nowrap; font-family: var(--font);
 }
@@ -1583,7 +1583,7 @@ window.nav = function(name,el){
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('mainArea').scrollTop=0;
   closeSidebar();
-  if(name==='ledger'&&!document.getElementById('ldrAccSel').value){const f=_accounts.find(a=>a.type==='BANK');if(f){document.getElementById('ldrAccSel').value=f.name;loadLedger();}}
+  if(name==='ledger'&&!document.getElementById('ldrAccSel').value){const f=_accounts.find(a=>a.name.toUpperCase().includes('HDFC')) || _accounts.find(a=>a.type==='BANK');if(f){document.getElementById('ldrAccSel').value=f.name;loadLedger();}}
   if(name==='manage') renderManage();
   if(name==='templates') renderTemplatesPage();
   if(name==='transactions') loadTransactionsPage();
@@ -1609,7 +1609,7 @@ function accHTML(a,i,accKind){
     const limit = a.openingBalance || 0;
     const spent = limit - (a.currentBalance || 0);
     const pct = limit > 0 ? Math.min(Math.max((spent/limit)*100, 0), 100) : 0;
-    balHTML = '<div style="flex:1;text-align:right;"><div style="font-size:11px;font-weight:700;color:var(--t2);">Spent <b>'+rs(spent)+'</b> / '+fmt(limit)+'</div><div style="height:4px;background:rgba(0,0,0,0.06);border-radius:2px;margin-top:4px;overflow:hidden;position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:'+pct+'%;background:var(--amt-neg);border-radius:2px;"></div></div></div>';
+    return '<div class="card card-p clickable cc-ui-card" data-id="'+a.id+'" data-name="'+escH(a.name)+'" data-opening="'+(a.openingBalance||0)+'" data-type="'+a.type+'" data-bal="'+(a.currentBalance||0)+'" data-kind="'+accKind+'" style="animation-delay:'+(i*0.05)+'s; background: linear-gradient(135deg, var(--dark), #333, var(--black)); color: #f0efe9; position: relative; margin-bottom: 12px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; border-radius: var(--r-xl);" onclick="accItemClick(this)"><div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;"></div><div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none;"></div><div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1;"><div style="font-size: 16px; font-weight: 700; letter-spacing: 2px;">'+escH(a.name)+'</div><div class="acc-acts" onclick="event.stopPropagation()" style="background: rgba(0,0,0,0.6); padding: 4px; border-radius: var(--r-sm); margin-left: auto;"><button class="act-btn" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="editAccEl(this.closest(\'.cc-ui-card\'))">🖌</button><button class="act-btn del" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="deleteAccEl(this.closest(\'.cc-ui-card\'))">🗑</button></div></div><div style="margin-top: 10px; position: relative; z-index: 1;"><div style="font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Limit Left / Total Limit</div><div style="font-size: 22px; font-weight: 700;">'+rs(a.currentBalance||0)+' <span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.6);">/ '+fmt(limit)+'</span></div></div><div style="margin-top: 16px; position: relative; z-index: 1;"><div style="display: flex; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,0.8); margin-bottom: 5px; font-weight: 700;"><span>Utilized: '+pct.toFixed(1)+'%</span><span>Spent: '+rs(spent)+'</span></div><div style="height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.2);"><div style="position: absolute; left: 0; top: 0; bottom: 0; width: '+pct+'%; background: linear-gradient(90deg, #ff4e50, #f9d423); border-radius: 3px;"></div></div></div></div>';
   } else {
     const pos=(a.currentBalance||0)>=0;
     balHTML = '<div class="acc-bal '+(pos?'pos':'neg')+'">'+rs(a.currentBalance||0)+'</div>';
