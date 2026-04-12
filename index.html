@@ -1129,6 +1129,7 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
       <div class="add-form" id="form-transfer">
         <div class="form-row"><label class="form-label">From Account</label><div class="form-input-wrap"><input class="form-input" id="t-from" placeholder="Debit from" autocomplete="off"><div class="form-dropdown" id="dd-t-from"></div></div></div>
         <div class="form-row"><label class="form-label">To Account</label><div class="form-input-wrap"><input class="form-input" id="t-to" placeholder="Credit to" autocomplete="off"><div class="form-dropdown" id="dd-t-to"></div></div></div>
+
         <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input" id="t-amt" type="number" placeholder="0.00"></div>
         <div class="form-row"><label class="form-label">Note / Item</label><div class="form-input-wrap"><input class="form-input" id="t-item" placeholder="Transfer purpose" autocomplete="off"><div class="form-dropdown" id="dd-t-item"></div></div></div>
         <div class="form-err" id="t-err"></div>
@@ -1185,11 +1186,7 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
             <div class="card-h" style="margin:0">Smart Insights</div>
             <button class="add-inline-btn" style="padding:5px 12px;font-size:10px;" onclick="refreshInsights()" id="insights-refresh-btn">↻ Refresh</button>
           </div>
-          <div id="insights-rule-list" class="insights-grid"></div>
-          <div style="margin-top:12px;border-top:1px solid var(--glass-border);padding-top:12px;">
-            <div class="card-h" style="margin-bottom:10px;">✦ AI Analysis</div>
-            <div id="insights-ai-list" class="insights-grid"></div>
-          </div>
+          <div id="insights-ai-list" class="insights-grid"></div>
         </div>
       </div>
     </div>
@@ -2156,11 +2153,27 @@ Generate exactly 3 concise, actionable financial insights. Each insight must be 
 Respond with ONLY a valid JSON array of 3 objects. No markdown, no explanation. Be specific, use the actual numbers provided, and be encouraging but honest.`;
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBFkrZ3B288iA6XmRNJKgcOrLLSnZem_xU`, {
+    let apiKey = localStorage.getItem('v_fintrack_gemini_key');
+    if (!apiKey || apiKey === 'AIzaSyBFkrZ3B288iA6XmRNJKgcOrLLSnZem_xU') {
+      apiKey = prompt('Please enter your Gemini API key (the previous hardcoded key was revoked by Google for being leaked on GitHub):');
+      if (!apiKey) throw new Error('No API key provided');
+      localStorage.setItem('v_fintrack_gemini_key', apiKey);
+    }
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:600}})
     });
+    
+    if (!res.ok) {
+      if(res.status === 403 || res.status === 400) {
+        localStorage.removeItem('v_fintrack_gemini_key');
+        throw new Error('API Key rejected');
+      }
+      throw new Error('API Error: ' + res.status);
+    }
+    
     const data = await res.json();
     const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     // Strip markdown fences if present
@@ -2171,14 +2184,14 @@ Respond with ONLY a valid JSON array of 3 objects. No markdown, no explanation. 
       ins.icon||'✦', ins.tag||'AI Insight', ins.text||'', ins.sub||'', 'ai-insight', i*0.08
     )).join('');
   } catch(e){
-    aiEl.innerHTML = '<div class="insights-ai-err">⚠ AI analysis unavailable right now. Check your connection or try refreshing.</div>';
+    console.error(e);
+    aiEl.innerHTML = '<div class="insights-ai-err">⚠ AI analysis unavailable right now: ' + escH(e.message) + '. Please check your connection or try refreshing.</div>';
   }
 }
 
 window.refreshInsights = async function(){
   const btn = document.getElementById('insights-refresh-btn');
   if(btn){ btn.textContent='…'; btn.disabled=true; }
-  renderRuleInsights();
   await fetchAIInsights();
   if(btn){ btn.textContent='↻ Refresh'; btn.disabled=false; }
 };
