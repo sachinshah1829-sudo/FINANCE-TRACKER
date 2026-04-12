@@ -925,15 +925,6 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
 .insight-sub {
   font-size: 11px; color: var(--t2); margin-top: 2px; font-family: var(--font);
 }
-.insight-pill.ai-insight .insight-icon { background: var(--dark); color: #f0efe9; border-color: transparent; }
-.insight-pill.ai-insight { border-color: rgba(0,0,0,0.12); }
-@media (prefers-color-scheme: dark) { .insight-pill.ai-insight .insight-icon { background: rgba(255,255,255,0.15); } }
-.insights-ai-loading {
-  display: flex; align-items: center; gap: 10px; padding: 14px 16px;
-  color: var(--t2); font-size: 12px; font-family: var(--font); font-weight: 700;
-}
-.insights-ai-err { padding: 10px 16px; font-size: 12px; color: var(--t2); font-family: var(--font); }
-
 /* ══════════════════════════════════════
    SPINNER / EMPTY
 ══════════════════════════════════════ */
@@ -1075,7 +1066,6 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
         <div class="sb-user-name" id="sbUserName">—</div>
         <div class="sb-user-email" id="sbUserEmail">—</div>
       </div>
-      <button class="sb-logout" onclick="changeGeminiKey()" title="Change AI Key" style="font-size:13px; margin-right: 2px;">✨</button>
       <button class="sb-logout" onclick="doLogout()" title="Sign out">↩</button>
     </div>
   </nav>
@@ -1183,11 +1173,8 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
         <div class="card card-p ana-full"><div class="card-h">Category Breakdown</div><div class="pie-layout"><canvas id="pieCanvas" width="180" height="180" style="flex-shrink:0"></canvas><div class="pie-leg" id="pieLegend"><div class="sp-wrap"><div class="sp"></div></div></div></div></div>
         <!-- SMART INSIGHTS -->
         <div class="card card-p ana-full" id="insightsCard">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div class="card-h" style="margin:0">Smart Insights</div>
-            <button class="add-inline-btn" style="padding:5px 12px;font-size:10px;" onclick="refreshInsights()" id="insights-refresh-btn">↻ Refresh</button>
-          </div>
-          <div id="insights-ai-list" class="insights-grid"></div>
+          <div class="card-h">Smart Insights</div>
+          <div id="insights-rule-list" class="insights-grid"></div>
         </div>
       </div>
     </div>
@@ -1560,7 +1547,6 @@ async function loadPeriodData(){
   // Build insights data snapshot for this period
   _insightsCtx = { periodTxns, totalExpense, avgDaily, categoryExpenses, weeklyExpenses, expDays, daysInMonth };
   renderRuleInsights();
-  fetchAIInsights();
 }
 
 function buildWeekly(txns,sd,ed){
@@ -2122,96 +2108,6 @@ function renderRuleInsights(){
   el.innerHTML = pills.length ? pills.join('') : '<div class="empty-s">All looks good — no alerts this period.</div>';
 }
 
-async function fetchAIInsights(){
-  const aiEl = document.getElementById('insights-ai-list');
-  if(!aiEl || !_insightsCtx) return;
-  if(!_insightsCtx.periodTxns.length){
-    aiEl.innerHTML = '<div class="insights-ai-err">Add some transactions so AI can analyse your spending.</div>';
-    return;
-  }
-  aiEl.innerHTML = '<div class="insights-ai-loading"><div class="sp" style="width:16px;height:16px;border-width:2px;flex-shrink:0"></div> Analysing your spending with Gemini AI…</div>';
-
-  const { periodTxns, totalExpense, categoryExpenses, avgDaily } = _insightsCtx;
-  const period = MO_LONG[curM-1] + ' ' + curY;
-
-  // Build a compact summary for the prompt
-  const catSummary = categoryExpenses.slice(0,6).map(c=>`${c.category}: ₹${c.total.toFixed(0)}`).join(', ');
-  const totalIncome = periodTxns.filter(t=>Number(t.amount)>0&&(t.category||'').toUpperCase()!=='TRANSFER').reduce((s,t)=>s+Number(t.amount),0);
-  const txnCount = periodTxns.filter(t=>Number(t.amount)<0&&(t.category||'').toUpperCase()!=='TRANSFER').length;
-
-  const prompt = `You are a personal finance advisor analyzing spending data for ${period}.
-
-Data:
-- Total Expenses: ₹${totalExpense.toFixed(0)}
-- Total Income: ₹${totalIncome.toFixed(0)}
-- Daily Average Spend: ₹${avgDaily}
-- Number of expense transactions: ${txnCount}
-- Category breakdown: ${catSummary || 'No categories'}
-
-Generate exactly 3 concise, actionable financial insights. Each insight must be a JSON object in this format:
-{"icon":"emoji","tag":"short label","text":"insight sentence with numbers","sub":"one-line followup tip"}
-
-Respond with ONLY a valid JSON array of 3 objects. No markdown, no explanation. Be specific, use the actual numbers provided, and be encouraging but honest.`;
-
-  try {
-    let prefsRef = uDoc('settings', 'prefs');
-    let prefsSnap = await getDoc(prefsRef);
-    let apiKey = prefsSnap.exists() ? prefsSnap.data().geminiKey : null;
-
-    if (!apiKey || apiKey === 'AIzaSyBFkrZ3B288iA6XmRNJKgcOrLLSnZem_xU') {
-      apiKey = window.prompt('Please enter your Gemini API key (the previous hardcoded key was revoked by Google for being leaked on GitHub):');
-      if (!apiKey) throw new Error('No API key provided');
-      await setDoc(prefsRef, {geminiKey: apiKey}, {merge: true});
-    }
-
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:600}})
-    });
-    
-    if (!res.ok) {
-      if(res.status === 403 || res.status === 401) {
-        await setDoc(prefsRef, {geminiKey: null}, {merge: true});
-        throw new Error('API Key rejected (Unauthorized)');
-      }
-      throw new Error('API Error: ' + res.status);
-    }
-    
-    const data = await res.json();
-    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    // Strip markdown fences if present
-    const cleaned = raw.replace(/```json|```/g,'').trim();
-    const insights = JSON.parse(cleaned);
-    if(!Array.isArray(insights)) throw new Error('Not an array');
-    aiEl.innerHTML = insights.map((ins,i)=>insightPillHTML(
-      ins.icon||'✦', ins.tag||'AI Insight', ins.text||'', ins.sub||'', 'ai-insight', i*0.08
-    )).join('');
-  } catch(e){
-    console.error(e);
-    aiEl.innerHTML = '<div class="insights-ai-err">⚠ AI analysis unavailable right now: ' + escH(e.message) + '. Please check your connection or try refreshing.</div>';
-  }
-}
-
-window.refreshInsights = async function(){
-  const btn = document.getElementById('insights-refresh-btn');
-  if(btn){ btn.textContent='…'; btn.disabled=true; }
-  await fetchAIInsights();
-  if(btn){ btn.textContent='↻ Refresh'; btn.disabled=false; }
-};
-
-window.changeGeminiKey = async function() {
-  const newKey = window.prompt('Enter new Gemini API Key (leave empty to cancel):');
-  if(newKey) {
-    try {
-      await setDoc(uDoc('settings', 'prefs'), {geminiKey: newKey.trim()}, {merge: true});
-      toast('AI Key updated');
-      refreshInsights();
-    } catch(e) {
-      toast('Failed to update API Key: ' + e.message);
-    }
-  }
-};
 
 /* ═══ MANAGE ═══ */
 window.switchMgmtTab=function(name,el){document.querySelectorAll('[id^="mtab-"]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.mgmt-panel').forEach(x=>x.style.display='none');el.classList.add('active');document.getElementById('mpanel-'+name).style.display='block';};
