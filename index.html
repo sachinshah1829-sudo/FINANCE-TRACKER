@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">  
 <title>Finance · Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 <style>
@@ -1751,7 +1751,7 @@ function accHTML(a,i,accKind){
   const emo=isPerson?(a.name||'?').charAt(0).toUpperCase():bkEmo(a.name);
   const pos=(a.currentBalance||0)>=0;
   const balHTML='<div class="acc-bal '+(pos?'pos':'neg')+'">'+rs(a.currentBalance||0)+'</div>';
-  return '<div class="acc-item clickable" data-id="'+a.id+'" data-name="'+escH(a.name)+'" data-opening="'+(a.openingBalance||0)+'" data-type="'+a.type+'" data-bal="'+(a.currentBalance||0)+'" data-kind="'+accKind+'" style="animation-delay:'+(i*0.05)+'s" onclick="accItemClick(this)">'+'<div class="acc-bar '+accKind+'"></div>'+'<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">'+emo+'</div>'+'<div class="acc-name">'+escH(a.name)+'</div>'+balHTML+(isPerson?'<div class="acc-chev">›</div>':'')+'<div class="acc-acts" onclick="event.stopPropagation()">'+'<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>'+'<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\')))">✕</button>'+'</div></div>';
+  return '<div class="acc-item clickable" data-id="'+a.id+'" data-name="'+escH(a.name)+'" data-opening="'+(a.openingBalance||0)+'" data-type="'+a.type+'" data-bal="'+(a.currentBalance||0)+'" data-kind="'+accKind+'" style="animation-delay:'+(i*0.05)+'s" onclick="accItemClick(this)">'+'<div class="acc-bar '+accKind+'"></div>'+'<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">'+emo+'</div>'+'<div class="acc-name">'+escH(a.name)+'</div>'+balHTML+(isPerson?'<div class="acc-chev">›</div>':'')+'<div class="acc-acts" onclick="event.stopPropagation()">'+'<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>'+'<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\'))">✕</button>'+'</div></div>';
 }
 window.accItemClick=function(el){
   const kind=el.dataset.kind;
