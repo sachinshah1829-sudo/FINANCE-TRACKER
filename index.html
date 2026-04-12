@@ -3886,12 +3886,10 @@
             const mx = Math.max(...data.map(d => d.total), 1);
             document.getElementById('momChart').innerHTML = data.map((d, i) => {
                 const pct = d.total > 0 ? Math.max((d.total / mx) * 100, 2) : 0;
-                const out = d.total > 0 && pct < 28, ins = d.total > 0 && !out;
                 return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
                     '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
                     '<div class="br-track-wrap">' +
-                        '<div class="br-track" style="flex:1"><div class="br-fill" style="width:' + pct + '%">' + (ins ? '<span class="br-in">' + rs(d.total) + '</span>' : '') + '</div></div>' +
-                        (out ? '<span class="br-out">' + rs(d.total) + '</span>' : '') +
+                        '<div class="br-track" style="flex:1"><div class="br-fill" style="width:' + pct + '%">' + (d.total > 0 ? '<span class="br-in">' + rs(d.total) + '</span>' : '') + '</div></div>' +
                         '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
                     '</div>' +
                 '</div>';
