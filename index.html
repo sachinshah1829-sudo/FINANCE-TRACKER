@@ -2587,29 +2587,32 @@ async function aiAutocat(item){
 function setupAutoCat(){
   const eItem=document.getElementById('e-item');
   const eCat=document.getElementById('e-cat');
-  const badge=document.getElementById('auto-cat-badge');
-  if(!eItem||!eCat) return;
+  const suggestEl=document.getElementById('auto-cat-suggest');
+  const suggestVal=document.getElementById('auto-cat-value');
+  if(!eItem||!eCat||!suggestEl) return;
+  function showSuggestion(cat,source){
+    suggestVal.textContent=cat;
+    suggestEl.title=source==='ai'?'AI-suggested \u2014 click to apply':'Auto-detected \u2014 click to apply';
+    suggestEl.style.display='';
+    suggestEl.onclick=()=>{eCat.value=cat;suggestEl.style.display='none';eCat.dispatchEvent(new Event('input'));};
+  }
+  function hideSuggestion(){suggestEl.style.display='none';}
   eItem.addEventListener('input',()=>{
     clearTimeout(_autoCatTimer);
     const val=eItem.value.trim();
-    if(!val||eCat.value.trim()) return; // don't override if user already set category
-    // Keyword first
+    if(!val){hideSuggestion();return;}
     const kwCat=keywordAutocat(val);
-    if(kwCat){
-      eCat.value=kwCat; badge.style.display=''; badge.textContent='Auto ✦'; return;
-    }
-    // AI fallback after 800ms debounce  
+    if(kwCat){showSuggestion(kwCat,'keyword');return;}
+    hideSuggestion();
     _autoCatTimer=setTimeout(async()=>{
-      if(eCat.value.trim()) return;
-      badge.style.display=''; badge.textContent='AI …';
+      if(!eItem.value.trim()){return;}
+      suggestVal.textContent='\u2026';suggestEl.style.display='';suggestEl.onclick=null;
       const aiCat=await aiAutocat(val);
-      if(aiCat&&!eCat.value.trim()){
-        eCat.value=aiCat; badge.textContent='AI ✦';
-        setTimeout(()=>{badge.style.display='none';},3000);
-      } else { badge.style.display='none'; }
-    },800);
+      if(aiCat&&eItem.value.trim()===val)showSuggestion(aiCat,'ai');
+      else hideSuggestion();
+    },700);
   });
-  eCat.addEventListener('input',()=>{badge.style.display='none';});
+  eCat.addEventListener('input',hideSuggestion);
 }
 
 /* Enter handlers */
