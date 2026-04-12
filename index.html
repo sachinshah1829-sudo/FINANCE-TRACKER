@@ -3174,9 +3174,15 @@
 
             <!-- ANALYTICS -->
             <div class="page" id="page-analytics">
-                <div class="pg-header">
-                    <div class="pg-title">Analytics</div>
-                    <div class="pg-sub" id="ana-period">—</div>
+                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <div class="pg-title">Analytics</div>
+                        <div class="pg-sub" id="ana-period">—</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
+                        <input type="number" id="ana-lookback" class="form-input" style="width:70px; padding:6px 10px;" value="6" min="1" max="24" onchange="updateMoMTrends()">
+                    </div>
                 </div>
                 <div class="ana-grid pie-colors">
                     <div class="card card-p ana-full">
@@ -3195,6 +3201,14 @@
                                 <div class="sp-wrap">
                                     <div class="sp"></div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-p ana-full">
+                        <div class="card-h">Monthly Trends</div>
+                        <div class="bar-rows" id="momChart">
+                            <div class="sp-wrap">
+                                <div class="sp"></div>
                             </div>
                         </div>
                     </div>
@@ -3739,6 +3753,7 @@
             renderHeatmap({ days: heatmapDays, firstDayOfWeek: sd.getDay() });
             renderWeekly(weeklyExpenses);
             renderPie(categoryExpenses);
+            updateMoMTrends();
             populateLdrSel(_accounts);
             if (document.getElementById('ldrAccSel').value) loadLedger();
             const p = MO_SHORT[curM - 1] + ' ' + curY;
@@ -3849,6 +3864,40 @@
         function rSh(r) { const l = Math.round(96 - r * 86); return 'hsl(0,0%,' + l + '%)'; }
 
         /* ═══ ANALYTICS ═══ */
+        window.updateMoMTrends = function () {
+            const lookbackInput = document.getElementById('ana-lookback');
+            if (!lookbackInput) return;
+            const numMonths = parseInt(lookbackInput.value) || 6;
+            const trends = [];
+            let trackM = curM, trackY = curY;
+            for (let i = 0; i < numMonths; i++) {
+                const sd = new Date(trackY, trackM - 1, 1), ed = new Date(trackY, trackM, 0, 23, 59, 59);
+                const monthTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
+                const totalExpense = monthTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
+                const daysInMonth = ed.getDate();
+                const avgDaily = daysInMonth > 0 ? Math.round(totalExpense / daysInMonth) : 0;
+                trends.push({ label: MO_SHORT[trackM - 1] + ' ' + trackY, total: totalExpense, avg: avgDaily });
+                trackM--; if (trackM === 0) { trackM = 12; trackY--; }
+            }
+            renderMoMTrends(trends);
+        };
+        function renderMoMTrends(data) {
+            if (!data || !data.length) { document.getElementById('momChart').innerHTML = '<div class="empty-s">No data</div>'; return; }
+            const mx = Math.max(...data.map(d => d.total), 1);
+            document.getElementById('momChart').innerHTML = data.map((d, i) => {
+                const pct = d.total > 0 ? Math.max((d.total / mx) * 100, 2) : 0;
+                const out = d.total > 0 && pct < 28, ins = d.total > 0 && !out;
+                return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
+                    '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
+                    '<div class="br-track-wrap">' +
+                        '<div class="br-track" style="flex:1"><div class="br-fill" style="width:' + pct + '%">' + (ins ? '<span class="br-in">' + rs(d.total) + '</span>' : '') + '</div></div>' +
+                        (out ? '<span class="br-out">' + rs(d.total) + '</span>' : '') +
+                        '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
         function renderWeekly(weeks) {
             if (!weeks || !weeks.length) { document.getElementById('weeklyChart').innerHTML = '<div class="empty-s">No data</div>'; return; }
             const mx = Math.max(...weeks.map(w => w.total), 1);
