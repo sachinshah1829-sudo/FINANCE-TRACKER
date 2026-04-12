@@ -1142,7 +1142,10 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
     <div class="page" id="page-ledger">
       <div class="ldr-hdr">
         <div class="ldr-title" id="ldrTitle">Account Ledger</div>
-        <div class="ldr-sel-wrap"><span class="ldr-sel-lbl">Account</span><select class="ldr-sel" id="ldrAccSel" onchange="loadLedger()"><option value="">— select —</option></select></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div class="ldr-sel-wrap"><span class="ldr-sel-lbl">Account</span><select class="ldr-sel" id="ldrAccSel" onchange="loadLedger()"><option value="">— select —</option></select></div>
+          <button class="add-inline-btn" id="ldr-pdf-btn" onclick="downloadLedgerPDF()" title="Download PDF" style="display:none">⬇ PDF</button>
+        </div>
       </div>
       <div class="ldr-stats">
         <div class="ldr-stat"><div class="ldr-stat-lbl">Total Spent</div><div class="ldr-stat-val" id="ls-spent">—</div></div>
@@ -1609,14 +1612,85 @@ function renderPie(cats){
 }
 
 /* ═══ LEDGER ═══ */
-function populateLdrSel(accs){const sel=document.getElementById('ldrAccSel'),prev=sel.value;sel.innerHTML='<option value="">— select —</option>';accs.filter(a=>a.type==='BANK').forEach(a=>{const o=document.createElement('option');o.value=a.name;o.textContent=a.name;sel.appendChild(o);});if(prev&&[...sel.options].some(o=>o.value===prev))sel.value=prev;}
-window.loadLedger=function(){const acc=document.getElementById('ldrAccSel').value;if(!acc)return;document.getElementById('ldrTitle').textContent=acc+' — Ledger';const sd=new Date(curY,curM-1,1),ed=new Date(curY,curM,0,23,59,59);const rows=_allTxns.filter(t=>{const d=t.date?.toDate?t.date.toDate():new Date(t.date);return t.account===acc&&d>=sd&&d<=ed&&t.category?.toUpperCase()!=='TRANSFER';});renderLedger(rows,acc);};
+function populateLdrSel(accs){
+  const sel=document.getElementById('ldrAccSel'),prev=sel.value;
+  sel.innerHTML='<option value="">— select —</option>';
+  const banks=accs.filter(a=>a.type==='BANK');
+  const credits=accs.filter(a=>a.type==='CREDIT_CARD');
+  if(banks.length){
+    const g=document.createElement('optgroup'); g.label='Bank Accounts';
+    banks.forEach(a=>{const o=document.createElement('option');o.value=a.name;o.textContent=a.name;g.appendChild(o);});
+    sel.appendChild(g);
+  }
+  if(credits.length){
+    const g=document.createElement('optgroup'); g.label='Credit Cards';
+    credits.forEach(a=>{const o=document.createElement('option');o.value=a.name;o.textContent=a.name;g.appendChild(o);});
+    sel.appendChild(g);
+  }
+  if(prev&&[...sel.options].some(o=>o.value===prev))sel.value=prev;
+}
+window.loadLedger=function(){
+  const acc=document.getElementById('ldrAccSel').value;
+  if(!acc){document.getElementById('ldr-pdf-btn').style.display='none';return;}
+  document.getElementById('ldrTitle').textContent=acc+' — Ledger';
+  document.getElementById('ldr-pdf-btn').style.display='';
+  const sd=new Date(curY,curM-1,1),ed=new Date(curY,curM,0,23,59,59);
+  const rows=_allTxns.filter(t=>{const d=t.date?.toDate?t.date.toDate():new Date(t.date);return t.account===acc&&d>=sd&&d<=ed&&t.category?.toUpperCase()!=='TRANSFER';});
+  renderLedger(rows,acc);
+};
 function renderLedger(rows,acc){
   if(!rows||!rows.length){['ls-spent','ls-count','ls-bal'].forEach(id=>document.getElementById(id).textContent='0');document.getElementById('ldrTblWrap').innerHTML='<div class="empty-s">No transactions for '+escH(acc)+' this period.</div>';return;}
   const spent=rows.filter(r=>Number(r.amount)<0).reduce((s,r)=>s+Math.abs(Number(r.amount)),0);
   document.getElementById('ls-spent').textContent=rs(spent);document.getElementById('ls-count').textContent=rows.length;document.getElementById('ls-bal').textContent=rs(rows[rows.length-1].closingBalance||0);
   document.getElementById('ldrTblWrap').innerHTML='<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Item</th><th>Category</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th></tr></thead><tbody>'+rows.map((r,i)=>{const amt=Number(r.amount),cls=amt>=0?'td-pos':'td-neg';return'<tr class="txn-tr" style="animation-delay:'+(Math.min(i,25)*0.022)+'s"><td class="td-date">'+fmtDate(r.date)+'</td><td class="td-item">'+escH(r.item||'—')+'</td><td><span class="td-cat">'+escH(r.category||'')+'</span></td><td class="td-tof">'+escH(r.toFrom||'—')+'</td><td class="ra"><span class="'+cls+'">'+(amt>=0?'+':'')+rs(amt)+'</span></td><td class="ra td-bal">'+rs(r.closingBalance||0)+'</td></tr>';}).join('')+'</tbody></table></div>';
 }
+
+window.downloadLedgerPDF = function(){
+  const acc = document.getElementById('ldrAccSel').value || 'Ledger';
+  const period = document.getElementById('acc-period')?.textContent || '';
+  const tblWrap = document.getElementById('ldrTblWrap');
+  const statsEls = document.querySelectorAll('#page-ledger .ldr-stats .ldr-stat');
+  let statsHTML = '<table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-family:Courier Prime,monospace;">';
+  statsEls.forEach(el=>{
+    const lbl=el.querySelector('.ldr-stat-lbl')?.textContent||'';
+    const val=el.querySelector('.ldr-stat-val')?.textContent||'';
+    statsHTML+='<tr><td style="color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px 4px 0;">'+lbl+'</td><td style="font-weight:700;font-size:15px;padding:4px 0;">'+val+'</td></tr>';
+  });
+  statsHTML+='</table>';
+  const win=window.open('','_blank','width=900,height=700');
+  win.document.write(`<!DOCTYPE html><html><head>
+    <title>${acc} — Ledger — ${period}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0;}
+      body{font-family:'Courier Prime',monospace;background:#fff;color:#111;padding:32px 40px;}
+      h1{font-size:22px;font-weight:700;margin-bottom:4px;}
+      .period{font-size:12px;color:#888;margin-bottom:20px;}
+      table{width:100%;border-collapse:collapse;font-family:'Courier Prime',monospace;}
+      thead th{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:0 12px 10px;text-align:left;border-bottom:2px solid #ddd;}
+      thead th.ra{text-align:right;}
+      tbody tr{border-bottom:1px solid #eee;}
+      tbody tr:hover{background:#fafafa;}
+      tbody td{padding:9px 12px;font-size:12px;vertical-align:middle;}
+      .ra{text-align:right;}
+      .neg{font-weight:700;font-size:13px;}
+      .pos{font-weight:700;font-size:13px;color:#444;}
+      .bal{color:#999;font-size:11px;}
+      .cat{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;background:#f0f0f0;color:#666;border:1px solid #ddd;letter-spacing:.5px;text-transform:uppercase;}
+      @media print{
+        @page{margin:18mm;}
+        body{padding:0;}
+      }
+    </style>
+  </head><body>
+    <h1>${acc} — Ledger</h1>
+    <div class="period">${period}</div>
+    ${statsHTML}
+    ${tblWrap.innerHTML}
+    <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+};
 
 /* ═══ PERSON MODAL ═══ */
 function openPersonM(name,bal){
