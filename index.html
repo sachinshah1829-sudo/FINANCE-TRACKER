@@ -3325,9 +3325,9 @@
                     <div class="add-tab" id="mtab-people" onclick="switchMgmtTab('people',this)">People</div>
                 </div>
                 <div class="mgmt-panel active" id="mpanel-categories">
-                    <div class="mgmt-section">
+                    <div class="mgmt-section" style="margin-bottom:20px">
                         <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Categories</div><button class="add-inline-btn"
+                            <div class="mgmt-sec-title">Add Category</div><button class="add-inline-btn"
                                 onclick="showMiniForm('cat-add')">+ Add</button>
                         </div>
                         <div class="mini-form" id="cat-add">
@@ -3338,7 +3338,22 @@
                                 </select><button class="mini-save-btn" onclick="doAddCategory()">Save</button><button
                                     class="mini-cancel-btn" onclick="hideMiniForm('cat-add')">✕</button></div>
                         </div>
-                        <div class="mgmt-list" id="catList">
+                    </div>
+                    <div class="mgmt-section" style="margin-bottom:20px">
+                        <div class="mgmt-sec-hdr">
+                            <div class="mgmt-sec-title">Expense Categories</div>
+                        </div>
+                        <div class="mgmt-list" id="catListExpense">
+                            <div class="sp-wrap">
+                                <div class="sp"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mgmt-section">
+                        <div class="mgmt-sec-hdr">
+                            <div class="mgmt-sec-title">Income Categories</div>
+                        </div>
+                        <div class="mgmt-list" id="catListIncome">
                             <div class="sp-wrap">
                                 <div class="sp"></div>
                             </div>
@@ -3799,7 +3814,22 @@
         let _accEditId = null;
         window.showAccForm = function (type) { _accEditId = null; document.getElementById('acc-modal-title').textContent = 'Add Account'; document.getElementById('acc-m-name').value = ''; document.getElementById('acc-m-bal').value = ''; document.getElementById('acc-m-type').value = type || 'BANK'; document.getElementById('acc-m-type').disabled = false; document.getElementById('acc-m-id').value = ''; openM('accModal'); };
         function editAcc(id, name, opening, type) { _accEditId = id; document.getElementById('acc-modal-title').textContent = 'Edit Account'; document.getElementById('acc-m-name').value = name; document.getElementById('acc-m-bal').value = opening; document.getElementById('acc-m-type').value = type; document.getElementById('acc-m-type').disabled = false; document.getElementById('acc-m-id').value = id; openM('accModal'); }
-        window.saveAccountModal = async function () { const name = document.getElementById('acc-m-name').value.trim(), bal = parseFloat(document.getElementById('acc-m-bal').value) || 0, type = document.getElementById('acc-m-type').value, id = document.getElementById('acc-m-id').value; if (!name) return; if (id) { await updateDoc(uDoc('accounts', id), { name, openingBalance: bal, type }); } else { await addDoc(uRef('accounts'), { name, openingBalance: bal, type }); } closeM('accModal'); await loadAccounts(); await loadPeriodData(); setupAddFormDropdowns(); toast(id ? 'Account updated' : 'Account added'); };
+        window.saveAccountModal = async function () {
+            const name = document.getElementById('acc-m-name').value.trim(), bal = parseFloat(document.getElementById('acc-m-bal').value) || 0, type = document.getElementById('acc-m-type').value, id = document.getElementById('acc-m-id').value;
+            if (!name) return;
+            if (id) {
+                const old = _accounts.find(a => a.id === id);
+                const oldName = old ? old.name : '';
+                await updateDoc(uDoc('accounts', id), { name, openingBalance: bal, type });
+                if (oldName && oldName !== name) {
+                    await propagateRename('account', oldName, name);
+                    await loadAllTransactions();
+                }
+            } else {
+                await addDoc(uRef('accounts'), { name, openingBalance: bal, type });
+            }
+            closeM('accModal'); await loadAccounts(); await loadPeriodData(); setupAddFormDropdowns(); toast(id ? 'Account updated' : 'Account added');
+        };
         async function deleteAcc(id, name) { if (!confirm('Delete account "' + name + '"?')) return; await deleteDoc(uDoc('accounts', id)); await loadAccounts(); await loadPeriodData(); setupAddFormDropdowns(); toast('Account deleted'); }
 
         /* ═══ HEATMAP ═══ */
@@ -4184,20 +4214,70 @@
         window.showMiniForm = id => document.getElementById(id).classList.add('show');
         window.hideMiniForm = id => document.getElementById(id).classList.remove('show');
         async function renderManage() { await Promise.all([loadCategories(), loadItems(), loadPeople()]); renderCatList(); renderItemList(); renderPersonMgmtList(); }
-        function renderCatList() { document.getElementById('catList').innerHTML = _categories.map(c => '<div class="mgmt-row" style="cursor:pointer" onclick="editCat(\'' + c.id + '\',\'' + escH(c.name) + '\',\'' + c.type + '\')"><div class="mgmt-row-main">' + escH(c.name) + '</div><div class="mgmt-row-badge">' + c.type + '</div><div class="mgmt-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="editCat(\'' + c.id + '\',\'' + escH(c.name) + '\',\'' + c.type + '\')">✎</button><button class="act-btn del" onclick="deleteCat(\'' + c.id + '\',\'' + escH(c.name) + '\')">✕</button></div></div>').join('') || '<div class="empty-s">No categories</div>'; }
+
+        async function propagateRename(field, oldVal, newVal) {
+            if (!oldVal || oldVal === newVal) return;
+            const q = query(uRef('transactions'), where(field, '==', oldVal));
+            const snap = await getDocs(q);
+            if (snap.empty) return;
+            const batch = writeBatch(db);
+            snap.docs.forEach(d => { batch.update(d.ref, { [field]: newVal }); });
+            await batch.commit();
+        }
+
+        function renderCatList() {
+            const exp = _categories.filter(c => c.type === 'EXPENSE');
+            const inc = _categories.filter(c => c.type === 'INCOME');
+            const row = c => '<div class="mgmt-row" style="cursor:pointer" onclick="editCat(\'' + c.id + '\',\'' + escH(c.name) + '\',\'' + c.type + '\')"><div class="mgmt-row-main">' + escH(c.name) + '</div><div class="mgmt-row-badge">' + c.type + '</div><div class="mgmt-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="editCat(\'' + c.id + '\',\'' + escH(c.name) + '\',\'' + c.type + '\')">✎</button><button class="act-btn del" onclick="deleteCat(\'' + c.id + '\',\'' + escH(c.name) + '\')">✕</button></div></div>';
+            document.getElementById('catListExpense').innerHTML = exp.map(row).join('') || '<div class="empty-s">No expense categories</div>';
+            document.getElementById('catListIncome').innerHTML = inc.map(row).join('') || '<div class="empty-s">No income categories</div>';
+        }
         function renderItemList() { document.getElementById('itemList').innerHTML = _items.map(it => '<div class="mgmt-row" style="cursor:pointer" onclick="editItem(\'' + it.id + '\',\'' + escH(it.value) + '\')"><div class="mgmt-row-main">' + escH(it.value) + '</div><div class="mgmt-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="editItem(\'' + it.id + '\',\'' + escH(it.value) + '\')">✎</button><button class="act-btn del" onclick="deleteItem2(\'' + it.id + '\',\'' + escH(it.value) + '\')">✕</button></div></div>').join('') || '<div class="empty-s">No items</div>'; }
         function renderPersonMgmtList() { document.getElementById('personMgmtList').innerHTML = _people.map(p => '<div class="mgmt-row" style="cursor:pointer" onclick="editPerson(\'' + p.id + '\',\'' + escH(p.value) + '\')"><div class="mgmt-row-main">' + escH(p.value) + '</div><div class="mgmt-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="editPerson(\'' + p.id + '\',\'' + escH(p.value) + '\')">✎</button><button class="act-btn del" onclick="deletePerson2(\'' + p.id + '\',\'' + escH(p.value) + '\')">✕</button></div></div>').join('') || '<div class="empty-s">No people</div>'; }
         window.doAddCategory = async function () { const name = document.getElementById('cat-add-name').value.trim(), type = document.getElementById('cat-add-type').value; if (!name) return; await addDoc(uRef('categories'), { name, type }); document.getElementById('cat-add-name').value = ''; hideMiniForm('cat-add'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category added'); };
         window.editCat = function (id, name, type) { document.getElementById('edit-modal-title').textContent = 'Edit Category'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Name</label><input class="form-input" id="em-name" value="' + escH(name) + '"></div><div class="form-row"><label class="form-label">Type</label><select class="form-input" id="em-type" style="cursor:pointer"><option value="EXPENSE"' + (type === 'EXPENSE' ? ' selected' : '') + '>Expense</option><option value="INCOME"' + (type === 'INCOME' ? ' selected' : '') + '>Income</option></select></div><button class="add-btn" onclick="saveCatEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
-        window.saveCatEdit = async function (id) { const name = document.getElementById('em-name').value.trim(), type = document.getElementById('em-type').value; if (!name) return; await updateDoc(uDoc('categories', id), { name, type }); closeM('editModal'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category updated'); };
+        window.saveCatEdit = async function (id) {
+            const name = document.getElementById('em-name').value.trim(), type = document.getElementById('em-type').value;
+            if (!name) return;
+            const old = _categories.find(c => c.id === id);
+            const oldName = old ? old.name : '';
+            await updateDoc(uDoc('categories', id), { name, type });
+            if (oldName && oldName !== name) {
+                await propagateRename('category', oldName, name);
+                await loadAllTransactions();
+            }
+            closeM('editModal'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category updated');
+        };
         window.deleteCat = async function (id, name) { if (!confirm('Delete category "' + name + '"?')) return; await deleteDoc(uDoc('categories', id)); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category deleted'); };
         window.doAddItem = async function () { const v = document.getElementById('item-add-val').value.trim(); if (!v) return; await addDoc(uRef('items'), { value: v }); document.getElementById('item-add-val').value = ''; hideMiniForm('item-add'); await loadItems(); renderItemList(); setupAddFormDropdowns(); toast('Item added'); };
         window.editItem = function (id, val) { document.getElementById('edit-modal-title').textContent = 'Edit Item'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Item</label><input class="form-input" id="em-val" value="' + escH(val) + '"></div><button class="add-btn" onclick="saveItemEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
-        window.saveItemEdit = async function (id) { const v = document.getElementById('em-val').value.trim(); if (!v) return; await updateDoc(uDoc('items', id), { value: v }); closeM('editModal'); await loadItems(); renderItemList(); setupAddFormDropdowns(); toast('Item updated'); };
+        window.saveItemEdit = async function (id) {
+            const v = document.getElementById('em-val').value.trim();
+            if (!v) return;
+            const old = _items.find(it => it.id === id);
+            const oldVal = old ? old.value : '';
+            await updateDoc(uDoc('items', id), { value: v });
+            if (oldVal && oldVal !== v) {
+                await propagateRename('item', oldVal, v);
+                await loadAllTransactions();
+            }
+            closeM('editModal'); await loadItems(); renderItemList(); setupAddFormDropdowns(); toast('Item updated');
+        };
         window.deleteItem2 = async function (id, val) { if (!confirm('Delete item "' + val + '"?')) return; await deleteDoc(uDoc('items', id)); await loadItems(); renderItemList(); setupAddFormDropdowns(); toast('Item deleted'); };
         window.doAddPerson = async function () { const v = document.getElementById('person-add-val').value.trim(); if (!v) return; await addDoc(uRef('people'), { value: v }); document.getElementById('person-add-val').value = ''; hideMiniForm('person-add'); await loadPeople(); renderPersonMgmtList(); setupAddFormDropdowns(); toast('Person added'); };
         window.editPerson = function (id, val) { document.getElementById('edit-modal-title').textContent = 'Edit Person'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Name</label><input class="form-input" id="em-val" value="' + escH(val) + '"></div><button class="add-btn" onclick="savePersonEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
-        window.savePersonEdit = async function (id) { const v = document.getElementById('em-val').value.trim(); if (!v) return; await updateDoc(uDoc('people', id), { value: v }); closeM('editModal'); await loadPeople(); renderPersonMgmtList(); setupAddFormDropdowns(); toast('Person updated'); };
+        window.savePersonEdit = async function (id) {
+            const v = document.getElementById('em-val').value.trim();
+            if (!v) return;
+            const old = _people.find(p => p.id === id);
+            const oldVal = old ? old.value : '';
+            await updateDoc(uDoc('people', id), { value: v });
+            if (oldVal && oldVal !== v) {
+                await propagateRename('toFrom', oldVal, v);
+                await loadAllTransactions();
+            }
+            closeM('editModal'); await loadPeople(); renderPersonMgmtList(); setupAddFormDropdowns(); toast('Person updated');
+        };
         window.deletePerson2 = async function (id, val) { if (!confirm('Delete "' + val + '"?')) return; await deleteDoc(uDoc('people', id)); await loadPeople(); renderPersonMgmtList(); setupAddFormDropdowns(); toast('Deleted'); };
 
         /* ═══ TEMPLATES ═══ */
