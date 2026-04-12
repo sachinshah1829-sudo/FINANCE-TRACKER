@@ -468,6 +468,79 @@ body::after {
 .acc-sec-h { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--t3); font-family: var(--font); }
 .acc-list { display: flex; flex-direction: column; gap: 6px; }
 
+/* Credit card UI */
+.cc-card {
+  position: relative;
+  border-radius: var(--r-lg);
+  padding: 20px 22px 18px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #111 100%);
+  color: #f0efe9;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+  margin-bottom: 8px;
+}
+.cc-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cc-card:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,0,0,0.30); }
+.cc-card:active { transform: scale(0.98); }
+.cc-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.cc-chip {
+  width: 34px; height: 26px; border-radius: 5px;
+  background: linear-gradient(135deg, #d4af37 0%, #f5e17a 40%, #c9a227 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  font-size: 8px; font-weight: 700; color: rgba(0,0,0,0.4);
+  letter-spacing: 0.5px;
+}
+.cc-chip::before {
+  content: '';
+  width: 60%; height: 60%; border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 2px;
+}
+.cc-network { font-size: 11px; font-weight: 700; letter-spacing: 2px; opacity: 0.7; }
+.cc-name { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.9; font-family: var(--font); }
+.cc-mid { flex: 1; display: flex; align-items: center; gap: 18px; padding: 10px 0 6px; }
+.cc-ring-wrap { position: relative; flex-shrink: 0; }
+.cc-ring-label {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: var(--font);
+}
+.cc-ring-pct { font-size: 14px; font-weight: 700; color: #f0efe9; line-height: 1; }
+.cc-ring-sub { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 1px; margin-top: 1px; }
+.cc-balances { flex: 1; }
+.cc-bal-row { margin-bottom: 6px; }
+.cc-bal-lbl { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); font-family: var(--font); margin-bottom: 1px; }
+.cc-bal-val { font-size: 16px; font-weight: 700; color: #f0efe9; font-family: var(--font); line-height: 1.1; }
+.cc-bal-val.avail { color: #a8d5a2; }
+.cc-progress-wrap { margin-top: 2px; }
+.cc-progress-track { height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; }
+.cc-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg,#6ee7b7,#3b82f6); transition: width 0.8s cubic-bezier(0.34,1.1,0.64,1); }
+.cc-progress-fill.warn { background: linear-gradient(90deg,#fbbf24,#f59e0b); }
+.cc-progress-fill.danger { background: linear-gradient(90deg,#f87171,#ef4444); }
+.cc-bottom { display: flex; align-items: center; justify-content: space-between; }
+.cc-limit-txt { font-size: 10px; color: rgba(255,255,255,0.45); font-family: var(--font); font-weight: 700; }
+.cc-acts-wrap { display: flex; gap: 4px; }
+.cc-act-btn {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: rgba(255,255,255,0.7); transition: all var(--t-fast);
+  font-family: var(--font);
+}
+.cc-act-btn:hover { background: rgba(255,255,255,0.20); color: #fff; }
+.cc-act-btn:active { transform: scale(0.9); }
+
 .acc-item {
   background: var(--glass-white);
   backdrop-filter: var(--glass-blur-sm);
@@ -610,9 +683,9 @@ body::after {
 .tbl-scroll-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .txn-tbl { width: 100%; border-collapse: collapse; font-family: var(--font); }
 .txn-tbl thead th {
-  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--t3); padding: 0 12px 10px; text-align: left;
-  border-bottom: 1px solid var(--glass-border); white-space: nowrap; font-family: var(--font);
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--t2); padding: 0 12px 12px; text-align: left;
+  border-bottom: 2px solid var(--glass-border); white-space: nowrap; font-family: var(--font);
 }
 .txn-tbl thead th.ra { text-align: right; }
 .txn-tr { border-bottom: 1px solid rgba(0,0,0,0.04); transition: background var(--t-fast); }
@@ -1583,7 +1656,12 @@ window.nav = function(name,el){
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('mainArea').scrollTop=0;
   closeSidebar();
-  if(name==='ledger'&&!document.getElementById('ldrAccSel').value){const f=_accounts.find(a=>a.type==='BANK');if(f){document.getElementById('ldrAccSel').value=f.name;loadLedger();}}
+  if(name==='ledger'&&!document.getElementById('ldrAccSel').value){
+    const preferred=_accounts.find(a=>a.name.toUpperCase().includes('HDFC')&&(a.type==='BANK'||a.type==='CREDIT_CARD'))
+      ||_accounts.find(a=>a.type==='BANK')
+      ||_accounts.find(a=>a.type==='CREDIT_CARD');
+    if(preferred){document.getElementById('ldrAccSel').value=preferred.name;loadLedger();}
+  }
   if(name==='manage') renderManage();
   if(name==='templates') renderTemplatesPage();
   if(name==='transactions') loadTransactionsPage();
@@ -1599,22 +1677,81 @@ function renderAccounts(accs,total,avg){
   document.getElementById('creditList').innerHTML=accs.filter(a=>a.type==='CREDIT_CARD').map((a,i)=>accHTML(a,i,'credit')).join('')||'<div class="empty-s">No credit cards</div>';
   document.getElementById('personList').innerHTML=accs.filter(a=>a.type==='PERSON').map((a,i)=>accHTML(a,i,'person')).join('')||'<div class="empty-s">No contacts</div>';
 }
-function bkEmo(n){n=n.toUpperCase();if(n.includes('HDFC'))return'H';if(n.includes('ICICI'))return'I';if(n.includes('AXIS'))return'A';if(n.includes('SBI'))return'S';if(n.includes('WALLET'))return'W';if(n.includes('CREDIT'))return'C';if(n.includes('CASH'))return'$';return'B';}
+function ccNetworkName(name){
+  const n=name.toUpperCase();
+  if(n.includes('VISA'))return'VISA';
+  if(n.includes('MASTER')||n.includes('MC'))return'MASTER';
+  if(n.includes('AMEX'))return'AMEX';
+  if(n.includes('RUPAY'))return'RUPAY';
+  return 'CARD';
+}
+function ccCardHTML(a,i){
+  const limit=a.openingBalance||0;
+  const bal=a.currentBalance||0;
+  const spent=Math.max(limit-bal,0);
+  const avail=Math.max(bal,0);
+  const pct=limit>0?Math.min((spent/limit)*100,100):0;
+  const fillCls=pct>=80?'danger':pct>=60?'warn':'';
+  const pctStr=pct.toFixed(0)+'%';
+  const network=ccNetworkName(a.name);
+  // SVG ring
+  const r=28,circ=2*Math.PI*r;
+  const dash=circ*(pct/100);
+  const ringColor=pct>=80?'#f87171':pct>=60?'#fbbf24':'#6ee7b7';
+  const svgRing=`<svg width="72" height="72" viewBox="0 0 72 72" style="transform:rotate(-90deg)">
+    <circle cx="36" cy="36" r="${r}" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="5"/>
+    <circle cx="36" cy="36" r="${r}" fill="none" stroke="${ringColor}" stroke-width="5"
+      stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round"
+      style="transition:stroke-dasharray 0.8s cubic-bezier(0.34,1.1,0.64,1)"/>
+  </svg>`;
+  return `<div class="cc-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="CREDIT_CARD" data-bal="${bal}" data-kind="credit" style="animation-delay:${i*0.08}s">
+    <div class="cc-card-top">
+      <div>
+        <div class="cc-name">${escH(a.name)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="cc-network">${network}</div>
+        <div class="cc-chip"></div>
+      </div>
+    </div>
+    <div class="cc-mid">
+      <div class="cc-ring-wrap">
+        ${svgRing}
+        <div class="cc-ring-label">
+          <div class="cc-ring-pct">${pctStr}</div>
+          <div class="cc-ring-sub">USED</div>
+        </div>
+      </div>
+      <div class="cc-balances">
+        <div class="cc-bal-row">
+          <div class="cc-bal-lbl">Amount Spent</div>
+          <div class="cc-bal-val">${rs(spent)}</div>
+        </div>
+        <div class="cc-bal-row">
+          <div class="cc-bal-lbl">Available Credit</div>
+          <div class="cc-bal-val avail">${rs(avail)}</div>
+        </div>
+      </div>
+    </div>
+    <div class="cc-bottom">
+      <div class="cc-limit-txt">Limit ${rs(limit)}</div>
+      <div onclick="event.stopPropagation()" class="cc-acts-wrap">
+        <button class="cc-act-btn" onclick="editAcc('${a.id}','${escH(a.name)}',${limit},'CREDIT_CARD')" title="Edit">✎</button>
+        <button class="cc-act-btn" onclick="deleteAcc('${a.id}','${escH(a.name)}')" title="Delete">✕</button>
+      </div>
+    </div>
+    <div class="cc-progress-wrap" style="margin-top:10px">
+      <div class="cc-progress-track"><div class="cc-progress-fill ${fillCls}" style="width:${pct.toFixed(1)}%"></div></div>
+    </div>
+  </div>`;
+}
 function accHTML(a,i,accKind){
+  if(accKind==='credit') return ccCardHTML(a,i);
   const isPerson = accKind==='person';
-  const isCredit = accKind==='credit';
   const emo=isPerson?(a.name||'?').charAt(0).toUpperCase():bkEmo(a.name);
-  let balHTML = '';
-  if(a.type === 'CREDIT_CARD') {
-    const limit = a.openingBalance || 0;
-    const spent = limit - (a.currentBalance || 0);
-    const pct = limit > 0 ? Math.min(Math.max((spent/limit)*100, 0), 100) : 0;
-    balHTML = '<div style="flex:1;text-align:right;"><div style="font-size:11px;font-weight:700;color:var(--t2);">Spent <b>'+rs(spent)+'</b> / '+fmt(limit)+'</div><div style="height:4px;background:rgba(0,0,0,0.06);border-radius:2px;margin-top:4px;overflow:hidden;position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:'+pct+'%;background:var(--amt-neg);border-radius:2px;"></div></div></div>';
-  } else {
-    const pos=(a.currentBalance||0)>=0;
-    balHTML = '<div class="acc-bal '+(pos?'pos':'neg')+'">'+rs(a.currentBalance||0)+'</div>';
-  }
-  return '<div class="acc-item clickable" data-id="'+a.id+'" data-name="'+escH(a.name)+'" data-opening="'+(a.openingBalance||0)+'" data-type="'+a.type+'" data-bal="'+(a.currentBalance||0)+'" data-kind="'+accKind+'" style="animation-delay:'+(i*0.05)+'s" onclick="accItemClick(this)">'+'<div class="acc-bar '+accKind+'"></div>'+'<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">'+emo+'</div>'+'<div class="acc-name">'+escH(a.name)+'</div>'+balHTML+(isPerson?'<div class="acc-chev">›</div>':'')+'<div class="acc-acts" onclick="event.stopPropagation()">'+'<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>'+'<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\'))">✕</button>'+'</div></div>';
+  const pos=(a.currentBalance||0)>=0;
+  const balHTML='<div class="acc-bal '+(pos?'pos':'neg')+'">'+rs(a.currentBalance||0)+'</div>';
+  return '<div class="acc-item clickable" data-id="'+a.id+'" data-name="'+escH(a.name)+'" data-opening="'+(a.openingBalance||0)+'" data-type="'+a.type+'" data-bal="'+(a.currentBalance||0)+'" data-kind="'+accKind+'" style="animation-delay:'+(i*0.05)+'s" onclick="accItemClick(this)">'+'<div class="acc-bar '+accKind+'"></div>'+'<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">'+emo+'</div>'+'<div class="acc-name">'+escH(a.name)+'</div>'+balHTML+(isPerson?'<div class="acc-chev">›</div>':'')+'<div class="acc-acts" onclick="event.stopPropagation()">'+'<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>'+'<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\')))">✕</button>'+'</div></div>';
 }
 window.accItemClick=function(el){
   const kind=el.dataset.kind;
