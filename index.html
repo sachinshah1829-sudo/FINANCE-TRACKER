@@ -925,7 +925,7 @@
 ══════════════════════════════════════ */
         .acc-cols {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 24px;
         }
 
@@ -996,10 +996,6 @@
 
         .acc-bar.credit {
             background: var(--mid);
-        }
-
-        .acc-bar.investment {
-            background: #004d40;
         }
 
         .acc-bar.person {
@@ -3124,10 +3120,10 @@
                         </div>
                         <div>
                             <div class="acc-sec-top">
-                                <div class="acc-sec-h">Investment Accounts</div><button class="add-inline-btn"
-                                    onclick="showAccForm('INVESTMENT')">+ Add</button>
+                                <div class="acc-sec-h">Credit Cards</div><button class="add-inline-btn"
+                                    onclick="showAccForm('CREDIT_CARD')">+ Add</button>
                             </div>
-                            <div class="acc-list" id="investmentList">
+                            <div class="acc-list" id="creditList">
                                 <div class="sp-wrap">
                                     <div class="sp"></div>
                                 </div>
@@ -3521,7 +3517,6 @@
                 <div class="form-row"><label class="form-label">Type</label><select class="form-input" id="acc-m-type"
                         style="cursor:pointer">
                         <option value="BANK">Bank / Wallet</option>
-                        <option value="INVESTMENT">Investment</option>
                         <option value="PERSON">Person</option>
                         <option value="CREDIT_CARD">Credit Card</option>
                     </select></div>
@@ -3770,14 +3765,12 @@
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
             document.getElementById('bankList').innerHTML = accs.filter(a => a.type === 'BANK').map((a, i) => accHTML(a, i, 'bank')).join('') || '<div class="empty-s">No bank accounts</div>';
             document.getElementById('creditList').innerHTML = accs.filter(a => a.type === 'CREDIT_CARD').map((a, i) => accHTML(a, i, 'credit')).join('') || '<div class="empty-s">No credit cards</div>';
-            document.getElementById('investmentList').innerHTML = accs.filter(a => a.type === 'INVESTMENT').map((a, i) => accHTML(a, i, 'investment')).join('') || '<div class="empty-s">No investment accounts</div>';
             document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No contacts</div>';
         }
         function bkEmo(n) { n = n.toUpperCase(); if (n.includes('HDFC')) return 'H'; if (n.includes('ICICI')) return 'I'; if (n.includes('AXIS')) return 'A'; if (n.includes('SBI')) return 'S'; if (n.includes('WALLET')) return 'W'; if (n.includes('CREDIT')) return 'C'; if (n.includes('CASH')) return '$'; return 'B'; }
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = accKind === 'credit';
-            const isInv = a.type === 'INVESTMENT';
             const emo = isPerson ? (a.name || '?').charAt(0).toUpperCase() : bkEmo(a.name);
             let balHTML = '';
             if (a.type === 'CREDIT_CARD') {
@@ -3785,9 +3778,6 @@
                 const spent = limit - (a.currentBalance || 0);
                 const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
                 return '<div class="card card-p clickable cc-ui-card" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + (a.currentBalance || 0) + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's; background: linear-gradient(135deg, var(--dark), #333, var(--black)); color: #f0efe9; position: relative; margin-bottom: 12px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; border-radius: var(--r-xl);" onclick="accItemClick(this)"><div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;"></div><div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none;"></div><div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1;"><div style="font-size: 16px; font-weight: 700; letter-spacing: 2px;">' + escH(a.name) + '</div><div class="acc-acts" onclick="event.stopPropagation()" style="background: rgba(0,0,0,0.6); padding: 4px; border-radius: var(--r-sm); margin-left: auto;"><button class="act-btn" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="editAccEl(this.closest(\'.cc-ui-card\'))">🖌</button><button class="act-btn del" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="deleteAccEl(this.closest(\'.cc-ui-card\'))">🗑</button></div></div><div style="margin-top: 10px; position: relative; z-index: 1;"><div style="font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Limit Left / Total Limit</div><div style="font-size: 22px; font-weight: 700;">' + rs(a.currentBalance || 0) + ' <span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.6);">/ ' + fmt(limit) + '</span></div></div><div style="margin-top: 16px; position: relative; z-index: 1;"><div style="display: flex; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,0.8); margin-bottom: 5px; font-weight: 700;"><span>Utilized: ' + pct.toFixed(1) + '%</span><span>Spent: ' + rs(spent) + '</span></div><div style="height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.2);"><div style="position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: linear-gradient(90deg, #ff4e50, #f9d423); border-radius: 3px;"></div></div></div></div>';
-            } else if (isInv) {
-                const bal = a.currentBalance || 0;
-                return '<div class="card card-p clickable inv-ui-card" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + bal + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's; background: linear-gradient(135deg, #004d40, #00695c, #00897b); color: #e0f2f1; position: relative; margin-bottom: 12px; min-height: 140px; border-radius: var(--r-lg); overflow: hidden; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);" onclick="accItemClick(this)"><div style="position: absolute; top: -20px; right: -20px; font-size: 100px; color: rgba(255,255,255,0.05); transform: rotate(15deg); pointer-events: none;">📈</div><div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between;"><div style="display: flex; justify-content: space-between; align-items: flex-start;"><div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #b2dfdb;">Wealth Repository</div><div class="acc-acts" onclick="event.stopPropagation()"><button class="act-btn" style="border:none;background:transparent;color:#fff;font-size:16px;" onclick="editAccEl(this.closest(\'.inv-ui-card\'))">✎</button><button class="act-btn del" style="border:none;background:transparent;color:#fff;font-size:16px;" onclick="deleteAccEl(this.closest(\'.inv-ui-card\'))">✕</button></div></div><div style="margin: 12px 0;"><div style="font-size: 16px; font-weight: 700;">' + escH(a.name) + '</div><div style="font-size: 26px; font-weight: 900; margin-top: 4px; letter-spacing: -0.5px;">' + rs(bal) + '</div></div><div style="font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 6px; color: #80cbc4;"><span style="display: inline-block; width: 6px; height: 6px; background: #4db6ac; border-radius: 50%;"></span> Growing Portfolio</div></div></div>';
             } else {
                 const pos = (a.currentBalance || 0) >= 0;
                 balHTML = '<div class="acc-bal ' + (pos ? 'pos' : 'neg') + '">' + rs(a.currentBalance || 0) + '</div>';
@@ -3863,12 +3853,6 @@
             if (credits.length) {
                 const g = document.createElement('optgroup'); g.label = 'Credit Cards';
                 credits.forEach(a => { const o = document.createElement('option'); o.value = a.name; o.textContent = a.name; g.appendChild(o); });
-                sel.appendChild(g);
-            }
-            const invs = accs.filter(a => a.type === 'INVESTMENT');
-            if (invs.length) {
-                const g = document.createElement('optgroup'); g.label = 'Investment Accounts';
-                invs.forEach(a => { const o = document.createElement('option'); o.value = a.name; o.textContent = a.name; g.appendChild(o); });
                 sel.appendChild(g);
             }
             if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
