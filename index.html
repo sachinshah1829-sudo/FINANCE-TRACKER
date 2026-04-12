@@ -4635,7 +4635,7 @@ RULES:
 - For transfers between accounts, use category TRANSFER.
 - Date: extract from SMS if present, else use today.
 
-Respond ONLY with a valid JSON array (no markdown, no explanation):
+Respond ONLY with a valid JSON array. Do not include markdown formatting or any explanatory text. Just the raw JSON.
 [
   {
     "date": "YYYY-MM-DD",
@@ -4647,7 +4647,7 @@ Respond ONLY with a valid JSON array (no markdown, no explanation):
   }
 ]
 
-If you cannot extract any transaction, return: []
+If you cannot extract any transaction, return an empty array: []
 
 User input:
 ${userMsg}`;
@@ -4690,13 +4690,31 @@ window.sendChatMsg = async function(){
       })
     });
     const data = await res.json();
+    
+    // Check for API errors
+    if(data.error){
+      typing.remove();
+      chatAddMsg('ai', `❌ API Error: ${data.error.message || 'Unknown error'}`);
+      return;
+    }
+
     const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
     
     let txns = [];
     try {
-      const cleaned = raw.replace(/```json|```/g,'').trim();
-      txns = JSON.parse(cleaned);
-    } catch(e){ txns = []; }
+      // Robust JSON extraction: find the first '[' and last ']'
+      const start = raw.indexOf('[');
+      const end = raw.lastIndexOf(']');
+      if(start !== -1 && end !== -1){
+        const jsonStr = raw.substring(start, end + 1);
+        txns = JSON.parse(jsonStr);
+      } else {
+        txns = [];
+      }
+    } catch(e){ 
+      console.error("Parse error:", e, "Raw response:", raw);
+      txns = []; 
+    }
 
     typing.remove();
 
