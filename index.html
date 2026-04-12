@@ -485,7 +485,8 @@ body::after {
 .acc-item:active { transform: scale(0.98); }
 .acc-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
 .acc-bar.bank { background: var(--dark); }
-.acc-bar.person { background: var(--mid); }
+.acc-bar.credit { background: var(--mid); }
+.acc-bar.person { background: var(--light); }
 .acc-emo { width: 32px; height: 32px; border-radius: var(--r-xs); display: flex; align-items: center; justify-content: center; font-size: 14px; background: rgba(0,0,0,0.04); border: 1px solid var(--glass-border-thin); flex-shrink: 0; }
 .acc-name { flex: 1; font-size: 13px; font-weight: 700; color: var(--t1); font-family: var(--font); }
 .acc-bal { font-size: 13px; font-weight: 700; font-family: var(--font); }
@@ -824,7 +825,7 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
   position: absolute; top: calc(100% + 3px); left: 0; min-width: 180px; max-width: 250px;
   background: rgba(255,255,255,0.98); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
   border: 1px solid var(--glass-border); border-radius: var(--r-sm);
-  box-shadow: var(--glass-shadow-float); z-index: 60; max-height: 220px; overflow-y: auto;
+  box-shadow: var(--glass-shadow-float); z-index: 200; max-height: 220px; overflow-y: auto;
 }
 @media (prefers-color-scheme: dark) { .txn-msel-dd { background: rgba(20,20,20,0.98); } }
 .txn-msel-item { display: flex; align-items: center; gap: 9px; padding: 9px 12px; font-size: 12px; font-weight: 400; color: var(--t1); cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); transition: background var(--t-fast); font-family: var(--font); }
@@ -1055,8 +1056,8 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
         
         <div class="form-row" style="margin-top:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <label class="form-label" style="margin:0">Splits & Multi-Items</label>
-            <button class="add-inline-btn" style="padding:5px 10px;font-size:10px" onclick="addSplitRow(event)">+ Add Split / Item</button>
+            <label class="form-label" style="margin:0">Split Payments</label>
+            <button class="add-inline-btn" style="padding:5px 10px;font-size:10px" onclick="addSplitRow(event)">+ Add Split</button>
           </div>
           <div id="split-rows-container"></div>
           <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
@@ -1099,10 +1100,16 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
         <div class="stat-tile t-blue"><div class="stat-bar"></div><div class="s-eye">Daily Average</div><div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div></div>
         <div class="stat-tile t-green"><div class="stat-bar"></div><div class="s-eye">Net Balance</div><div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div></div>
       </div>
-      <div class="acc-cols">
-        <div>
-          <div class="acc-sec-top"><div class="acc-sec-h">Bank Accounts</div><button class="add-inline-btn" onclick="showAccForm('BANK')">+ Add</button></div>
-          <div class="acc-list" id="bankList"><div class="sp-wrap"><div class="sp"></div></div></div>
+      <div style="display:flex;flex-direction:column;gap:24px;">
+        <div class="acc-cols">
+          <div>
+            <div class="acc-sec-top"><div class="acc-sec-h">Bank Accounts</div><button class="add-inline-btn" onclick="showAccForm('BANK')">+ Add</button></div>
+            <div class="acc-list" id="bankList"><div class="sp-wrap"><div class="sp"></div></div></div>
+          </div>
+          <div>
+            <div class="acc-sec-top"><div class="acc-sec-h">Credit Cards</div><button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add</button></div>
+            <div class="acc-list" id="creditList"><div class="sp-wrap"><div class="sp"></div></div></div>
+          </div>
         </div>
         <div>
           <div class="acc-sec-top"><div class="acc-sec-h">People &amp; Contacts</div><button class="add-inline-btn" onclick="showAccForm('PERSON')">+ Add</button></div>
@@ -1525,11 +1532,14 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('mob
 function renderAccounts(accs,total,avg){
   cntUp('st-spent',total);cntUp('st-avg',avg);
   const net=accs.reduce((s,a)=>s+(a.currentBalance||0),0);cntUp('st-net',net);
-  document.getElementById('bankList').innerHTML=accs.filter(a=>a.type==='BANK'||a.type==='CREDIT_CARD').map((a,i)=>accHTML(a,i,false)).join('')||'<div class="empty-s">No accounts</div>';
-  document.getElementById('personList').innerHTML=accs.filter(a=>a.type==='PERSON').map((a,i)=>accHTML(a,i,true)).join('')||'<div class="empty-s">No contacts</div>';
+  document.getElementById('bankList').innerHTML=accs.filter(a=>a.type==='BANK').map((a,i)=>accHTML(a,i,'bank')).join('')||'<div class="empty-s">No bank accounts</div>';
+  document.getElementById('creditList').innerHTML=accs.filter(a=>a.type==='CREDIT_CARD').map((a,i)=>accHTML(a,i,'credit')).join('')||'<div class="empty-s">No credit cards</div>';
+  document.getElementById('personList').innerHTML=accs.filter(a=>a.type==='PERSON').map((a,i)=>accHTML(a,i,'person')).join('')||'<div class="empty-s">No contacts</div>';
 }
 function bkEmo(n){n=n.toUpperCase();if(n.includes('HDFC'))return'H';if(n.includes('ICICI'))return'I';if(n.includes('AXIS'))return'A';if(n.includes('SBI'))return'S';if(n.includes('WALLET'))return'W';if(n.includes('CREDIT'))return'C';if(n.includes('CASH'))return'$';return'B';}
-function accHTML(a,i,isPerson){
+function accHTML(a,i,accKind){
+  const isPerson = accKind==='person';
+  const isCredit = accKind==='credit';
   const emo=isPerson?(a.name||'?').charAt(0).toUpperCase():bkEmo(a.name);
   let balHTML = '';
   if(a.type === 'CREDIT_CARD') {
@@ -1541,9 +1551,18 @@ function accHTML(a,i,isPerson){
     const pos=(a.currentBalance||0)>=0;
     balHTML = '<div class="acc-bal '+(pos?'pos':'neg')+'">'+rs(a.currentBalance||0)+'</div>';
   }
-  return '<div class="acc-item'+(isPerson?' clickable':'')+'" data-id="'+a.id+'" data-name="'+escH(a.name)+'" data-opening="'+(a.openingBalance||0)+'" data-type="'+a.type+'" data-bal="'+(a.currentBalance||0)+'" data-person="'+(isPerson?'1':'0')+'" style="animation-delay:'+(i*0.05)+'s" onclick="accItemClick(this)">'+'<div class="acc-bar '+(isPerson?'person':'bank')+'"></div>'+'<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">'+emo+'</div>'+'<div class="acc-name">'+escH(a.name)+'</div>'+balHTML+(isPerson?'<div class="acc-chev">›</div>':'')+'<div class="acc-acts" onclick="event.stopPropagation()">'+'<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>'+'<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\'))">✕</button>'+'</div></div>';
+  return '<div class="acc-item clickable" data-id="'+a.id+'" data-name="'+escH(a.name)+'" data-opening="'+(a.openingBalance||0)+'" data-type="'+a.type+'" data-bal="'+(a.currentBalance||0)+'" data-kind="'+accKind+'" style="animation-delay:'+(i*0.05)+'s" onclick="accItemClick(this)">'+'<div class="acc-bar '+accKind+'"></div>'+'<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">'+emo+'</div>'+'<div class="acc-name">'+escH(a.name)+'</div>'+balHTML+(isPerson?'<div class="acc-chev">›</div>':'')+'<div class="acc-acts" onclick="event.stopPropagation()">'+'<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>'+'<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\'))">✕</button>'+'</div></div>';
 }
-window.accItemClick=function(el){if(el.dataset.person==='1'){const name=el.dataset.name.replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,'&');openPersonM(name,parseFloat(el.dataset.bal)||0);}};
+window.accItemClick=function(el){
+  const kind=el.dataset.kind;
+  if(kind==='person'){
+    const name=el.dataset.name.replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,'&');
+    openPersonM(name,parseFloat(el.dataset.bal)||0);
+  } else {
+    // bank or credit — open edit modal
+    editAccEl(el);
+  }
+};
 window.editAccEl=function(el){editAcc(el.dataset.id,el.dataset.name.replace(/&#39;/g,"'"),parseFloat(el.dataset.opening)||0,el.dataset.type);};
 window.deleteAccEl=function(el){deleteAcc(el.dataset.id,el.dataset.name.replace(/&#39;/g,"'"));};
 let _accEditId=null;
@@ -1690,25 +1709,57 @@ let _splitRows = 0;
 window.addSplitRow = function(e){
   if(e) e.preventDefault();
   _splitRows++;
+  const rowId = _splitRows;
   const container = document.getElementById('split-rows-container');
   const div = document.createElement('div');
   div.className = 'mini-form show';
-  div.style.marginBottom = '5px';
-  div.id = 'sp-row-' + _splitRows;
+  div.style.cssText = 'margin-bottom:5px;position:relative;';
+  div.id = 'sp-row-' + rowId;
   div.innerHTML = `
-    <div class="mini-form-row" style="margin-bottom:5px;">
-      <input class="mini-input sp-person" placeholder="Person / To (Optional)">
-      <input class="mini-input sp-cat" placeholder="Category" value="${document.getElementById('e-cat').value}">
+    <div class="mini-form-row" style="margin-bottom:5px;align-items:flex-start;">
+      <div style="position:relative;flex:1;min-width:80px;">
+        <input class="mini-input sp-person" id="sp-person-${rowId}" placeholder="Person / To (Optional)" autocomplete="off" style="width:100%">
+        <div id="sp-dd-person-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
+      </div>
+      <div style="position:relative;flex:1;min-width:80px;">
+        <input class="mini-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" autocomplete="off" style="width:100%" value="${document.getElementById('e-cat').value}">
+        <div id="sp-dd-cat-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
+      </div>
     </div>
-    <div class="mini-form-row" style="flex-wrap:nowrap">
-      <input class="mini-input sp-item" placeholder="Item" value="${document.getElementById('e-item').value}">
+    <div class="mini-form-row" style="flex-wrap:nowrap;align-items:flex-start;">
+      <div style="position:relative;flex:1;min-width:80px;">
+        <input class="mini-input sp-item" id="sp-item-${rowId}" placeholder="Item" autocomplete="off" style="width:100%" value="${document.getElementById('e-item').value}">
+        <div id="sp-dd-item-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
+      </div>
       <input class="mini-input sp-amt" type="number" placeholder="Amount (₹)" style="width:90px;min-width:auto;">
-      <button class="mini-cancel-btn" onclick="document.getElementById('${div.id}').remove(); if(document.getElementById('split-rows-container').children.length===0) document.getElementById('split-tools').style.display='none';">✕</button>
+      <button class="mini-cancel-btn" onclick="document.getElementById('sp-row-${rowId}').remove(); if(document.getElementById('split-rows-container').children.length===0) document.getElementById('split-tools').style.display='none';">✕</button>
     </div>
   `;
   container.appendChild(div);
   document.getElementById('split-tools').style.display = 'block';
+  // Setup dropdowns
+  const peopleNames = _people.map(p=>p.value);
+  const catNames = _categories.filter(c=>c.type==='EXPENSE').map(c=>c.name);
+  const itemNames = _items.map(i=>i.value);
+  setupSplitDD('sp-person-'+rowId, 'sp-dd-person-'+rowId, peopleNames);
+  setupSplitDD('sp-cat-'+rowId, 'sp-dd-cat-'+rowId, catNames);
+  setupSplitDD('sp-item-'+rowId, 'sp-dd-item-'+rowId, itemNames);
 };
+
+function setupSplitDD(inputId, ddId, data){
+  const inp = document.getElementById(inputId);
+  const dd = document.getElementById(ddId);
+  if(!inp||!dd) return;
+  function render(){
+    const q = inp.value.toLowerCase();
+    const filtered = data.filter(x=>String(x).toLowerCase().includes(q));
+    dd.innerHTML = filtered.map(v=>'<div class="fd-item" data-val="'+escH(v)+'" onmousedown="event.preventDefault();document.getElementById(\''+inputId+'\').value=this.dataset.val;document.getElementById(\''+ddId+'\').style.display=\'none\';">'+escH(v)+'</div>').join('');
+    dd.style.display = filtered.length ? 'block' : 'none';
+  }
+  inp.oninput = render;
+  inp.onfocus = render;
+  inp.onblur = ()=>setTimeout(()=>{dd.style.display='none';},160);
+}
 
 window.splitEqually = function(e){
   if(e) e.preventDefault();
