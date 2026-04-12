@@ -891,6 +891,50 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
 .m-empty { padding: 40px; text-align: center; color: var(--t3); font-size: 13px; font-family: var(--font); }
 
 /* ══════════════════════════════════════
+   SMART INSIGHTS
+══════════════════════════════════════ */
+.insights-grid { display: flex; flex-direction: column; gap: 8px; }
+.insight-pill {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 16px;
+  background: rgba(0,0,0,0.025);
+  border: 1px solid var(--glass-border-thin);
+  border-radius: var(--r-sm);
+  animation: brIn 0.3s ease both;
+  transition: background var(--t-fast);
+}
+@media (prefers-color-scheme: dark) { .insight-pill { background: rgba(255,255,255,0.04); } }
+.insight-pill:hover { background: rgba(0,0,0,0.04); }
+@media (prefers-color-scheme: dark) { .insight-pill:hover { background: rgba(255,255,255,0.07); } }
+.insight-icon {
+  font-size: 18px; width: 32px; height: 32px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.05); border-radius: var(--r-xs);
+  border: 1px solid var(--glass-border-thin);
+}
+@media (prefers-color-scheme: dark) { .insight-icon { background: rgba(255,255,255,0.07); } }
+.insight-body { flex: 1; min-width: 0; }
+.insight-tag {
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 3px; font-family: var(--font);
+}
+.insight-text {
+  font-size: 13px; font-weight: 700; color: var(--t1); line-height: 1.45;
+  font-family: var(--font);
+}
+.insight-sub {
+  font-size: 11px; color: var(--t2); margin-top: 2px; font-family: var(--font);
+}
+.insight-pill.ai-insight .insight-icon { background: var(--dark); color: #f0efe9; border-color: transparent; }
+.insight-pill.ai-insight { border-color: rgba(0,0,0,0.12); }
+@media (prefers-color-scheme: dark) { .insight-pill.ai-insight .insight-icon { background: rgba(255,255,255,0.15); } }
+.insights-ai-loading {
+  display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+  color: var(--t2); font-size: 12px; font-family: var(--font); font-weight: 700;
+}
+.insights-ai-err { padding: 10px 16px; font-size: 12px; color: var(--t2); font-family: var(--font); }
+
+/* ══════════════════════════════════════
    SPINNER / EMPTY
 ══════════════════════════════════════ */
 .sp-wrap { display: flex; justify-content: center; align-items: center; padding: 48px; }
@@ -1135,6 +1179,18 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
       <div class="ana-grid pie-colors">
         <div class="card card-p ana-full"><div class="card-h">Weekly Expenses</div><div class="bar-rows" id="weeklyChart"><div class="sp-wrap"><div class="sp"></div></div></div></div>
         <div class="card card-p ana-full"><div class="card-h">Category Breakdown</div><div class="pie-layout"><canvas id="pieCanvas" width="180" height="180" style="flex-shrink:0"></canvas><div class="pie-leg" id="pieLegend"><div class="sp-wrap"><div class="sp"></div></div></div></div></div>
+        <!-- SMART INSIGHTS -->
+        <div class="card card-p ana-full" id="insightsCard">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div class="card-h" style="margin:0">Smart Insights</div>
+            <button class="add-inline-btn" style="padding:5px 12px;font-size:10px;" onclick="refreshInsights()" id="insights-refresh-btn">↻ Refresh</button>
+          </div>
+          <div id="insights-rule-list" class="insights-grid"></div>
+          <div style="margin-top:12px;border-top:1px solid var(--glass-border);padding-top:12px;">
+            <div class="card-h" style="margin-bottom:10px;">✦ AI Analysis</div>
+            <div id="insights-ai-list" class="insights-grid"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1503,6 +1559,10 @@ async function loadPeriodData(){
   document.getElementById('ana-period').textContent=p;
   document.getElementById('hm-title').textContent='Heatmap — '+MO_LONG[curM-1]+' '+curY;
   document.getElementById('hm-lbl').textContent=MO_LONG[curM-1]+' '+curY;
+  // Build insights data snapshot for this period
+  _insightsCtx = { periodTxns, totalExpense, avgDaily, categoryExpenses, weeklyExpenses, expDays, daysInMonth };
+  renderRuleInsights();
+  fetchAIInsights();
 }
 
 function buildWeekly(txns,sd,ed){
@@ -1947,6 +2007,181 @@ window.submitTr=async function(){
 };
 window.saveExpTpl=async function(){const cat=gv('e-cat'),item=gv('e-item');if(!cat||!item){if(!cat)setInv('e-cat');if(!item)setInv('e-item');return;}const btn=document.getElementById('e-tpl-btn');await addDoc(uRef('templates'),{type:'EXPENSE',name:item,account:gv('e-acc'),category:cat,item,amount:gv('e-amt'),tofrom:gv('e-to')});btn.textContent='✓ Saved';btn.classList.add('saved');await loadTemplates();setupAddFormDropdowns();setTimeout(()=>{btn.textContent='+ Save as Template';btn.classList.remove('saved');},1400);toast('Template saved');};
 window.saveIncTpl=async function(){const cat=gv('i-cat'),item=gv('i-item');if(!cat||!item){if(!cat)setInv('i-cat');if(!item)setInv('i-item');return;}const btn=document.getElementById('i-tpl-btn');await addDoc(uRef('templates'),{type:'INCOME',name:item,account:gv('i-acc'),category:cat,item,amount:gv('i-amt'),tofrom:gv('i-from')});btn.textContent='✓ Saved';btn.classList.add('saved');await loadTemplates();setupAddFormDropdowns();setTimeout(()=>{btn.textContent='+ Save as Template';btn.classList.remove('saved');},1400);toast('Template saved');};
+
+/* ═══ SMART INSIGHTS ═══ */
+let _insightsCtx = null;
+
+function insightPillHTML(icon, tag, text, sub, extraClass='', delay=0){
+  return `<div class="insight-pill ${extraClass}" style="animation-delay:${delay}s">
+    <div class="insight-icon">${icon}</div>
+    <div class="insight-body">
+      <div class="insight-tag">${tag}</div>
+      <div class="insight-text">${text}</div>
+      ${sub ? `<div class="insight-sub">${sub}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderRuleInsights(){
+  const el = document.getElementById('insights-rule-list');
+  if(!el) return;
+  if(!_insightsCtx || !_insightsCtx.periodTxns.length){
+    el.innerHTML = '<div class="empty-s">No transactions this period to analyse.</div>';
+    return;
+  }
+  const { periodTxns, totalExpense, avgDaily, categoryExpenses, weeklyExpenses, expDays, daysInMonth } = _insightsCtx;
+  const pills = [];
+  const period = MO_LONG[curM-1] + ' ' + curY;
+
+  // ── 1. Top spending category
+  if(categoryExpenses.length > 0){
+    const top = categoryExpenses[0];
+    const pct = totalExpense > 0 ? ((top.total/totalExpense)*100).toFixed(0) : 0;
+    pills.push(insightPillHTML('🏆', 'Top Category', `Your highest expense is <b>${top.category}</b> at ${rs(top.total)}`, `${pct}% of total spend this ${MO_SHORT[curM-1]}`, '', 0.03));
+  }
+
+  // ── 2. Week-over-week comparison (last 2 weeks)
+  if(weeklyExpenses.length >= 2){
+    const last = weeklyExpenses[weeklyExpenses.length-1];
+    const prev = weeklyExpenses[weeklyExpenses.length-2];
+    if(prev.total > 0 && last.total > 0){
+      const diff = ((last.total - prev.total)/prev.total*100).toFixed(0);
+      const up = last.total > prev.total;
+      pills.push(insightPillHTML(
+        up ? '📈' : '📉', 'Weekly Trend',
+        up ? `You spent <b>${Math.abs(diff)}% more</b> this week than last week`
+           : `You spent <b>${Math.abs(diff)}% less</b> this week than last week`,
+        `This week: ${rs(last.total)} · Last week: ${rs(prev.total)}`, '', 0.06
+      ));
+    }
+  }
+
+  // ── 3. Daily average insight
+  if(avgDaily > 0){
+    const today = new Date().getDate();
+    const daysElapsed = (curM === new Date().getMonth()+1 && curY === new Date().getFullYear()) ? today : daysInMonth;
+    const projectedMonthly = Math.round(avgDaily * daysInMonth);
+    pills.push(insightPillHTML('📅', 'Daily Average',
+      `You spend an average of <b>${rs(avgDaily)}/day</b> this month`,
+      `Projected monthly total: ${rs(projectedMonthly)}`, '', 0.09));
+  }
+
+  // ── 4. Highest single-day spend
+  const maxDay = Object.entries(expDays).sort((a,b)=>b[1]-a[1])[0];
+  if(maxDay){
+    pills.push(insightPillHTML('🔥', 'Peak Day',
+      `Your biggest spending day was the <b>${maxDay[0]}${['th','st','nd','rd'][Math.min(+maxDay[0]%10,3)] || 'th'}</b> at ${rs(maxDay[1])}`,
+      `That's ${totalExpense > 0 ? ((maxDay[1]/totalExpense)*100).toFixed(0) : 0}% of your entire month's spend in one day`, '', 0.12));
+  }
+
+  // ── 5. Category diversity
+  if(categoryExpenses.length <= 2 && totalExpense > 0){
+    pills.push(insightPillHTML('⚠️', 'Concentration Risk',
+      `Nearly all your spending is in just <b>${categoryExpenses.length} categor${categoryExpenses.length===1?'y':'ies'}</b>`,
+      'Consider tracking more categories for better insights', '', 0.15));
+  } else if(categoryExpenses.length >= 5){
+    pills.push(insightPillHTML('✅', 'Category Spread',
+      `You have a <b>healthy spread</b> across ${categoryExpenses.length} categories`,
+      'Diverse tracking helps identify overspending areas', '', 0.15));
+  }
+
+  // ── 6. Income vs Expense balance
+  const totalIncome = periodTxns.filter(t=>Number(t.amount)>0&&(t.category||'').toUpperCase()!=='TRANSFER').reduce((s,t)=>s+Number(t.amount),0);
+  if(totalIncome > 0){
+    const savings = totalIncome - totalExpense;
+    const savRate = (savings/totalIncome*100).toFixed(0);
+    const icon = savings >= 0 ? '💰' : '🚨';
+    pills.push(insightPillHTML(icon, savings >= 0 ? 'Savings' : 'Deficit',
+      savings >= 0
+        ? `You saved <b>${rs(savings)}</b> this month — a ${savRate}% savings rate`
+        : `You overspent by <b>${rs(Math.abs(savings))}</b> vs your income this month`,
+      `Income: ${rs(totalIncome)} · Spent: ${rs(totalExpense)}`, '', 0.18));
+  }
+
+  // ── 7. Overspending days (> 2× average)
+  const heavyDays = Object.entries(expDays).filter(([,v])=>v > avgDaily*2);
+  if(heavyDays.length > 0){
+    pills.push(insightPillHTML('⚡', 'Heavy Spend Days',
+      `You had <b>${heavyDays.length} day${heavyDays.length>1?'s':''}</b> where you spent more than 2× your daily average`,
+      `Days: ${heavyDays.map(([d])=>d).join(', ')} of ${MO_SHORT[curM-1]}`, '', 0.21));
+  }
+
+  // ── 8. Credit card usage
+  const ccAccs = _accounts.filter(a=>a.type==='CREDIT_CARD');
+  ccAccs.forEach(cc=>{
+    const limit = cc.openingBalance || 0;
+    if(limit > 0){
+      const spent = limit - (cc.currentBalance||0);
+      const pct = (spent/limit*100).toFixed(0);
+      if(pct > 70){
+        pills.push(insightPillHTML('💳', 'Credit Card Alert',
+          `<b>${escH(cc.name)}</b> is at ${pct}% utilisation — consider paying down`,
+          `Spent ${rs(spent)} of ${rs(limit)} limit`, '', 0.24));
+      }
+    }
+  });
+
+  el.innerHTML = pills.length ? pills.join('') : '<div class="empty-s">All looks good — no alerts this period.</div>';
+}
+
+async function fetchAIInsights(){
+  const aiEl = document.getElementById('insights-ai-list');
+  if(!aiEl || !_insightsCtx) return;
+  if(!_insightsCtx.periodTxns.length){
+    aiEl.innerHTML = '<div class="insights-ai-err">Add some transactions so AI can analyse your spending.</div>';
+    return;
+  }
+  aiEl.innerHTML = '<div class="insights-ai-loading"><div class="sp" style="width:16px;height:16px;border-width:2px;flex-shrink:0"></div> Analysing your spending with Gemini AI…</div>';
+
+  const { periodTxns, totalExpense, categoryExpenses, avgDaily } = _insightsCtx;
+  const period = MO_LONG[curM-1] + ' ' + curY;
+
+  // Build a compact summary for the prompt
+  const catSummary = categoryExpenses.slice(0,6).map(c=>`${c.category}: ₹${c.total.toFixed(0)}`).join(', ');
+  const totalIncome = periodTxns.filter(t=>Number(t.amount)>0&&(t.category||'').toUpperCase()!=='TRANSFER').reduce((s,t)=>s+Number(t.amount),0);
+  const txnCount = periodTxns.filter(t=>Number(t.amount)<0&&(t.category||'').toUpperCase()!=='TRANSFER').length;
+
+  const prompt = `You are a personal finance advisor analyzing spending data for ${period}.
+
+Data:
+- Total Expenses: ₹${totalExpense.toFixed(0)}
+- Total Income: ₹${totalIncome.toFixed(0)}
+- Daily Average Spend: ₹${avgDaily}
+- Number of expense transactions: ${txnCount}
+- Category breakdown: ${catSummary || 'No categories'}
+
+Generate exactly 3 concise, actionable financial insights. Each insight must be a JSON object in this format:
+{"icon":"emoji","tag":"short label","text":"insight sentence with numbers","sub":"one-line followup tip"}
+
+Respond with ONLY a valid JSON array of 3 objects. No markdown, no explanation. Be specific, use the actual numbers provided, and be encouraging but honest.`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBFkrZ3B288iA6XmRNJKgcOrLLSnZem_xU`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:600}})
+    });
+    const data = await res.json();
+    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    // Strip markdown fences if present
+    const cleaned = raw.replace(/```json|```/g,'').trim();
+    const insights = JSON.parse(cleaned);
+    if(!Array.isArray(insights)) throw new Error('Not an array');
+    aiEl.innerHTML = insights.map((ins,i)=>insightPillHTML(
+      ins.icon||'✦', ins.tag||'AI Insight', ins.text||'', ins.sub||'', 'ai-insight', i*0.08
+    )).join('');
+  } catch(e){
+    aiEl.innerHTML = '<div class="insights-ai-err">⚠ AI analysis unavailable right now. Check your connection or try refreshing.</div>';
+  }
+}
+
+window.refreshInsights = async function(){
+  const btn = document.getElementById('insights-refresh-btn');
+  if(btn){ btn.textContent='…'; btn.disabled=true; }
+  renderRuleInsights();
+  await fetchAIInsights();
+  if(btn){ btn.textContent='↻ Refresh'; btn.disabled=false; }
+};
 
 /* ═══ MANAGE ═══ */
 window.switchMgmtTab=function(name,el){document.querySelectorAll('[id^="mtab-"]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.mgmt-panel').forEach(x=>x.style.display='none');el.classList.add('active');document.getElementById('mpanel-'+name).style.display='block';};
