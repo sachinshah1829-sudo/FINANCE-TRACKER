@@ -1160,7 +1160,7 @@ input[type=number].form-input::-webkit-inner-spin-button { -webkit-appearance: n
         <div class="ldr-stat"><div class="ldr-stat-lbl">Total Spent</div><div class="ldr-stat-val" id="txn-stat-spent">—</div></div>
         <div class="ldr-stat"><div class="ldr-stat-lbl">Total Income</div><div class="ldr-stat-val" id="txn-stat-income">—</div></div>
       </div>
-      <div class="card card-p" style="margin-bottom:16px;">
+      <div class="card card-p" style="margin-bottom:16px;overflow:visible;">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
           <div>
             <label class="form-label">Search</label>
@@ -1567,7 +1567,7 @@ window.editAccEl=function(el){editAcc(el.dataset.id,el.dataset.name.replace(/&#3
 window.deleteAccEl=function(el){deleteAcc(el.dataset.id,el.dataset.name.replace(/&#39;/g,"'"));};
 let _accEditId=null;
 window.showAccForm=function(type){_accEditId=null;document.getElementById('acc-modal-title').textContent='Add Account';document.getElementById('acc-m-name').value='';document.getElementById('acc-m-bal').value='';document.getElementById('acc-m-type').value=type||'BANK';document.getElementById('acc-m-type').disabled=false;document.getElementById('acc-m-id').value='';openM('accModal');};
-function editAcc(id,name,opening,type){_accEditId=id;document.getElementById('acc-modal-title').textContent='Edit Account';document.getElementById('acc-m-name').value=name;document.getElementById('acc-m-bal').value=opening;document.getElementById('acc-m-type').value=type;document.getElementById('acc-m-type').disabled=true;document.getElementById('acc-m-id').value=id;openM('accModal');}
+function editAcc(id,name,opening,type){_accEditId=id;document.getElementById('acc-modal-title').textContent='Edit Account';document.getElementById('acc-m-name').value=name;document.getElementById('acc-m-bal').value=opening;document.getElementById('acc-m-type').value=type;document.getElementById('acc-m-type').disabled=false;document.getElementById('acc-m-id').value=id;openM('accModal');}
 window.saveAccountModal=async function(){const name=document.getElementById('acc-m-name').value.trim(),bal=parseFloat(document.getElementById('acc-m-bal').value)||0,type=document.getElementById('acc-m-type').value,id=document.getElementById('acc-m-id').value;if(!name)return;if(id){await updateDoc(uDoc('accounts',id),{name,openingBalance:bal,type});}else{await addDoc(uRef('accounts'),{name,openingBalance:bal,type});}closeM('accModal');await loadAccounts();await loadPeriodData();setupAddFormDropdowns();toast(id?'Account updated':'Account added');};
 async function deleteAcc(id,name){if(!confirm('Delete account "'+name+'"?'))return;await deleteDoc(uDoc('accounts',id));await loadAccounts();await loadPeriodData();setupAddFormDropdowns();toast('Account deleted');}
 
@@ -1737,11 +1737,11 @@ window.addSplitRow = function(e){
   `;
   container.appendChild(div);
   document.getElementById('split-tools').style.display = 'block';
-  // Setup dropdowns
-  const peopleNames = _people.map(p=>p.value);
+  // Setup dropdowns — Person field uses PERSON-type accounts
+  const personAccNames = _accounts.filter(a=>a.type==='PERSON').map(a=>a.name);
   const catNames = _categories.filter(c=>c.type==='EXPENSE').map(c=>c.name);
   const itemNames = _items.map(i=>i.value);
-  setupSplitDD('sp-person-'+rowId, 'sp-dd-person-'+rowId, peopleNames);
+  setupSplitDD('sp-person-'+rowId, 'sp-dd-person-'+rowId, personAccNames);
   setupSplitDD('sp-cat-'+rowId, 'sp-dd-cat-'+rowId, catNames);
   setupSplitDD('sp-item-'+rowId, 'sp-dd-item-'+rowId, itemNames);
 };
