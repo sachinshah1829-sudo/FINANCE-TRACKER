@@ -1300,28 +1300,28 @@
             position: relative;
             overflow: hidden;
             transition: width 0.7s cubic-bezier(0.34, 1.1, 0.64, 1);
+            z-index: 1;
         }
 
-        .br-in {
+        /* Fixed value at the end of the track */
+        .br-val-fixed {
             position: absolute;
             right: 7px;
             top: 50%;
             transform: translateY(-50%);
             font-size: 9px;
             font-weight: 700;
-            color: #f0efe9;
+            color: #fff;
+            mix-blend-mode: difference;
             white-space: nowrap;
-            z-index: 2;
+            z-index: 10;
             font-family: var(--font);
+            pointer-events: none;
         }
 
-        .br-out {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--t1);
-            white-space: nowrap;
-            flex-shrink: 0;
-            font-family: var(--font);
+        /* Legacy classes kept for compatibility or slightly adjusted */
+        .br-in, .br-out {
+            display: none; /* We'll use br-val-fixed instead */
         }
 
         .pie-layout {
@@ -3889,7 +3889,10 @@
                 return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
                     '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
                     '<div class="br-track-wrap">' +
-                        '<div class="br-track" style="flex:1"><div class="br-fill" style="width:' + pct + '%">' + (d.total > 0 ? '<span class="br-in">' + rs(d.total) + '</span>' : '') + '</div></div>' +
+                        '<div class="br-track" style="flex:1">' +
+                            (d.total > 0 ? '<span class="br-val-fixed">' + rs(d.total) + '</span>' : '') +
+                            '<div class="br-fill" style="width:' + pct + '%"></div>' +
+                        '</div>' +
                         '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
                     '</div>' +
                 '</div>';
@@ -3899,7 +3902,17 @@
         function renderWeekly(weeks) {
             if (!weeks || !weeks.length) { document.getElementById('weeklyChart').innerHTML = '<div class="empty-s">No data</div>'; return; }
             const mx = Math.max(...weeks.map(w => w.total), 1);
-            document.getElementById('weeklyChart').innerHTML = weeks.map((w, i) => { const pct = w.total > 0 ? Math.max((w.total / mx) * 100, 2) : 0, out = w.total > 0 && pct < 28, ins = w.total > 0 && !out; return '<div class="br-item" style="animation-delay:' + (i * 0.08) + 's"><div class="br-lbl">' + w.label + '</div><div class="br-track-wrap"><div class="br-track"><div class="br-fill" style="width:' + pct + '%">' + (ins ? '<span class="br-in">' + rs(w.total) + '</span>' : '') + '</div></div>' + (out ? '<span class="br-out">' + rs(w.total) + '</span>' : '') + '</div></div>'; }).join('');
+            document.getElementById('weeklyChart').innerHTML = weeks.map((w, i) => {
+                const pct = w.total > 0 ? Math.max((w.total / mx) * 100, 2) : 0;
+                return '<div class="br-item" style="animation-delay:' + (i * 0.08) + 's">' +
+                    '<div class="br-lbl">' + w.label + '</div>' +
+                    '<div class="br-track-wrap">' +
+                        '<div class="br-track">' +
+                            (w.total > 0 ? '<span class="br-val-fixed">' + rs(w.total) + '</span>' : '') +
+                            '<div class="br-fill" style="width:' + pct + '%"></div>' +
+                        '</div>' +
+                    '</div></div>';
+            }).join('');
         }
         function renderPie(cats) {
             if (!cats || !cats.length) { document.getElementById('pieLegend').innerHTML = '<div class="empty-s">No data</div>'; return; }
