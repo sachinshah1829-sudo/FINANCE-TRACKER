@@ -13,7 +13,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min    <style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
         :root {
             --bg: #F8F9FA;
             --surface: #FFFFFF;
@@ -795,6 +796,22 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 40%);
             border-radius: inherit;
         }
+
+        /* Toast UI */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: #000; color: #fff; padding: 12px 24px; font-size: 13px; font-weight: 700;
+            z-index: 2000; transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Split UI */
+        .split-tools { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee; }
+        .split-rows { margin-top: 12px; }
+        .split-row { display: grid; grid-template-columns: 1fr 1fr 100px 40px; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .split-input { background: #f9f9f9; border: 1px solid #eee; padding: 8px; font-size: 11px; font-family: var(--font-main); outline: none; }
+        .split-del { cursor: pointer; color: var(--red); font-weight: 700; text-align: center; }
 
         /* ══════════════════════════════════════
    STAT TILES
@@ -2782,6 +2799,25 @@
                 padding: 8px 4px;
             }
         }
+
+        /* ═══ RESTORED UTILITIES ═══ */
+        .form-input-wrap { position: relative; width: 100%; }
+        .form-dropdown { 
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0; 
+            background: #fff; border: 1px solid #000; z-index: 1000; 
+            max-height: 220px; overflow-y: auto; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; 
+            border-radius: var(--r-xs);
+        }
+        .fd-item { 
+            padding: 11px 14px; font-size: 11px; font-weight: 700; 
+            cursor: pointer; border-bottom: 1px solid #eee; transition: background 0.2s; 
+            text-transform: uppercase; letter-spacing: 0.5px; color: #000;
+        }
+        .fd-item:hover { background: #f8f9fa; }
+        .form-input.invalid { border-color: var(--red) !important; background: #FFF5F5 !important; }
+        .txn-clickable:hover { background: #fcfcfc !important; }
+        .act-btn.saved { background: var(--green) !important; color: #fff !important; }
     </style>
 </head>
 
@@ -2964,7 +3000,7 @@
                         </div>
                         <div class="form-row">
                             <label class="form-label">Amount (₹)</label>
-                            <input class="form-input" id="e-amt" type="number" placeholder="0.00">
+                            <input class="form-input" id="e-amt" type="number" placeholder="0.00" autocomplete="off">
                         </div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                             <div class="form-row" style="margin-bottom:0">
@@ -2996,7 +3032,7 @@
 
                         <div class="form-err" id="e-err"></div>
                         <button class="btn-primary" id="e-btn" onclick="submitExp()">Save Expense</button>
-                        <div class="form-save-tpl" onclick="saveExpTpl()">+ Save as Template</div>
+                        <div class="form-save-tpl" id="e-tpl-btn" onclick="saveExpTpl()">+ Save as Template</div>
                     </div>
                     <!-- INCOME -->
                     <div class="add-form" id="form-income">
@@ -3045,7 +3081,7 @@
                         </div>
                         <div class="form-err" id="i-err"></div>
                         <button class="btn-primary" id="i-btn" onclick="submitInc()">Save Income</button>
-                        <div class="form-save-tpl" onclick="saveIncTpl()">+ Save as Template</div>
+                        <div class="form-save-tpl" id="i-tpl-btn" onclick="saveIncTpl()">+ Save as Template</div>
                     </div>
 
                     <!-- TRANSFER -->
@@ -3258,7 +3294,7 @@
                     </div>
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
                         <div class="txn-msel-wrap" id="msel-type-wrap" onclick="toggleMsel('type')">
-                            <div class="txn-msel-trigger"><span id="msel-type-label">All Filter</span> ▾</div>
+                            <div class="txn-msel-trigger"><span id="msel-type-label">All Types</span> ▾</div>
                             <div class="txn-msel-dd" id="msel-type-dd" style="display:none"></div>
                         </div>
                         <div class="txn-msel-wrap" id="msel-account-wrap" onclick="toggleMsel('account')">
@@ -3268,6 +3304,14 @@
                         <div class="txn-msel-wrap" id="msel-cat-wrap" onclick="toggleMsel('cat')">
                             <div class="txn-msel-trigger"><span id="msel-cat-label">All Categories</span> ▾</div>
                             <div class="txn-msel-dd" id="msel-cat-dd" style="display:none"></div>
+                        </div>
+                        <div class="txn-msel-wrap" id="msel-item-wrap" onclick="toggleMsel('item')">
+                            <div class="txn-msel-trigger"><span id="msel-item-label">All Items</span> ▾</div>
+                            <div class="txn-msel-dd" id="msel-item-dd" style="display:none"></div>
+                        </div>
+                        <div class="txn-msel-wrap" id="msel-tofrom-wrap" onclick="toggleMsel('tofrom')">
+                            <div class="txn-msel-trigger"><span id="msel-tofrom-label">All Counterparties</span> ▾</div>
+                            <div class="txn-msel-dd" id="msel-tofrom-dd" style="display:none"></div>
                         </div>
                         <button class="btn-primary" onclick="clearAllFilters()" style="padding:10px; width:auto; background:#eee; color:#000;">Reset Filters</button>
                     </div>
@@ -3535,11 +3579,17 @@
                     <input class="form-input" id="txn-edit-tofrom">
                 </div>
                 <button class="btn-primary" onclick="saveTxnEdit()" style="margin-top:12px">Commit Modifications</button>
+                
+                <div class="split-tools" id="split-tools">
+                    <div style="font-weight:700; font-size:12px">Split Transaction</div>
+                    <button class="add-inline-btn" onclick="addSplitRow()" style="font-size:11px">+ Add Row</button>
+                </div>
+                <div class="split-rows" id="split-rows-container"></div>
             </div>
         </div>
     </div>
 
-    <div id="toast"></div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -4711,6 +4761,7 @@
             if (el.id === 's-pwd') doSignup();
         });
     </script>
+    <div id="toast" class="toast"></div>
 </body>
 
 </html>
