@@ -3,142 +3,93 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <title>Finance · Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>ट्रैकर.इन | Ledger & Finance</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <style>
-        /* ═══════════════════════════════════════════════════
-   MONOCHROME — BLACK & WHITE — COURIER PRIME
-═══════════════════════════════════════════════════ */
-        *,
-        *::before,
-        *::after {
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min    <style>
+        :root {
+            --bg: #F8F9FA;
+            --surface: #FFFFFF;
+            --sidebar-bg: #FFFFFF;
+            --sidebar-text: #000000;
+            --sidebar-muted: #666666;
+            --sidebar-active: #000000;
+            --sidebar-active-bg: #000000;
+            --accent: #000000;
+            --border: rgba(0, 0, 0, 0.08);
+            --text: #000000;
+            --text-muted: #666666;
+            --green: #00D18E;
+            --green-bg: #E6FBF5;
+            --red: #FF3B6F;
+            --red-bg: #FFF0F4;
+            --amber: #FFB800;
+            --amber-bg: #FFF9E6;
+            --input-bg: #ffffff;
+
+            /* Smooth CRED Elevations */
+            --elevation-1: 0 2px 4px rgba(0, 0, 0, 0.04);
+            --elevation-2: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --elevation-3: 0 12px 24px rgba(0, 0, 0, 0.08);
+            --elevation-4: 0 16px 32px rgba(0, 0, 0, 0.1);
+
+            --radius: 0px;
+
+            /* Legacy variable names for JS compatibility */
+            --amt-pos: var(--green);
+            --amt-neg: var(--red);
+            --t1: #000000;
+            --t2: #444444;
+            --t3: #888888;
+            --dark: #000000;
+
+            /* Fonts */
+            --font-main: 'Courier Prime', monospace;
+            --font-big: 'Outfit', sans-serif;
+
+            /* Transitions */
+            --t-fast: 0.16s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --t-smooth: 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        :root {
-            /* Monochrome System */
-            --glass-white: rgba(255, 255, 255, 0.82);
-            --glass-white-hov: rgba(255, 255, 255, 0.96);
-            --glass-white-thin: rgba(255, 255, 255, 0.55);
-            --glass-border: rgba(0, 0, 0, 0.12);
-            --glass-border-thin: rgba(0, 0, 0, 0.07);
-            --glass-blur: blur(32px) saturate(120%);
-            --glass-blur-sm: blur(16px) saturate(110%);
-            --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-            --glass-shadow-float: 0 12px 40px rgba(0, 0, 0, 0.10), 0 3px 10px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.98);
-            --glass-shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.14), 0 6px 18px rgba(0, 0, 0, 0.08);
-
-            /* Typography */
-            --font: 'Courier Prime', 'Courier New', Courier, monospace;
-
-            /* Background — off-white paper */
-            --bg-grad: linear-gradient(145deg, #f5f5f0 0%, #eeede8 40%, #f2f1ec 70%, #f0efe9 100%);
-
-            /* Text */
-            --t1: rgba(0, 0, 0, 0.90);
-            --t2: rgba(0, 0, 0, 0.55);
-            --t3: rgba(0, 0, 0, 0.35);
-            --t4: rgba(0, 0, 0, 0.18);
-
-            /* Accent — only black/grey shades */
-            --black: #0a0a0a;
-            --dark: #1a1a1a;
-            --mid: #555555;
-            --light: #aaaaaa;
-            --xlight: #dddddd;
-            --white: #ffffff;
-
-            /* Semantic — muted */
-            --blue: #2a2a2a;
-            --blue-glass: rgba(0, 0, 0, 0.06);
-            --red: #1a1a1a;
-            --red-glass: rgba(0, 0, 0, 0.06);
-            --green: #1a1a1a;
-            --green-glass: rgba(0, 0, 0, 0.06);
-            --amber: #555555;
-            --purple: #333333;
-
-            /* For amounts */
-            --amt-neg: #0a0a0a;
-            --amt-pos: #444444;
-
-            /* Radius */
-            --r-xs: 4px;
-            --r-sm: 8px;
-            --r: 12px;
-            --r-lg: 16px;
-            --r-xl: 20px;
-
-            /* Nav */
-            --nav-w: 220px;
-
-            /* Transitions */
-            --t-fast: 0.16s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --t-spring: 0.38s cubic-bezier(0.34, 1.4, 0.64, 1);
-            --t-smooth: 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --glass-white: rgba(18, 18, 18, 0.88);
-                --glass-white-hov: rgba(28, 28, 28, 0.95);
-                --glass-white-thin: rgba(15, 15, 15, 0.65);
-                --glass-border: rgba(255, 255, 255, 0.10);
-                --glass-border-thin: rgba(255, 255, 255, 0.06);
-                --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.40), 0 1px 4px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-                --glass-shadow-float: 0 12px 40px rgba(0, 0, 0, 0.50), 0 3px 10px rgba(0, 0, 0, 0.30);
-                --bg-grad: linear-gradient(145deg, #0e0e0e 0%, #111111 40%, #0d0d0d 70%, #101010 100%);
-                --t1: rgba(255, 255, 255, 0.92);
-                --t2: rgba(255, 255, 255, 0.55);
-                --t3: rgba(255, 255, 255, 0.32);
-                --t4: rgba(255, 255, 255, 0.16);
-                --blue-glass: rgba(255, 255, 255, 0.07);
-                --red-glass: rgba(255, 255, 255, 0.07);
-                --green-glass: rgba(255, 255, 255, 0.07);
-                --amt-neg: rgba(255, 255, 255, 0.90);
-                --amt-pos: rgba(255, 255, 255, 0.65);
-                --xlight: #333333;
-            }
-        }
-
-        html {
-            height: 100%;
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
-            font-family: var(--font);
-            background: var(--bg-grad);
-            color: var(--t1);
-            min-height: 100%;
-            min-height: 100dvh;
-            display: flex;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            font-family: var(--font-main);
         }
 
-        /* ── SUBTLE PAPER TEXTURE ── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            background-size: 256px;
+        h1, h2, h3, h4, h5,
+        .auth-title, .page-title, .stat-val, .modal-title, 
+        .sidebar-brand-name, .pg-title, .ldr-title {
+            font-family: var(--font-big);
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
-        /* Fine grid lines — ledger paper effect */
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 0;
+        /* Fine grid lines removed as per new design */
+         z-index: 0;
             pointer-events: none;
             opacity: 0.015;
             background-image: repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(0, 0, 0, 0.6) 27px, rgba(0, 0, 0, 0.6) 28px);
@@ -1303,7 +1254,8 @@
         }
 
         /* Twin labels for stationary inverted text */
-        .br-val-base, .br-val-fill {
+        .br-val-base,
+        .br-val-fill {
             position: absolute;
             right: 7px;
             top: 50%;
@@ -1317,16 +1269,21 @@
 
         .br-val-base {
             color: var(--t1);
-            z-index: 0; /* Behind the fill */
+            z-index: 0;
+            /* Behind the fill */
         }
 
         .br-val-fill {
             color: #fff;
-            z-index: 2; /* In front of the fill background */
+            z-index: 2;
+            /* In front of the fill background */
         }
 
         /* Legacy classes kept for compatibility */
-        .br-in, .br-out { display: none; }
+        .br-in,
+        .br-out {
+            display: none;
+        }
 
         .pie-layout {
             display: flex;
@@ -2832,60 +2789,67 @@
 
     <!-- ═══════════════════ AUTH ═══════════════════ -->
     <div id="authScreen">
-        <div class="auth-box">
-            <div class="auth-wordmark">Finance</div>
-            <div class="auth-title">Tracker</div>
-            <div class="auth-pills">
-                <button class="auth-pill active" id="atab-login" onclick="switchAuthTab('login')">Sign In</button>
-                <button class="auth-pill" id="atab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+        <div class="auth-card">
+            <div class="auth-brand">ट्रैकर.इन</div>
+            <div class="auth-title">Finance Ledger</div>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="atab-login" onclick="switchAuthTab('login')">Sign In</button>
+                <button class="auth-tab" id="atab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
             </div>
 
             <div class="auth-form active" id="aform-login">
-                <div class="af-field"><label class="af-label">Email</label><input class="af-input" id="l-email"
-                        type="email" placeholder="you@example.com" autocomplete="email"></div>
-                <div class="af-field"><label class="af-label">Password</label><input class="af-input" id="l-pwd"
-                        type="password" placeholder="••••••••" autocomplete="current-password"></div>
-                <button class="af-btn" id="l-btn" onclick="doLogin()">Sign In</button>
+                <div class="form-row">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" id="l-email" type="email" placeholder="name@domain.com" autocomplete="email">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Password</label>
+                    <input class="form-input" id="l-pwd" type="password" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button class="btn-primary" id="l-btn" onclick="doLogin()">Sign In</button>
+                
                 <div class="af-divider">or</div>
-                <button class="google-btn" onclick="doGoogleAuth()">
-                    <svg class="google-ico" viewBox="0 0 18 18">
-                        <path fill="#4285F4"
-                            d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" />
-                        <path fill="#34A853"
-                            d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" />
-                        <path fill="#FBBC05"
-                            d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" />
-                        <path fill="#EA4335"
-                            d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" />
+                
+                <button class="btn-google" onclick="doGoogleAuth()">
+                    <svg class="google-ico" viewBox="0 0 18 18" width="18" height="18">
+                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" />
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" />
+                        <path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" />
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" />
                     </svg>
                     Continue with Google
                 </button>
-                <div class="af-err" id="l-err"></div>
+                <div class="form-err" id="l-err"></div>
             </div>
 
             <div class="auth-form" id="aform-signup">
-                <div class="af-field"><label class="af-label">Name</label><input class="af-input" id="s-name"
-                        type="text" placeholder="Your name" autocomplete="name"></div>
-                <div class="af-field"><label class="af-label">Email</label><input class="af-input" id="s-email"
-                        type="email" placeholder="you@example.com" autocomplete="email"></div>
-                <div class="af-field"><label class="af-label">Password</label><input class="af-input" id="s-pwd"
-                        type="password" placeholder="Min 6 characters" autocomplete="new-password"></div>
-                <button class="af-btn" id="s-btn" onclick="doSignup()">Create Account</button>
+                <div class="form-row">
+                    <label class="form-label">Name</label>
+                    <input class="form-input" id="s-name" type="text" placeholder="Your Name" autocomplete="name">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" id="s-email" type="email" placeholder="name@domain.com" autocomplete="email">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Password</label>
+                    <input class="form-input" id="s-pwd" type="password" placeholder="Min 6 characters" autocomplete="new-password">
+                </div>
+                <button class="btn-primary" id="s-btn" onclick="doSignup()">Create Account</button>
+                
                 <div class="af-divider">or</div>
-                <button class="google-btn" onclick="doGoogleAuth()">
-                    <svg class="google-ico" viewBox="0 0 18 18">
-                        <path fill="#4285F4"
-                            d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" />
-                        <path fill="#34A853"
-                            d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" />
-                        <path fill="#FBBC05"
-                            d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" />
-                        <path fill="#EA4335"
-                            d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" />
+                
+                <button class="btn-google" onclick="doGoogleAuth()">
+                    <svg class="google-ico" viewBox="0 0 18 18" width="18" height="18">
+                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" />
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" />
+                        <path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" />
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" />
                     </svg>
                     Continue with Google
                 </button>
-                <div class="af-err" id="s-err"></div>
+                <div class="form-err" id="s-err"></div>
             </div>
         </div>
     </div>
@@ -2895,530 +2859,469 @@
         <div class="mob-toggle" id="mobToggle" onclick="toggleSidebar()">☰</div>
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
-        <nav class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sb-logo">
-                <div class="sb-wordmark">Finance</div>
-                <div class="sb-title">Tracker</div>
+                <div class="sb-wordmark">ट्रैकर.इन</div>
+                <div class="sb-title">Finance</div>
             </div>
-            <div class="sb-nav">
-                <div class="nav-item active" id="nav-add" onclick="nav('add',this)">
-                    <div class="nav-ico">＋</div>Add Entry
+            
+            <nav class="sb-nav">
+                <button class="nav-item active" id="nav-add" onclick="nav('add',this)">
+                    <span class="nav-ico">＋</span> Add Entry
+                </button>
+                <button class="nav-item" id="nav-accounts" onclick="nav('accounts',this)">
+                    <span class="nav-ico">▦</span> Accounts
+                </button>
+                <button class="nav-item" id="nav-heatmap" onclick="nav('heatmap',this)">
+                    <span class="nav-ico">▣</span> Heatmap
+                </button>
+                <button class="nav-item" id="nav-analytics" onclick="nav('analytics',this)">
+                    <span class="nav-ico">◈</span> Analytics
+                </button>
+                <button class="nav-item" id="nav-ledger" onclick="nav('ledger',this)">
+                    <span class="nav-ico">≡</span> Ledger
+                </button>
+                <button class="nav-item" id="nav-transactions" onclick="nav('transactions',this)">
+                    <span class="nav-ico">☰</span> Transactions
+                </button>
+                <button class="nav-item" id="nav-manage" onclick="nav('manage',this)">
+                    <span class="nav-ico">⚙</span> Manage
+                </button>
+                <button class="nav-item" id="nav-templates" onclick="nav('templates',this)">
+                    <span class="nav-ico">⊡</span> Templates
+                </button>
+                <button class="nav-item" id="nav-import" onclick="nav('import',this)">
+                    <span class="nav-ico">⬆</span> Import
+                </button>
+            </nav>
+
+            <div class="sb-user-wrap">
+                <div class="sb-period">
+                    <div class="period-label">Period</div>
+                    <div class="period-row">
+                        <span class="period-tag">M</span>
+                        <select class="g-select" id="monthSel" onchange="onPeriodChange()">
+                            <option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option>
+                            <option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option>
+                            <option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
+                            <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                        </select>
+                        <span class="period-tag">Y</span>
+                        <select class="g-select" id="yearSel" onchange="onPeriodChange()"></select>
+                    </div>
                 </div>
-                <div class="nav-item" id="nav-accounts" onclick="nav('accounts',this)">
-                    <div class="nav-ico">▦</div>Accounts
-                </div>
-                <div class="nav-item" id="nav-heatmap" onclick="nav('heatmap',this)">
-                    <div class="nav-ico">▣</div>Heatmap
-                </div>
-                <div class="nav-item" id="nav-analytics" onclick="nav('analytics',this)">
-                    <div class="nav-ico">◈</div>Analytics
-                </div>
-                <div class="nav-item" id="nav-ledger" onclick="nav('ledger',this)">
-                    <div class="nav-ico">≡</div>Ledger
-                </div>
-                <div class="nav-item" id="nav-transactions" onclick="nav('transactions',this)">
-                    <div class="nav-ico">☰</div>Transactions
-                </div>
-                <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
-                    <div class="nav-ico">⚙</div>Manage
-                </div>
-                <div class="nav-item" id="nav-templates" onclick="nav('templates',this)">
-                    <div class="nav-ico">⊡</div>Templates
-                </div>
-                <div class="nav-item" id="nav-import" onclick="nav('import',this)">
-                    <div class="nav-ico">⬆</div>Import Data
+                <div class="sb-user">
+                    <div class="sb-ava">U</div>
+                    <div class="sb-user-info">
+                        <div class="sb-user-name" id="sbUserName">—</div>
+                        <div class="sb-user-email" id="sbUserEmail">—</div>
+                    </div>
+                    <button class="sb-logout" onclick="doLogout()" title="Sign out">↩</button>
                 </div>
             </div>
-            <div class="sb-period">
-                <div class="period-label">Period</div>
-                <div class="period-row"><span class="period-tag">Mo.</span>
-                    <select class="g-select" id="monthSel" onchange="onPeriodChange()">
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </select>
-                </div>
-                <div class="period-row"><span class="period-tag">Yr.</span>
-                    <select class="g-select" id="yearSel" onchange="onPeriodChange()"></select>
-                </div>
-            </div>
-            <div class="sb-user">
-                <div class="sb-ava">S</div>
-                <div class="sb-user-info">
-                    <div class="sb-user-name" id="sbUserName">—</div>
-                    <div class="sb-user-email" id="sbUserEmail">—</div>
-                </div>
-                <button class="sb-logout" onclick="doLogout()" title="Sign out">↩</button>
-            </div>
-        </nav>
+        </aside>
 
         <main class="main" id="mainArea">
 
             <!-- ADD ENTRY -->
             <div class="page active" id="page-add">
-                <div class="pg-header">
-                    <div class="pg-title">Add Entry</div>
-                    <div class="pg-sub">Record a new expense, income, or transfer</div>
-                </div>
+                <header class="pg-header">
+                    <h1 class="pg-title">Add Entry</h1>
+                    <p class="pg-sub">Record a new expense, income, or transfer</p>
+                </header>
+
                 <div class="add-tabs">
-                    <div class="add-tab active" onclick="switchAddTab('expense',this)">Expense</div>
-                    <div class="add-tab" onclick="switchAddTab('income',this)">Income</div>
-                    <div class="add-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
+                    <button class="add-tab active" onclick="switchAddTab('expense',this)">Expense</button>
+                    <button class="add-tab" onclick="switchAddTab('income',this)">Income</button>
+                    <button class="add-tab" onclick="switchAddTab('transfer',this)">Transfer</button>
                 </div>
-                <!-- EXPENSE -->
-                <div class="add-form active" id="form-expense">
-                    <div class="form-row"><label class="form-label">Template</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-tpl"
-                                placeholder="Choose template (optional)" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-tpl"></div>
+
+                <div class="card card-p">
+                    <!-- EXPENSE -->
+                    <div class="add-form active" id="form-expense">
+                        <div class="form-row">
+                            <label class="form-label">Template</label>
+                            <div class="form-input-wrap">
+                                <input class="form-input" id="e-tpl" placeholder="Optional template..." autocomplete="off">
+                                <div class="form-dropdown" id="dd-e-tpl"></div>
+                            </div>
                         </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">Account</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="e-acc" placeholder="Select account..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-acc"></div>
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">Category</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="e-cat" placeholder="Select or type..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-cat"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Amount (₹)</label>
+                            <input class="form-input" id="e-amt" type="number" placeholder="0.00">
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">Item</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="e-item" placeholder="Item name..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-item"></div>
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">To / Spent At</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="e-to" placeholder="Person or store..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-to"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mini-form show" style="margin-top:20px; border-style:solid; border-width:1px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                <label class="form-label" style="margin:0">Split Payments</label>
+                                <button class="add-inline-btn" onclick="addSplitRow(event)">+ Add Split</button>
+                            </div>
+                            <div id="split-rows-container"></div>
+                            <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
+                                <button class="btn-primary" onclick="splitEqually(event)" style="padding:4px 10px; font-size:10px; width:auto;">Split Equally</button>
+                            </div>
+                        </div>
+
+                        <div class="form-err" id="e-err"></div>
+                        <button class="btn-primary" id="e-btn" onclick="submitExp()">Save Expense</button>
+                        <div class="form-save-tpl" onclick="saveExpTpl()">+ Save as Template</div>
                     </div>
-                    <div class="form-row"><label class="form-label">Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-acc" placeholder="Select account"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-acc"></div>
+                    <!-- INCOME -->
+                    <div class="add-form" id="form-income">
+                        <div class="form-row">
+                            <label class="form-label">Template</label>
+                            <div class="form-input-wrap">
+                                <input class="form-input" id="i-tpl" placeholder="Optional template..." autocomplete="off">
+                                <div class="form-dropdown" id="dd-i-tpl"></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Category</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-cat"
-                                placeholder="Select or type new category" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-cat"></div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">Account (Credit to)</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="i-acc" placeholder="Select account..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-i-acc"></div>
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">Category</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="i-cat" placeholder="Select or type..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-i-cat"></div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
-                            id="e-amt" type="number" placeholder="0.00"></div>
-                    <div class="form-row"><label class="form-label">Item</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-item"
-                                placeholder="Type or select item" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-item"></div>
+                        <div class="form-row">
+                            <label class="form-label">Amount (₹)</label>
+                            <input class="form-input" id="i-amt" type="number" placeholder="0.00">
                         </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Paid To</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-to"
-                                placeholder="Type or select person" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-to"></div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">Item / Note</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="i-item" placeholder="Item name..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-i-item"></div>
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">Received From</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="i-from" placeholder="Person or store..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-i-from"></div>
+                                </div>
+                            </div>
                         </div>
+                        <div class="form-err" id="i-err"></div>
+                        <button class="btn-primary" id="i-btn" onclick="submitInc()">Save Income</button>
+                        <div class="form-save-tpl" onclick="saveIncTpl()">+ Save as Template</div>
                     </div>
 
-                    <div class="form-row" style="margin-top:16px;">
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                            <label class="form-label" style="margin:0">Split Payments</label>
-                            <button class="add-inline-btn" style="padding:5px 10px;font-size:10px"
-                                onclick="addSplitRow(event)">+ Add Split</button>
+                    <!-- TRANSFER -->
+                    <div class="add-form" id="form-transfer">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">From Account</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="t-from" placeholder="Debit from..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-t-from"></div>
+                                </div>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0">
+                                <label class="form-label">To Account</label>
+                                <div class="form-input-wrap">
+                                    <input class="form-input" id="t-to" placeholder="Credit to..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-t-to"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div id="split-rows-container"></div>
-                        <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
-                            <button class="txn-clr-btn" onclick="splitEqually(event)"
-                                style="padding:6px 12px;font-size:11px;">Split Equally</button>
+                        <div class="form-row">
+                            <label class="form-label">Amount (₹)</label>
+                            <input class="form-input" id="t-amt" type="number" placeholder="0.00">
                         </div>
+                        <div class="form-row">
+                            <label class="form-label">Item / Note</label>
+                            <div class="form-input-wrap">
+                                <input class="form-input" id="t-item" placeholder="Note..." autocomplete="off">
+                                <div class="form-dropdown" id="dd-t-item"></div>
+                            </div>
+                        </div>
+                        <div class="form-err" id="t-err"></div>
+                        <button class="btn-primary" id="t-btn" onclick="submitTr()">Execute Transfer</button>
                     </div>
-
-                    <div class="form-err" id="e-err"></div>
-                    <button class="add-btn" id="e-btn" onclick="submitExp()">Save Expense</button>
-                    <span class="form-save-tpl" id="e-tpl-btn" onclick="saveExpTpl()">+ Save as Template</span>
-                </div>
-                <!-- INCOME -->
-                <div class="add-form" id="form-income">
-                    <div class="form-row"><label class="form-label">Template</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-tpl"
-                                placeholder="Choose template (optional)" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-tpl"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-acc" placeholder="Select account"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-acc"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Category</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-cat"
-                                placeholder="Select or type new category" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-cat"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
-                            id="i-amt" type="number" placeholder="0.00"></div>
-                    <div class="form-row"><label class="form-label">Item</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-item"
-                                placeholder="Type or select item" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-item"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Received From</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-from"
-                                placeholder="Type or select person" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-from"></div>
-                        </div>
-                    </div>
-                    <div class="form-err" id="i-err"></div>
-                    <button class="add-btn" id="i-btn" onclick="submitInc()">Save Income</button>
-                    <span class="form-save-tpl" id="i-tpl-btn" onclick="saveIncTpl()">+ Save as Template</span>
-                </div>
-                <!-- TRANSFER -->
-                <div class="add-form" id="form-transfer">
-                    <div class="form-row"><label class="form-label">From Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-from" placeholder="Debit from"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-t-from"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">To Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-to" placeholder="Credit to"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-t-to"></div>
-                        </div>
-                    </div>
-
-                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
-                            id="t-amt" type="number" placeholder="0.00"></div>
-                    <div class="form-row"><label class="form-label">Note / Item</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-item"
-                                placeholder="Transfer purpose" autocomplete="off">
-                            <div class="form-dropdown" id="dd-t-item"></div>
-                        </div>
-                    </div>
-                    <div class="form-err" id="t-err"></div>
-                    <button class="add-btn" id="t-btn" onclick="submitTr()">Execute Transfer</button>
                 </div>
             </div>
 
-            <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
-                <div class="pg-header">
-                    <div class="pg-title">Accounts</div>
-                    <div class="pg-sub" id="acc-period">—</div>
-                </div>
+                <header class="pg-header">
+                    <h1 class="pg-title">Portfolio Accounts</h1>
+                    <p class="pg-sub" id="acc-period">—</p>
+                </header>
+
                 <div class="stats-row">
                     <div class="stat-tile t-red">
                         <div class="stat-bar"></div>
-                        <div class="s-eye">Total Spent</div>
-                        <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
+                        <div class="s-eye">Monthly Burn</div>
+                        <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">0</span></div>
                     </div>
                     <div class="stat-tile t-blue">
                         <div class="stat-bar"></div>
-                        <div class="s-eye">Daily Average</div>
-                        <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
+                        <div class="s-eye">Avg Daily Velocity</div>
+                        <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">0</span></div>
                     </div>
-                    <div class="stat-tile t-green">
+                    <div class="stat-tile t-green" style="grid-column: span 1;">
                         <div class="stat-bar"></div>
-                        <div class="s-eye">Net Balance</div>
-                        <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
+                        <div class="s-eye">Net Liquid Position</div>
+                        <div class="s-val"><span class="s-rs">₹</span><span id="st-net">0</span></div>
                     </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:24px;">
-                    <div class="acc-cols">
-                        <div>
-                            <div class="acc-sec-top">
-                                <div class="acc-sec-h">Bank Accounts</div><button class="add-inline-btn"
-                                    onclick="showAccForm('BANK')">+ Add</button>
-                            </div>
-                            <div class="acc-list" id="bankList">
-                                <div class="sp-wrap">
-                                    <div class="sp"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="acc-sec-top">
-                                <div class="acc-sec-h">Credit Cards</div><button class="add-inline-btn"
-                                    onclick="showAccForm('CREDIT_CARD')">+ Add</button>
-                            </div>
-                            <div class="acc-list" id="creditList">
-                                <div class="sp-wrap">
-                                    <div class="sp"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="acc-sec-top">
-                            <div class="acc-sec-h">People &amp; Contacts</div><button class="add-inline-btn"
-                                onclick="showAccForm('PERSON')">+ Add</button>
-                        </div>
-                        <div class="acc-list" id="personList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
+
+                <div class="acc-cols" style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+                    <section>
+                        <header class="acc-sec-top">
+                            <h2 class="acc-sec-h">Bank Holdings</h2>
+                            <button class="add-inline-btn" onclick="showAccForm('BANK')">+ Add Account</button>
+                        </header>
+                        <div class="acc-list" id="bankList"></div>
+                    </section>
+                    <section>
+                        <header class="acc-sec-top">
+                            <h2 class="acc-sec-h">Credit Obligations</h2>
+                            <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
+                        </header>
+                        <div class="acc-list" id="creditList"></div>
+                    </section>
+                    <section style="grid-column: 1/-1;">
+                        <header class="acc-sec-top">
+                            <h2 class="acc-sec-h">Lending & People</h2>
+                            <button class="add-inline-btn" onclick="showAccForm('PERSON')">+ Add Person</button>
+                        </header>
+                        <div class="acc-list" id="personList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px;"></div>
+                    </section>
                 </div>
             </div>
 
             <!-- HEATMAP -->
             <div class="page" id="page-heatmap">
-                <div class="pg-header">
-                    <div class="pg-title" id="hm-title">Heatmap</div>
-                    <div class="pg-sub">Click any coloured date to see expenses</div>
-                </div>
-                <div class="card card-p hm-wrap">
+                <header class="pg-header">
+                    <h1 class="pg-title" id="hm-title">Heatmap</h1>
+                    <p class="pg-sub">Historical expense density tracking</p>
+                </header>
+
+                <div class="card card-p">
                     <div class="card-h" id="hm-lbl">—</div>
                     <div class="dcl-row">
-                        <div class="dcl">Sun</div>
-                        <div class="dcl">Mon</div>
-                        <div class="dcl">Tue</div>
-                        <div class="dcl">Wed</div>
-                        <div class="dcl">Thu</div>
-                        <div class="dcl">Fri</div>
-                        <div class="dcl">Sat</div>
+                        <div class="dcl">Sun</div><div class="dcl">Mon</div><div class="dcl">Tue</div>
+                        <div class="dcl">Wed</div><div class="dcl">Thu</div><div class="dcl">Fri</div><div class="dcl">Sat</div>
                     </div>
-                    <div class="cal-grid" id="calGrid">
-                        <div class="sp-wrap" style="grid-column:span 7">
-                            <div class="sp"></div>
-                        </div>
-                    </div>
-                    <div class="hm-legend"><span>Low</span>
-                        <div class="lgd-sw" id="lgdSw"></div><span>High</span>
+                    <div class="cal-grid" id="calGrid"></div>
+                    <div class="hm-legend">
+                        <span>Low Intensity</span>
+                        <div class="lgd-sw" id="lgdSw"></div>
+                        <span>High Intensity</span>
                     </div>
                 </div>
             </div>
 
             <!-- ANALYTICS -->
             <div class="page" id="page-analytics">
-                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+                <header class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
                     <div>
-                        <div class="pg-title">Analytics</div>
-                        <div class="pg-sub" id="ana-period">—</div>
+                        <h1 class="pg-title">Analytics</h1>
+                        <p class="pg-sub" id="ana-period">—</p>
                     </div>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
+                        <label class="form-label" style="margin:0">Look-back</label>
                         <input type="number" id="ana-lookback" class="form-input" style="width:70px; padding:6px 10px;" value="6" min="1" max="24" onchange="updateMoMTrends()">
                     </div>
-                </div>
-                <div class="ana-grid pie-colors">
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Weekly Expenses</div>
-                        <div class="bar-rows" id="weeklyChart">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Category Breakdown</div>
-                        <div class="pie-layout"><canvas id="pieCanvas" width="180" height="180"
-                                style="flex-shrink:0"></canvas>
-                            <div class="pie-leg" id="pieLegend">
-                                <div class="sp-wrap">
-                                    <div class="sp"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Monthly Trends</div>
-                        <div class="bar-rows" id="momChart">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
+                </header>
 
+                <div class="ana-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="card card-p" style="grid-column: 1/-1;">
+                        <div class="card-h">Weekly Distribution</div>
+                        <div class="bar-rows" id="weeklyChart"></div>
+                    </div>
+                    <div class="card card-p">
+                        <div class="card-h">Category Split</div>
+                        <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+                            <canvas id="pieCanvas" width="180" height="180"></canvas>
+                            <div class="pie-leg" id="pieLegend" style="flex:1;"></div>
+                        </div>
+                    </div>
+                    <div class="card card-p">
+                        <div class="card-h">Monthly Volume Trends</div>
+                        <div class="bar-rows" id="momChart"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- LEDGER -->
             <div class="page" id="page-ledger">
-                <div class="ldr-hdr">
-                    <div class="ldr-title" id="ldrTitle">Account Ledger</div>
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                        <div class="ldr-sel-wrap"><span class="ldr-sel-lbl">Account</span><select class="ldr-sel"
-                                id="ldrAccSel" onchange="loadLedger()">
-                                <option value="">— select —</option>
-                            </select></div>
-                        <button class="add-inline-btn" id="ldr-pdf-btn" onclick="downloadLedgerPDF()"
-                            title="Download PDF" style="display:none">⬇ PDF</button>
+                <header class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div>
+                        <h1 class="pg-title" id="ldrTitle">Account Ledger</h1>
+                        <p class="pg-sub">Detailed transaction trail for selected account</p>
                     </div>
-                </div>
+                    <div class="ldr-sel-wrap">
+                        <span class="ldr-sel-lbl">Account</span>
+                        <select class="ldr-sel" id="ldrAccSel" onchange="loadLedger()">
+                            <option value="">— Select Account —</option>
+                        </select>
+                        <button class="add-inline-btn" id="ldr-pdf-btn" onclick="downloadLedgerPDF()" style="display:none; padding:8px 12px; font-size:11px;">⬇ Download PDF</button>
+                    </div>
+                </header>
+
                 <div class="ldr-stats">
                     <div class="ldr-stat">
-                        <div class="ldr-stat-lbl">Total Spent</div>
-                        <div class="ldr-stat-val" id="ls-spent">—</div>
+                        <div class="ldr-stat-lbl">Aggregate Debit</div>
+                        <div class="ldr-stat-val" id="ls-spent">0</div>
                     </div>
                     <div class="ldr-stat">
-                        <div class="ldr-stat-lbl">Transactions</div>
-                        <div class="ldr-stat-val" id="ls-count">—</div>
+                        <div class="ldr-stat-lbl">Entry Count</div>
+                        <div class="ldr-stat-val" id="ls-count">0</div>
                     </div>
                     <div class="ldr-stat">
-                        <div class="ldr-stat-lbl">Closing Balance</div>
-                        <div class="ldr-stat-val" id="ls-bal">—</div>
+                        <div class="ldr-stat-lbl">Estimated Balance</div>
+                        <div class="ldr-stat-val" id="ls-bal">0</div>
                     </div>
                 </div>
-                <div class="card" id="ldrTblWrap">
-                    <div class="sp-wrap">
-                        <div class="sp"></div>
-                    </div>
-                </div>
+
+                <div class="table-wrap" id="ldrTblWrap"></div>
             </div>
 
             <!-- TRANSACTIONS -->
             <div class="page" id="page-transactions">
-                <div class="pg-header">
-                    <div class="pg-title">Transactions</div>
-                    <div class="pg-sub">Click to edit · Double-click to delete</div>
+                <header class="pg-header">
+                    <h1 class="pg-title">Transactions</h1>
+                    <p class="pg-sub">Historical record of all activities</p>
+                </header>
+
+                <div class="stats-row" style="margin-bottom:16px">
+                    <div class="stat-tile">
+                        <div class="s-eye">Total Items</div>
+                        <div class="s-val" id="txn-stat-total">0</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="s-eye">Total Spend</div>
+                        <div class="s-val" id="txn-stat-spent">0</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="s-eye">Total Income</div>
+                        <div class="s-val" id="txn-stat-income">0</div>
+                    </div>
                 </div>
-                <div class="ldr-stats" style="margin-bottom:16px">
-                    <div class="ldr-stat">
-                        <div class="ldr-stat-lbl">Showing</div>
-                        <div class="ldr-stat-val" id="txn-stat-total">—</div>
-                    </div>
-                    <div class="ldr-stat">
-                        <div class="ldr-stat-lbl">Total Spent</div>
-                        <div class="ldr-stat-val" id="txn-stat-spent">—</div>
-                    </div>
-                    <div class="ldr-stat">
-                        <div class="ldr-stat-lbl">Total Income</div>
-                        <div class="ldr-stat-val" id="txn-stat-income">—</div>
-                    </div>
-                </div>
-                <div class="card card-p" style="margin-bottom:16px;overflow:visible;position:relative;z-index:10;">
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
-                        <div>
-                            <label class="form-label">Search</label>
-                            <input class="txn-search-inp" id="txn-search" placeholder="Search transactions…"
-                                oninput="filterTxns()">
+
+                <div class="card card-p" style="overflow:visible; z-index:10; margin-bottom:16px;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:16px;">
+                        <div class="form-row" style="margin:0">
+                            <label class="form-label">Keyword Search</label>
+                            <input class="txn-search-inp" id="txn-search" placeholder="Search by item, person..." oninput="filterTxns()">
                         </div>
-                        <div>
-                            <label class="form-label">Date Range <a href="#" onclick="clearDateRange();return false;"
-                                    style="float:right;color:var(--t2);text-decoration:none">Clear</a></label>
-                            <div style="display:flex;gap:6px">
-                                <input class="txn-date-inp" type="date" id="txn-date-from" onchange="filterTxns()"
-                                    style="flex:1">
-                                <input class="txn-date-inp" type="date" id="txn-date-to" onchange="filterTxns()"
-                                    style="flex:1">
+                        <div class="form-row" style="margin:0">
+                            <label class="form-label">Temporal Range</label>
+                            <div style="display:flex; gap:6px">
+                                <input class="txn-date-inp" type="date" id="txn-date-from" onchange="filterTxns()">
+                                <input class="txn-date-inp" type="date" id="txn-date-to" onchange="filterTxns()">
                             </div>
                         </div>
                     </div>
-                    <div
-                        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px;">
-                        <div class="txn-msel-wrap" id="msel-type-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('type')"><span id="msel-type-label">All
-                                    Types</span><span class="txn-msel-caret">▾</span></div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px;">
+                        <div class="txn-msel-wrap" id="msel-type-wrap" onclick="toggleMsel('type')">
+                            <div class="txn-msel-trigger"><span id="msel-type-label">All Filter</span> ▾</div>
                             <div class="txn-msel-dd" id="msel-type-dd" style="display:none"></div>
                         </div>
-                        <div class="txn-msel-wrap" id="msel-account-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('account')"><span
-                                    id="msel-account-label">All Accounts</span><span class="txn-msel-caret">▾</span>
-                            </div>
+                        <div class="txn-msel-wrap" id="msel-account-wrap" onclick="toggleMsel('account')">
+                            <div class="txn-msel-trigger"><span id="msel-account-label">All Accounts</span> ▾</div>
                             <div class="txn-msel-dd" id="msel-account-dd" style="display:none"></div>
                         </div>
-                        <div class="txn-msel-wrap" id="msel-cat-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('cat')"><span id="msel-cat-label">All
-                                    Categories</span><span class="txn-msel-caret">▾</span></div>
+                        <div class="txn-msel-wrap" id="msel-cat-wrap" onclick="toggleMsel('cat')">
+                            <div class="txn-msel-trigger"><span id="msel-cat-label">All Categories</span> ▾</div>
                             <div class="txn-msel-dd" id="msel-cat-dd" style="display:none"></div>
                         </div>
-                        <div class="txn-msel-wrap" id="msel-item-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('item')"><span id="msel-item-label">All
-                                    Items</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-item-dd" style="display:none"></div>
-                        </div>
-                        <div class="txn-msel-wrap" id="msel-tofrom-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('tofrom')"><span
-                                    id="msel-tofrom-label">All To/From</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-tofrom-dd" style="display:none"></div>
-                        </div>
-                        <button class="txn-clr-btn" onclick="clearAllFilters()">Reset Filters</button>
+                        <button class="btn-primary" onclick="clearAllFilters()" style="padding:10px; width:auto; background:#eee; color:#000;">Reset Filters</button>
                     </div>
                 </div>
-                <div class="card" id="txnListWrap">
-                    <div class="sp-wrap">
-                        <div class="sp"></div>
-                    </div>
-                </div>
+
+                <div class="table-wrap" id="txnListWrap"></div>
             </div>
 
             <!-- MANAGE -->
-            <div class="page" id="page-manage">
-                <div class="pg-header">
-                    <div class="pg-title">Manage</div>
-                    <div class="pg-sub">Categories, Items &amp; People</div>
-                </div>
-                <div class="add-tabs" style="margin-bottom:22px">
-                    <div class="add-tab active" id="mtab-categories" onclick="switchMgmtTab('categories',this)">
-                        Categories</div>
-                    <div class="add-tab" id="mtab-items" onclick="switchMgmtTab('items',this)">Items</div>
-                    <div class="add-tab" id="mtab-people" onclick="switchMgmtTab('people',this)">People</div>
-                </div>
-                <div class="mgmt-panel active" id="mpanel-categories">
-                    <div class="mgmt-section" style="margin-bottom:20px">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Add Category</div><button class="add-inline-btn"
-                                onclick="showMiniForm('cat-add')">+ Add</button>
-                        </div>
-                        <div class="mini-form" id="cat-add">
-                            <div class="mini-form-row"><input class="mini-input" id="cat-add-name"
-                                    placeholder="Category name"><select class="mini-select" id="cat-add-type">
-                                    <option value="EXPENSE">Expense</option>
-                                    <option value="INCOME">Income</option>
-                                </select><button class="mini-save-btn" onclick="doAddCategory()">Save</button><button
-                                    class="mini-cancel-btn" onclick="hideMiniForm('cat-add')">✕</button></div>
-                        </div>
-                    </div>
-                    <div class="mgmt-section" style="margin-bottom:20px">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Expense Categories</div>
-                        </div>
-                        <div class="mgmt-list" id="catListExpense">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mgmt-section">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Income Categories</div>
-                        </div>
-                        <div class="mgmt-list" id="catListIncome">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
+
+                <div class="page" id="page-manage">
+                <header class="pg-header">
+                    <h1 class="pg-title">Data Management</h1>
+                    <p class="pg-sub">Manage your categories, items, and contacts</p>
+                </header>
+
+                <div class="card card-p" style="margin-bottom:24px">
+                    <div class="card-h">Expense Categories</div>
+                    <div class="cat-grid" id="catListExpense"></div>
+                    <div class="mini-form show" id="cat-add" style="margin-top:20px; border:1px solid #eee">
+                        <div class="mini-form-row">
+                    <input class="mini-input" id="cat-add-name" placeholder="New category name...">
+                            <select class="mini-select" id="cat-add-type">
+                                <option value="EXPENSE">Expense</option>
+                                <option value="INCOME">Income</option>
+                            </select>
+                            <button class="btn-primary" onclick="doAddCategory()" style="width:70px; font-size:11px; padding:6px">Save</button>
                         </div>
                     </div>
                 </div>
-                <div class="mgmt-panel" id="mpanel-items" style="display:none">
-                    <div class="mgmt-section">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Items</div><button class="add-inline-btn"
-                                onclick="showMiniForm('item-add')">+ Add</button>
-                        </div>
-                        <div class="mini-form" id="item-add">
-                            <div class="mini-form-row"><input class="mini-input" id="item-add-val"
-                                    placeholder="Item name"><button class="mini-save-btn"
-                                    onclick="doAddItem()">Save</button><button class="mini-cancel-btn"
-                                    onclick="hideMiniForm('item-add')">✕</button></div>
-                        </div>
-                        <div class="mgmt-list" id="itemList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
+
+                <div class="card card-p" style="margin-bottom:24px">
+                    <div class="card-h">Income Categories</div>
+                    <div class="cat-grid" id="catListIncome"></div>
+                </div>
+
+                <div class="card card-p" style="margin-bottom:24px">
+                    <div class="card-h">Frequently Used Items</div>
+                    <div class="cat-grid" id="itemList"></div>
+                    <div class="mini-form show" id="item-add" style="margin-top:20px; border:1px solid #eee">
+                        <div class="mini-form-row">
+                            <input class="mini-input" id="item-add-val" placeholder="New item name...">
+                            <button class="btn-primary" onclick="doAddItem()" style="width:70px; font-size:11px; padding:6px">Save</button>
                         </div>
                     </div>
                 </div>
-                <div class="mgmt-panel" id="mpanel-people" style="display:none">
-                    <div class="mgmt-section">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">People / To &amp; From</div><button class="add-inline-btn"
-                                onclick="showMiniForm('person-add')">+ Add</button>
-                        </div>
-                        <div class="mini-form" id="person-add">
-                            <div class="mini-form-row"><input class="mini-input" id="person-add-val"
-                                    placeholder="Person / store name"><button class="mini-save-btn"
-                                    onclick="doAddPerson()">Save</button><button class="mini-cancel-btn"
-                                    onclick="hideMiniForm('person-add')">✕</button></div>
-                        </div>
-                        <div class="mgmt-list" id="personMgmtList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
+
+                <div class="card card-p">
+                    <div class="card-h">Contacts & People</div>
+                    <div class="cat-grid" id="personMgmtList"></div>
+                    <div class="mini-form show" id="person-add" style="margin-top:20px; border:1px solid #eee">
+                        <div class="mini-form-row">
+                            <input class="mini-input" id="person-add-val" placeholder="Person / store name...">
+                            <button class="btn-primary" onclick="doAddPerson()" style="width:70px; font-size:11px; padding:6px">Save</button>
                         </div>
                     </div>
                 </div>
@@ -3426,80 +3329,69 @@
 
             <!-- TEMPLATES -->
             <div class="page" id="page-templates">
-                <div class="pg-header">
-                    <div class="pg-title">Templates</div>
-                    <div class="pg-sub">Manage saved expense &amp; income templates</div>
-                </div>
-                <div class="mgmt-section" style="margin-bottom:14px">
-                    <div class="mgmt-sec-hdr">
-                        <div class="mgmt-sec-title">Add New Template</div>
-                    </div>
-                    <div class="mini-form show" style="margin-bottom:0">
-                        <div class="mini-form-row" style="margin-bottom:7px">
+                <header class="pg-header">
+                    <h1 class="pg-title">Smart Templates</h1>
+                    <p class="pg-sub">Recurring transaction presets for rapid data entry</p>
+                </header>
+
+                <div class="card card-p" style="margin-bottom:24px">
+                    <div class="card-h">Create New Template</div>
+                    <div class="mini-form show" style="border:1px solid #eee">
+                        <div class="mini-form-row">
                             <select class="mini-select" id="tpl-add-type">
                                 <option value="EXPENSE">Expense</option>
                                 <option value="INCOME">Income</option>
                             </select>
-                            <input class="mini-input" id="tpl-add-name" placeholder="Template name (item)">
+                            <input class="mini-input" id="tpl-add-name" placeholder="Friendly Name">
                             <input class="mini-input" id="tpl-add-acc" placeholder="Account">
                             <input class="mini-input" id="tpl-add-cat" placeholder="Category">
                         </div>
-                        <div class="mini-form-row">
-                            <input class="mini-input" id="tpl-add-item" placeholder="Item">
-                            <input class="mini-input" id="tpl-add-amt" placeholder="Amount" type="number">
+                        <div class="mini-form-row" style="margin-top:8px">
+                            <input class="mini-input" id="tpl-add-item" placeholder="Item/Label">
+                            <input class="mini-input" id="tpl-add-amt" placeholder="Amount (₹)" type="number">
                             <input class="mini-input" id="tpl-add-to" placeholder="To/From">
-                            <button class="mini-save-btn" onclick="doAddTemplate()">Save</button>
+                            <button class="btn-primary" onclick="doAddTemplate()" style="width:70px; font-size:11px; padding:6px">Save</button>
                         </div>
                     </div>
                 </div>
-                <div id="tplList">
-                    <div class="sp-wrap">
-                        <div class="sp"></div>
-                    </div>
-                </div>
+
+                <div class="tpl-grid" id="tplList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:16px;"></div>
             </div>
 
             <!-- IMPORT DATA -->
             <div class="page" id="page-import">
-                <div class="pg-header">
-                    <div class="pg-title">Import from Google Sheets</div>
-                    <div class="pg-sub">Paste CSV exported from your Expense Tracker Google Sheet</div>
-                </div>
-                <div class="card card-p" style="max-width:740px">
-                    <div class="card-h">Export Instructions</div>
-                    <div class="import-hint">
-                        1. In your Google Sheet, go to <b>File → Download → CSV (.csv)</b><br>
-                        2. Open the downloaded file in a text editor and copy all content<br>
-                        3. Paste below. Your sheet columns (any order):<br>
-                        <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM · CLOSING BALANCE (optional)</code><br><br>
-                        <b>Date formats accepted:</b> DD/MM/YYYY, DD/MM/YYYY HH:MM:SS, YYYY-MM-DD<br>
-                        <b>Amount:</b> negative = expense (e.g. -399.42), positive = income<br>
-                        <b>Note:</b> ₹ symbol, commas in numbers, and closing balance column are handled
-                        automatically.<br>
-                        <b>After import:</b> All unique accounts, categories, items &amp; people are auto-created in
-                        Manage.
+                <header class="pg-header">
+                    <h1 class="pg-title">Bulk Import</h1>
+                    <p class="pg-sub">Ingest transaction data via CSV payload</p>
+                </header>
+
+                <div class="card card-p">
+                    <div class="card-h">CSV Engine</div>
+                    <div class="import-hint" style="margin-bottom:20px; font-size:11px; opacity:0.7; border-left: 2px solid #000; padding-left:12px;">
+                        Accepted Columns: DATE, ACCOUNT, CATEGORY, ITEM, AMOUNT, TO/FROM.<br>
+                        Format: DD/MM/YYYY or YYYY-MM-DD. Amounts: Negative for Expenses, Positive for Income.
                     </div>
-                    <div class="form-row" style="margin-bottom:14px;">
-                        <label class="form-label">Import Type</label>
+                    
+                    <div class="form-row">
+                        <label class="form-label">Data Schema</label>
                         <select id="import-type-sel" class="form-input" style="cursor:pointer" onchange="clearImport()">
-                            <option value="TXN">Transactions (Date, Account, Category, Item, Amount, To/From)</option>
-                            <option value="TPL">Templates (Type, Name, Account, Category, Item, Amount, To/From)
-                            </option>
+                            <option value="TXN">Historical Transactions</option>
+                            <option value="TPL">Smart Templates</option>
                         </select>
                     </div>
+
                     <div class="form-row">
-                        <label class="form-label">CSV Data</label>
-                        <textarea id="import-csv" class="form-input" rows="10" placeholder="Paste your CSV here…"
-                            style="resize:vertical;font-family:'Courier Prime',monospace;font-size:12px;line-height:1.5"></textarea>
+                        <label class="form-label">Raw CSV Input</label>
+                        <textarea id="import-csv" class="form-input" rows="8" placeholder="Paste CSV rows here..." style="font-family:'Courier Prime',monospace; font-size:11px;"></textarea>
                     </div>
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-                        <button class="add-btn" onclick="previewImport()" style="max-width:170px">Preview
-                            Import</button>
-                        <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
-                            style="max-width:210px;display:none">✓ Import to Firebase</button>
-                        <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
+
+                    <div style="display:flex; align-items:center; gap:12px; margin-top:20px;">
+                        <button class="btn-primary" onclick="previewImport()" style="width:auto; padding:0 24px;">Analyze Data</button>
+                        <button class="btn-primary" id="import-execute-btn" onclick="executeImport()" style="width:auto; padding:0 24px; display:none; background:var(--green); border-color:var(--green);">Commit to Ledger</button>
+                        <button class="btn-primary" onclick="clearImport()" style="width:auto; padding:0 24px; background:#eee; color:#000; border-color:#eee;">Reset</button>
                     </div>
-                    <div id="import-preview" style="margin-top:14px"></div>
+
+                    <div id="import-preview" style="margin-top:20px"></div>
                 </div>
             </div>
 
@@ -3509,111 +3401,140 @@
     <!-- MODALS -->
     <div class="modal-ov" id="personModal" onclick="if(event.target===this)closeM('personModal')">
         <div class="modal-box">
-            <div class="modal-hd">
+            <header class="modal-hd">
                 <div>
-                    <div class="mhd-name" id="pm-name">—</div>
-                    <div class="mhd-sub">Transfer entries</div>
+                    <h2 class="mhd-name" id="pm-name">—</h2>
+                    <p class="mhd-sub">Person / Entity Details</p>
                 </div>
                 <div class="mhd-right">
                     <div class="mhd-total">
-                        <div class="mhd-amt" id="pm-bal">₹0</div>
-                        <div class="mhd-albl">Balance</div>
-                    </div><button class="m-close" onclick="closeM('personModal')">✕</button>
+                        <div class="mhd-amt" id="pm-bal">₹0.00</div>
+                        <div class="mhd-albl">Net Balance</div>
+                    </div>
+                    <button class="m-close" onclick="closeM('personModal')">✕</button>
                 </div>
-            </div>
+            </header>
             <div class="modal-bd" id="pm-body"></div>
         </div>
     </div>
+
     <div class="modal-ov" id="dayModal" onclick="if(event.target===this)closeM('dayModal')">
         <div class="modal-box">
-            <div class="modal-hd">
+            <header class="modal-hd">
                 <div>
-                    <div class="mhd-name" id="dm-title">—</div>
-                    <div class="mhd-sub">Expenses on this day</div>
+                    <h2 class="mhd-name" id="dm-title">—</h2>
+                    <p class="mhd-sub">Daily Ledger Activity</p>
                 </div>
                 <div class="mhd-right">
                     <div class="mhd-total">
-                        <div class="mhd-amt" id="dm-total">₹0</div>
-                        <div class="mhd-albl">Total</div>
-                    </div><button class="m-close" onclick="closeM('dayModal')">✕</button>
+                        <div class="mhd-amt" id="dm-total">₹0.00</div>
+                        <div class="mhd-albl">Daily Burn</div>
+                    </div>
+                    <button class="m-close" onclick="closeM('dayModal')">✕</button>
                 </div>
-            </div>
+            </header>
             <div class="modal-bd" id="dm-body"></div>
         </div>
     </div>
+
     <div class="modal-ov" id="catModal" onclick="if(event.target===this)closeM('catModal')">
         <div class="modal-box">
-            <div class="modal-hd">
+            <header class="modal-hd">
                 <div>
-                    <div class="mhd-name" id="cm-title">—</div>
-                    <div class="mhd-sub">Expenses in this category</div>
+                    <h2 class="mhd-name" id="cm-title">—</h2>
+                    <p class="mhd-sub">Category-wise Drilldown</p>
                 </div>
                 <div class="mhd-right">
                     <div class="mhd-total">
-                        <div class="mhd-amt" id="cm-total">₹0</div>
-                        <div class="mhd-albl">Total</div>
-                    </div><button class="m-close" onclick="closeM('catModal')">✕</button>
+                        <div class="mhd-amt" id="cm-total">₹0.00</div>
+                        <div class="mhd-albl">Total Velocity</div>
+                    </div>
+                    <button class="m-close" onclick="closeM('catModal')">✕</button>
                 </div>
-            </div>
+            </header>
             <div class="modal-bd" id="cm-body"></div>
         </div>
     </div>
+
     <div class="modal-ov" id="accModal" onclick="if(event.target===this)closeM('accModal')">
-        <div class="modal-box">
-            <div class="modal-hd">
-                <div>
-                    <div class="mhd-name" id="acc-modal-title">Add Account</div>
-                </div><button class="m-close" onclick="closeM('accModal')">✕</button>
-            </div>
-            <div style="padding:20px 24px 24px">
-                <div class="form-row"><label class="form-label">Account Name</label><input class="form-input"
-                        id="acc-m-name" placeholder="e.g. HDFC BANK"></div>
-                <div class="form-row"><label class="form-label">Opening Balance (₹)</label><input class="form-input"
-                        id="acc-m-bal" type="number" placeholder="0.00"></div>
-                <div class="form-row"><label class="form-label">Type</label><select class="form-input" id="acc-m-type"
-                        style="cursor:pointer">
-                        <option value="BANK">Bank / Wallet</option>
-                        <option value="PERSON">Person</option>
-                        <option value="CREDIT_CARD">Credit Card</option>
-                    </select></div>
+        <div class="modal-box modal-sm">
+            <header class="modal-hd">
+                <h2 class="mhd-name" id="acc-modal-title">Configure Account</h2>
+                <button class="m-close" onclick="closeM('accModal')">✕</button>
+            </header>
+            <div class="modal-form-bd">
+                <div class="form-row">
+                    <label class="form-label">Internal Identifier</label>
+                    <input class="form-input" id="acc-m-name" placeholder="Bank Name / Card Label">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Seed Balance (₹)</label>
+                    <input class="form-input" id="acc-m-bal" type="number" placeholder="0.00">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Asset Classification</label>
+                    <select class="form-input" id="acc-m-type" style="cursor:pointer">
+                        <option value="BANK">Bank Account / Liquid Wallet</option>
+                        <option value="CREDIT_CARD">Liability / Credit Card</option>
+                        <option value="PERSON">Entity / Person (Lending)</option>
+                    </select>
+                </div>
                 <input type="hidden" id="acc-m-id">
-                <button class="add-btn" onclick="saveAccountModal()">Save Account</button>
+                <button class="btn-primary" onclick="saveAccountModal()" style="margin-top:12px">Commit Changes</button>
             </div>
         </div>
     </div>
+
     <div class="modal-ov" id="editModal" onclick="if(event.target===this)closeM('editModal')">
         <div class="modal-box">
-            <div class="modal-hd">
-                <div>
-                    <div class="mhd-name" id="edit-modal-title">Edit</div>
-                </div><button class="m-close" onclick="closeM('editModal')">✕</button>
-            </div>
-            <div style="padding:20px 24px 24px" id="edit-modal-body"></div>
+            <header class="modal-hd">
+                <h2 class="mhd-name" id="edit-modal-title">Modify Record</h2>
+                <button class="m-close" onclick="closeM('editModal')">✕</button>
+            </header>
+            <div class="modal-bd" id="edit-modal-body"></div>
         </div>
     </div>
+
     <div class="modal-ov" id="txnEditModal" onclick="if(event.target===this)closeM('txnEditModal')">
         <div class="modal-box">
-            <div class="modal-hd">
+            <header class="modal-hd">
                 <div>
-                    <div class="mhd-name">Edit Transaction</div>
-                    <div class="mhd-sub" id="txn-edit-sub">—</div>
-                </div><button class="m-close" onclick="closeM('txnEditModal')">✕</button>
-            </div>
-            <div style="padding:20px 24px 24px;overflow-y:auto">
+                    <h2 class="mhd-name">Audit Transaction</h2>
+                    <p class="mhd-sub" id="txn-edit-sub">—</p>
+                </div>
+                <button class="m-close" onclick="closeM('txnEditModal')">✕</button>
+            </header>
+            <div class="modal-form-bd">
                 <input type="hidden" id="txn-edit-id">
-                <div class="form-row"><label class="form-label">Date</label><input class="form-input" id="txn-edit-date"
-                        type="date"></div>
-                <div class="form-row"><label class="form-label">Account</label><input class="form-input"
-                        id="txn-edit-acc"></div>
-                <div class="form-row"><label class="form-label">Category</label><input class="form-input"
-                        id="txn-edit-cat"></div>
-                <div class="form-row"><label class="form-label">Item</label><input class="form-input"
-                        id="txn-edit-item"></div>
-                <div class="form-row"><label class="form-label">Amount (negative = expense)</label><input
-                        class="form-input" id="txn-edit-amt" type="number"></div>
-                <div class="form-row"><label class="form-label">To / From</label><input class="form-input"
-                        id="txn-edit-tofrom"></div>
-                <button class="add-btn" onclick="saveTxnEdit()">Save Changes</button>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div class="form-row" style="margin:0">
+                        <label class="form-label">Timestamp</label>
+                        <input class="form-input" id="txn-edit-date" type="date">
+                    </div>
+                    <div class="form-row" style="margin:0">
+                        <label class="form-label">Internal Account</label>
+                        <input class="form-input" id="txn-edit-acc">
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div class="form-row" style="margin:0">
+                        <label class="form-label">Class</label>
+                        <input class="form-input" id="txn-edit-cat">
+                    </div>
+                    <div class="form-row" style="margin:0">
+                        <label class="form-label">Velocity (₹)</label>
+                        <input class="form-input" id="txn-edit-amt" type="number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Label / Item</label>
+                    <input class="form-input" id="txn-edit-item">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Counterparty / Store</label>
+                    <input class="form-input" id="txn-edit-tofrom">
+                </div>
+                <button class="btn-primary" onclick="saveTxnEdit()" style="margin-top:12px">Commit Modifications</button>
             </div>
         </div>
     </div>
@@ -3637,8 +3558,8 @@
         const MO_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const MO_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        // Greyscale pie colors
-        const PC = ['#0a0a0a', '#222222', '#3a3a3a', '#555555', '#6e6e6e', '#888888', '#9e9e9e', '#b4b4b4', '#c6c6c6', '#d6d6d6', '#e4e4e4', '#eeeeee'];
+        // Expressive monochromatic palette
+        const PC = ['#000000', '#1a1a1a', '#333333', '#4d4d4d', '#666666', '#808080', '#999999', '#b3b3b3', '#cccccc', '#e6e6e6'];
         const PAGE_ORDER = ['add', 'accounts', 'heatmap', 'analytics', 'ledger', 'transactions', 'manage', 'templates', 'import'];
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
@@ -3659,8 +3580,9 @@
         function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
         /* ═══ AUTH ═══ */
+        /* ═══ AUTH ═══ */
         function switchAuthTab(tab) {
-            document.querySelectorAll('.auth-pill').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.auth-tab').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(x => x.classList.remove('active'));
             document.getElementById('atab-' + tab).classList.add('active');
             document.getElementById('aform-' + tab).classList.add('active');
@@ -3820,26 +3742,57 @@
         function renderAccounts(accs, total, avg) {
             cntUp('st-spent', total); cntUp('st-avg', avg);
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
-            document.getElementById('bankList').innerHTML = accs.filter(a => a.type === 'BANK').map((a, i) => accHTML(a, i, 'bank')).join('') || '<div class="empty-s">No bank accounts</div>';
-            document.getElementById('creditList').innerHTML = accs.filter(a => a.type === 'CREDIT_CARD').map((a, i) => accHTML(a, i, 'credit')).join('') || '<div class="empty-s">No credit cards</div>';
-            document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No contacts</div>';
+            document.getElementById('bankList').innerHTML = accs.filter(a => a.type === 'BANK').map((a, i) => accHTML(a, i, 'bank')).join('') || '<div class="empty-s">No active bank accounts</div>';
+            document.getElementById('creditList').innerHTML = accs.filter(a => a.type === 'CREDIT_CARD').map((a, i) => accHTML(a, i, 'credit')).join('') || '<div class="empty-s">No credit obligations</div>';
+            document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No lending contacts</div>';
         }
         function bkEmo(n) { n = n.toUpperCase(); if (n.includes('HDFC')) return 'H'; if (n.includes('ICICI')) return 'I'; if (n.includes('AXIS')) return 'A'; if (n.includes('SBI')) return 'S'; if (n.includes('WALLET')) return 'W'; if (n.includes('CREDIT')) return 'C'; if (n.includes('CASH')) return '$'; return 'B'; }
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = accKind === 'credit';
             const emo = isPerson ? (a.name || '?').charAt(0).toUpperCase() : bkEmo(a.name);
-            let balHTML = '';
-            if (a.type === 'CREDIT_CARD') {
+            let balLine = `
+                <div class="acc-entry-row">
+                    <div class="acc-entry-lbl">Current Balance</div>
+                    <div class="acc-entry-val ${a.currentBalance < 0 ? 'neg' : 'pos'}">${rs(a.currentBalance || 0)}</div>
+                </div>
+            `;
+            
+            if (isCredit) {
                 const limit = a.openingBalance || 0;
                 const spent = limit - (a.currentBalance || 0);
                 const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
-                return '<div class="card card-p clickable cc-ui-card" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + (a.currentBalance || 0) + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's; background: linear-gradient(135deg, var(--dark), #333, var(--black)); color: #f0efe9; position: relative; margin-bottom: 12px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; border-radius: var(--r-xl);" onclick="accItemClick(this)"><div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;"></div><div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none;"></div><div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1;"><div style="font-size: 16px; font-weight: 700; letter-spacing: 2px;">' + escH(a.name) + '</div><div class="acc-acts" onclick="event.stopPropagation()" style="background: rgba(0,0,0,0.6); padding: 4px; border-radius: var(--r-sm); margin-left: auto;"><button class="act-btn" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="editAccEl(this.closest(\'.cc-ui-card\'))">🖌</button><button class="act-btn del" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="deleteAccEl(this.closest(\'.cc-ui-card\'))">🗑</button></div></div><div style="margin-top: 10px; position: relative; z-index: 1;"><div style="font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Limit Left / Total Limit</div><div style="font-size: 22px; font-weight: 700;">' + rs(a.currentBalance || 0) + ' <span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.6);">/ ' + fmt(limit) + '</span></div></div><div style="margin-top: 16px; position: relative; z-index: 1;"><div style="display: flex; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,0.8); margin-bottom: 5px; font-weight: 700;"><span>Utilized: ' + pct.toFixed(1) + '%</span><span>Spent: ' + rs(spent) + '</span></div><div style="height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.2);"><div style="position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: linear-gradient(90deg, #ff4e50, #f9d423); border-radius: 3px;"></div></div></div></div>';
-            } else {
-                const pos = (a.currentBalance || 0) >= 0;
-                balHTML = '<div class="acc-bal ' + (pos ? 'pos' : 'neg') + '">' + rs(a.currentBalance || 0) + '</div>';
+                balLine = `
+                    <div class="acc-entry-row">
+                        <div class="acc-entry-lbl">Available Limit</div>
+                        <div class="acc-entry-val pos">${rs(a.currentBalance || 0)}</div>
+                    </div>
+                    <div class="acc-meter-wrap">
+                        <div class="acc-meter-bar" style="width:${pct}%"></div>
+                    </div>
+                    <div class="acc-entry-row" style="margin-top:4px; opacity:0.6; font-size:9px;">
+                        <div>Utilized: ${pct.toFixed(0)}%</div>
+                        <div>Total: ${fmt(limit)}</div>
+                    </div>
+                `;
             }
-            return '<div class="acc-item clickable" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + (a.currentBalance || 0) + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's" onclick="accItemClick(this)">' + '<div class="acc-bar ' + accKind + '"></div>' + '<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">' + emo + '</div>' + '<div class="acc-name">' + escH(a.name) + '</div>' + balHTML + (isPerson ? '<div class="acc-chev">›</div>' : '') + '<div class="acc-acts" onclick="event.stopPropagation()">' + '<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>' + '<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\'))">✕</button>' + '</div></div>';
+
+            return `
+                <div class="card card-p acc-card clickable" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" onclick="accItemClick(this)" style="animation-delay:${i * 0.05}s">
+                    <div class="acc-card-top">
+                        <div class="acc-ico">${emo}</div>
+                        <div class="acc-info">
+                            <div class="acc-name">${escH(a.name)}</div>
+                            <div class="acc-type-lbl">${a.type.replace('_', ' ')}</div>
+                        </div>
+                        <div class="acc-acts" onclick="event.stopPropagation()">
+                            <button class="act-btn" onclick="editAccEl(this.closest('.acc-card'))">✎</button>
+                            <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-card'))">✕</button>
+                        </div>
+                    </div>
+                    ${balLine}
+                </div>
+            `;
         }
         window.accItemClick = function (el) {
             const kind = el.dataset.kind;
@@ -3916,15 +3869,15 @@
                 return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
                     '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
                     '<div class="br-track-wrap">' +
-                        '<div class="br-track" style="flex:1">' +
-                            (d.total > 0 ? '<span class="br-val-base">' + rs(d.total) + '</span>' : '') +
-                            '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                                (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total) + '</span>' : '') +
-                            '</div>' +
-                        '</div>' +
-                        '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
+                    '<div class="br-track" style="flex:1">' +
+                    (d.total > 0 ? '<span class="br-val-base">' + rs(d.total) + '</span>' : '') +
+                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
+                    (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total) + '</span>' : '') +
                     '</div>' +
-                '</div>';
+                    '</div>' +
+                    '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
+                    '</div>' +
+                    '</div>';
             }).join('');
         }
 
@@ -3936,28 +3889,54 @@
                 return '<div class="br-item" style="animation-delay:' + (i * 0.08) + 's">' +
                     '<div class="br-lbl">' + w.label + '</div>' +
                     '<div class="br-track-wrap">' +
-                        '<div class="br-track">' +
-                            (w.total > 0 ? '<span class="br-val-base">' + rs(w.total) + '</span>' : '') +
-                            '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                                (w.total > 0 ? '<span class="br-val-fill">' + rs(w.total) + '</span>' : '') +
-                            '</div>' +
-                        '</div>' +
+                    '<div class="br-track">' +
+                    (w.total > 0 ? '<span class="br-val-base">' + rs(w.total) + '</span>' : '') +
+                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
+                    (w.total > 0 ? '<span class="br-val-fill">' + rs(w.total) + '</span>' : '') +
+                    '</div>' +
+                    '</div>' +
                     '</div></div>';
             }).join('');
         }
         function renderPie(cats) {
-            if (!cats || !cats.length) { document.getElementById('pieLegend').innerHTML = '<div class="empty-s">No data</div>'; return; }
+            if (!cats || !cats.length) { document.getElementById('pieLegend').innerHTML = '<div class="empty-s">No ledger data</div>'; return; }
             const total = cats.reduce((s, c) => s + c.total, 0);
             const cv = document.getElementById('pieCanvas'), ctx = cv.getContext('2d');
-            const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 6, iR = R * 0.5;
+            const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 4, iR = R * 0.65;
             let sl = [], sa = -Math.PI / 2;
             cats.forEach((c, i) => { const a = (c.total / total) * 2 * Math.PI; sl.push({ s: sa, e: sa + a, col: PC[i % PC.length] }); sa += a; });
             ctx.clearRect(0, 0, W, H);
             const t0 = performance.now();
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const bgFill = isDark ? '#111' : '#f5f5f0';
-            (function draw(now) { const p = Math.min((now - t0) / 750, 1), ez = 1 - Math.pow(1 - p, 3); ctx.clearRect(0, 0, W, H); sl.forEach(s => { const ea = s.s + (s.e - s.s) * ez; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s.s, ea); ctx.closePath(); ctx.fillStyle = s.col; ctx.fill(); }); ctx.beginPath(); ctx.arc(cx, cy, iR, 0, 2 * Math.PI); ctx.fillStyle = bgFill; ctx.fill(); if (p > 0.65) { const al = Math.min((p - 0.65) / 0.35, 1); ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = isDark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.85)'; ctx.font = 'bold 15px Courier Prime, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('₹' + fmt(total), cx, cy - 5); ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.38)'; ctx.font = '700 8px Courier Prime, monospace'; ctx.fillText('TOTAL', cx, cy + 9); ctx.restore(); } if (p < 1) requestAnimationFrame(draw); })(t0);
-            document.getElementById('pieLegend').innerHTML = cats.map((c, i) => '<div class="pl-row" style="animation-delay:' + (i * 0.05) + 's" onclick="openCategoryM(\'' + escH(c.category) + '\')"><div class="pl-dot" style="background:' + PC[i % PC.length] + '"></div><div class="pl-name">' + c.category + '</div><div class="pl-pct">' + ((c.total / total) * 100).toFixed(1) + '%</div><div class="pl-amt">' + rs(c.total) + '</div></div>').join('');
+            const bgFill = isDark ? '#000000' : '#ffffff';
+            (function draw(now) { 
+                const p = Math.min((now - t0) / 750, 1), ez = 1 - Math.pow(1 - p, 4); 
+                ctx.clearRect(0, 0, W, H); 
+                sl.forEach(s => { 
+                    const ea = s.s + (s.e - s.s) * ez; 
+                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s.s, ea); ctx.closePath(); 
+                    ctx.fillStyle = s.col; ctx.fill(); 
+                    ctx.strokeStyle = bgFill; ctx.lineWidth = 1; ctx.stroke();
+                }); 
+                ctx.beginPath(); ctx.arc(cx, cy, iR, 0, 2 * Math.PI); ctx.fillStyle = bgFill; ctx.fill(); 
+                if (p > 0.65) { 
+                    const al = Math.min((p - 0.65) / 0.35, 1); ctx.save(); ctx.globalAlpha = al; 
+                    ctx.fillStyle = isDark ? '#ffffff' : '#000000'; 
+                    ctx.font = '700 16px Outfit, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
+                    ctx.fillText('₹' + fmt(total), cx, cy - 4); 
+                    ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'; 
+                    ctx.font = '700 8px Outfit, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('EXPENSES', cx, cy + 10); 
+                    ctx.restore(); 
+                } 
+                if (p < 1) requestAnimationFrame(draw); 
+            })(t0);
+            document.getElementById('pieLegend').innerHTML = cats.map((c, i) => `
+                <div class="pl-row" style="animation-delay:${i * 0.05}s" onclick="openCategoryM('${escH(c.category)}')">
+                    <div class="pl-dot" style="background:${PC[i % PC.length]}"></div>
+                    <div class="pl-name">${c.category}</div>
+                    <div class="pl-pct">${Math.round((c.total / total) * 100)}%</div>
+                    <div class="pl-amt">${rs(c.total)}</div>
+                </div>`).join('');
         }
 
         /* ═══ LEDGER ═══ */
