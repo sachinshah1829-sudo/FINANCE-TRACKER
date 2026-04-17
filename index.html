@@ -55,8 +55,8 @@
             --amber-bg: #FFF9E6;
 
             /* Amount colours */
-            --amt-pos: #00D18E;
-            --amt-blk: #000000;
+            --amt-neg: #000000;
+            --amt-pos: #444444;
 
             /* Radius — 0 everywhere to match investment tracker */
             --r-xs: 0px;
@@ -2489,7 +2489,6 @@
                         type="email" placeholder="you@example.com" autocomplete="email"></div>
                 <div class="af-field"><label class="af-label">Password</label><input class="af-input" id="l-pwd"
                         type="password" placeholder="••••••••" autocomplete="current-password"></div>
-                <div class="form-err" id="l-err"></div>
                 <button class="af-btn" id="l-btn" onclick="doLogin()">Sign In</button>
                 <div class="af-divider">or</div>
                 <button class="google-btn" onclick="doGoogleAuth()">
@@ -2505,6 +2504,7 @@
                     </svg>
                     Continue with Google
                 </button>
+                <div class="af-err" id="l-err"></div>
             </div>
 
             <div class="auth-form" id="aform-signup">
@@ -2514,7 +2514,6 @@
                         type="email" placeholder="you@example.com" autocomplete="email"></div>
                 <div class="af-field"><label class="af-label">Password</label><input class="af-input" id="s-pwd"
                         type="password" placeholder="Min 6 characters" autocomplete="new-password"></div>
-                <div class="form-err" id="s-err"></div>
                 <button class="af-btn" id="s-btn" onclick="doSignup()">Create Account</button>
                 <div class="af-divider">or</div>
                 <button class="google-btn" onclick="doGoogleAuth()">
@@ -2552,6 +2551,9 @@
                 <div class="nav-item" id="nav-accounts" onclick="nav('accounts',this)">
                     <div class="nav-ico">▦</div>Accounts
                 </div>
+                <div class="nav-item" id="nav-heatmap" onclick="nav('heatmap',this)">
+                    <div class="nav-ico">▣</div>Heatmap
+                </div>
                 <div class="nav-item" id="nav-analytics" onclick="nav('analytics',this)">
                     <div class="nav-ico">◈</div>Analytics
                 </div>
@@ -2563,6 +2565,12 @@
                 </div>
                 <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
                     <div class="nav-ico">⚙</div>Manage
+                </div>
+                <div class="nav-item" id="nav-templates" onclick="nav('templates',this)">
+                    <div class="nav-ico">⊡</div>Templates
+                </div>
+                <div class="nav-item" id="nav-import" onclick="nav('import',this)">
+                    <div class="nav-ico">⬆</div>Import Data
                 </div>
             </div>
             <div class="sb-period">
@@ -2601,20 +2609,15 @@
 
             <!-- ADD ENTRY -->
             <div class="page active" id="page-add">
-                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <div class="pg-title" id="add-pg-title">Add Entry</div>
-                        <div class="pg-sub" id="add-pg-sub">Record a new expense, income, or transfer</div>
-                    </div>
-                    <button class="add-inline-btn" id="import-toggle-btn" onclick="toggleImportMode()" style="padding: 10px 16px;">Import Data</button>
+                <div class="pg-header">
+                    <div class="pg-title">Add Entry</div>
+                    <div class="pg-sub">Record a new expense, income, or transfer</div>
                 </div>
-
-                <div id="manual-entry-wrap">
-                    <div class="add-tabs">
-                        <div class="add-tab active" onclick="switchAddTab('expense',this)">Expense</div>
-                        <div class="add-tab" onclick="switchAddTab('income',this)">Income</div>
-                        <div class="add-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
-                    </div>
+                <div class="add-tabs">
+                    <div class="add-tab active" onclick="switchAddTab('expense',this)">Expense</div>
+                    <div class="add-tab" onclick="switchAddTab('income',this)">Income</div>
+                    <div class="add-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
+                </div>
                 <!-- EXPENSE -->
                 <div class="add-form active" id="form-expense">
                     <div class="form-row"><label class="form-label">Template</label>
@@ -2705,74 +2708,33 @@
                     <button class="add-btn" id="i-btn" onclick="submitInc()">Save Income</button>
                     <span class="form-save-tpl" id="i-tpl-btn" onclick="saveIncTpl()">+ Save as Template</span>
                 </div>
+                <!-- TRANSFER -->
                 <div class="add-form" id="form-transfer">
-                    <div class="form-cols">
-                        <div class="form-row">
-                            <label class="form-label">From Account</label>
-                            <input class="form-input" id="t-from" placeholder="Select account" autocomplete="off">
+                    <div class="form-row"><label class="form-label">From Account</label>
+                        <div class="form-input-wrap"><input class="form-input" id="t-from" placeholder="Debit from"
+                                autocomplete="off">
                             <div class="form-dropdown" id="dd-t-from"></div>
                         </div>
-                        <div class="form-row">
-                            <label class="form-label">To Account</label>
-                            <input class="form-input" id="t-to" placeholder="Select account" autocomplete="off">
+                    </div>
+                    <div class="form-row"><label class="form-label">To Account</label>
+                        <div class="form-input-wrap"><input class="form-input" id="t-to" placeholder="Credit to"
+                                autocomplete="off">
                             <div class="form-dropdown" id="dd-t-to"></div>
                         </div>
                     </div>
-                    <div class="form-cols">
-                        <div class="form-row">
-                            <label class="form-label">Amount (₹)</label>
-                            <input class="form-input" id="t-amt" type="number" placeholder="0.00">
-                        </div>
-                        <div class="form-row">
-                            <label class="form-label">Item / Note</label>
-                            <input class="form-input" id="t-item" placeholder="Internal Transfer" autocomplete="off">
+
+                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
+                            id="t-amt" type="number" placeholder="0.00"></div>
+                    <div class="form-row"><label class="form-label">Note / Item</label>
+                        <div class="form-input-wrap"><input class="form-input" id="t-item"
+                                placeholder="Transfer purpose" autocomplete="off">
                             <div class="form-dropdown" id="dd-t-item"></div>
                         </div>
                     </div>
                     <div class="form-err" id="t-err"></div>
                     <button class="add-btn" id="t-btn" onclick="submitTr()">Execute Transfer</button>
-                </div> <!-- form-transfer -->
-            </div> <!-- manual-entry-wrap -->
- 
-                <div id="import-entry-wrap" style="display:none;">
-                    <div class="card card-p" style="max-width:740px">
-                        <div class="card-h">Export Instructions</div>
-                        <div class="import-hint">
-                            1. In your Google Sheet, go to <b>File → Download → CSV (.csv)</b><br>
-                            2. Open the downloaded file in a text editor and copy all content<br>
-                            3. Paste below. Your sheet columns (any order):<br>
-                            <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM · CLOSING BALANCE (optional)</code><br><br>
-                            <b>Date formats accepted:</b> DD/MM/YYYY, DD/MM/YYYY HH:MM:SS, YYYY-MM-DD<br>
-                            <b>Amount:</b> negative = expense (e.g. -399.42), positive = income<br>
-                            <b>Note:</b> ₹ symbol, commas in numbers, and closing balance column are handled
-                            automatically.<br>
-                            <b>After import:</b> All unique accounts, categories, items &amp; people are auto-created in
-                            Manage.
-                        </div>
-                        <div class="form-row" style="margin-bottom:14px;">
-                            <label class="form-label">Import Type</label>
-                            <select id="import-type-sel" class="form-input" style="cursor:pointer" onchange="clearImport()">
-                                <option value="TXN">Transactions (Date, Account, Category, Item, Amount, To/From)</option>
-                                <option value="TPL">Templates (Type, Name, Account, Category, Item, Amount, To/From)
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <label class="form-label">CSV Data</label>
-                            <textarea id="import-csv" class="form-input" rows="10" placeholder="Paste your CSV here…"
-                                style="resize:vertical;font-family:'Courier Prime',monospace;font-size:12px;line-height:1.5"></textarea>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-                            <button class="add-btn" onclick="previewImport()" style="max-width:170px">Preview
-                                Import</button>
-                            <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
-                                style="max-width:210px;display:none">✓ Import to Firebase</button>
-                            <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
-                        </div>
-                        <div id="import-preview" style="margin-top:14px"></div>
-                    </div>
                 </div>
-            </div> <!-- page-add -->
+            </div>
 
             <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
@@ -2836,24 +2798,13 @@
                 </div>
             </div>
 
-
-            <!-- ANALYTICS -->
-            <div class="page" id="page-analytics">
-                <div class="pg-header"
-                    style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <div class="pg-title">Analytics</div>
-                        <div class="pg-sub" id="ana-period">—</div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
-                        <input type="number" id="ana-lookback" class="form-input" style="width:70px; padding:6px 10px;"
-                            value="6" min="1" max="24" onchange="updateMoMTrends()">
-                    </div>
+            <!-- HEATMAP -->
+            <div class="page" id="page-heatmap">
+                <div class="pg-header">
+                    <div class="pg-title" id="hm-title">Heatmap</div>
+                    <div class="pg-sub">Click any coloured date to see expenses</div>
                 </div>
-
-                <!-- HEATMAP INTEGRATED -->
-                <div class="card card-p hm-wrap" style="margin-bottom: 2rem; max-width: 100%;">
+                <div class="card card-p hm-wrap">
                     <div class="card-h" id="hm-lbl">—</div>
                     <div class="dcl-row">
                         <div class="dcl">Sun</div>
@@ -2871,6 +2822,22 @@
                     </div>
                     <div class="hm-legend"><span>Low</span>
                         <div class="lgd-sw" id="lgdSw"></div><span>High</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS -->
+            <div class="page" id="page-analytics">
+                <div class="pg-header"
+                    style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <div class="pg-title">Analytics</div>
+                        <div class="pg-sub" id="ana-period">—</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
+                        <input type="number" id="ana-lookback" class="form-input" style="width:70px; padding:6px 10px;"
+                            value="6" min="1" max="24" onchange="updateMoMTrends()">
                     </div>
                 </div>
                 <div class="ana-grid pie-colors">
@@ -3026,7 +2993,6 @@
                         Categories</div>
                     <div class="add-tab" id="mtab-items" onclick="switchMgmtTab('items',this)">Items</div>
                     <div class="add-tab" id="mtab-people" onclick="switchMgmtTab('people',this)">People</div>
-                    <div class="add-tab" id="mtab-templates" onclick="switchMgmtTab('templates',this); renderTemplatesPage();">Templates</div>
                 </div>
                 <div class="mgmt-panel active" id="mpanel-categories">
                     <div class="mgmt-section" style="margin-bottom:20px">
@@ -3104,7 +3070,84 @@
                 </div>
             </div>
 
+            <!-- TEMPLATES -->
+            <div class="page" id="page-templates">
+                <div class="pg-header">
+                    <div class="pg-title">Templates</div>
+                    <div class="pg-sub">Manage saved expense &amp; income templates</div>
+                </div>
+                <div class="mgmt-section" style="margin-bottom:14px">
+                    <div class="mgmt-sec-hdr">
+                        <div class="mgmt-sec-title">Add New Template</div>
+                    </div>
+                    <div class="mini-form show" style="margin-bottom:0">
+                        <div class="mini-form-row" style="margin-bottom:7px">
+                            <select class="mini-select" id="tpl-add-type">
+                                <option value="EXPENSE">Expense</option>
+                                <option value="INCOME">Income</option>
+                            </select>
+                            <input class="mini-input" id="tpl-add-name" placeholder="Template name (item)">
+                            <input class="mini-input" id="tpl-add-acc" placeholder="Account">
+                            <input class="mini-input" id="tpl-add-cat" placeholder="Category">
+                        </div>
+                        <div class="mini-form-row">
+                            <input class="mini-input" id="tpl-add-item" placeholder="Item">
+                            <input class="mini-input" id="tpl-add-amt" placeholder="Amount" type="number">
+                            <input class="mini-input" id="tpl-add-to" placeholder="To/From">
+                            <button class="mini-save-btn" onclick="doAddTemplate()">Save</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="tplList">
+                    <div class="sp-wrap">
+                        <div class="sp"></div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- IMPORT DATA -->
+            <div class="page" id="page-import">
+                <div class="pg-header">
+                    <div class="pg-title">Import from Google Sheets</div>
+                    <div class="pg-sub">Paste CSV exported from your Expense Tracker Google Sheet</div>
+                </div>
+                <div class="card card-p" style="max-width:740px">
+                    <div class="card-h">Export Instructions</div>
+                    <div class="import-hint">
+                        1. In your Google Sheet, go to <b>File → Download → CSV (.csv)</b><br>
+                        2. Open the downloaded file in a text editor and copy all content<br>
+                        3. Paste below. Your sheet columns (any order):<br>
+                        <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM · CLOSING BALANCE (optional)</code><br><br>
+                        <b>Date formats accepted:</b> DD/MM/YYYY, DD/MM/YYYY HH:MM:SS, YYYY-MM-DD<br>
+                        <b>Amount:</b> negative = expense (e.g. -399.42), positive = income<br>
+                        <b>Note:</b> ₹ symbol, commas in numbers, and closing balance column are handled
+                        automatically.<br>
+                        <b>After import:</b> All unique accounts, categories, items &amp; people are auto-created in
+                        Manage.
+                    </div>
+                    <div class="form-row" style="margin-bottom:14px;">
+                        <label class="form-label">Import Type</label>
+                        <select id="import-type-sel" class="form-input" style="cursor:pointer" onchange="clearImport()">
+                            <option value="TXN">Transactions (Date, Account, Category, Item, Amount, To/From)</option>
+                            <option value="TPL">Templates (Type, Name, Account, Category, Item, Amount, To/From)
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">CSV Data</label>
+                        <textarea id="import-csv" class="form-input" rows="10" placeholder="Paste your CSV here…"
+                            style="resize:vertical;font-family:'Courier Prime',monospace;font-size:12px;line-height:1.5"></textarea>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                        <button class="add-btn" onclick="previewImport()" style="max-width:170px">Preview
+                            Import</button>
+                        <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
+                            style="max-width:210px;display:none">✓ Import to Firebase</button>
+                        <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
+                    </div>
+                    <div id="import-preview" style="margin-top:14px"></div>
+                </div>
+            </div>
 
         </main>
     </div>
@@ -3233,25 +3276,16 @@
         const db = getFirestore(app);
         const gProvider = new GoogleAuthProvider();
 
-        let _userId = null;
-        const uid = () => _userId || auth.currentUser?.uid;
-        const uRef = (col) => { 
-            const u = uid(); 
-            if(!u) throw new Error("Auth required for " + col);
-            return collection(db, 'users', u, col); 
-        };
-        const uDoc = (col, id) => {
-            const u = uid();
-            if(!u) throw new Error("Auth required for doc " + col);
-            return doc(db, 'users', u, col, id);
-        };
+        const uid = () => auth.currentUser?.uid;
+        const uRef = (col) => collection(db, 'users', uid(), col);
+        const uDoc = (col, id) => doc(db, 'users', uid(), col, id);
 
         const MO_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const MO_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        // Vibrant pastel palette
-        const PC = ['#FFD93D', '#6BCB77', '#FF6B6B', '#4D96FF', '#B983FF', '#FFA3FD', '#6EC72D', '#FF8D29', '#2D31FA', '#FF1E00'];
-        const PAGE_ORDER = ['add', 'accounts', 'analytics', 'ledger', 'transactions', 'manage'];
+        // Greyscale pie colors
+        const PC = ['#0a0a0a', '#222222', '#3a3a3a', '#555555', '#6e6e6e', '#888888', '#9e9e9e', '#b4b4b4', '#c6c6c6', '#d6d6d6', '#e4e4e4', '#eeeeee'];
+        const PAGE_ORDER = ['add', 'accounts', 'heatmap', 'analytics', 'ledger', 'transactions', 'manage', 'templates', 'import'];
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
         let curM, curY;
@@ -3260,75 +3294,23 @@
         const _mselState = { type: new Set(), account: new Set(), cat: new Set(), item: new Set(), tofrom: new Set() };
         let _importRows = [];
 
-        /* ── TOAST & MODALS ── */
+        /* ── TOAST ── */
         window.toast = function (msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
-        window.openM = id => { const m = document.getElementById(id); if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; } };
-        window.closeM = id => { const m = document.getElementById(id); if (m) { m.classList.remove('open'); document.body.style.overflow = ''; } };
-
-        window.openCategoryM = function (cat) {
-            const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
-            const txns = _allTxns.filter(t => {
-                const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
-                return (t.category || '').toUpperCase() === cat.toUpperCase() && d >= sd && d <= ed;
-            });
-            const tEl = document.getElementById('cm-title'), totEl = document.getElementById('cm-total'), bdEl = document.getElementById('cm-body');
-            if (tEl) tEl.textContent = cat;
-            if (totEl) totEl.textContent = rs(txns.reduce((s, t) => s + (Number(t.amount) || 0), 0));
-            if (bdEl) bdEl.innerHTML = txns.map(t => `<div class="m-txn"><div class="m-txn-dot"></div><div style="flex:1"><div class="m-txn-item">${escH(t.item)}</div><div class="m-txn-date">${fmtDate(t.date)} · ${escH(t.account)}</div></div><div class="m-txn-amt">${rs(t.amount)}</div></div>`).join('') || '<div class="empty-s">No transactions</div>';
-            openM('catModal');
-        };
-
-        window.openDayM = function (day) {
-            const d = new Date(curY, curM - 1, day), txns = _allTxns.filter(t => {
-                const td = t.date?.toDate ? t.date.toDate() : new Date(t.date);
-                return td.getDate() === day && td.getMonth() === d.getMonth() && td.getFullYear() === d.getFullYear() && t.category?.toUpperCase() !== 'TRANSFER';
-            });
-            const tEl = document.getElementById('dm-title'), totEl = document.getElementById('dm-total'), bdEl = document.getElementById('dm-body');
-            if (tEl) tEl.textContent = day + ' ' + MO_LONG[curM - 1] + ' ' + curY;
-            if (totEl) totEl.textContent = rs(txns.reduce((s, t) => s + Math.abs(Number(t.amount)), 0));
-            if (bdEl) bdEl.innerHTML = txns.map(t => `<div class="m-txn"><div class="m-txn-dot"></div><div style="flex:1"><div class="m-txn-item">${escH(t.item)}</div><div class="m-txn-date">${escH(t.account)} · ${escH(t.category)}</div></div><div class="m-txn-amt">${rs(t.amount)}</div></div>`).join('') || '<div class="empty-s">No expenses</div>';
-            openM('dayModal');
-        };
-
-        window.openPersonM = function (name, bal) {
-            const txns = _allTxns.filter(t => t.toFrom === name && t.category?.toUpperCase() === 'TRANSFER');
-            const nEl = document.getElementById('pm-name'), bEl = document.getElementById('pm-bal'), bdEl = document.getElementById('pm-body');
-            if (nEl) nEl.textContent = name;
-            if (bEl) bEl.textContent = rs(bal);
-            if (bdEl) bdEl.innerHTML = txns.map(t => `<div class="m-txn"><div class="m-txn-dot"></div><div style="flex:1"><div class="m-txn-item">${escH(t.item)}</div><div class="m-txn-date">${fmtDate(t.date)} · ${escH(t.account)}</div></div><div class="m-txn-amt">${rs(t.amount)}</div></div>`).join('') || '<div class="empty-s">No transfer history</div>';
-            openM('personModal');
-        };
 
         /* ── FORMAT ── */
         function fmt(n) { if (n >= 100000) return (n / 100000).toFixed(2) + 'L'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return Math.round(n).toString(); }
-        function rs(n, colored = true, prefix = '') {
-            const val = Number(n);
-            const formatted = '₹' + Math.abs(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            if (!colored) return prefix + formatted;
-            const cls = val > 0 ? 'amt-pos' : 'amt-blk';
-            return '<span class="' + cls + '" style="color:' + (val > 0 ? 'var(--amt-pos)' : 'var(--amt-blk)') + '">' + prefix + (val < 0 ? '-' : '') + formatted + '</span>';
-        }
-        function cntUp(id, val) {
-            const el = document.getElementById(id), t0 = performance.now();
-            const isPos = val > 0;
-            // Color parent to ensure symbol is colored too
-            if (el.parentElement.classList.contains('s-val')) el.parentElement.style.color = isPos ? 'var(--amt-pos)' : 'var(--amt-blk)';
-            el.style.color = isPos ? 'var(--amt-pos)' : 'var(--amt-blk)';
-            (function t(now) {
-                const p = Math.min((now - t0) / 700, 1), e = 1 - Math.pow(1 - p, 3);
-                el.textContent = fmt(val * e);
-                if (p < 1) requestAnimationFrame(t); else el.textContent = fmt(val);
-            })(t0);
-        }
+        function rs(n) { return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function cntUp(id, val) { const el = document.getElementById(id), t0 = performance.now(); (function t(now) { const p = Math.min((now - t0) / 700, 1), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(val * e); if (p < 1) requestAnimationFrame(t); else el.textContent = fmt(val); })(t0); }
         function fmtDate(ts) { if (!ts) return ''; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear(); }
         function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
+        /* ═══ AUTH ═══ */
         function switchAuthTab(tab) {
             document.querySelectorAll('.auth-pill').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(x => x.classList.remove('active'));
             document.getElementById('atab-' + tab).classList.add('active');
             document.getElementById('aform-' + tab).classList.add('active');
-            ['l-err', 's-err'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
+            ['l-err', 's-err'].forEach(id => document.getElementById(id).textContent = '');
         }
         window.switchAuthTab = switchAuthTab;
 
@@ -3375,121 +3357,83 @@
 
         onAuthStateChanged(auth, async user => {
             if (user) {
-                _userId = user.uid;
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('appShell').classList.remove('hidden');
-                document.getElementById('sb-u-name').textContent = user.displayName || 'Finance User';
-                document.getElementById('sb-u-email').textContent = user.email || '';
-                const ava = document.getElementById('sb-u-ava');
+                document.getElementById('sbUserName').textContent = user.displayName || 'User';
+                document.getElementById('sbUserEmail').textContent = user.email || '';
+                // Update avatar initial
+                const ava = document.querySelector('.sb-ava');
                 if (ava) ava.textContent = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
-                
-                await initApp(user.uid);
-                
-                const activeId = PAGE_ORDER.find(p => document.getElementById('page-' + p)?.classList.contains('active')) || 'add';
-                nav(activeId, document.getElementById('nav-' + activeId));
+                initApp();
             } else {
-                _userId = null;
-                document.getElementById('appShell').classList.add('hidden');
                 document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('appShell').classList.add('hidden');
                 ['l-btn', 's-btn'].forEach(id => { const b = document.getElementById(id); if (b) { b.disabled = false; b.textContent = id === 'l-btn' ? 'Sign In' : 'Create Account'; } });
             }
         });
 
-        async function initApp(id) {
-            _userId = id;
+        /* ═══ APP INIT ═══ */
+        async function initApp() {
             const now = new Date(); curM = now.getMonth() + 1; curY = now.getFullYear();
-            const ms = document.getElementById('monthSel'); if (ms) ms.value = curM;
-            const ys = document.getElementById('yearSel');
-            if (ys) {
-                ys.innerHTML = '';
-                for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
-            }
-            
-            // Failsafe timer to remove spinners if things hang
-            const failsafe = setTimeout(() => {
-                if (_accounts.length === 0) {
-                    toast("Connection slow... showing zero state.");
-                    renderAccounts([], 0, 0);
-                    renderHeatmap({ days: [], firstDayOfWeek: 0 });
-                }
-            }, 7500);
-
-            try {
-                await loadAllData();
-                clearTimeout(failsafe);
-            } catch (err) {
-                console.error("initApp error", err);
-                renderAccounts([], 0, 0); // Failsafe render
-            }
-            
+            document.getElementById('monthSel').value = curM;
+            const ys = document.getElementById('yearSel'); ys.innerHTML = '';
+            for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
+            await loadAllData();
             setupSwipe();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { ['personModal', 'dayModal', 'accModal', 'editModal', 'txnEditModal'].forEach(closeM); } });
             document.addEventListener('click', e => { if (!e.target.closest('.txn-msel-wrap')) ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.style.display = 'none'; }); });
         }
 
+        /* ═══ DATA LOADING ═══ */
         async function loadAllData() {
-            try {
-                await Promise.all([loadAccounts(), loadCategories(), loadItems(), loadPeople(), loadTemplates()]);
-                setupAddFormDropdowns();
-                await loadPeriodData();
-            } catch (e) {
-                console.error("loadAllData failed", e);
-                throw e;
-            }
+            await Promise.all([loadAccounts(), loadCategories(), loadItems(), loadPeople(), loadTemplates()]);
+            setupAddFormDropdowns();
+            await loadPeriodData();
         }
-        async function loadAccounts() { try { const snap = await getDocs(uRef('accounts')); _accounts = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
-        async function loadCategories() { try { const snap = await getDocs(uRef('categories')); _categories = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
-        async function loadItems() { try { const snap = await getDocs(uRef('items')); _items = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
-        async function loadPeople() { try { const snap = await getDocs(uRef('people')); _people = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
-        async function loadTemplates() { try { const snap = await getDocs(uRef('templates')); _templates = snap.docs.map(d => ({ id: d.id, ...d.data() })); expTpls = _templates.filter(t => t.type === 'EXPENSE'); incTpls = _templates.filter(t => t.type === 'INCOME'); } catch(e){} }
+        async function loadAccounts() { const snap = await getDocs(uRef('accounts')); _accounts = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
+        async function loadCategories() { const snap = await getDocs(uRef('categories')); _categories = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
+        async function loadItems() { const snap = await getDocs(uRef('items')); _items = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
+        async function loadPeople() { const snap = await getDocs(uRef('people')); _people = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
+        async function loadTemplates() { const snap = await getDocs(uRef('templates')); _templates = snap.docs.map(d => ({ id: d.id, ...d.data() })); expTpls = _templates.filter(t => t.type === 'EXPENSE'); incTpls = _templates.filter(t => t.type === 'INCOME'); }
 
         async function loadAllTransactions() {
-            try {
-                const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
-                _allTxns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                const bal = {};
-                _accounts.forEach(a => bal[a.name] = (a.openingBalance || 0));
-                _allTxns.forEach(t => { const a = t.account, v = Number(t.amount) || 0; if (!a) return; if (bal[a] === undefined) bal[a] = 0; bal[a] += v; t.closingBalance = bal[a]; });
-                return _allTxns;
-            } catch(e) { console.error(e); return []; }
+            const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
+            _allTxns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const bal = {};
+            _accounts.forEach(a => bal[a.name] = (a.openingBalance || 0));
+            _allTxns.forEach(t => { const a = t.account, v = Number(t.amount) || 0; if (!a) return; if (bal[a] === undefined) bal[a] = 0; bal[a] += v; t.closingBalance = bal[a]; });
+            return _allTxns;
         }
 
         async function loadPeriodData() {
-            try {
-                await loadAllTransactions();
-                const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
-                const periodTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
-                const totalExpense = periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
-                const expDays = {};
-                periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const d = (t.date?.toDate ? t.date.toDate() : new Date(t.date)).getDate(); expDays[d] = (expDays[d] || 0) + Math.abs(Number(t.amount)); });
-                const avgDaily = Object.keys(expDays).length > 0 ? Math.round(Object.values(expDays).reduce((a, b) => a + b, 0) / Object.keys(expDays).length) : 0;
-                const daysInMonth = ed.getDate();
-                const heatmapDays = [];
-                for (let d = 1; d <= daysInMonth; d++)heatmapDays.push({ day: d, total: expDays[d] || 0 });
-                const weeklyExpenses = buildWeekly(periodTxns, sd, ed);
-                const categoryExpenses = buildCategoryTotals(periodTxns);
-                const finalBal = {};
-                _accounts.forEach(a => finalBal[a.id] = (a.openingBalance || 0));
-                _allTxns.forEach(t => { const acc = _accounts.find(a => a.name === t.account); if (acc) finalBal[acc.id] = (finalBal[acc.id] || 0) + (Number(t.amount) || 0); });
-                _accounts.forEach(a => { a.currentBalance = finalBal[a.id] || 0; });
-
-                // Start rendering with guards
-                try { renderAccounts(_accounts, totalExpense, avgDaily); } catch(e){ console.error(e); }
-                try { renderHeatmap({ days: heatmapDays, firstDayOfWeek: sd.getDay() }); } catch(e){ console.error(e); }
-                try { renderWeekly(weeklyExpenses); } catch(e){ console.error(e); }
-                try { renderPie(categoryExpenses); } catch(e){ console.error(e); }
-                try { updateMoMTrends(); } catch(e){ console.error(e); }
-                try { populateLdrSel(_accounts); } catch(e){ console.error(e); }
-
-                const ldrSel = document.getElementById('ldrAccSel');
-                if (ldrSel && ldrSel.value) loadLedger();
-                const p = MO_SHORT[curM - 1] + ' ' + curY;
-                ['acc-period', 'ana-period'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p; });
-                const hm = document.getElementById('hm-lbl'); if (hm) hm.textContent = MO_LONG[curM - 1] + ' ' + curY;
-            } catch (err) {
-                console.error('loadPeriodData fatal', err);
-                toast('Error loading period data');
-            }
+            await loadAllTransactions();
+            const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
+            const periodTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
+            const totalExpense = periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
+            const expDays = {};
+            periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const d = (t.date?.toDate ? t.date.toDate() : new Date(t.date)).getDate(); expDays[d] = (expDays[d] || 0) + Math.abs(Number(t.amount)); });
+            const avgDaily = Object.keys(expDays).length > 0 ? Math.round(Object.values(expDays).reduce((a, b) => a + b, 0) / Object.keys(expDays).length) : 0;
+            const daysInMonth = ed.getDate();
+            const heatmapDays = [];
+            for (let d = 1; d <= daysInMonth; d++)heatmapDays.push({ day: d, total: expDays[d] || 0 });
+            const weeklyExpenses = buildWeekly(periodTxns, sd, ed);
+            const categoryExpenses = buildCategoryTotals(periodTxns);
+            const finalBal = {};
+            _accounts.forEach(a => finalBal[a.id] = (a.openingBalance || 0));
+            _allTxns.forEach(t => { const acc = _accounts.find(a => a.name === t.account); if (acc) finalBal[acc.id] = (finalBal[acc.id] || 0) + (Number(t.amount) || 0); });
+            _accounts.forEach(a => { a.currentBalance = finalBal[a.id] || 0; });
+            renderAccounts(_accounts, totalExpense, avgDaily);
+            renderHeatmap({ days: heatmapDays, firstDayOfWeek: sd.getDay() });
+            renderWeekly(weeklyExpenses);
+            renderPie(categoryExpenses);
+            updateMoMTrends();
+            populateLdrSel(_accounts);
+            if (document.getElementById('ldrAccSel').value) loadLedger();
+            const p = MO_SHORT[curM - 1] + ' ' + curY;
+            document.getElementById('acc-period').textContent = p;
+            document.getElementById('ana-period').textContent = p;
+            document.getElementById('hm-title').textContent = 'Heatmap — ' + MO_LONG[curM - 1] + ' ' + curY;
+            document.getElementById('hm-lbl').textContent = MO_LONG[curM - 1] + ' ' + curY;
         }
 
         function buildWeekly(txns, sd, ed) {
@@ -3500,15 +3444,9 @@
         }
         function buildCategoryTotals(txns) { const ct = {}; txns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const c = (t.category || 'OTHER').toUpperCase(); ct[c] = (ct[c] || 0) + Math.abs(Number(t.amount)); }); return Object.entries(ct).map(([category, total]) => ({ category, total })).sort((a, b) => b.total - a.total); }
 
-        function bkEmo(n) {
-            if (!n) return '💳';
-            n = String(n).toUpperCase();
-            if (n.includes('HDFC')) return '🏦'; if (n.includes('SBI')) return '🏛️'; if (n.includes('CASH')) return '💵';
-            return '🏦';
-        }
-
         window.onPeriodChange = async function () { curM = +document.getElementById('monthSel').value; curY = +document.getElementById('yearSel').value; await loadPeriodData(); };
 
+        /* ═══ NAV ═══ */
         window.nav = function (name, el) {
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
@@ -3518,23 +3456,8 @@
             closeSidebar();
             if (name === 'ledger' && !document.getElementById('ldrAccSel').value) { const f = _accounts.find(a => a.name.toUpperCase().includes('HDFC')) || _accounts.find(a => a.type === 'BANK'); if (f) { document.getElementById('ldrAccSel').value = f.name; loadLedger(); } }
             if (name === 'manage') renderManage();
+            if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
-        };
-        window.toggleImportMode = function() {
-            const isImport = document.getElementById('import-entry-wrap').style.display === 'block';
-            if (isImport) {
-                document.getElementById('import-entry-wrap').style.display = 'none';
-                document.getElementById('manual-entry-wrap').style.display = 'block';
-                document.getElementById('import-toggle-btn').textContent = 'Import Data';
-                document.getElementById('add-pg-title').textContent = 'Add Entry';
-                document.getElementById('add-pg-sub').textContent = 'Record a new expense, income, or transfer';
-            } else {
-                document.getElementById('import-entry-wrap').style.display = 'block';
-                document.getElementById('manual-entry-wrap').style.display = 'none';
-                document.getElementById('import-toggle-btn').textContent = 'Manual Entry';
-                document.getElementById('add-pg-title').textContent = 'Import Data';
-                document.getElementById('add-pg-sub').textContent = 'Paste CSV exported from your Google Sheet';
-            }
         };
         window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('mob-open'); document.getElementById('sbOverlay').classList.toggle('show'); };
         function closeSidebar() { document.getElementById('sidebar').classList.remove('mob-open'); document.getElementById('sbOverlay').classList.remove('show'); }
@@ -3547,6 +3470,7 @@
             document.getElementById('creditList').innerHTML = accs.filter(a => a.type === 'CREDIT_CARD').map((a, i) => accHTML(a, i, 'credit')).join('') || '<div class="empty-s">No credit cards</div>';
             document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No contacts</div>';
         }
+        function bkEmo(n) { n = n.toUpperCase(); if (n.includes('HDFC')) return 'H'; if (n.includes('ICICI')) return 'I'; if (n.includes('AXIS')) return 'A'; if (n.includes('SBI')) return 'S'; if (n.includes('WALLET')) return 'W'; if (n.includes('CREDIT')) return 'C'; if (n.includes('CASH')) return '$'; return 'B'; }
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = accKind === 'credit';
@@ -3554,49 +3478,9 @@
             let balHTML = '';
             if (a.type === 'CREDIT_CARD') {
                 const limit = a.openingBalance || 0;
-                const balance = a.currentBalance || 0;
-                const spent = limit - balance;
+                const spent = limit - (a.currentBalance || 0);
                 const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
-                return `
-                <div class="card clickable cc-premium-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)" style="margin-bottom:20px; border:none; border-radius:16px; min-height:190px; background: linear-gradient(135deg, #111 0%, #333 100%); color:#fff; padding:20px; position:relative; overflow:hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: cardEnter 0.4s ease forwards;">
-                    <div style="position:absolute; top:-40px; right:-40px; width:140px; height:140px; background:rgba(255,255,255,0.05); border-radius:50%;"></div>
-                    <div style="position:absolute; bottom:20px; right:20px; font-size:40px; opacity:0.1; font-weight:900;">VISA</div>
-                    
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px;">
-                        <div>
-                            <div style="font-size:10px; opacity:0.5; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Credit Balance</div>
-                            <div style="font-size:24px; font-weight:700; font-family:var(--font-big);">${rs(balance, false)}</div>
-                        </div>
-                        <div style="width:40px; height:30px; background:linear-gradient(45deg, #ffd700, #b8860b); border-radius:4px; position:relative;">
-                            <div style="position:absolute; top:50%; left:20%; right:20%; height:1px; background:rgba(0,0,0,0.2);"></div>
-                            <div style="position:absolute; top:30%; bottom:30%; left:50%; width:1px; background:rgba(0,0,0,0.2);"></div>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom:20px;">
-                        <div style="font-size:14px; letter-spacing:2px; font-family:var(--font-big);">${escH(a.name)}</div>
-                    </div>
-
-                    <div>
-                        <div style="display:flex; justify-content:space-between; font-size:10px; opacity:0.6; margin-bottom:6px;">
-                            <span>Utilized: ${pct.toFixed(0)}%</span>
-                            <span>Limit: ${fmt(limit)}</span>
-                        </div>
-                        <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px;">
-                            <div style="height:100%; width:${pct}%; background:${pct > 80 ? '#FF3B6F' : '#00D18E'}; border-radius:2px; transition: width 1s ease;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="acc-acts" onclick="event.stopPropagation()" style="position:absolute; top:15px; right:15px; opacity:0; transition:0.2s;">
-                        <button class="act-btn" onclick="editAccEl(this.closest('.cc-premium-card'))" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:28px; height:28px; border-radius:50%; margin-right:5px;">✎</button>
-                        <button class="act-btn del" onclick="deleteAccEl(this.closest('.cc-premium-card'))" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:28px; height:28px; border-radius:50%;">✕</button>
-                    </div>
-                </div>
-                <style>
-                    .cc-premium-card:hover .acc-acts { opacity: 1; }
-                    @keyframes cardEnter { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-                </style>
-                `;
+                return '<div class="card card-p clickable cc-ui-card" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + (a.currentBalance || 0) + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's; background: linear-gradient(135deg, var(--dark), #333, var(--black)); color: #f0efe9; position: relative; margin-bottom: 12px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; border-radius: var(--r-xl);" onclick="accItemClick(this)"><div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;"></div><div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none;"></div><div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1;"><div style="font-size: 16px; font-weight: 700; letter-spacing: 2px;">' + escH(a.name) + '</div><div class="acc-acts" onclick="event.stopPropagation()" style="background: rgba(0,0,0,0.6); padding: 4px; border-radius: var(--r-sm); margin-left: auto;"><button class="act-btn" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="editAccEl(this.closest(\'.cc-ui-card\'))">🖌</button><button class="act-btn del" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="deleteAccEl(this.closest(\'.cc-ui-card\'))">🗑</button></div></div><div style="margin-top: 10px; position: relative; z-index: 1;"><div style="font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Limit Left / Total Limit</div><div style="font-size: 22px; font-weight: 700;">' + rs(a.currentBalance || 0) + ' <span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.6);">/ ' + fmt(limit) + '</span></div></div><div style="margin-top: 16px; position: relative; z-index: 1;"><div style="display: flex; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,0.8); margin-bottom: 5px; font-weight: 700;"><span>Utilized: ' + pct.toFixed(1) + '%</span><span>Spent: ' + rs(spent) + '</span></div><div style="height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.2);"><div style="position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: linear-gradient(90deg, #ff4e50, #f9d423); border-radius: 3px;"></div></div></div></div>';
             } else {
                 const pos = (a.currentBalance || 0) >= 0;
                 balHTML = '<div class="acc-bal ' + (pos ? 'pos' : 'neg') + '">' + rs(a.currentBalance || 0) + '</div>';
@@ -3650,11 +3534,7 @@
             document.getElementById('calGrid').innerHTML = h;
         }
         function hRatio(v, mn, mx) { return mx === mn ? 0.7 : 0.15 + ((v - mn) / (mx - mn)) * 0.85; }
-        function rSh(r) {
-            // Shades of red: H=0, S=70-90%, L=95-40% (darker for higher ratio)
-            const l = Math.round(95 - r * 55);
-            return 'hsl(0, 80%, ' + l + '%)';
-        }
+        function rSh(r) { const l = Math.round(96 - r * 86); return 'hsl(0,0%,' + l + '%)'; }
 
         /* ═══ ANALYTICS ═══ */
         window.updateMoMTrends = function () {
@@ -3679,14 +3559,13 @@
             const mx = Math.max(...data.map(d => d.total), 1);
             document.getElementById('momChart').innerHTML = data.map((d, i) => {
                 const pct = d.total > 0 ? Math.max((d.total / mx) * 100, 2) : 0;
-                const color = PC[i % PC.length];
                 return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
                     '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
                     '<div class="br-track-wrap">' +
                     '<div class="br-track" style="flex:1">' +
-                    (d.total > 0 ? '<span class="br-val-base">' + rs(d.total, false) + '</span>' : '') +
-                    '<div class="br-fill" style="background:' + color + '; clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                    (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total, false) + '</span>' : '') +
+                    (d.total > 0 ? '<span class="br-val-base">' + rs(d.total) + '</span>' : '') +
+                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
+                    (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total) + '</span>' : '') +
                     '</div>' +
                     '</div>' +
                     '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
@@ -3700,14 +3579,13 @@
             const mx = Math.max(...weeks.map(w => w.total), 1);
             document.getElementById('weeklyChart').innerHTML = weeks.map((w, i) => {
                 const pct = w.total > 0 ? Math.max((w.total / mx) * 100, 2) : 0;
-                const color = PC[i % PC.length];
                 return '<div class="br-item" style="animation-delay:' + (i * 0.08) + 's">' +
                     '<div class="br-lbl">' + w.label + '</div>' +
                     '<div class="br-track-wrap">' +
-                    '<div class="br-track" style="flex:1">' +
-                    (w.total > 0 ? '<span class="br-val-base">' + rs(w.total, false) + '</span>' : '') +
-                    '<div class="br-fill" style="background:' + color + '; clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                    (w.total > 0 ? '<span class="br-val-fill">' + rs(w.total, false) + '</span>' : '') +
+                    '<div class="br-track">' +
+                    (w.total > 0 ? '<span class="br-val-base">' + rs(w.total) + '</span>' : '') +
+                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
+                    (w.total > 0 ? '<span class="br-val-fill">' + rs(w.total) + '</span>' : '') +
                     '</div>' +
                     '</div>' +
                     '</div></div>';
@@ -4198,8 +4076,8 @@
             const spent = _filteredTxns.filter(r => Number(r.amount) < 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Math.abs(Number(r.amount)), 0);
             const income = _filteredTxns.filter(r => Number(r.amount) > 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Number(r.amount), 0);
             document.getElementById('txn-stat-total').textContent = _filteredTxns.length;
-            document.getElementById('txn-stat-spent').innerHTML = rs(spent);
-            document.getElementById('txn-stat-income').innerHTML = rs(income);
+            document.getElementById('txn-stat-spent').textContent = rs(spent);
+            document.getElementById('txn-stat-income').textContent = rs(income);
             renderTxnTable(_filteredTxns);
         };
         function renderTxnTable(rows) {
@@ -4207,14 +4085,14 @@
             const CHUNK = 200;
             const visible = rows.slice(0, CHUNK);
             let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:56px;text-align:center">⋯</th></tr></thead><tbody>';
-            visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" ondblclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Click to edit · Double-click to delete"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra">' + rs(amt, true, pos ? '+' : '') + '</td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button><button class="act-btn del" onclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Delete">✕</button></td></tr>'; });
+            visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" ondblclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Click to edit · Double-click to delete"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button><button class="act-btn del" onclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Delete">✕</button></td></tr>'; });
             if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:\'Courier Prime\',monospace">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
             h += '</tbody></table></div>';
             document.getElementById('txnListWrap').innerHTML = h;
         }
         window.openTxnEdit = function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); if (!r) return; const d = r.date?.toDate ? r.date.toDate() : new Date(r.date); document.getElementById('txn-edit-id').value = id; document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10); document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || ''); document.getElementById('txn-edit-acc').value = r.account || ''; document.getElementById('txn-edit-cat').value = r.category || ''; document.getElementById('txn-edit-item').value = r.item || ''; document.getElementById('txn-edit-amt').value = r.amount || ''; document.getElementById('txn-edit-tofrom').value = r.toFrom || ''; openM('txnEditModal'); };
         window.saveTxnEdit = async function () { const id = document.getElementById('txn-edit-id').value, dateStr = document.getElementById('txn-edit-date').value, acc = document.getElementById('txn-edit-acc').value.trim(), cat = document.getElementById('txn-edit-cat').value.trim(), item = document.getElementById('txn-edit-item').value.trim(), amt = document.getElementById('txn-edit-amt').value, tofrom = document.getElementById('txn-edit-tofrom').value.trim(); if (!acc || !cat || !item || !amt || !dateStr) return; const newDate = new Date(dateStr + "T12:00:00"); const btn = document.querySelector('#txnEditModal .add-btn'); btn.textContent = 'Saving…'; btn.disabled = true; try { await updateDoc(uDoc('transactions', id), { date: Timestamp.fromDate(newDate), account: acc, category: cat, item, amount: Number(amt), toFrom: tofrom }); closeM('txnEditModal'); await loadPeriodData(); loadTransactionsPage(); toast('Transaction updated'); } catch (e) { alert('Error saving.'); } btn.textContent = 'Save Changes'; btn.disabled = false; };
-        window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount, false)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(); loadTransactionsPage(); toast('Transaction deleted'); };
+        window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(); loadTransactionsPage(); toast('Transaction deleted'); };
 
         /* ═══════════════════════════════════════════════════════
            IMPORT — FULLY REWRITTEN TO HANDLE GOOGLE SHEETS FORMAT
@@ -4484,7 +4362,11 @@
         };
 
         /* ═══ SWIPE ═══ */
-        function setupSwipe() { const main = document.getElementById('mainArea'); if (!main) return; let sx = 0, sy = 0, st = 0, blocked = false; main.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); blocked = !!(e.target.closest('.tbl-scroll-wrap') || e.target.closest('.card table')); }, { passive: true }); main.addEventListener('touchend', e => { if (blocked) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, dt = Date.now() - st; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5 || dt > 500) return; const cur = PAGE_ORDER.findIndex(p => document.getElementById('page-' + p)?.classList.contains('active')); if (cur < 0) return; if (dx < 0 && cur < PAGE_ORDER.length - 1) nav(PAGE_ORDER[cur + 1], null); if (dx > 0 && cur > 0) nav(PAGE_ORDER[cur - 1], null); }, { passive: true }); }
+        function setupSwipe() { const main = document.getElementById('mainArea'); let sx = 0, sy = 0, st = 0, blocked = false; main.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); blocked = !!(e.target.closest('.tbl-scroll-wrap') || e.target.closest('.card table')); }, { passive: true }); main.addEventListener('touchend', e => { if (blocked) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, dt = Date.now() - st; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5 || dt > 500) return; const cur = PAGE_ORDER.findIndex(p => document.getElementById('page-' + p)?.classList.contains('active')); if (cur < 0) return; if (dx < 0 && cur < PAGE_ORDER.length - 1) nav(PAGE_ORDER[cur + 1], null); if (dx > 0 && cur > 0) nav(PAGE_ORDER[cur - 1], null); }, { passive: true }); }
+
+        /* ═══ MODAL HELPERS ═══ */
+        window.openM = id => { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; };
+        window.closeM = id => { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; };
 
         /* Enter handlers */
         document.addEventListener('keydown', e => {
