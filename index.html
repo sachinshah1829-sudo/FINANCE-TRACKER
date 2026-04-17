@@ -2727,9 +2727,8 @@
                             <div class="form-dropdown" id="dd-t-item"></div>
                         </div>
                     </div>
-                    <div class="form-err" id="t-err"></div>
-                </div>
-
+                </div> <!-- manual-entry-wrap -->
+ 
                 <div id="import-entry-wrap" style="display:none;">
                     <div class="card card-p" style="max-width:740px">
                         <div class="card-h">Export Instructions</div>
@@ -3100,40 +3099,6 @@
                 </div>
             </div>
 
-            <!-- TEMPLATES -->
-            <div class="page" id="page-templates">
-                <div class="pg-header">
-                    <div class="pg-title">Templates</div>
-                    <div class="pg-sub">Manage saved expense &amp; income templates</div>
-                </div>
-                <div class="mgmt-section" style="margin-bottom:14px">
-                    <div class="mgmt-sec-hdr">
-                        <div class="mgmt-sec-title">Add New Template</div>
-                    </div>
-                    <div class="mini-form show" style="margin-bottom:0">
-                        <div class="mini-form-row" style="margin-bottom:7px">
-                            <select class="mini-select" id="tpl-add-type">
-                                <option value="EXPENSE">Expense</option>
-                                <option value="INCOME">Income</option>
-                            </select>
-                            <input class="mini-input" id="tpl-add-name" placeholder="Template name (item)">
-                            <input class="mini-input" id="tpl-add-acc" placeholder="Account">
-                            <input class="mini-input" id="tpl-add-cat" placeholder="Category">
-                        </div>
-                        <div class="mini-form-row">
-                            <input class="mini-input" id="tpl-add-item" placeholder="Item">
-                            <input class="mini-input" id="tpl-add-amt" placeholder="Amount" type="number">
-                            <input class="mini-input" id="tpl-add-to" placeholder="To/From">
-                            <button class="mini-save-btn" onclick="doAddTemplate()">Save</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="tplList">
-                    <div class="sp-wrap">
-                        <div class="sp"></div>
-                    </div>
-                </div>
-            </div>
 
 
         </main>
@@ -3419,7 +3384,6 @@
             const p = MO_SHORT[curM - 1] + ' ' + curY;
             document.getElementById('acc-period').textContent = p;
             document.getElementById('ana-period').textContent = p;
-            document.getElementById('hm-title').textContent = 'Heatmap — ' + MO_LONG[curM - 1] + ' ' + curY;
             document.getElementById('hm-lbl').textContent = MO_LONG[curM - 1] + ' ' + curY;
         }
 
