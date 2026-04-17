@@ -3251,16 +3251,18 @@
 
         /* ── FORMAT ── */
         function fmt(n) { if (n >= 100000) return (n / 100000).toFixed(2) + 'L'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return Math.round(n).toString(); }
-        function rs(n, colored = true) {
+        function rs(n, colored = true, prefix = '') {
             const val = Number(n);
             const formatted = '₹' + Math.abs(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            if (!colored) return formatted;
+            if (!colored) return prefix + formatted;
             const cls = val > 0 ? 'amt-pos' : 'amt-blk';
-            return '<span class="' + cls + '" style="color:' + (val > 0 ? 'var(--amt-pos)' : 'var(--amt-blk)') + '">' + (val < 0 ? '-' : '') + formatted + '</span>';
+            return '<span class="' + cls + '" style="color:' + (val > 0 ? 'var(--amt-pos)' : 'var(--amt-blk)') + '">' + prefix + (val < 0 ? '-' : '') + formatted + '</span>';
         }
         function cntUp(id, val) {
             const el = document.getElementById(id), t0 = performance.now();
             const isPos = val > 0;
+            // Color parent to ensure symbol is colored too
+            if (el.parentElement.classList.contains('s-val')) el.parentElement.style.color = isPos ? 'var(--amt-pos)' : 'var(--amt-blk)';
             el.style.color = isPos ? 'var(--amt-pos)' : 'var(--amt-blk)';
             (function t(now) {
                 const p = Math.min((now - t0) / 700, 1), e = 1 - Math.pow(1 - p, 3);
@@ -4104,8 +4106,8 @@
             const spent = _filteredTxns.filter(r => Number(r.amount) < 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Math.abs(Number(r.amount)), 0);
             const income = _filteredTxns.filter(r => Number(r.amount) > 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Number(r.amount), 0);
             document.getElementById('txn-stat-total').textContent = _filteredTxns.length;
-            document.getElementById('txn-stat-spent').textContent = rs(spent);
-            document.getElementById('txn-stat-income').textContent = rs(income);
+            document.getElementById('txn-stat-spent').innerHTML = rs(spent);
+            document.getElementById('txn-stat-income').innerHTML = rs(income);
             renderTxnTable(_filteredTxns);
         };
         function renderTxnTable(rows) {
@@ -4113,14 +4115,14 @@
             const CHUNK = 200;
             const visible = rows.slice(0, CHUNK);
             let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:56px;text-align:center">⋯</th></tr></thead><tbody>';
-            visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" ondblclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Click to edit · Double-click to delete"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button><button class="act-btn del" onclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Delete">✕</button></td></tr>'; });
+            visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" ondblclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Click to edit · Double-click to delete"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra">' + rs(amt, true, pos ? '+' : '') + '</td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button><button class="act-btn del" onclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Delete">✕</button></td></tr>'; });
             if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:\'Courier Prime\',monospace">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
             h += '</tbody></table></div>';
             document.getElementById('txnListWrap').innerHTML = h;
         }
         window.openTxnEdit = function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); if (!r) return; const d = r.date?.toDate ? r.date.toDate() : new Date(r.date); document.getElementById('txn-edit-id').value = id; document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10); document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || ''); document.getElementById('txn-edit-acc').value = r.account || ''; document.getElementById('txn-edit-cat').value = r.category || ''; document.getElementById('txn-edit-item').value = r.item || ''; document.getElementById('txn-edit-amt').value = r.amount || ''; document.getElementById('txn-edit-tofrom').value = r.toFrom || ''; openM('txnEditModal'); };
         window.saveTxnEdit = async function () { const id = document.getElementById('txn-edit-id').value, dateStr = document.getElementById('txn-edit-date').value, acc = document.getElementById('txn-edit-acc').value.trim(), cat = document.getElementById('txn-edit-cat').value.trim(), item = document.getElementById('txn-edit-item').value.trim(), amt = document.getElementById('txn-edit-amt').value, tofrom = document.getElementById('txn-edit-tofrom').value.trim(); if (!acc || !cat || !item || !amt || !dateStr) return; const newDate = new Date(dateStr + "T12:00:00"); const btn = document.querySelector('#txnEditModal .add-btn'); btn.textContent = 'Saving…'; btn.disabled = true; try { await updateDoc(uDoc('transactions', id), { date: Timestamp.fromDate(newDate), account: acc, category: cat, item, amount: Number(amt), toFrom: tofrom }); closeM('txnEditModal'); await loadPeriodData(); loadTransactionsPage(); toast('Transaction updated'); } catch (e) { alert('Error saving.'); } btn.textContent = 'Save Changes'; btn.disabled = false; };
-        window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(); loadTransactionsPage(); toast('Transaction deleted'); };
+        window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount, false)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(); loadTransactionsPage(); toast('Transaction deleted'); };
 
         /* ═══════════════════════════════════════════════════════
            IMPORT — FULLY REWRITTEN TO HANDLE GOOGLE SHEETS FORMAT
