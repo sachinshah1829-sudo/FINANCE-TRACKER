@@ -2705,30 +2705,34 @@
                     <button class="add-btn" id="i-btn" onclick="submitInc()">Save Income</button>
                     <span class="form-save-tpl" id="i-tpl-btn" onclick="saveIncTpl()">+ Save as Template</span>
                 </div>
-                <!-- TRANSFER -->
                 <div class="add-form" id="form-transfer">
-                    <div class="form-row"><label class="form-label">From Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-from" placeholder="Debit from"
-                                autocomplete="off">
+                    <div class="form-cols">
+                        <div class="form-row">
+                            <label class="form-label">From Account</label>
+                            <input class="form-input" id="t-from" placeholder="Select account" autocomplete="off">
                             <div class="form-dropdown" id="dd-t-from"></div>
                         </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">To Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-to" placeholder="Credit to"
-                                autocomplete="off">
+                        <div class="form-row">
+                            <label class="form-label">To Account</label>
+                            <input class="form-input" id="t-to" placeholder="Select account" autocomplete="off">
                             <div class="form-dropdown" id="dd-t-to"></div>
                         </div>
                     </div>
-
-                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
-                            id="t-amt" type="number" placeholder="0.00"></div>
-                    <div class="form-row"><label class="form-label">Note / Item</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-item"
-                                placeholder="Transfer purpose" autocomplete="off">
+                    <div class="form-cols">
+                        <div class="form-row">
+                            <label class="form-label">Amount (₹)</label>
+                            <input class="form-input" id="t-amt" type="number" placeholder="0.00">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">Item / Note</label>
+                            <input class="form-input" id="t-item" placeholder="Internal Transfer" autocomplete="off">
                             <div class="form-dropdown" id="dd-t-item"></div>
                         </div>
                     </div>
-                </div> <!-- manual-entry-wrap -->
+                    <div class="form-err" id="t-err"></div>
+                    <button class="add-btn" id="t-btn" onclick="submitTr()">Execute Transfer</button>
+                </div> <!-- form-transfer -->
+            </div> <!-- manual-entry-wrap -->
  
                 <div id="import-entry-wrap" style="display:none;">
                     <div class="card card-p" style="max-width:740px">
@@ -2768,7 +2772,7 @@
                         <div id="import-preview" style="margin-top:14px"></div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- page-add -->
 
             <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
@@ -3247,10 +3251,44 @@
         const _mselState = { type: new Set(), account: new Set(), cat: new Set(), item: new Set(), tofrom: new Set() };
         let _importRows = [];
 
-        /* ── TOAST ── */
+        /* ── TOAST & MODALS ── */
         window.toast = function (msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
-        window.openM = function (id) { const m = document.getElementById(id); if (m) m.classList.add('show'); };
-        window.closeM = function (id) { const m = document.getElementById(id); if (m) m.classList.remove('show'); };
+        window.openM = id => { const m = document.getElementById(id); if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; } };
+        window.closeM = id => { const m = document.getElementById(id); if (m) { m.classList.remove('open'); document.body.style.overflow = ''; } };
+
+        window.openCategoryM = function (cat) {
+            const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
+            const txns = _allTxns.filter(t => {
+                const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+                return (t.category || '').toUpperCase() === cat.toUpperCase() && d >= sd && d <= ed;
+            });
+            const tEl = document.getElementById('cm-title'), totEl = document.getElementById('cm-total'), bdEl = document.getElementById('cm-body');
+            if (tEl) tEl.textContent = cat;
+            if (totEl) totEl.textContent = rs(txns.reduce((s, t) => s + (Number(t.amount) || 0), 0));
+            if (bdEl) bdEl.innerHTML = txns.map(t => `<div class="m-txn"><div class="m-txn-dot"></div><div style="flex:1"><div class="m-txn-item">${escH(t.item)}</div><div class="m-txn-date">${fmtDate(t.date)} · ${escH(t.account)}</div></div><div class="m-txn-amt">${rs(t.amount)}</div></div>`).join('') || '<div class="empty-s">No transactions</div>';
+            openM('catModal');
+        };
+
+        window.openDayM = function (day) {
+            const d = new Date(curY, curM - 1, day), txns = _allTxns.filter(t => {
+                const td = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+                return td.getDate() === day && td.getMonth() === d.getMonth() && td.getFullYear() === d.getFullYear() && t.category?.toUpperCase() !== 'TRANSFER';
+            });
+            const tEl = document.getElementById('dm-title'), totEl = document.getElementById('dm-total'), bdEl = document.getElementById('dm-body');
+            if (tEl) tEl.textContent = day + ' ' + MO_LONG[curM - 1] + ' ' + curY;
+            if (totEl) totEl.textContent = rs(txns.reduce((s, t) => s + Math.abs(Number(t.amount)), 0));
+            if (bdEl) bdEl.innerHTML = txns.map(t => `<div class="m-txn"><div class="m-txn-dot"></div><div style="flex:1"><div class="m-txn-item">${escH(t.item)}</div><div class="m-txn-date">${escH(t.account)} · ${escH(t.category)}</div></div><div class="m-txn-amt">${rs(t.amount)}</div></div>`).join('') || '<div class="empty-s">No expenses</div>';
+            openM('dayModal');
+        };
+
+        window.openPersonM = function (name, bal) {
+            const txns = _allTxns.filter(t => t.toFrom === name && t.category?.toUpperCase() === 'TRANSFER');
+            const nEl = document.getElementById('pm-name'), bEl = document.getElementById('pm-bal'), bdEl = document.getElementById('pm-body');
+            if (nEl) nEl.textContent = name;
+            if (bEl) bEl.textContent = rs(bal);
+            if (bdEl) bdEl.innerHTML = txns.map(t => `<div class="m-txn"><div class="m-txn-dot"></div><div style="flex:1"><div class="m-txn-item">${escH(t.item)}</div><div class="m-txn-date">${fmtDate(t.date)} · ${escH(t.account)}</div></div><div class="m-txn-amt">${rs(t.amount)}</div></div>`).join('') || '<div class="empty-s">No transfer history</div>';
+            openM('personModal');
+        };
 
         /* ── FORMAT ── */
         function fmt(n) { if (n >= 100000) return (n / 100000).toFixed(2) + 'L'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return Math.round(n).toString(); }
@@ -3276,13 +3314,12 @@
         function fmtDate(ts) { if (!ts) return ''; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear(); }
         function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-        /* ═══ AUTH ═══ */
         function switchAuthTab(tab) {
             document.querySelectorAll('.auth-pill').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(x => x.classList.remove('active'));
             document.getElementById('atab-' + tab).classList.add('active');
             document.getElementById('aform-' + tab).classList.add('active');
-            ['l-err', 's-err'].forEach(id => document.getElementById(id).textContent = '');
+            ['l-err', 's-err'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
         }
         window.switchAuthTab = switchAuthTab;
 
@@ -3331,80 +3368,93 @@
             if (user) {
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('appShell').classList.remove('hidden');
-                document.getElementById('sbUserName').textContent = user.displayName || 'User';
-                document.getElementById('sbUserEmail').textContent = user.email || '';
-                // Update avatar initial
-                const ava = document.querySelector('.sb-ava');
+                document.getElementById('sb-u-name').textContent = user.displayName || 'Finance User';
+                document.getElementById('sb-u-email').textContent = user.email || '';
+                const ava = document.getElementById('sb-u-ava');
                 if (ava) ava.textContent = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
-                initApp();
+                await initApp();
+                // Safe nav on start
+                const activeId = PAGE_ORDER.find(p => document.getElementById('page-' + p)?.classList.contains('active')) || 'add';
+                nav(activeId, document.getElementById('nav-' + activeId));
             } else {
-                document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('appShell').classList.add('hidden');
+                document.getElementById('authScreen').classList.remove('hidden');
                 ['l-btn', 's-btn'].forEach(id => { const b = document.getElementById(id); if (b) { b.disabled = false; b.textContent = id === 'l-btn' ? 'Sign In' : 'Create Account'; } });
             }
         });
 
-        /* ═══ APP INIT ═══ */
         async function initApp() {
             const now = new Date(); curM = now.getMonth() + 1; curY = now.getFullYear();
-            document.getElementById('monthSel').value = curM;
-            const ys = document.getElementById('yearSel'); ys.innerHTML = '';
-            for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
+            const ms = document.getElementById('monthSel'); if (ms) ms.value = curM;
+            const ys = document.getElementById('yearSel');
+            if (ys) {
+                ys.innerHTML = '';
+                for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
+            }
             await loadAllData();
             setupSwipe();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { ['personModal', 'dayModal', 'accModal', 'editModal', 'txnEditModal'].forEach(closeM); } });
             document.addEventListener('click', e => { if (!e.target.closest('.txn-msel-wrap')) ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.style.display = 'none'; }); });
         }
 
-        /* ═══ DATA LOADING ═══ */
         async function loadAllData() {
             await Promise.all([loadAccounts(), loadCategories(), loadItems(), loadPeople(), loadTemplates()]);
             setupAddFormDropdowns();
             await loadPeriodData();
         }
-        async function loadAccounts() { const snap = await getDocs(uRef('accounts')); _accounts = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
-        async function loadCategories() { const snap = await getDocs(uRef('categories')); _categories = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
-        async function loadItems() { const snap = await getDocs(uRef('items')); _items = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
-        async function loadPeople() { const snap = await getDocs(uRef('people')); _people = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
-        async function loadTemplates() { const snap = await getDocs(uRef('templates')); _templates = snap.docs.map(d => ({ id: d.id, ...d.data() })); expTpls = _templates.filter(t => t.type === 'EXPENSE'); incTpls = _templates.filter(t => t.type === 'INCOME'); }
+        async function loadAccounts() { try { const snap = await getDocs(uRef('accounts')); _accounts = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
+        async function loadCategories() { try { const snap = await getDocs(uRef('categories')); _categories = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
+        async function loadItems() { try { const snap = await getDocs(uRef('items')); _items = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
+        async function loadPeople() { try { const snap = await getDocs(uRef('people')); _people = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
+        async function loadTemplates() { try { const snap = await getDocs(uRef('templates')); _templates = snap.docs.map(d => ({ id: d.id, ...d.data() })); expTpls = _templates.filter(t => t.type === 'EXPENSE'); incTpls = _templates.filter(t => t.type === 'INCOME'); } catch(e){} }
 
         async function loadAllTransactions() {
-            const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
-            _allTxns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            const bal = {};
-            _accounts.forEach(a => bal[a.name] = (a.openingBalance || 0));
-            _allTxns.forEach(t => { const a = t.account, v = Number(t.amount) || 0; if (!a) return; if (bal[a] === undefined) bal[a] = 0; bal[a] += v; t.closingBalance = bal[a]; });
-            return _allTxns;
+            try {
+                const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
+                _allTxns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const bal = {};
+                _accounts.forEach(a => bal[a.name] = (a.openingBalance || 0));
+                _allTxns.forEach(t => { const a = t.account, v = Number(t.amount) || 0; if (!a) return; if (bal[a] === undefined) bal[a] = 0; bal[a] += v; t.closingBalance = bal[a]; });
+                return _allTxns;
+            } catch(e) { console.error(e); return []; }
         }
 
         async function loadPeriodData() {
-            await loadAllTransactions();
-            const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
-            const periodTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
-            const totalExpense = periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
-            const expDays = {};
-            periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const d = (t.date?.toDate ? t.date.toDate() : new Date(t.date)).getDate(); expDays[d] = (expDays[d] || 0) + Math.abs(Number(t.amount)); });
-            const avgDaily = Object.keys(expDays).length > 0 ? Math.round(Object.values(expDays).reduce((a, b) => a + b, 0) / Object.keys(expDays).length) : 0;
-            const daysInMonth = ed.getDate();
-            const heatmapDays = [];
-            for (let d = 1; d <= daysInMonth; d++)heatmapDays.push({ day: d, total: expDays[d] || 0 });
-            const weeklyExpenses = buildWeekly(periodTxns, sd, ed);
-            const categoryExpenses = buildCategoryTotals(periodTxns);
-            const finalBal = {};
-            _accounts.forEach(a => finalBal[a.id] = (a.openingBalance || 0));
-            _allTxns.forEach(t => { const acc = _accounts.find(a => a.name === t.account); if (acc) finalBal[acc.id] = (finalBal[acc.id] || 0) + (Number(t.amount) || 0); });
-            _accounts.forEach(a => { a.currentBalance = finalBal[a.id] || 0; });
-            renderAccounts(_accounts, totalExpense, avgDaily);
-            renderHeatmap({ days: heatmapDays, firstDayOfWeek: sd.getDay() });
-            renderWeekly(weeklyExpenses);
-            renderPie(categoryExpenses);
-            updateMoMTrends();
-            populateLdrSel(_accounts);
-            if (document.getElementById('ldrAccSel').value) loadLedger();
-            const p = MO_SHORT[curM - 1] + ' ' + curY;
-            document.getElementById('acc-period').textContent = p;
-            document.getElementById('ana-period').textContent = p;
-            document.getElementById('hm-lbl').textContent = MO_LONG[curM - 1] + ' ' + curY;
+            try {
+                await loadAllTransactions();
+                const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
+                const periodTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
+                const totalExpense = periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
+                const expDays = {};
+                periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const d = (t.date?.toDate ? t.date.toDate() : new Date(t.date)).getDate(); expDays[d] = (expDays[d] || 0) + Math.abs(Number(t.amount)); });
+                const avgDaily = Object.keys(expDays).length > 0 ? Math.round(Object.values(expDays).reduce((a, b) => a + b, 0) / Object.keys(expDays).length) : 0;
+                const daysInMonth = ed.getDate();
+                const heatmapDays = [];
+                for (let d = 1; d <= daysInMonth; d++)heatmapDays.push({ day: d, total: expDays[d] || 0 });
+                const weeklyExpenses = buildWeekly(periodTxns, sd, ed);
+                const categoryExpenses = buildCategoryTotals(periodTxns);
+                const finalBal = {};
+                _accounts.forEach(a => finalBal[a.id] = (a.openingBalance || 0));
+                _allTxns.forEach(t => { const acc = _accounts.find(a => a.name === t.account); if (acc) finalBal[acc.id] = (finalBal[acc.id] || 0) + (Number(t.amount) || 0); });
+                _accounts.forEach(a => { a.currentBalance = finalBal[a.id] || 0; });
+
+                // Start rendering with guards
+                try { renderAccounts(_accounts, totalExpense, avgDaily); } catch(e){ console.error(e); }
+                try { renderHeatmap({ days: heatmapDays, firstDayOfWeek: sd.getDay() }); } catch(e){ console.error(e); }
+                try { renderWeekly(weeklyExpenses); } catch(e){ console.error(e); }
+                try { renderPie(categoryExpenses); } catch(e){ console.error(e); }
+                try { updateMoMTrends(); } catch(e){ console.error(e); }
+                try { populateLdrSel(_accounts); } catch(e){ console.error(e); }
+
+                const ldrSel = document.getElementById('ldrAccSel');
+                if (ldrSel && ldrSel.value) loadLedger();
+                const p = MO_SHORT[curM - 1] + ' ' + curY;
+                ['acc-period', 'ana-period'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = p; });
+                const hm = document.getElementById('hm-lbl'); if (hm) hm.textContent = MO_LONG[curM - 1] + ' ' + curY;
+            } catch (err) {
+                console.error('loadPeriodData fatal', err);
+                toast('Error loading period data');
+            }
         }
 
         function buildWeekly(txns, sd, ed) {
@@ -3415,9 +3465,15 @@
         }
         function buildCategoryTotals(txns) { const ct = {}; txns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const c = (t.category || 'OTHER').toUpperCase(); ct[c] = (ct[c] || 0) + Math.abs(Number(t.amount)); }); return Object.entries(ct).map(([category, total]) => ({ category, total })).sort((a, b) => b.total - a.total); }
 
+        function bkEmo(n) {
+            if (!n) return '💳';
+            n = String(n).toUpperCase();
+            if (n.includes('HDFC')) return '🏦'; if (n.includes('SBI')) return '🏛️'; if (n.includes('CASH')) return '💵';
+            return '🏦';
+        }
+
         window.onPeriodChange = async function () { curM = +document.getElementById('monthSel').value; curY = +document.getElementById('yearSel').value; await loadPeriodData(); };
 
-        /* ═══ NAV ═══ */
         window.nav = function (name, el) {
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
@@ -3456,7 +3512,6 @@
             document.getElementById('creditList').innerHTML = accs.filter(a => a.type === 'CREDIT_CARD').map((a, i) => accHTML(a, i, 'credit')).join('') || '<div class="empty-s">No credit cards</div>';
             document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No contacts</div>';
         }
-        function bkEmo(n) { n = n.toUpperCase(); if (n.includes('HDFC')) return 'H'; if (n.includes('ICICI')) return 'I'; if (n.includes('AXIS')) return 'A'; if (n.includes('SBI')) return 'S'; if (n.includes('WALLET')) return 'W'; if (n.includes('CREDIT')) return 'C'; if (n.includes('CASH')) return '$'; return 'B'; }
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = accKind === 'credit';
@@ -4394,11 +4449,7 @@
         };
 
         /* ═══ SWIPE ═══ */
-        function setupSwipe() { const main = document.getElementById('mainArea'); let sx = 0, sy = 0, st = 0, blocked = false; main.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); blocked = !!(e.target.closest('.tbl-scroll-wrap') || e.target.closest('.card table')); }, { passive: true }); main.addEventListener('touchend', e => { if (blocked) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, dt = Date.now() - st; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5 || dt > 500) return; const cur = PAGE_ORDER.findIndex(p => document.getElementById('page-' + p)?.classList.contains('active')); if (cur < 0) return; if (dx < 0 && cur < PAGE_ORDER.length - 1) nav(PAGE_ORDER[cur + 1], null); if (dx > 0 && cur > 0) nav(PAGE_ORDER[cur - 1], null); }, { passive: true }); }
-
-        /* ═══ MODAL HELPERS ═══ */
-        window.openM = id => { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; };
-        window.closeM = id => { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; };
+        function setupSwipe() { const main = document.getElementById('mainArea'); if (!main) return; let sx = 0, sy = 0, st = 0, blocked = false; main.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); blocked = !!(e.target.closest('.tbl-scroll-wrap') || e.target.closest('.card table')); }, { passive: true }); main.addEventListener('touchend', e => { if (blocked) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, dt = Date.now() - st; if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5 || dt > 500) return; const cur = PAGE_ORDER.findIndex(p => document.getElementById('page-' + p)?.classList.contains('active')); if (cur < 0) return; if (dx < 0 && cur < PAGE_ORDER.length - 1) nav(PAGE_ORDER[cur + 1], null); if (dx > 0 && cur > 0) nav(PAGE_ORDER[cur - 1], null); }, { passive: true }); }
 
         /* Enter handlers */
         document.addEventListener('keydown', e => {
