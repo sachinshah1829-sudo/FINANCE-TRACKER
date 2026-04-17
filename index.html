@@ -3233,9 +3233,18 @@
         const db = getFirestore(app);
         const gProvider = new GoogleAuthProvider();
 
-        const uid = () => auth.currentUser?.uid;
-        const uRef = (col) => collection(db, 'users', uid(), col);
-        const uDoc = (col, id) => doc(db, 'users', uid(), col, id);
+        let _userId = null;
+        const uid = () => _userId || auth.currentUser?.uid;
+        const uRef = (col) => { 
+            const u = uid(); 
+            if(!u) throw new Error("Auth required for " + col);
+            return collection(db, 'users', u, col); 
+        };
+        const uDoc = (col, id) => {
+            const u = uid();
+            if(!u) throw new Error("Auth required for doc " + col);
+            return doc(db, 'users', u, col, id);
+        };
 
         const MO_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const MO_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -3366,24 +3375,28 @@
 
         onAuthStateChanged(auth, async user => {
             if (user) {
+                _userId = user.uid;
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('appShell').classList.remove('hidden');
                 document.getElementById('sb-u-name').textContent = user.displayName || 'Finance User';
                 document.getElementById('sb-u-email').textContent = user.email || '';
                 const ava = document.getElementById('sb-u-ava');
                 if (ava) ava.textContent = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
-                await initApp();
-                // Safe nav on start
+                
+                await initApp(user.uid);
+                
                 const activeId = PAGE_ORDER.find(p => document.getElementById('page-' + p)?.classList.contains('active')) || 'add';
                 nav(activeId, document.getElementById('nav-' + activeId));
             } else {
+                _userId = null;
                 document.getElementById('appShell').classList.add('hidden');
                 document.getElementById('authScreen').classList.remove('hidden');
                 ['l-btn', 's-btn'].forEach(id => { const b = document.getElementById(id); if (b) { b.disabled = false; b.textContent = id === 'l-btn' ? 'Sign In' : 'Create Account'; } });
             }
         });
 
-        async function initApp() {
+        async function initApp(id) {
+            _userId = id;
             const now = new Date(); curM = now.getMonth() + 1; curY = now.getFullYear();
             const ms = document.getElementById('monthSel'); if (ms) ms.value = curM;
             const ys = document.getElementById('yearSel');
@@ -3391,16 +3404,38 @@
                 ys.innerHTML = '';
                 for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
             }
-            await loadAllData();
+            
+            // Failsafe timer to remove spinners if things hang
+            const failsafe = setTimeout(() => {
+                if (_accounts.length === 0) {
+                    toast("Connection slow... showing zero state.");
+                    renderAccounts([], 0, 0);
+                    renderHeatmap({ days: [], firstDayOfWeek: 0 });
+                }
+            }, 7500);
+
+            try {
+                await loadAllData();
+                clearTimeout(failsafe);
+            } catch (err) {
+                console.error("initApp error", err);
+                renderAccounts([], 0, 0); // Failsafe render
+            }
+            
             setupSwipe();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { ['personModal', 'dayModal', 'accModal', 'editModal', 'txnEditModal'].forEach(closeM); } });
             document.addEventListener('click', e => { if (!e.target.closest('.txn-msel-wrap')) ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.style.display = 'none'; }); });
         }
 
         async function loadAllData() {
-            await Promise.all([loadAccounts(), loadCategories(), loadItems(), loadPeople(), loadTemplates()]);
-            setupAddFormDropdowns();
-            await loadPeriodData();
+            try {
+                await Promise.all([loadAccounts(), loadCategories(), loadItems(), loadPeople(), loadTemplates()]);
+                setupAddFormDropdowns();
+                await loadPeriodData();
+            } catch (e) {
+                console.error("loadAllData failed", e);
+                throw e;
+            }
         }
         async function loadAccounts() { try { const snap = await getDocs(uRef('accounts')); _accounts = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
         async function loadCategories() { try { const snap = await getDocs(uRef('categories')); _categories = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch(e){} }
