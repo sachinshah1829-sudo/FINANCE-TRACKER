@@ -2551,9 +2551,6 @@
                 <div class="nav-item" id="nav-accounts" onclick="nav('accounts',this)">
                     <div class="nav-ico">▦</div>Accounts
                 </div>
-                <div class="nav-item" id="nav-heatmap" onclick="nav('heatmap',this)">
-                    <div class="nav-ico">▣</div>Heatmap
-                </div>
                 <div class="nav-item" id="nav-analytics" onclick="nav('analytics',this)">
                     <div class="nav-ico">◈</div>Analytics
                 </div>
@@ -2565,12 +2562,6 @@
                 </div>
                 <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
                     <div class="nav-ico">⚙</div>Manage
-                </div>
-                <div class="nav-item" id="nav-templates" onclick="nav('templates',this)">
-                    <div class="nav-ico">⊡</div>Templates
-                </div>
-                <div class="nav-item" id="nav-import" onclick="nav('import',this)">
-                    <div class="nav-ico">⬆</div>Import Data
                 </div>
             </div>
             <div class="sb-period">
@@ -2609,15 +2600,20 @@
 
             <!-- ADD ENTRY -->
             <div class="page active" id="page-add">
-                <div class="pg-header">
-                    <div class="pg-title">Add Entry</div>
-                    <div class="pg-sub">Record a new expense, income, or transfer</div>
+                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <div class="pg-title" id="add-pg-title">Add Entry</div>
+                        <div class="pg-sub" id="add-pg-sub">Record a new expense, income, or transfer</div>
+                    </div>
+                    <button class="add-inline-btn" id="import-toggle-btn" onclick="toggleImportMode()" style="padding: 10px 16px;">Import Data</button>
                 </div>
-                <div class="add-tabs">
-                    <div class="add-tab active" onclick="switchAddTab('expense',this)">Expense</div>
-                    <div class="add-tab" onclick="switchAddTab('income',this)">Income</div>
-                    <div class="add-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
-                </div>
+
+                <div id="manual-entry-wrap">
+                    <div class="add-tabs">
+                        <div class="add-tab active" onclick="switchAddTab('expense',this)">Expense</div>
+                        <div class="add-tab" onclick="switchAddTab('income',this)">Income</div>
+                        <div class="add-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
+                    </div>
                 <!-- EXPENSE -->
                 <div class="add-form active" id="form-expense">
                     <div class="form-row"><label class="form-label">Template</label>
@@ -2732,7 +2728,45 @@
                         </div>
                     </div>
                     <div class="form-err" id="t-err"></div>
-                    <button class="add-btn" id="t-btn" onclick="submitTr()">Execute Transfer</button>
+                </div>
+
+                <div id="import-entry-wrap" style="display:none;">
+                    <div class="card card-p" style="max-width:740px">
+                        <div class="card-h">Export Instructions</div>
+                        <div class="import-hint">
+                            1. In your Google Sheet, go to <b>File → Download → CSV (.csv)</b><br>
+                            2. Open the downloaded file in a text editor and copy all content<br>
+                            3. Paste below. Your sheet columns (any order):<br>
+                            <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM · CLOSING BALANCE (optional)</code><br><br>
+                            <b>Date formats accepted:</b> DD/MM/YYYY, DD/MM/YYYY HH:MM:SS, YYYY-MM-DD<br>
+                            <b>Amount:</b> negative = expense (e.g. -399.42), positive = income<br>
+                            <b>Note:</b> ₹ symbol, commas in numbers, and closing balance column are handled
+                            automatically.<br>
+                            <b>After import:</b> All unique accounts, categories, items &amp; people are auto-created in
+                            Manage.
+                        </div>
+                        <div class="form-row" style="margin-bottom:14px;">
+                            <label class="form-label">Import Type</label>
+                            <select id="import-type-sel" class="form-input" style="cursor:pointer" onchange="clearImport()">
+                                <option value="TXN">Transactions (Date, Account, Category, Item, Amount, To/From)</option>
+                                <option value="TPL">Templates (Type, Name, Account, Category, Item, Amount, To/From)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">CSV Data</label>
+                            <textarea id="import-csv" class="form-input" rows="10" placeholder="Paste your CSV here…"
+                                style="resize:vertical;font-family:'Courier Prime',monospace;font-size:12px;line-height:1.5"></textarea>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                            <button class="add-btn" onclick="previewImport()" style="max-width:170px">Preview
+                                Import</button>
+                            <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
+                                style="max-width:210px;display:none">✓ Import to Firebase</button>
+                            <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
+                        </div>
+                        <div id="import-preview" style="margin-top:14px"></div>
+                    </div>
                 </div>
             </div>
 
@@ -2798,13 +2832,24 @@
                 </div>
             </div>
 
-            <!-- HEATMAP -->
-            <div class="page" id="page-heatmap">
-                <div class="pg-header">
-                    <div class="pg-title" id="hm-title">Heatmap</div>
-                    <div class="pg-sub">Click any coloured date to see expenses</div>
+
+            <!-- ANALYTICS -->
+            <div class="page" id="page-analytics">
+                <div class="pg-header"
+                    style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <div class="pg-title">Analytics</div>
+                        <div class="pg-sub" id="ana-period">—</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
+                        <input type="number" id="ana-lookback" class="form-input" style="width:70px; padding:6px 10px;"
+                            value="6" min="1" max="24" onchange="updateMoMTrends()">
+                    </div>
                 </div>
-                <div class="card card-p hm-wrap">
+
+                <!-- HEATMAP INTEGRATED -->
+                <div class="card card-p hm-wrap" style="margin-bottom: 2rem; max-width: 100%;">
                     <div class="card-h" id="hm-lbl">—</div>
                     <div class="dcl-row">
                         <div class="dcl">Sun</div>
@@ -2822,22 +2867,6 @@
                     </div>
                     <div class="hm-legend"><span>Low</span>
                         <div class="lgd-sw" id="lgdSw"></div><span>High</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ANALYTICS -->
-            <div class="page" id="page-analytics">
-                <div class="pg-header"
-                    style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <div class="pg-title">Analytics</div>
-                        <div class="pg-sub" id="ana-period">—</div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
-                        <input type="number" id="ana-lookback" class="form-input" style="width:70px; padding:6px 10px;"
-                            value="6" min="1" max="24" onchange="updateMoMTrends()">
                     </div>
                 </div>
                 <div class="ana-grid pie-colors">
@@ -2993,6 +3022,7 @@
                         Categories</div>
                     <div class="add-tab" id="mtab-items" onclick="switchMgmtTab('items',this)">Items</div>
                     <div class="add-tab" id="mtab-people" onclick="switchMgmtTab('people',this)">People</div>
+                    <div class="add-tab" id="mtab-templates" onclick="switchMgmtTab('templates',this); renderTemplatesPage();">Templates</div>
                 </div>
                 <div class="mgmt-panel active" id="mpanel-categories">
                     <div class="mgmt-section" style="margin-bottom:20px">
@@ -3105,49 +3135,6 @@
                 </div>
             </div>
 
-            <!-- IMPORT DATA -->
-            <div class="page" id="page-import">
-                <div class="pg-header">
-                    <div class="pg-title">Import from Google Sheets</div>
-                    <div class="pg-sub">Paste CSV exported from your Expense Tracker Google Sheet</div>
-                </div>
-                <div class="card card-p" style="max-width:740px">
-                    <div class="card-h">Export Instructions</div>
-                    <div class="import-hint">
-                        1. In your Google Sheet, go to <b>File → Download → CSV (.csv)</b><br>
-                        2. Open the downloaded file in a text editor and copy all content<br>
-                        3. Paste below. Your sheet columns (any order):<br>
-                        <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM · CLOSING BALANCE (optional)</code><br><br>
-                        <b>Date formats accepted:</b> DD/MM/YYYY, DD/MM/YYYY HH:MM:SS, YYYY-MM-DD<br>
-                        <b>Amount:</b> negative = expense (e.g. -399.42), positive = income<br>
-                        <b>Note:</b> ₹ symbol, commas in numbers, and closing balance column are handled
-                        automatically.<br>
-                        <b>After import:</b> All unique accounts, categories, items &amp; people are auto-created in
-                        Manage.
-                    </div>
-                    <div class="form-row" style="margin-bottom:14px;">
-                        <label class="form-label">Import Type</label>
-                        <select id="import-type-sel" class="form-input" style="cursor:pointer" onchange="clearImport()">
-                            <option value="TXN">Transactions (Date, Account, Category, Item, Amount, To/From)</option>
-                            <option value="TPL">Templates (Type, Name, Account, Category, Item, Amount, To/From)
-                            </option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label class="form-label">CSV Data</label>
-                        <textarea id="import-csv" class="form-input" rows="10" placeholder="Paste your CSV here…"
-                            style="resize:vertical;font-family:'Courier Prime',monospace;font-size:12px;line-height:1.5"></textarea>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-                        <button class="add-btn" onclick="previewImport()" style="max-width:170px">Preview
-                            Import</button>
-                        <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
-                            style="max-width:210px;display:none">✓ Import to Firebase</button>
-                        <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
-                    </div>
-                    <div id="import-preview" style="margin-top:14px"></div>
-                </div>
-            </div>
 
         </main>
     </div>
@@ -3285,7 +3272,7 @@
         const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         // Greyscale pie colors
         const PC = ['#0a0a0a', '#222222', '#3a3a3a', '#555555', '#6e6e6e', '#888888', '#9e9e9e', '#b4b4b4', '#c6c6c6', '#d6d6d6', '#e4e4e4', '#eeeeee'];
-        const PAGE_ORDER = ['add', 'accounts', 'heatmap', 'analytics', 'ledger', 'transactions', 'manage', 'templates', 'import'];
+        const PAGE_ORDER = ['add', 'accounts', 'analytics', 'ledger', 'transactions', 'manage'];
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
         let curM, curY;
@@ -3456,8 +3443,23 @@
             closeSidebar();
             if (name === 'ledger' && !document.getElementById('ldrAccSel').value) { const f = _accounts.find(a => a.name.toUpperCase().includes('HDFC')) || _accounts.find(a => a.type === 'BANK'); if (f) { document.getElementById('ldrAccSel').value = f.name; loadLedger(); } }
             if (name === 'manage') renderManage();
-            if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
+        };
+        window.toggleImportMode = function() {
+            const isImport = document.getElementById('import-entry-wrap').style.display === 'block';
+            if (isImport) {
+                document.getElementById('import-entry-wrap').style.display = 'none';
+                document.getElementById('manual-entry-wrap').style.display = 'block';
+                document.getElementById('import-toggle-btn').textContent = 'Import Data';
+                document.getElementById('add-pg-title').textContent = 'Add Entry';
+                document.getElementById('add-pg-sub').textContent = 'Record a new expense, income, or transfer';
+            } else {
+                document.getElementById('import-entry-wrap').style.display = 'block';
+                document.getElementById('manual-entry-wrap').style.display = 'none';
+                document.getElementById('import-toggle-btn').textContent = 'Manual Entry';
+                document.getElementById('add-pg-title').textContent = 'Import Data';
+                document.getElementById('add-pg-sub').textContent = 'Paste CSV exported from your Google Sheet';
+            }
         };
         window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('mob-open'); document.getElementById('sbOverlay').classList.toggle('show'); };
         function closeSidebar() { document.getElementById('sidebar').classList.remove('mob-open'); document.getElementById('sbOverlay').classList.remove('show'); }
