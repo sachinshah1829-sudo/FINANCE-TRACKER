@@ -2489,6 +2489,7 @@
                         type="email" placeholder="you@example.com" autocomplete="email"></div>
                 <div class="af-field"><label class="af-label">Password</label><input class="af-input" id="l-pwd"
                         type="password" placeholder="••••••••" autocomplete="current-password"></div>
+                <div class="form-err" id="l-err"></div>
                 <button class="af-btn" id="l-btn" onclick="doLogin()">Sign In</button>
                 <div class="af-divider">or</div>
                 <button class="google-btn" onclick="doGoogleAuth()">
@@ -2504,7 +2505,6 @@
                     </svg>
                     Continue with Google
                 </button>
-                <div class="af-err" id="l-err"></div>
             </div>
 
             <div class="auth-form" id="aform-signup">
@@ -2514,6 +2514,7 @@
                         type="email" placeholder="you@example.com" autocomplete="email"></div>
                 <div class="af-field"><label class="af-label">Password</label><input class="af-input" id="s-pwd"
                         type="password" placeholder="Min 6 characters" autocomplete="new-password"></div>
+                <div class="form-err" id="s-err"></div>
                 <button class="af-btn" id="s-btn" onclick="doSignup()">Create Account</button>
                 <div class="af-divider">or</div>
                 <button class="google-btn" onclick="doGoogleAuth()">
@@ -3248,6 +3249,8 @@
 
         /* ── TOAST ── */
         window.toast = function (msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
+        window.openM = function (id) { const m = document.getElementById(id); if (m) m.classList.add('show'); };
+        window.closeM = function (id) { const m = document.getElementById(id); if (m) m.classList.remove('show'); };
 
         /* ── FORMAT ── */
         function fmt(n) { if (n >= 100000) return (n / 100000).toFixed(2) + 'L'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return Math.round(n).toString(); }
@@ -3504,7 +3507,6 @@
                     @keyframes cardEnter { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
                 </style>
                 `;
-            } else {
             } else {
                 const pos = (a.currentBalance || 0) >= 0;
                 balHTML = '<div class="acc-bal ' + (pos ? 'pos' : 'neg') + '">' + rs(a.currentBalance || 0) + '</div>';
