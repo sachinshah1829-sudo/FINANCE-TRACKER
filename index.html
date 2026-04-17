@@ -55,8 +55,8 @@
             --amber-bg: #FFF9E6;
 
             /* Amount colours */
-            --amt-neg: #000000;
-            --amt-pos: #444444;
+            --amt-pos: #00D18E;
+            --amt-blk: #000000;
 
             /* Radius — 0 everywhere to match investment tracker */
             --r-xs: 0px;
@@ -3235,8 +3235,8 @@
         const MO_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const MO_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        // Greyscale pie colors
-        const PC = ['#0a0a0a', '#222222', '#3a3a3a', '#555555', '#6e6e6e', '#888888', '#9e9e9e', '#b4b4b4', '#c6c6c6', '#d6d6d6', '#e4e4e4', '#eeeeee'];
+        // Vibrant pastel palette
+        const PC = ['#FFD93D', '#6BCB77', '#FF6B6B', '#4D96FF', '#B983FF', '#FFA3FD', '#6EC72D', '#FF8D29', '#2D31FA', '#FF1E00'];
         const PAGE_ORDER = ['add', 'accounts', 'analytics', 'ledger', 'transactions', 'manage'];
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
@@ -3251,8 +3251,23 @@
 
         /* ── FORMAT ── */
         function fmt(n) { if (n >= 100000) return (n / 100000).toFixed(2) + 'L'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return Math.round(n).toString(); }
-        function rs(n) { return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-        function cntUp(id, val) { const el = document.getElementById(id), t0 = performance.now(); (function t(now) { const p = Math.min((now - t0) / 700, 1), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(val * e); if (p < 1) requestAnimationFrame(t); else el.textContent = fmt(val); })(t0); }
+        function rs(n, colored = true) {
+            const val = Number(n);
+            const formatted = '₹' + Math.abs(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (!colored) return formatted;
+            const cls = val > 0 ? 'amt-pos' : 'amt-blk';
+            return '<span class="' + cls + '" style="color:' + (val > 0 ? 'var(--amt-pos)' : 'var(--amt-blk)') + '">' + (val < 0 ? '-' : '') + formatted + '</span>';
+        }
+        function cntUp(id, val) {
+            const el = document.getElementById(id), t0 = performance.now();
+            const isPos = val > 0;
+            el.style.color = isPos ? 'var(--amt-pos)' : 'var(--amt-blk)';
+            (function t(now) {
+                const p = Math.min((now - t0) / 700, 1), e = 1 - Math.pow(1 - p, 3);
+                el.textContent = fmt(val * e);
+                if (p < 1) requestAnimationFrame(t); else el.textContent = fmt(val);
+            })(t0);
+        }
         function fmtDate(ts) { if (!ts) return ''; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear(); }
         function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
@@ -3444,9 +3459,50 @@
             let balHTML = '';
             if (a.type === 'CREDIT_CARD') {
                 const limit = a.openingBalance || 0;
-                const spent = limit - (a.currentBalance || 0);
+                const balance = a.currentBalance || 0;
+                const spent = limit - balance;
                 const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
-                return '<div class="card card-p clickable cc-ui-card" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + (a.currentBalance || 0) + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's; background: linear-gradient(135deg, var(--dark), #333, var(--black)); color: #f0efe9; position: relative; margin-bottom: 12px; min-height: 160px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; border-radius: var(--r-xl);" onclick="accItemClick(this)"><div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;"></div><div style="position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none;"></div><div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1;"><div style="font-size: 16px; font-weight: 700; letter-spacing: 2px;">' + escH(a.name) + '</div><div class="acc-acts" onclick="event.stopPropagation()" style="background: rgba(0,0,0,0.6); padding: 4px; border-radius: var(--r-sm); margin-left: auto;"><button class="act-btn" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="editAccEl(this.closest(\'.cc-ui-card\'))">🖌</button><button class="act-btn del" style="border:none;background:transparent;color:#f0efe9;width:24px;height:24px;" onclick="deleteAccEl(this.closest(\'.cc-ui-card\'))">🗑</button></div></div><div style="margin-top: 10px; position: relative; z-index: 1;"><div style="font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Limit Left / Total Limit</div><div style="font-size: 22px; font-weight: 700;">' + rs(a.currentBalance || 0) + ' <span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.6);">/ ' + fmt(limit) + '</span></div></div><div style="margin-top: 16px; position: relative; z-index: 1;"><div style="display: flex; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,0.8); margin-bottom: 5px; font-weight: 700;"><span>Utilized: ' + pct.toFixed(1) + '%</span><span>Spent: ' + rs(spent) + '</span></div><div style="height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.2);"><div style="position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: linear-gradient(90deg, #ff4e50, #f9d423); border-radius: 3px;"></div></div></div></div>';
+                return `
+                <div class="card clickable cc-premium-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)" style="margin-bottom:20px; border:none; border-radius:16px; min-height:190px; background: linear-gradient(135deg, #111 0%, #333 100%); color:#fff; padding:20px; position:relative; overflow:hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: cardEnter 0.4s ease forwards;">
+                    <div style="position:absolute; top:-40px; right:-40px; width:140px; height:140px; background:rgba(255,255,255,0.05); border-radius:50%;"></div>
+                    <div style="position:absolute; bottom:20px; right:20px; font-size:40px; opacity:0.1; font-weight:900;">VISA</div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px;">
+                        <div>
+                            <div style="font-size:10px; opacity:0.5; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Credit Balance</div>
+                            <div style="font-size:24px; font-weight:700; font-family:var(--font-big);">${rs(balance, false)}</div>
+                        </div>
+                        <div style="width:40px; height:30px; background:linear-gradient(45deg, #ffd700, #b8860b); border-radius:4px; position:relative;">
+                            <div style="position:absolute; top:50%; left:20%; right:20%; height:1px; background:rgba(0,0,0,0.2);"></div>
+                            <div style="position:absolute; top:30%; bottom:30%; left:50%; width:1px; background:rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:20px;">
+                        <div style="font-size:14px; letter-spacing:2px; font-family:var(--font-big);">${escH(a.name)}</div>
+                    </div>
+
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-size:10px; opacity:0.6; margin-bottom:6px;">
+                            <span>Utilized: ${pct.toFixed(0)}%</span>
+                            <span>Limit: ${fmt(limit)}</span>
+                        </div>
+                        <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px;">
+                            <div style="height:100%; width:${pct}%; background:${pct > 80 ? '#FF3B6F' : '#00D18E'}; border-radius:2px; transition: width 1s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="acc-acts" onclick="event.stopPropagation()" style="position:absolute; top:15px; right:15px; opacity:0; transition:0.2s;">
+                        <button class="act-btn" onclick="editAccEl(this.closest('.cc-premium-card'))" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:28px; height:28px; border-radius:50%; margin-right:5px;">✎</button>
+                        <button class="act-btn del" onclick="deleteAccEl(this.closest('.cc-premium-card'))" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:28px; height:28px; border-radius:50%;">✕</button>
+                    </div>
+                </div>
+                <style>
+                    .cc-premium-card:hover .acc-acts { opacity: 1; }
+                    @keyframes cardEnter { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+                </style>
+                `;
+            } else {
             } else {
                 const pos = (a.currentBalance || 0) >= 0;
                 balHTML = '<div class="acc-bal ' + (pos ? 'pos' : 'neg') + '">' + rs(a.currentBalance || 0) + '</div>';
@@ -3500,7 +3556,11 @@
             document.getElementById('calGrid').innerHTML = h;
         }
         function hRatio(v, mn, mx) { return mx === mn ? 0.7 : 0.15 + ((v - mn) / (mx - mn)) * 0.85; }
-        function rSh(r) { const l = Math.round(96 - r * 86); return 'hsl(0,0%,' + l + '%)'; }
+        function rSh(r) {
+            // Shades of red: H=0, S=70-90%, L=95-40% (darker for higher ratio)
+            const l = Math.round(95 - r * 55);
+            return 'hsl(0, 80%, ' + l + '%)';
+        }
 
         /* ═══ ANALYTICS ═══ */
         window.updateMoMTrends = function () {
@@ -3525,13 +3585,14 @@
             const mx = Math.max(...data.map(d => d.total), 1);
             document.getElementById('momChart').innerHTML = data.map((d, i) => {
                 const pct = d.total > 0 ? Math.max((d.total / mx) * 100, 2) : 0;
+                const color = PC[i % PC.length];
                 return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
                     '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
                     '<div class="br-track-wrap">' +
                     '<div class="br-track" style="flex:1">' +
-                    (d.total > 0 ? '<span class="br-val-base">' + rs(d.total) + '</span>' : '') +
-                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                    (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total) + '</span>' : '') +
+                    (d.total > 0 ? '<span class="br-val-base">' + rs(d.total, false) + '</span>' : '') +
+                    '<div class="br-fill" style="background:' + color + '; clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
+                    (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total, false) + '</span>' : '') +
                     '</div>' +
                     '</div>' +
                     '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
@@ -3545,13 +3606,14 @@
             const mx = Math.max(...weeks.map(w => w.total), 1);
             document.getElementById('weeklyChart').innerHTML = weeks.map((w, i) => {
                 const pct = w.total > 0 ? Math.max((w.total / mx) * 100, 2) : 0;
+                const color = PC[i % PC.length];
                 return '<div class="br-item" style="animation-delay:' + (i * 0.08) + 's">' +
                     '<div class="br-lbl">' + w.label + '</div>' +
                     '<div class="br-track-wrap">' +
-                    '<div class="br-track">' +
-                    (w.total > 0 ? '<span class="br-val-base">' + rs(w.total) + '</span>' : '') +
-                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                    (w.total > 0 ? '<span class="br-val-fill">' + rs(w.total) + '</span>' : '') +
+                    '<div class="br-track" style="flex:1">' +
+                    (w.total > 0 ? '<span class="br-val-base">' + rs(w.total, false) + '</span>' : '') +
+                    '<div class="br-fill" style="background:' + color + '; clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
+                    (w.total > 0 ? '<span class="br-val-fill">' + rs(w.total, false) + '</span>' : '') +
                     '</div>' +
                     '</div>' +
                     '</div></div>';
