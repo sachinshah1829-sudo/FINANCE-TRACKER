@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <title>टा्रैकर.इन</title>
+    <title>Finance Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet">
     <style>
@@ -830,73 +830,97 @@
             border-color: var(--red);
         }
 
-        /* Glassmorphism Credit Card */
-        .glass-cc {
-            background: linear-gradient(135deg, rgba(28, 25, 23, 0.95) 0%, rgba(68, 64, 60, 0.9) 100%) !important;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        /* ─── REALISTIC CREDIT CARD ─── */
+        .real-cc {
+            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%) !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
             color: #fff !important;
-            min-height: 180px;
+            min-height: 200px;
             padding: 1.5rem !important;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .cc-chip {
-            width: 38px;
-            height: 28px;
-            background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
-            border-radius: 4px;
-            position: relative;
-            margin-bottom: 1rem;
-        }
-
-        .cc-chip::after {
+        .real-cc::before {
             content: '';
             position: absolute;
-            inset: 4px;
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 2px;
+            inset: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
-        .cc-name-premium {
-            font-size: 18px;
-            font-weight: 700;
+        .cc-brand-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cc-bank-name {
+            font-size: 14px;
+            font-weight: 800;
             letter-spacing: 1px;
             text-transform: uppercase;
             font-family: var(--font-big);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            opacity: 0.9;
         }
 
-        .cc-util-wrap {
-            margin-top: auto;
+        .cc-chip-mock {
+            width: 45px;
+            height: 34px;
+            background: linear-gradient(135deg, #D4AF37 0%, #F5D76E 50%, #B8860B 100%);
+            border-radius: 6px;
+            position: relative;
+            margin: 15px 0;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);
         }
 
-        .cc-util-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            margin: 8px 0;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
+        .cc-number-mock {
+            font-family: 'Courier Prime', monospace;
+            font-size: 19px;
+            letter-spacing: 3px;
+            word-spacing: 8px;
+            margin: 10px 0;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.8);
+            color: rgba(255,255,255,0.95);
         }
 
-        .cc-util-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #F59E0B, #FB7185);
-            border-radius: 4px;
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .cc-stats {
+        .cc-info-row {
             display: flex;
-            justify-content: space-between;
+            gap: 20px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .cc-info-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cc-info-lbl {
+            font-size: 7px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .cc-info-val {
             font-size: 11px;
             font-weight: 600;
-            color: rgba(255,255,255,0.6);
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        .cc-util-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
         .acc-actions {
@@ -1004,17 +1028,41 @@
 
         .form-dropdown {
             position: absolute;
-            top: calc(100% + 4px);
+            top: 100%;
             left: 0;
             right: 0;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--r-sm);
-            box-shadow: var(--el-3);
-            z-index: 300;
-            max-height: 200px;
-            overflow-y: auto;
+            box-shadow: 0 12px 30px -5px rgba(0,0,0,0.12), 0 4px 10px -2px rgba(0,0,0,0.05);
             display: none;
+            z-index: 100;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 6px;
+            padding: 6px;
+            animation: ddIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes ddIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fd-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--t2);
+            cursor: pointer;
+            border-radius: var(--r-xs);
+            transition: all var(--t-fast);
+        }
+
+        .fd-item:hover, .fd-item:focus {
+            background: var(--bg);
+            color: var(--accent);
+            padding-left: 18px;
         }
 
         .form-dropdown.open {
@@ -1126,6 +1174,22 @@
             color: var(--t3);
             letter-spacing: 0.04em;
             text-transform: uppercase;
+        }
+
+        .cal-hdr {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .cal-hdr-day {
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--t4);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         .cal-grid {
@@ -1270,48 +1334,54 @@
             align-items: flex-start;
         }
 
-        .pie-leg {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
-        }
-
-        .pie-row {
-            display: flex;
+        .pl-row {
+            display: grid;
+            grid-template-columns: 12px 1fr 40px 65px;
             align-items: center;
-            gap: 7px;
-            font-size: 12px;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: var(--r-sm);
+            background: var(--surface);
+            border: 1px solid var(--border);
             cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 4px;
-            transition: background var(--t-fast);
+            transition: all var(--t-fast);
+            animation: barIn 0.4s ease backwards;
         }
 
-        .pie-row:hover {
+        .pl-row:hover {
+            border-color: var(--accent);
             background: var(--bg);
+            transform: translateX(4px);
         }
 
-        .pie-dot {
+        .pl-dot {
             width: 8px;
             height: 8px;
             border-radius: 2px;
-            flex-shrink: 0;
         }
 
-        .pie-name {
-            flex: 1;
-            color: var(--t2);
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .pie-pct {
+        .pl-name {
+            font-size: 12px;
             font-weight: 700;
             color: var(--t1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pl-pct {
             font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            text-align: right;
+        }
+
+        .pl-amt {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--t2);
+            text-align: right;
+            font-family: var(--font-big);
         }
 
         .pie-colors .bar-fill {
@@ -2376,8 +2446,8 @@
     <!-- ═══════════════════ AUTH ═══════════════════ -->
     <div id="authScreen">
         <div class="auth-box">
-            <div class="auth-wordmark">ट्रैकर.इन</div>
-            <div class="auth-title">टा्रैकर.इन</div>
+            <div class="auth-wordmark">FINANCE</div>
+            <div class="auth-title">Tracker</div>
             <div class="auth-pills">
                 <button class="auth-pill active" id="atab-login" onclick="switchAuthTab('login')">Sign In</button>
                 <button class="auth-pill" id="atab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
@@ -2440,8 +2510,8 @@
 
         <nav class="sidebar" id="sidebar">
             <div class="sb-logo">
-                <div class="sb-wordmark">ट्रैकर.इन</div>
-                <div class="sb-title">टा्रैकर.इन</div>
+                <div class="sb-wordmark">FINANCE</div>
+                <div class="sb-title">Tracker</div>
             </div>
             <div class="sb-nav">
                 <div class="nav-item active" id="nav-add" onclick="nav('add',this)">
@@ -2885,86 +2955,36 @@
             <div class="page" id="page-manage">
                 <div class="pg-header">
                     <div class="pg-title">Manage</div>
-                    <div class="pg-sub">Categories, Items &amp; People</div>
                 </div>
-                <div class="add-tabs" style="margin-bottom:22px">
-                    <div class="add-tab active" id="mtab-categories" onclick="switchMgmtTab('categories',this)">
-                        Categories</div>
-                    <div class="add-tab" id="mtab-items" onclick="switchMgmtTab('items',this)">Items</div>
-                    <div class="add-tab" id="mtab-people" onclick="switchMgmtTab('people',this)">People</div>
+                <!-- Mini Pill Tabs -->
+                <div class="add-tabs" style="margin-bottom:20px;">
+                    <div class="add-tab active" onclick="switchMgmtTab('cats',this)">Categories</div>
                 </div>
-                <div class="mgmt-panel active" id="mpanel-categories">
-                    <div class="mgmt-section" style="margin-bottom:20px">
+
+                <div class="mgmt-panel active" id="mpanel-cats">
+                    <div class="mgmt-section">
                         <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Add Category</div><button class="add-inline-btn"
-                                onclick="showMiniForm('cat-add')">+ Add</button>
+                            <div class="mgmt-sec-title">Expenses</div>
+                            <button class="add-inline-btn" data-type="EXPENSE"
+                                onclick="showMiniForm('cat-add',this)">+ Add</button>
                         </div>
                         <div class="mini-form" id="cat-add">
-                            <div class="mini-form-row"><input class="mini-input" id="cat-add-name"
-                                    placeholder="Category name"><select class="mini-select" id="cat-add-type">
-                                    <option value="EXPENSE">Expense</option>
-                                    <option value="INCOME">Income</option>
-                                </select><button class="mini-save-btn" onclick="doAddCategory()">Save</button><button
-                                    class="mini-cancel-btn" onclick="hideMiniForm('cat-add')">✕</button></div>
-                        </div>
-                    </div>
-                    <div class="mgmt-section" style="margin-bottom:20px">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Expense Categories</div>
-                        </div>
-                        <div class="mgmt-list" id="catListExpense">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
+                            <input type="hidden" id="cat-add-type">
+                            <input class="form-input" id="cat-add-name" placeholder="Category Name" autocomplete="off">
+                            <div style="display:flex;gap:8px;">
+                                <button class="add-btn" onclick="doAddCategory()">Save</button>
+                                <button class="txn-clr-btn" onclick="hideMiniForm('cat-add')">Cancel</button>
                             </div>
                         </div>
+                        <div class="mgmt-list" id="catListExpense"></div>
                     </div>
                     <div class="mgmt-section">
                         <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Income Categories</div>
+                            <div class="mgmt-sec-title">Income</div>
+                            <button class="add-inline-btn" data-type="INCOME"
+                                onclick="showMiniForm('cat-add',this)">+ Add</button>
                         </div>
-                        <div class="mgmt-list" id="catListIncome">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mgmt-panel" id="mpanel-items" style="display:none">
-                    <div class="mgmt-section">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Items</div><button class="add-inline-btn"
-                                onclick="showMiniForm('item-add')">+ Add</button>
-                        </div>
-                        <div class="mini-form" id="item-add">
-                            <div class="mini-form-row"><input class="mini-input" id="item-add-val"
-                                    placeholder="Item name"><button class="mini-save-btn"
-                                    onclick="doAddItem()">Save</button><button class="mini-cancel-btn"
-                                    onclick="hideMiniForm('item-add')">✕</button></div>
-                        </div>
-                        <div class="mgmt-list" id="itemList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mgmt-panel" id="mpanel-people" style="display:none">
-                    <div class="mgmt-section">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">People / To &amp; From</div><button class="add-inline-btn"
-                                onclick="showMiniForm('person-add')">+ Add</button>
-                        </div>
-                        <div class="mini-form" id="person-add">
-                            <div class="mini-form-row"><input class="mini-input" id="person-add-val"
-                                    placeholder="Person / store name"><button class="mini-save-btn"
-                                    onclick="doAddPerson()">Save</button><button class="mini-cancel-btn"
-                                    onclick="hideMiniForm('person-add')">✕</button></div>
-                        </div>
-                        <div class="mgmt-list" id="personMgmtList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
+                        <div class="mgmt-list" id="catListIncome"></div>
                     </div>
                 </div>
             </div>
@@ -3310,7 +3330,7 @@
 
         /* ═══ DATA LOADING ═══ */
         async function loadAllData() {
-            await Promise.all([loadAccounts(), loadCategories(), loadItems(), loadPeople(), loadTemplates()]);
+            await Promise.all([loadAccounts(), loadCategories(), loadTemplates()]);
             setupAddFormDropdowns();
             await loadPeriodData();
         }
@@ -3405,28 +3425,40 @@
                 const balance = a.currentBalance || 0;
                 const spent = limit - balance;
                 const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
+                const last4 = a.id.substring(a.id.length - 4).toUpperCase();
                 
                 return `
-                    <div class="acc-item glass-cc" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                            <div class="cc-chip"></div>
+                    <div class="acc-item real-cc" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)">
+                        <div class="cc-brand-area">
+                            <div class="cc-bank-name">${escH(a.name)}</div>
                             <div class="acc-acts" onclick="event.stopPropagation()">
                                 <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
                                 <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
                             </div>
                         </div>
-                        <div class="cc-name-premium">${escH(a.name)}</div>
-                        <div class="cc-util-wrap">
-                            <div class="cc-stats">
-                                <span>Utilized: ${pct.toFixed(1)}%</span>
-                                <span>Spent: ${rs(spent)}</span>
+                        <div class="cc-chip-mock"></div>
+                        <div class="cc-number-mock">•••• •••• •••• ${last4}</div>
+                        <div class="cc-info-row">
+                            <div class="cc-info-block">
+                                <div class="cc-info-lbl">Limit Left</div>
+                                <div class="cc-info-val">${rs(balance)}</div>
                             </div>
-                            <div class="cc-util-bar">
-                                <div class="cc-util-fill" style="width: ${pct}%"></div>
+                            <div class="cc-info-block">
+                                <div class="cc-info-lbl">Total Spent</div>
+                                <div class="cc-info-val">${rs(spent)}</div>
                             </div>
-                            <div class="cc-stats">
-                                <span>Available: ${rs(balance)}</span>
+                             <div class="cc-info-block" style="margin-left:auto; text-align:right;">
+                                <div class="cc-info-lbl">PLATINUM</div>
+                                <div class="cc-info-val" style="font-size:8px;">FINANCE</div>
+                            </div>
+                        </div>
+                        <div class="cc-util-section">
+                            <div class="cc-stats" style="margin-bottom:6px;">
+                                <span>Utilization: ${pct.toFixed(1)}%</span>
                                 <span>Limit: ${fmt(limit)}</span>
+                            </div>
+                            <div class="cc-util-bar" style="height:6px; background:rgba(255,255,255,0.1);">
+                                <div class="cc-util-fill" style="width: ${pct}%; background: linear-gradient(90deg, #F59E0B, #FB7185);"></div>
                             </div>
                         </div>
                     </div>
@@ -3490,11 +3522,27 @@
             const amts = days.filter(d => d.total > 0).map(d => d.total);
             const mx = amts.length ? Math.max(...amts) : 1, mn = amts.length ? Math.min(...amts) : 0;
             document.getElementById('lgdSw').innerHTML = [0.1, 0.3, 0.5, 0.7, 0.9].map(r => '<div class="sw" style="background:' + rSh(r) + '; width:14px; height:14px; border-radius:3px; border:1px solid rgba(0,0,0,0.05);"></div>').join('');
+            
             const now = new Date(), todayD = (now.getMonth() + 1 === curM && now.getFullYear() === curY) ? now.getDate() : -1;
+            
+            // Weekday Headers
+            const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const hdrH = daysShort.map(d => `<div class="cal-hdr-day">${d}</div>`).join('');
+            
             let h = '';
             for (let i = 0; i < firstDayOfWeek; i++)h += '<div class="cd emp"></div>';
-            days.forEach(d => { const ratio = d.total > 0 ? hRatio(d.total, mn, mx) : 0, col = d.total > 0 ? rSh(ratio) : null; const amtS = d.total > 0 ? (d.total >= 1000 ? '₹' + (d.total / 1000).toFixed(1) + 'k' : '₹' + Math.round(d.total)) : ''; const cls = 'cd ' + (col ? 'has-e' : 'no-e') + (d.day === todayD ? ' today-c' : ''); const sty = col ? ' style="background:' + col + '"' : ''; const clk = d.total > 0 ? ' onclick="openDayM(' + d.day + ')"' : ''; h += '<div class="' + cls + '"' + sty + clk + '><div class="cd-n">' + d.day + '</div>' + (amtS ? '<div class="cd-a">' + amtS + '</div>' : '') + '</div>'; });
-            document.getElementById('calGrid').innerHTML = h;
+            days.forEach(d => { 
+                const ratio = d.total > 0 ? hRatio(d.total, mn, mx) : 0, col = d.total > 0 ? rSh(ratio) : null; 
+                const amtS = d.total > 0 ? (d.total >= 1000 ? '₹' + (d.total / 1000).toFixed(1) + 'k' : '₹' + Math.round(d.total)) : ''; 
+                const cls = 'cd ' + (col ? 'has-e' : 'no-e') + (d.day === todayD ? ' today-c' : ''); 
+                const sty = col ? ' style="background:' + col + '"' : ''; 
+                const clk = d.total > 0 ? ' onclick="openDayM(' + d.day + ')"' : ''; 
+                h += '<div class="' + cls + '"' + sty + clk + '><div class="cd-n">' + d.day + '</div>' + (amtS ? '<div class="cd-a">' + amtS + '</div>' : '') + '</div>'; 
+            });
+            
+            const gridEl = document.getElementById('calGrid');
+            gridEl.previousElementSibling.innerHTML = hdrH; // Update .cal-hdr
+            gridEl.innerHTML = h;
         }
         function hRatio(v, mn, mx) { return mx === mn ? 0.7 : 0.1 + ((v - mn) / (mx - mn)) * 0.9; }
         function rSh(r) { 
@@ -3685,7 +3733,7 @@
             openM('catModal');
         };
 
-        /* ═══ ADD ENTRY — AUTO-CREATE IN MANAGE ═══ */
+        /* ═══ ADD ENTRY ═══ */
         async function ensureCategory(name, type) {
             if (!name) return;
             const exists = _categories.find(c => c.name.toLowerCase() === name.toLowerCase());
@@ -3693,24 +3741,6 @@
                 const newCat = { name: name.toUpperCase(), type };
                 const ref = await addDoc(uRef('categories'), newCat);
                 _categories.push({ id: ref.id, ...newCat });
-                setupAddFormDropdowns();
-            }
-        }
-        async function ensureItem(name) {
-            if (!name) return;
-            const exists = _items.find(i => i.value.toLowerCase() === name.toLowerCase());
-            if (!exists) {
-                const ref = await addDoc(uRef('items'), { value: name });
-                _items.push({ id: ref.id, value: name });
-                setupAddFormDropdowns();
-            }
-        }
-        async function ensurePerson(name) {
-            if (!name) return;
-            const exists = _people.find(p => p.value.toLowerCase() === name.toLowerCase());
-            if (!exists) {
-                const ref = await addDoc(uRef('people'), { value: name });
-                _people.push({ id: ref.id, value: name });
                 setupAddFormDropdowns();
             }
         }
@@ -3727,14 +3757,18 @@
         }
 
         function setupAddFormDropdowns() {
+            const txns = _allTxns || [];
             const accNames = _accounts.map(a => a.name);
             const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
             const incCats = _categories.filter(c => c.type === 'INCOME').map(c => c.name);
-            const itemNames = _items.map(i => i.value);
-            const peopleNames = _people.map(p => p.value);
+            
+            // Smart Suggestions from past transactions
+            const recentItems = [...new Set(txns.map(t => t.item).filter(Boolean))].reverse().slice(0, 30);
+            const recentPeople = [...new Set(txns.map(t => t.toFrom).filter(Boolean))].reverse().slice(0, 30);
+            
             const expTplNames = expTpls.map(t => t.name);
             const incTplNames = incTpls.map(t => t.name);
-            const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-acc', 'dd-e-acc', accNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', itemNames], ['e-to', 'dd-e-to', peopleNames], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-acc', 'dd-i-acc', accNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', itemNames], ['i-from', 'dd-i-from', peopleNames], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', itemNames]];
+            const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-acc', 'dd-e-acc', accNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', recentItems], ['e-to', 'dd-e-to', recentPeople], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-acc', 'dd-i-acc', accNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', recentItems], ['i-from', 'dd-i-from', recentPeople], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', recentItems]];
             pairs.forEach(([inp, dd, data]) => initDD(inp, dd, data));
         }
 
@@ -3925,10 +3959,15 @@
 
 
         /* ═══ MANAGE ═══ */
-        window.switchMgmtTab = function (name, el) { document.querySelectorAll('[id^="mtab-"]').forEach(x => x.classList.remove('active')); document.querySelectorAll('.mgmt-panel').forEach(x => x.style.display = 'none'); el.classList.add('active'); document.getElementById('mpanel-' + name).style.display = 'block'; };
+        window.switchMgmtTab = function (name, el) { 
+            document.querySelectorAll('#page-manage .add-tab').forEach(x => x.classList.remove('active')); 
+            document.querySelectorAll('.mgmt-panel').forEach(x => x.classList.remove('active')); 
+            el.classList.add('active'); 
+            document.getElementById('mpanel-' + name).classList.add('active'); 
+        };
         window.showMiniForm = id => document.getElementById(id).classList.add('show');
         window.hideMiniForm = id => document.getElementById(id).classList.remove('show');
-        async function renderManage() { await Promise.all([loadCategories(), loadItems(), loadPeople()]); renderCatList(); renderItemList(); renderPersonMgmtList(); }
+        async function renderManage() { await loadCategories(); renderCatList(); }
 
         async function propagateRename(field, oldVal, newVal) {
             if (!oldVal || oldVal === newVal) return;
@@ -3957,26 +3996,6 @@
             document.getElementById('catListExpense').innerHTML = exp.map(row).join('') || '<div class="empty-s">No expense categories</div>';
             document.getElementById('catListIncome').innerHTML = inc.map(row).join('') || '<div class="empty-s">No income categories</div>';
         }
-        function renderItemList() { 
-            document.getElementById('itemList').innerHTML = _items.map(it => `
-                <div class="mgmt-row clickable" onclick="editItem('${it.id}','${escH(it.value)}')">
-                    <div class="mgmt-row-main">${escH(it.value)}</div>
-                    <div class="mgmt-acts" onclick="event.stopPropagation()">
-                        <button class="act-btn" onclick="editItem('${it.id}','${escH(it.value)}')">✎</button>
-                        <button class="act-btn del" onclick="deleteItem2('${it.id}','${escH(it.value)}')">✕</button>
-                    </div>
-                </div>`).join('') || '<div class="empty-s">No items</div>'; 
-        }
-        function renderPersonMgmtList() { 
-            document.getElementById('personMgmtList').innerHTML = _people.map(p => `
-                <div class="mgmt-row clickable" onclick="editPerson('${p.id}','${escH(p.value)}')">
-                    <div class="mgmt-row-main">${escH(p.value)}</div>
-                    <div class="mgmt-acts" onclick="event.stopPropagation()">
-                        <button class="act-btn" onclick="editPerson('${p.id}','${escH(p.value)}')">✎</button>
-                        <button class="act-btn del" onclick="deletePerson2('${p.id}','${escH(p.value)}')">✕</button>
-                    </div>
-                </div>`).join('') || '<div class="empty-s">No people</div>'; 
-        }
         window.doAddCategory = async function () { const name = document.getElementById('cat-add-name').value.trim(), type = document.getElementById('cat-add-type').value; if (!name) return; await addDoc(uRef('categories'), { name, type }); document.getElementById('cat-add-name').value = ''; hideMiniForm('cat-add'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category added'); };
         window.editCat = function (id, name, type) { document.getElementById('edit-modal-title').textContent = 'Edit Category'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Name</label><input class="form-input" id="em-name" value="' + escH(name) + '"></div><div class="form-row"><label class="form-label">Type</label><select class="form-input" id="em-type" style="cursor:pointer"><option value="EXPENSE"' + (type === 'EXPENSE' ? ' selected' : '') + '>Expense</option><option value="INCOME"' + (type === 'INCOME' ? ' selected' : '') + '>Income</option></select></div><button class="add-btn" onclick="saveCatEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
         window.saveCatEdit = async function (id) {
@@ -3992,37 +4011,6 @@
             closeM('editModal'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category updated');
         };
         window.deleteCat = async function (id, name) { if (!confirm('Delete category "' + name + '"?')) return; await deleteDoc(uDoc('categories', id)); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category deleted'); };
-        window.doAddItem = async function () { const v = document.getElementById('item-add-val').value.trim(); if (!v) return; await addDoc(uRef('items'), { value: v }); document.getElementById('item-add-val').value = ''; hideMiniForm('item-add'); await loadItems(); renderItemList(); setupAddFormDropdowns(); toast('Item added'); };
-        window.editItem = function (id, val) { document.getElementById('edit-modal-title').textContent = 'Edit Item'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Item</label><input class="form-input" id="em-val" value="' + escH(val) + '"></div><button class="add-btn" onclick="saveItemEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
-        window.saveItemEdit = async function (id) {
-            const v = document.getElementById('em-val').value.trim();
-            if (!v) return;
-            const old = _items.find(it => it.id === id);
-            const oldVal = old ? old.value : '';
-            await updateDoc(uDoc('items', id), { value: v });
-            if (oldVal && oldVal !== v) {
-                await propagateRename('item', oldVal, v);
-                await loadAllTransactions();
-            }
-            closeM('editModal'); await loadItems(); renderItemList(); setupAddFormDropdowns(); toast('Item updated');
-        };
-        window.deleteItem2 = async function (id, val) { if (!confirm('Delete item "' + val + '"?')) return; await deleteDoc(uDoc('items', id)); await loadItems(); renderItemList(); setupAddFormDropdowns(); toast('Item deleted'); };
-        window.doAddPerson = async function () { const v = document.getElementById('person-add-val').value.trim(); if (!v) return; await addDoc(uRef('people'), { value: v }); document.getElementById('person-add-val').value = ''; hideMiniForm('person-add'); await loadPeople(); renderPersonMgmtList(); setupAddFormDropdowns(); toast('Person added'); };
-        window.editPerson = function (id, val) { document.getElementById('edit-modal-title').textContent = 'Edit Person'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Name</label><input class="form-input" id="em-val" value="' + escH(val) + '"></div><button class="add-btn" onclick="savePersonEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
-        window.savePersonEdit = async function (id) {
-            const v = document.getElementById('em-val').value.trim();
-            if (!v) return;
-            const old = _people.find(p => p.id === id);
-            const oldVal = old ? old.value : '';
-            await updateDoc(uDoc('people', id), { value: v });
-            if (oldVal && oldVal !== v) {
-                await propagateRename('toFrom', oldVal, v);
-                await loadAllTransactions();
-            }
-            closeM('editModal'); await loadPeople(); renderPersonMgmtList(); setupAddFormDropdowns(); toast('Person updated');
-        };
-        window.deletePerson2 = async function (id, val) { if (!confirm('Delete "' + val + '"?')) return; await deleteDoc(uDoc('people', id)); await loadPeople(); renderPersonMgmtList(); setupAddFormDropdowns(); toast('Deleted'); };
-
         /* ═══ TEMPLATES ═══ */
         async function renderTemplatesPage() { 
             await loadTemplates(); 
