@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>Finance · Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
         *,
         *::before,
@@ -19,42 +19,42 @@
         }
 
         :root {
-            --bg: #F8F9FA;
-            --bg2: #F1F3F5;
+            --bg: #FAF9F7;
+            --bg2: #F2EFE9;
             --surface: #FFFFFF;
-            --border: rgba(0, 0, 0, 0.06);
-            --border-strong: rgba(0, 0, 0, 0.12);
-            --el-1: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --el-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --el-3: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --el-4: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            --font-big: 'Outfit', sans-serif;
-            --t1: #111827;
-            --t2: #374151;
-            --t3: #6B7280;
-            --t4: #9CA3AF;
-            --accent: #6366F1;
-            --accent-bg: #EEF2FF;
-            --accent-dark: #4F46E5;
-            --green: #10B981;
-            --green-bg: #ECFDF5;
-            --red: #EF4444;
-            --red-bg: #FEF2F2;
-            --amber: #F59E0B;
-            --amber-bg: #FFFBEB;
-            --amt-neg: #EF4444;
-            --amt-pos: #10B981;
+            --border: rgba(100, 80, 55, 0.10);
+            --border-strong: rgba(100, 80, 55, 0.22);
+            --el-1: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --el-2: 0 4px 12px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --el-3: 0 8px 24px rgba(0, 0, 0, 0.08), 0 3px 8px rgba(0, 0, 0, 0.04);
+            --el-4: 0 20px 48px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.06);
+            --font: 'Courier Prime', 'Courier New', Courier, monospace;
+            --font-big: 'Courier Prime', 'Courier New', Courier, monospace;
+            --t1: #1C1917;
+            --t2: #44403C;
+            --t3: #78716C;
+            --t4: rgba(28, 25, 23, 0.25);
+            --accent: #C97B4B;
+            --accent-bg: #FEF4EC;
+            --accent-dark: #9E5E33;
+            --green: #16A34A;
+            --green-bg: #DCFCE7;
+            --red: #DC2626;
+            --red-bg: #FEE2E2;
+            --amber: #D97706;
+            --amber-bg: #FEF3C7;
+            --amt-neg: #DC2626;
+            --amt-pos: #16A34A;
             --r-xs: 6px;
-            --r-sm: 10px;
-            --r: 14px;
-            --r-lg: 18px;
+            --r-sm: 8px;
+            --r: 12px;
+            --r-lg: 16px;
             --r-xl: 24px;
-            --nav-w: 260px;
+            --nav-w: 248px;
             --mob-nav-h: 72px;
-            --t-fast: 0.15s ease;
-            --t-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --t-smooth: 0.25s ease;
+            --t-fast: 0.14s ease;
+            --t-spring: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            --t-smooth: 0.2s ease;
         }
 
         html {
@@ -211,7 +211,7 @@
 
         .af-input:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(201, 123, 75, 0.1);
             background: var(--surface);
         }
 
@@ -619,11 +619,11 @@
         .glass,
         .glass-thin,
         .glass-float {
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(12px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            box-shadow: var(--el-2) !important;
+            background: var(--surface) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--el-1) !important;
             border-radius: var(--r) !important;
         }
 
@@ -1596,34 +1596,7 @@
 
         .txn-search-inp:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .mini-form-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            align-items: flex-start;
-        }
-
-        .mini-form-row.nowrap {
-            flex-wrap: nowrap;
-        }
-
-        .mini-rel {
-            position: relative;
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .sp-dd {
-            top: calc(100% + 2px);
-            z-index: 300;
-        }
-
-        .sp-amt-field {
-            width: 90px !important;
-            min-width: auto !important;
+            box-shadow: 0 0 0 3px rgba(201, 123, 75, 0.1);
         }
 
         .txn-date-inp {
@@ -1776,16 +1749,14 @@
             max-height: 86vh;
             display: flex;
             flex-direction: column;
-            transform: scale(0.96) translateY(20px);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
+            transform: scale(0.95) translateY(12px);
+            transition: transform var(--t-spring);
             position: relative;
             overflow: hidden;
-            opacity: 0;
         }
 
         .modal-ov.open .modal-box {
             transform: scale(1) translateY(0);
-            opacity: 1;
         }
 
         .modal-hd {
@@ -2200,16 +2171,14 @@
             }
 
             .modal-box {
-                border-radius: var(--r-xl) var(--r-xl) 0 0;
+                border-radius: var(--r-lg) var(--r-lg) 0 0;
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 right: 0;
                 width: 100%;
                 max-width: 100%;
-                max-height: 92vh;
-                transform: translateY(100%);
-                opacity: 1;
+                transform: translateY(20px);
             }
 
             .modal-ov.open .modal-box {
@@ -2218,20 +2187,16 @@
 
             .mini-form-row {
                 flex-direction: column;
-                gap: 10px;
             }
 
             .mini-input,
             .mini-select {
                 min-width: unset;
                 width: 100%;
-                padding: 10px 12px;
             }
 
             #toast {
-                bottom: calc(var(--mob-nav-h) + 16px + env(safe-area-inset-bottom, 0px));
-                font-size: 14px;
-                padding: 12px 24px;
+                bottom: calc(var(--mob-nav-h) + 12px + env(safe-area-inset-bottom, 0px));
             }
         }
 
@@ -3100,28 +3065,14 @@
         let _importRows = [];
 
         /* ── TOAST ── */
-        window.toast = function (msg) { const t = document.getElementById('toast'); if(!t) return; t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
+        window.toast = function (msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
 
         /* ── FORMAT ── */
-        function fmt(n) { 
-            const val = Math.abs(n);
-            if (val >= 10000000) return (n / 10000000).toFixed(2) + 'Cr';
-            if (val >= 100000) return (n / 100000).toFixed(2) + 'L'; 
-            if (val >= 1000) return (n / 1000).toFixed(1) + 'K'; 
-            return Math.round(n).toLocaleString('en-IN'); 
-        }
-        function rs(n) { return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
-        function cntUp(id, val) { 
-            const el = document.getElementById(id); if(!el) return;
-            const t0 = performance.now(), duration = 800; 
-            (function t(now) { 
-                const p = Math.min((now - t0) / duration, 1), e = 1 - Math.pow(1 - p, 4); 
-                el.textContent = fmt(val * e); 
-                if (p < 1) requestAnimationFrame(t); else el.textContent = fmt(val); 
-            })(t0); 
-        }
-        function fmtDate(ts) { if (!ts) return ''; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.getDate().toString().padStart(2, '0') + ' ' + MO_SHORT[d.getMonth()] + ' ' + d.getFullYear(); }
-        function escH(s) { return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        function fmt(n) { if (n >= 100000) return (n / 100000).toFixed(2) + 'L'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return Math.round(n).toString(); }
+        function rs(n) { return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function cntUp(id, val) { const el = document.getElementById(id), t0 = performance.now(); (function t(now) { const p = Math.min((now - t0) / 700, 1), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(val * e); if (p < 1) requestAnimationFrame(t); else el.textContent = fmt(val); })(t0); }
+        function fmtDate(ts) { if (!ts) return ''; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear(); }
+        function escH(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
         /* ═══ AUTH ═══ */
         function switchAuthTab(tab) {
@@ -3304,7 +3255,7 @@
                 const pos = (a.currentBalance || 0) >= 0;
                 balHTML = '<div class="acc-bal ' + (pos ? 'pos' : 'neg') + '">' + rs(a.currentBalance || 0) + '</div>';
             }
-            return '<div class="acc-item clickable" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + (a.currentBalance || 0) + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's" onclick="accItemClick(this)">' + '<div class="acc-bar ' + accKind + '"></div>' + '<div class="acc-emo" style="font-weight:700;font-family:var(--font-big);font-size:13px;color:var(--t2)">' + emo + '</div>' + '<div class="acc-name">' + escH(a.name) + '</div>' + balHTML + (isPerson ? '<div class="acc-chev">›</div>' : '') + '<div class="acc-acts" onclick="event.stopPropagation()">' + '<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>' + '<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\'))">✕</button>' + '</div></div>';
+            return '<div class="acc-item clickable" data-id="' + a.id + '" data-name="' + escH(a.name) + '" data-opening="' + (a.openingBalance || 0) + '" data-type="' + a.type + '" data-bal="' + (a.currentBalance || 0) + '" data-kind="' + accKind + '" style="animation-delay:' + (i * 0.05) + 's" onclick="accItemClick(this)">' + '<div class="acc-bar ' + accKind + '"></div>' + '<div class="acc-emo" style="font-weight:700;font-family:\'Courier Prime\',monospace;font-size:13px;color:var(--t2)">' + emo + '</div>' + '<div class="acc-name">' + escH(a.name) + '</div>' + balHTML + (isPerson ? '<div class="acc-chev">›</div>' : '') + '<div class="acc-acts" onclick="event.stopPropagation()">' + '<button class="act-btn" onclick="editAccEl(this.closest(\'.acc-item\'))">✎</button>' + '<button class="act-btn del" onclick="deleteAccEl(this.closest(\'.acc-item\'))">✕</button>' + '</div></div>';
         }
         window.accItemClick = function (el) {
             const kind = el.dataset.kind;
@@ -3414,46 +3365,14 @@
             if (!cats || !cats.length) { document.getElementById('pieLegend').innerHTML = '<div class="empty-s">No data</div>'; return; }
             const total = cats.reduce((s, c) => s + c.total, 0);
             const cv = document.getElementById('pieCanvas'), ctx = cv.getContext('2d');
-            
-            // High DPI support
-            const dpr = window.devicePixelRatio || 1;
-            const bsr = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1;
-            const ratio = dpr / bsr;
-            if (dpr !== bsr) {
-                const oldW = cv.width, oldH = cv.height;
-                cv.width = oldW * ratio; cv.height = oldH * ratio;
-                cv.style.width = oldW + 'px'; cv.style.height = oldH + 'px';
-                ctx.scale(ratio, ratio);
-            }
-
-            const W = 180, H = 180, cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 8, iR = R * 0.6;
+            const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 6, iR = R * 0.5;
             let sl = [], sa = -Math.PI / 2;
             cats.forEach((c, i) => { const a = (c.total / total) * 2 * Math.PI; sl.push({ s: sa, e: sa + a, col: PC[i % PC.length] }); sa += a; });
             ctx.clearRect(0, 0, W, H);
             const t0 = performance.now();
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const bgFill = '#ffffff'; // Always white for light mode surface
-            
-            (function draw(now) { 
-                const p = Math.min((now - t0) / 800, 1), ez = 1 - Math.pow(1 - p, 4); 
-                ctx.clearRect(0, 0, W, H); 
-                sl.forEach(s => { 
-                    const ea = s.s + (s.e - s.s) * ez; 
-                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s.s, ea); ctx.closePath(); 
-                    ctx.fillStyle = s.col; ctx.fill(); 
-                }); 
-                ctx.beginPath(); ctx.arc(cx, cy, iR, 0, 2 * Math.PI); ctx.fillStyle = bgFill; ctx.fill(); 
-                if (p > 0.6) { 
-                    const al = Math.min((p - 0.6) / 0.4, 1); 
-                    ctx.save(); ctx.globalAlpha = al; 
-                    ctx.fillStyle = 'var(--t1)'; ctx.font = 'bold 16px Outfit, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
-                    ctx.fillText('₹' + fmt(total), cx, cy - 4); 
-                    ctx.fillStyle = 'var(--t3)'; ctx.font = '600 9px Inter, sans-serif'; 
-                    ctx.fillText('TOTAL', cx, cy + 10); 
-                    ctx.restore(); 
-                } 
-                if (p < 1) requestAnimationFrame(draw); 
-            })(t0);
+            const bgFill = isDark ? '#111' : '#f5f5f0';
+            (function draw(now) { const p = Math.min((now - t0) / 750, 1), ez = 1 - Math.pow(1 - p, 3); ctx.clearRect(0, 0, W, H); sl.forEach(s => { const ea = s.s + (s.e - s.s) * ez; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s.s, ea); ctx.closePath(); ctx.fillStyle = s.col; ctx.fill(); }); ctx.beginPath(); ctx.arc(cx, cy, iR, 0, 2 * Math.PI); ctx.fillStyle = bgFill; ctx.fill(); if (p > 0.65) { const al = Math.min((p - 0.65) / 0.35, 1); ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = isDark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.85)'; ctx.font = 'bold 15px Courier Prime, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('₹' + fmt(total), cx, cy - 5); ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.38)'; ctx.font = '700 8px Courier Prime, monospace'; ctx.fillText('TOTAL', cx, cy + 9); ctx.restore(); } if (p < 1) requestAnimationFrame(draw); })(t0);
             document.getElementById('pieLegend').innerHTML = cats.map((c, i) => '<div class="pl-row" style="animation-delay:' + (i * 0.05) + 's" onclick="openCategoryM(\'' + escH(c.category) + '\')"><div class="pl-dot" style="background:' + PC[i % PC.length] + '"></div><div class="pl-name">' + c.category + '</div><div class="pl-pct">' + ((c.total / total) * 100).toFixed(1) + '%</div><div class="pl-amt">' + rs(c.total) + '</div></div>').join('');
         }
 
@@ -3496,7 +3415,7 @@
             const period = document.getElementById('acc-period')?.textContent || '';
             const tblWrap = document.getElementById('ldrTblWrap');
             const statsEls = document.querySelectorAll('#page-ledger .ldr-stats .ldr-stat');
-            let statsHTML = '<table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-family:sans-serif;">';
+            let statsHTML = '<table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-family:Courier Prime,monospace;">';
             statsEls.forEach(el => {
                 const lbl = el.querySelector('.ldr-stat-lbl')?.textContent || '';
                 const val = el.querySelector('.ldr-stat-val')?.textContent || '';
@@ -3506,13 +3425,13 @@
             const win = window.open('', '_blank', 'width=900,height=700');
             win.document.write(`<!DOCTYPE html><html><head>
     <title>${acc} — Ledger — ${period}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <style>
       *{box-sizing:border-box;margin:0;padding:0;}
-      body{font-family:'Inter',sans-serif;background:#fff;color:#111;padding:32px 40px;}
+      body{font-family:'Courier Prime',monospace;background:#fff;color:#111;padding:32px 40px;}
       h1{font-size:22px;font-weight:700;margin-bottom:4px;}
       .period{font-size:12px;color:#888;margin-bottom:20px;}
-      table{width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;}
+      table{width:100%;border-collapse:collapse;font-family:'Courier Prime',monospace;}
       thead th{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:0 12px 10px;text-align:left;border-bottom:2px solid #ddd;}
       thead th.ra{text-align:right;}
       tbody tr{border-bottom:1px solid #eee;}
@@ -3645,22 +3564,22 @@
             div.style.cssText = 'margin-bottom:5px;position:relative;';
             div.id = 'sp-row-' + rowId;
             div.innerHTML = `
-    <div class="mini-form-row">
-      <div class="mini-rel">
-        <input class="mini-input sp-person" id="sp-person-${rowId}" placeholder="Person / To (Optional)" autocomplete="off">
-        <div id="sp-dd-person-${rowId}" class="form-dropdown sp-dd"></div>
+    <div class="mini-form-row" style="margin-bottom:5px;align-items:flex-start;">
+      <div style="position:relative;flex:1;min-width:80px;">
+        <input class="mini-input sp-person" id="sp-person-${rowId}" placeholder="Person / To (Optional)" autocomplete="off" style="width:100%">
+        <div id="sp-dd-person-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
-      <div class="mini-rel">
-        <input class="mini-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" autocomplete="off" value="${document.getElementById('e-cat').value}">
-        <div id="sp-dd-cat-${rowId}" class="form-dropdown sp-dd"></div>
+      <div style="position:relative;flex:1;min-width:80px;">
+        <input class="mini-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" autocomplete="off" style="width:100%" value="${document.getElementById('e-cat').value}">
+        <div id="sp-dd-cat-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
     </div>
-    <div class="mini-form-row nowrap">
-      <div class="mini-rel">
-        <input class="mini-input sp-item" id="sp-item-${rowId}" placeholder="Item" autocomplete="off" value="${document.getElementById('e-item').value}">
-        <div id="sp-dd-item-${rowId}" class="form-dropdown sp-dd"></div>
+    <div class="mini-form-row" style="flex-wrap:nowrap;align-items:flex-start;">
+      <div style="position:relative;flex:1;min-width:80px;">
+        <input class="mini-input sp-item" id="sp-item-${rowId}" placeholder="Item" autocomplete="off" style="width:100%" value="${document.getElementById('e-item').value}">
+        <div id="sp-dd-item-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
-      <input class="mini-input sp-amt-field" type="number" placeholder="Amount (₹)">
+      <input class="mini-input sp-amt" type="number" placeholder="Amount (₹)" style="width:90px;min-width:auto;">
       <button class="mini-cancel-btn" onclick="document.getElementById('sp-row-${rowId}').remove(); if(document.getElementById('split-rows-container').children.length===0) document.getElementById('split-tools').style.display='none';">✕</button>
     </div>
   `;
@@ -3817,14 +3736,9 @@
             const q = query(uRef('transactions'), where(field, '==', oldVal));
             const snap = await getDocs(q);
             if (snap.empty) return;
-            const docs = snap.docs;
-            const BATCH_LIMIT = 450;
-            for (let i = 0; i < docs.length; i += BATCH_LIMIT) {
-                const chunk = docs.slice(i, i + BATCH_LIMIT);
-                const batch = writeBatch(db);
-                chunk.forEach(d => { batch.update(d.ref, { [field]: newVal }); });
-                await batch.commit();
-            }
+            const batch = writeBatch(db);
+            snap.docs.forEach(d => { batch.update(d.ref, { [field]: newVal }); });
+            await batch.commit();
         }
 
         function renderCatList() {
@@ -3942,7 +3856,7 @@
             const visible = rows.slice(0, CHUNK);
             let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:56px;text-align:center">⋯</th></tr></thead><tbody>';
             visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" ondblclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Click to edit · Double-click to delete"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button><button class="act-btn del" onclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Delete">✕</button></td></tr>'; });
-            if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:var(--font)">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
+            if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:\'Courier Prime\',monospace">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
             h += '</tbody></table></div>';
             document.getElementById('txnListWrap').innerHTML = h;
         }
@@ -3983,21 +3897,22 @@
         // Parse Google Sheets date — handles "DD/MM/YYYY HH:MM:SS", "DD/MM/YYYY", "YYYY-MM-DD"
         function parseGSheetDate(s) {
             if (!s) return null;
-            s = String(s).trim().replace(/^["']+|["']+$/g, ''); // strip quotes
+            s = s.trim().replace(/^["']+|["']+$/g, ''); // strip quotes
 
-            // Handle DD/MM/YYYY HH:MM:SS or DD/MM/YYYY
-            let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?$/);
-            if (m) {
-                let y = +m[3]; if(y < 100) y += 2000;
-                return new Date(y, +m[2] - 1, +m[1]);
-            }
+            // "DD/MM/YYYY HH:MM:SS" or "DD/MM/YYYY"
+            let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?$/);
+            if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
 
-            // Handle YYYY-MM-DD
+            // "YYYY-MM-DD" or "YYYY-MM-DDTHH:MM:SS"
             m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
             if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
 
+            // "MM/DD/YYYY" (US format fallback)
+            m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (m) { const d = new Date(+m[3], +m[1] - 1, +m[2]); return d; }
+
             const d = new Date(s);
-            return isNaN(d.getTime()) ? null : d;
+            return isNaN(d) ? null : d;
         }
 
         // Clean amount — strips ₹, commas, spaces; keeps sign
