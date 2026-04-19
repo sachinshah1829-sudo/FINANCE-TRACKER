@@ -38,23 +38,26 @@
             --accent-bg: #FEF4EC;
             --accent-dark: #9E5E33;
             --green: #16A34A;
-            --green-bg: #DCFCE7;
-            --red: #DC2626;
-            --red-bg: #FEE2E2;
-            --amber: #D97706;
-            --amber-bg: #FEF3C7;
-            --amt-neg: #DC2626;
-            --amt-pos: #16A34A;
+            --surface: #ffffff;
+            --border: #e5e1da;
+            --t1: #1f1d1a;
+            --t2: #6b645c;
+            --t3: #948b81;
+            --t4: #b8b0a6;
+            --red: #dc2626;
+            --red-bg: #fef2f2;
+            --pos: #059669;
+            --pos-bg: #ecfdf5;
             --r-xs: 6px;
-            --r-sm: 8px;
-            --r: 12px;
-            --r-lg: 16px;
+            --r-sm: 10px;
+            --r-md: 14px;
+            --r-lg: 18px;
             --r-xl: 24px;
-            --nav-w: 248px;
-            --mob-nav-h: 72px;
-            --t-fast: 0.14s ease;
-            --t-spring: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-            --t-smooth: 0.2s ease;
+            --shad: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --t-fast: 0.15s;
+            --t-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --font: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+            --font-big: 'Outfit', sans-serif;
         }
 
         html {
@@ -832,24 +835,33 @@
 
         /* ─── REALISTIC CREDIT CARD ─── */
         .real-cc {
-            background: linear-gradient(135deg, #2D2D2D 0%, #1A1A1A 100%) !important;
-            border: 1px solid rgba(255,255,255,0.08) !important;
+            background: linear-gradient(135deg, #1f1d1a 0%, #3e3831 100%) !important;
+            border: 1px solid rgba(255,191,0,0.15) !important;
             color: #fff !important;
-            min-height: 200px;
-            padding: 1.5rem !important;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+            width: 100%;
+            max-width: 440px;
+            min-height: 240px;
+            padding: 2rem !important;
+            box-shadow: 0 40px 80px -15px rgba(0,0,0,0.25), 0 0 40px rgba(245,158,11,0.05) !important;
             position: relative;
             z-index: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            overflow: hidden;
+            border-radius: var(--r-lg) !important;
+            margin: 1.5rem 0;
         }
 
         .real-cc::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 150%;
+            background: radial-gradient(circle at center, rgba(245,158,11,0.1) 0%, transparent 70%);
+            transform: rotate(-15deg);
             pointer-events: none;
             z-index: -1;
         }
@@ -870,13 +882,13 @@
         }
 
         .cc-chip-mock {
-            width: 45px;
-            height: 34px;
-            background: linear-gradient(135deg, #D4AF37 0%, #F5D76E 50%, #B8860B 100%);
-            border-radius: 6px;
+            width: 50px;
+            height: 38px;
+            background: linear-gradient(135deg, #F5D76E 0%, #F59E0B 50%, #B8860B 100%);
+            border-radius: 8px;
             position: relative;
-            margin: 15px 0;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);
+            margin: 1.5rem 0;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .cc-number-mock {
@@ -1176,26 +1188,19 @@
             text-transform: uppercase;
         }
 
-        .cal-hdr {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-
-        .cal-hdr-day {
-            font-size: 9px;
-            font-weight: 800;
-            color: var(--t4);
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
         .cal-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            gap: 8px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .cal-hdr {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            max-width: 800px;
+            margin: 0 auto 12px;
         }
 
         .cal-day {
@@ -2515,31 +2520,32 @@
             </div>
             <div class="sb-nav">
                 <div class="nav-item active" id="nav-add" onclick="nav('add',this)">
-                    <div class="nav-ico">＋</div>Add Entry
+                    <div class="nav-ico">➕</div>
+                    <span>Add Entry</span>
                 </div>
                 <div class="nav-item" id="nav-accounts" onclick="nav('accounts',this)">
-                    <div class="nav-ico">▦</div>Accounts
-                </div>
-                <div class="nav-item" id="nav-heatmap" onclick="nav('heatmap',this)">
-                    <div class="nav-ico">▣</div>Heatmap
+                    <div class="nav-ico">💳</div>
+                    <span>Accounts</span>
                 </div>
                 <div class="nav-item" id="nav-analytics" onclick="nav('analytics',this)">
-                    <div class="nav-ico">◈</div>Analytics
+                    <div class="nav-ico">📈</div>
+                    <span>Analytics</span>
                 </div>
                 <div class="nav-item" id="nav-ledger" onclick="nav('ledger',this)">
-                    <div class="nav-ico">≡</div>Ledger
+                    <div class="nav-ico">📖</div>
+                    <span>Ledger</span>
                 </div>
                 <div class="nav-item" id="nav-transactions" onclick="nav('transactions',this)">
-                    <div class="nav-ico">☰</div>Transactions
+                    <div class="nav-ico">🧾</div>
+                    <span>Transactions</span>
                 </div>
                 <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
-                    <div class="nav-ico">⚙</div>Manage
-                </div>
-                <div class="nav-item" id="nav-templates" onclick="nav('templates',this)">
-                    <div class="nav-ico">⊡</div>Templates
+                    <div class="nav-ico">⚙️</div>
+                    <span>Manage</span>
                 </div>
                 <div class="nav-item" id="nav-import" onclick="nav('import',this)">
-                    <div class="nav-ico">⬆</div>Import Data
+                    <div class="nav-ico">📤</div>
+                    <span>Import Data</span>
                 </div>
             </div>
             <div class="sb-period">
@@ -2578,9 +2584,12 @@
 
             <!-- ADD ENTRY -->
             <div class="page active" id="page-add">
-                <div class="pg-header">
-                    <div class="pg-title">Add Entry</div>
-                    <div class="pg-sub">Record a new expense, income, or transfer</div>
+                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div class="pg-title">Add Entry</div>
+                        <div class="pg-sub">Log your expenses, income or transfers</div>
+                    </div>
+                    <button class="add-inline-btn" style="padding:10px 18px; font-size:12px; border-radius:var(--r-sm);" onclick="nav('import')">📤 Import Data</button>
                 </div>
                 <div class="add-tabs">
                     <div class="add-tab active" onclick="switchAddTab('expense',this)">Expense</div>
@@ -2758,50 +2767,32 @@
                             <div class="acc-sec-h">People &amp; Contacts</div><button class="add-inline-btn"
                                 onclick="showAccForm('PERSON')">+ Add</button>
                         </div>
-                        <div class="acc-list" id="personList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HEATMAP -->
-            <div class="page" id="page-heatmap">
-                <div class="pg-header">
-                    <div class="pg-title" id="hm-title">Heatmap</div>
-                    <div class="pg-sub">Click any coloured date to see expenses</div>
-                </div>
-                <div class="card card-p hm-wrap">
-                    <div class="card-h" id="hm-lbl">—</div>
-                    <div class="dcl-row">
-                        <div class="dcl">Sun</div>
-                        <div class="dcl">Mon</div>
-                        <div class="dcl">Tue</div>
-                        <div class="dcl">Wed</div>
-                        <div class="dcl">Thu</div>
-                        <div class="dcl">Fri</div>
-                        <div class="dcl">Sat</div>
-                    </div>
-                    <div class="cal-grid" id="calGrid">
-                        <div class="sp-wrap" style="grid-column:span 7">
-                            <div class="sp"></div>
-                        </div>
-                    </div>
-                    <div class="hm-legend"><span>Low</span>
-                        <div class="lgd-sw" id="lgdSw"></div><span>High</span>
+                        <div class="accounts-grid" id="personList"></div>
                     </div>
                 </div>
             </div>
 
             <!-- ANALYTICS -->
             <div class="page" id="page-analytics">
+                <div class="pg-header">
+                    <div class="pg-title">Analytics</div>
+                    <div class="pg-sub" id="ana-period">—</div>
+                </div>
+
+                <div class="heatmap-container" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:24px; margin-bottom:32px;">
+                    <div class="cal-hdr"></div>
+                    <div class="cal-grid" id="calGrid"></div>
+                    <div class="hm-legend" style="margin-top:20px; justify-content:center;">
+                        <div class="hm-lgd-label">Less</div>
+                        <div class="hm-swatches" id="lgdSw"></div>
+                        <div class="hm-lgd-label">More</div>
+                    </div>
+                </div>
+
                 <div class="pg-header"
-                    style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+                    style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-top:32px;">
                     <div>
-                        <div class="pg-title">Analytics</div>
-                        <div class="pg-sub" id="ana-period">—</div>
+                        <div class="pg-title" style="font-size:16px;">Trends & Breakdown</div>
                     </div>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
@@ -2959,6 +2950,7 @@
                 <!-- Mini Pill Tabs -->
                 <div class="add-tabs" style="margin-bottom:20px;">
                     <div class="add-tab active" onclick="switchMgmtTab('cats',this)">Categories</div>
+                    <div class="add-tab" onclick="switchMgmtTab('templates',this)">Templates</div>
                 </div>
 
                 <div class="mgmt-panel active" id="mpanel-cats">
@@ -2987,39 +2979,34 @@
                         <div class="mgmt-list" id="catListIncome"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- TEMPLATES -->
-            <div class="page" id="page-templates">
-                <div class="pg-header">
-                    <div class="pg-title">Templates</div>
-                    <div class="pg-sub">Manage saved expense &amp; income templates</div>
-                </div>
-                <div class="mgmt-section" style="margin-bottom:14px">
-                    <div class="mgmt-sec-hdr">
-                        <div class="mgmt-sec-title">Add New Template</div>
-                    </div>
-                    <div class="mini-form show" style="margin-bottom:0">
-                        <div class="mini-form-row" style="margin-bottom:7px">
-                            <select class="mini-select" id="tpl-add-type">
-                                <option value="EXPENSE">Expense</option>
-                                <option value="INCOME">Income</option>
-                            </select>
-                            <input class="mini-input" id="tpl-add-name" placeholder="Template name (item)">
-                            <input class="mini-input" id="tpl-add-acc" placeholder="Account">
-                            <input class="mini-input" id="tpl-add-cat" placeholder="Category">
+                <div class="mgmt-panel" id="mpanel-templates">
+                    <div class="mgmt-section" style="margin-bottom:14px">
+                        <div class="mgmt-sec-hdr">
+                            <div class="mgmt-sec-title">Add New Template</div>
                         </div>
-                        <div class="mini-form-row">
-                            <input class="mini-input" id="tpl-add-item" placeholder="Item">
-                            <input class="mini-input" id="tpl-add-amt" placeholder="Amount" type="number">
-                            <input class="mini-input" id="tpl-add-to" placeholder="To/From">
-                            <button class="mini-save-btn" onclick="doAddTemplate()">Save</button>
+                        <div class="mini-form show" style="margin-bottom:0">
+                            <div class="mini-form-row" style="margin-bottom:7px; display:grid; grid-template-columns: 1fr 2fr 2fr 2fr; gap:8px;">
+                                <select class="mini-select" id="tpl-add-type" style="padding:10px; border-radius:var(--r-sm); border:1px solid var(--border);">
+                                    <option value="EXPENSE">Expense</option>
+                                    <option value="INCOME">Income</option>
+                                </select>
+                                <input class="form-input" id="tpl-add-name" placeholder="Template name">
+                                <input class="form-input" id="tpl-add-acc" placeholder="Account">
+                                <input class="form-input" id="tpl-add-cat" placeholder="Category">
+                            </div>
+                            <div class="mini-form-row" style="display:grid; grid-template-columns: 2fr 1fr 2fr 100px; gap:8px; margin-top:8px;">
+                                <input class="form-input" id="tpl-add-item" placeholder="Item">
+                                <input class="form-input" id="tpl-add-amt" placeholder="Amount" type="number">
+                                <input class="form-input" id="tpl-add-to" placeholder="To/From">
+                                <button class="add-btn" onclick="doAddTemplate()" style="padding:0;">Save</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div id="tplList">
-                    <div class="sp-wrap">
-                        <div class="sp"></div>
+                    <div id="tplList" style="margin-top:20px;">
+                        <div class="sp-wrap">
+                            <div class="sp"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3331,8 +3318,8 @@
         /* ═══ DATA LOADING ═══ */
         async function loadAllData() {
             await Promise.all([loadAccounts(), loadCategories(), loadTemplates()]);
-            setupAddFormDropdowns();
             await loadPeriodData();
+            setupAddFormDropdowns();
         }
         async function loadAccounts() { const snap = await getDocs(uRef('accounts')); _accounts = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
         async function loadCategories() { const snap = await getDocs(uRef('categories')); _categories = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
@@ -3400,7 +3387,6 @@
             closeSidebar();
             if (name === 'ledger' && !document.getElementById('ldrAccSel').value) { const f = _accounts.find(a => a.name.toUpperCase().includes('HDFC')) || _accounts.find(a => a.type === 'BANK'); if (f) { document.getElementById('ldrAccSel').value = f.name; loadLedger(); } }
             if (name === 'manage') renderManage();
-            if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
         };
         window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('mob-open'); document.getElementById('sbOverlay').classList.toggle('show'); };
@@ -3774,7 +3760,14 @@
 
         function getFieldOrder(inputId) { for (const [, fields] of Object.entries(FIELD_ORDER)) { const i = fields.indexOf(inputId); if (i >= 0) return fields; } return null; }
         function focusNext(inputId) { const fields = getFieldOrder(inputId); if (!fields) return; const idx = fields.indexOf(inputId); if (idx < 0 || idx >= fields.length - 1) return; const next = document.getElementById(fields[idx + 1]); if (next) setTimeout(() => next.focus(), 55); }
-        function renderDD(inputId, ddId, data) { const inp = document.getElementById(inputId), dd = document.getElementById(ddId); if (!inp || !dd) return; const q = inp.value.toLowerCase(); const filtered = data.filter(x => String(x).toLowerCase().includes(q)); dd.innerHTML = filtered.map(v => '<div class="fd-item" data-val="' + escH(v) + '" onmousedown="event.preventDefault();W_selectDD(\'' + inputId + '\',\'' + ddId + '\',this.dataset.val)">' + escH(v) + '</div>').join(''); dd.style.display = filtered.length ? 'block' : 'none'; }
+        function renderDD(inputId, ddId, data) { 
+            const inp = document.getElementById(inputId), dd = document.getElementById(ddId); 
+            if (!inp || !dd) return; 
+            const q = inp.value.toLowerCase(); 
+            const filtered = q ? data.filter(x => String(x).toLowerCase().includes(q)) : data; 
+            dd.innerHTML = filtered.map(v => '<div class="fd-item" data-val="' + escH(v) + '" onmousedown="event.preventDefault();W_selectDD(\'' + inputId + '\',\'' + ddId + '\',this.dataset.val)">' + escH(v) + '</div>').join(''); 
+            dd.style.display = filtered.length ? 'block' : 'none'; 
+        }
         function initDD(inputId, ddId, data) { const inp = document.getElementById(inputId), dd = document.getElementById(ddId); if (!inp || !dd) return; inp._ddData = data; inp.oninput = () => { renderDD(inputId, ddId, data); inp.classList.remove('invalid'); if (inputId === 'e-tpl') applyExpTpl(inp.value); if (inputId === 'i-tpl') applyIncTpl(inp.value); }; inp.onfocus = () => renderDD(inputId, ddId, data); inp.onblur = () => setTimeout(() => { dd.style.display = 'none'; }, 160); inp.onkeydown = e => { const items = [...dd.querySelectorAll('.fd-item')]; const ddOpen = dd.style.display === 'block' && items.length > 0; if (e.key === 'Enter') { e.preventDefault(); if (ddOpen) { W_selectDD(inputId, ddId, items[0].dataset.val); } else { dd.style.display = 'none'; focusNext(inputId); } } else if (e.key === 'ArrowDown' && items.length > 0) { e.preventDefault(); items[0].focus(); } else if (e.key === 'Escape') dd.style.display = 'none'; }; dd.onkeydown = e => { const items = [...dd.querySelectorAll('.fd-item')]; const idx = items.indexOf(document.activeElement); if (e.key === 'ArrowDown') { e.preventDefault(); if (idx < items.length - 1) items[idx + 1].focus(); } else if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) items[idx - 1].focus(); else inp.focus(); } else if (e.key === 'Enter') { e.preventDefault(); if (document.activeElement.dataset.val !== undefined) W_selectDD(inputId, ddId, document.activeElement.dataset.val); } }; }
         window.W_selectDD = function (inputId, ddId, value) { const inp = document.getElementById(inputId), dd = document.getElementById(ddId); if (!inp || !dd) return; inp.value = value; inp.classList.remove('invalid'); dd.style.display = 'none'; if (inputId === 'e-tpl') { applyExpTpl(value); return; } if (inputId === 'i-tpl') { applyIncTpl(value); return; } focusNext(inputId); };
         function applyExpTpl(n) { const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('e-acc').value = t.account; if (t.category) document.getElementById('e-cat').value = t.category; if (t.item) document.getElementById('e-item').value = t.item; if (t.tofrom) document.getElementById('e-to').value = t.tofrom; if (t.amount) document.getElementById('e-amt').value = t.amount; }
@@ -3964,10 +3957,11 @@
             document.querySelectorAll('.mgmt-panel').forEach(x => x.classList.remove('active')); 
             el.classList.add('active'); 
             document.getElementById('mpanel-' + name).classList.add('active'); 
+            if (name === 'templates') renderTemplatesPage();
         };
         window.showMiniForm = id => document.getElementById(id).classList.add('show');
         window.hideMiniForm = id => document.getElementById(id).classList.remove('show');
-        async function renderManage() { await loadCategories(); renderCatList(); }
+        async function renderManage() { await loadCategories(); renderCatList(); renderTemplatesPage(); }
 
         async function propagateRename(field, oldVal, newVal) {
             if (!oldVal || oldVal === newVal) return;
