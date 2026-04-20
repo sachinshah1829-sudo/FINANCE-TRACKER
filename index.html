@@ -1663,45 +1663,51 @@
             font-family: var(--font-big);
         }
 
-        .mgmt-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .mgmt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 2rem;
         }
 
-        .mgmt-row {
+        .mgmt-chip {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            padding: 12px 16px;
+            padding: 10px 12px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--r-sm);
-            font-size: 13px;
-            font-weight: 600;
             transition: all var(--t-fast);
+            cursor: pointer;
         }
 
-        .mgmt-row:hover {
+        .mgmt-chip:hover {
             border-color: var(--accent);
-            background: var(--bg);
+            background: var(--accent-bg);
+            transform: translateY(-1px);
         }
 
-        .mgmt-row-badge {
-            font-size: 9px;
+        .mgmt-chip-name {
+            font-size: 12px;
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: var(--bg2);
-            color: var(--t3);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            color: var(--t1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: var(--font-big);
         }
 
         .mgmt-item-btns {
             display: flex;
             gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .mgmt-chip:hover .mgmt-item-btns,
+        .tpl-item:hover .mgmt-item-btns {
+            opacity: 1;
         }
 
         .mini-form {
@@ -1789,31 +1795,33 @@
         }
 
         /* ─── TEMPLATES ─── */
-        .tpl-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+        .tpl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
         }
 
         .tpl-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px 16px;
+            padding: 12px 14px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--r-lg);
+            border-radius: var(--r-sm);
             cursor: pointer;
             transition: all var(--t-spring);
-            box-shadow: var(--el-1);
+            border-left: 3px solid transparent;
         }
 
         .tpl-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--el-2);
             border-color: var(--accent);
             background: var(--accent-bg);
+            border-left-color: var(--accent);
         }
+
+        .tpl-item.exp { border-left-color: var(--red); }
+        .tpl-item.inc { border-left-color: var(--green); }
 
         .tpl-ico {
             width: 40px;
@@ -4059,19 +4067,19 @@
         function renderCatList() {
             const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE');
             const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME');
-            const row = c => `
-                <div class="mgmt-row clickable" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
-                    <div style="flex:1">
-                        <div class="mgmt-row-main">${escH(c.name)}</div>
-                    </div>
-                    <div class="mgmt-row-badge">${c.type}</div>
-                    <div class="mgmt-acts" onclick="event.stopPropagation()">
-                        <button class="act-btn" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">✎</button>
-                        <button class="act-btn del" onclick="deleteCat('${c.id}','${escH(c.name)}')">✕</button>
+            const chip = c => `
+                <div class="mgmt-chip" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
+                    <div class="mgmt-chip-name">${escH(c.name)}</div>
+                    <div class="mgmt-item-btns" onclick="event.stopPropagation()">
+                        <button class="act-btn" style="width:22px;height:22px;font-size:10px;" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">✎</button>
+                        <button class="act-btn del" style="width:22px;height:22px;font-size:10px;" onclick="deleteCat('${c.id}','${escH(c.name)}')">✕</button>
                     </div>
                 </div>`;
-            document.getElementById('catListExpense').innerHTML = exp.map(row).join('') || '<div class="empty-s">No expense categories</div>';
-            document.getElementById('catListIncome').innerHTML = inc.map(row).join('') || '<div class="empty-s">No income categories</div>';
+            
+            document.getElementById('catListExpense').className = 'mgmt-grid';
+            document.getElementById('catListIncome').className = 'mgmt-grid';
+            document.getElementById('catListExpense').innerHTML = exp.map(chip).join('') || '<div class="empty-s">No expense categories</div>';
+            document.getElementById('catListIncome').innerHTML = inc.map(chip).join('') || '<div class="empty-s">No income categories</div>';
         }
         window.doAddCategory = async function () { const name = document.getElementById('cat-add-name').value.trim(), type = document.getElementById('cat-add-type').value; if (!name) return; await addDoc(uRef('categories'), { name, type }); document.getElementById('cat-add-name').value = ''; hideMiniForm('cat-add'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category added'); };
         window.editCat = function (id, name, type) { document.getElementById('edit-modal-title').textContent = 'Edit Category'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Name</label><input class="form-input" id="em-name" value="' + escH(name) + '"></div><div class="form-row"><label class="form-label">Type</label><select class="form-input" id="em-type" style="cursor:pointer"><option value="EXPENSE"' + (type === 'EXPENSE' ? ' selected' : '') + '>Expense</option><option value="INCOME"' + (type === 'INCOME' ? ' selected' : '') + '>Income</option></select></div><button class="add-btn" onclick="saveCatEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
@@ -4095,21 +4103,19 @@
                 document.getElementById('tplList').innerHTML = '<div class="empty-s">No templates yet.</div>'; 
                 return; 
             } 
+            document.getElementById('tplList').className = 'tpl-grid';
             document.getElementById('tplList').innerHTML = _templates.map(r => {
                 const isExp = r.type === 'EXPENSE';
                 const details = [r.account, r.category, r.amount ? rs(r.amount) : ''].filter(Boolean).join(' · ');
                 return `
-                    <div class="tpl-item" onclick="editTpl('${r.id}')">
-                        <div style="flex:1">
-                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
-                                <div class="tpl-name">${escH(r.name || '')}</div>
-                                <span class="tpl-badge ${isExp ? 'exp' : 'inc'}">${r.type}</span>
-                            </div>
-                            <div class="tpl-detail">${escH(details)}</div>
+                    <div class="tpl-item ${isExp ? 'exp' : 'inc'}" onclick="editTpl('${r.id}')">
+                        <div style="flex:1; min-width:0;">
+                            <div class="tpl-name" style="font-size:13px;">${escH(r.name || '')}</div>
+                            <div class="tpl-detail" style="font-size:10px; color:var(--t3);">${escH(details)}</div>
                         </div>
-                        <div class="mgmt-acts" onclick="event.stopPropagation()">
-                            <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
-                            <button class="act-btn del" onclick="deleteTpl('${r.id}','${escH(r.name || '')}')" title="Delete">✕</button>
+                        <div class="mgmt-item-btns" onclick="event.stopPropagation()">
+                            <button class="act-btn" style="width:24px;height:24px;font-size:11px;" onclick="editTpl('${r.id}')" title="Edit">✎</button>
+                            <button class="act-btn del" style="width:24px;height:24px;font-size:11px;" onclick="deleteTpl('${r.id}','${escH(r.name || '')}')" title="Delete">✕</button>
                         </div>
                     </div>`;
             }).join(''); 
