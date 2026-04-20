@@ -880,12 +880,13 @@
         }
 
         .cc-chip-mock {
-            width: 34px;
-            height: 26px;
+            width: 32px;
+            height: 24px;
             background: linear-gradient(135deg, #EAD7BA 0%, #D4AF37 50%, #C97B4B 100%);
             border-radius: 4px;
             position: relative;
             box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.1);
+            margin-left: auto; /* Prevent overlap by pushing to right */
         }
 
         .cc-chip-mock::after {
@@ -922,13 +923,23 @@
             line-height: 1;
         }
 
-        .cc-util-label {
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--t3);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
+        .cc-util-bar {
+            height: 6px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cc-util-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .cc-footer {
@@ -3060,28 +3071,30 @@
                 </div>
 
                 <div class="mgmt-panel active" id="mpanel-cats">
-                    <div class="mgmt-section">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Expenses</div>
-                            <button class="add-inline-btn" data-type="EXPENSE"
-                                onclick="showMiniForm('cat-add',this)">+ Add</button>
-                        </div>
-                        <div class="mini-form" id="cat-add">
-                            <input type="hidden" id="cat-add-type">
+                    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                        <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showMiniForm('cat-add',this)">+ Add Category</button>
+                    </div>
+
+                    <div class="mini-form" id="cat-add" style="margin-bottom:24px;">
+                        <div style="display:grid; grid-template-columns: 1fr 120px; gap:8px; margin-bottom:8px;">
                             <input class="form-input" id="cat-add-name" placeholder="Category Name" autocomplete="off">
-                            <div style="display:flex;gap:8px;">
-                                <button class="add-btn" onclick="doAddCategory()">Save</button>
-                                <button class="txn-clr-btn" onclick="hideMiniForm('cat-add')">Cancel</button>
-                            </div>
+                            <select class="form-input" id="cat-add-type" style="cursor:pointer">
+                                <option value="EXPENSE">Expense</option>
+                                <option value="INCOME">Income</option>
+                            </select>
                         </div>
+                        <div style="display:flex;gap:8px;">
+                            <button class="add-btn" style="margin:0" onclick="doAddCategory()">Save Category</button>
+                            <button class="txn-clr-btn" onclick="hideMiniForm('cat-add')">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="mgmt-section">
+                        <div class="mgmt-sec-hdr"><div class="mgmt-sec-title">Expenses</div></div>
                         <div class="mgmt-list" id="catListExpense"></div>
                     </div>
                     <div class="mgmt-section">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Income</div>
-                            <button class="add-inline-btn" data-type="INCOME"
-                                onclick="showMiniForm('cat-add',this)">+ Add</button>
-                        </div>
+                        <div class="mgmt-sec-hdr"><div class="mgmt-sec-title">Income</div></div>
                         <div class="mgmt-list" id="catListIncome"></div>
                     </div>
                 </div>
@@ -3491,30 +3504,24 @@
                 
                 return `
                     <div class="acc-item real-cc" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)">
-                        <div class="cc-brand-area" style="margin-bottom:auto">
-                            <div class="cc-bank-name" style="font-size:12px; font-family:var(--font-big);">${escH(a.name)}</div>
-                            <div class="cc-chip-mock"></div>
+                        <div class="cc-brand-area" style="margin-bottom:auto; gap:12px;">
+                            <div class="cc-bank-name" style="font-size:12px; font-family:var(--font-big); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escH(a.name)}</div>
+                            <div class="cc-chip-mock" style="flex-shrink:0"></div>
                         </div>
                         
-                        <div style="margin: 15px 0;">
-                            <div class="cc-util-label">Card Utilization</div>
-                            <div class="cc-util-val-big">${pct.toFixed(0)}%</div>
-                            <div class="cc-util-bar" style="height:6px; background:rgba(0,0,0,0.05); border-radius:10px; margin-top:8px; overflow:hidden;">
+                        <div style="margin: 12px 0;">
+                            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px">
+                                <div class="cc-util-val-big">${pct.toFixed(0)}% <span style="font-size:10px; font-weight:700; color:var(--t3); margin-left:4px">Utilized</span></div>
+                                <div class="cc-f-val" style="color:var(--accent); font-size:13px">₹${fmt(spent)}</div>
+                            </div>
+                            <div class="cc-util-bar">
                                 <div class="cc-util-fill" style="width:${pct}%"></div>
+                            </div>
+                            <div style="display:flex; justify-content:flex-end; margin-top:4px">
+                                <div class="cc-f-lbl" style="margin:0">Limit: ₹${fmt(limit)}</div>
                             </div>
                         </div>
 
-                        <div class="cc-footer">
-                            <div class="cc-footer-item">
-                                <div class="cc-f-lbl">Limit</div>
-                                <div class="cc-f-val">₹${fmt(limit)}</div>
-                            </div>
-                            <div class="cc-footer-item" style="text-align:right">
-                                <div class="cc-f-lbl">Utilized</div>
-                                <div class="cc-f-val" style="color:var(--accent)">₹${fmt(spent)}</div>
-                            </div>
-                        </div>
-                        
                         <div class="acc-acts" onclick="event.stopPropagation()" style="bottom: auto; top: 10px; right: 10px;">
                             <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
                             <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
@@ -4092,12 +4099,8 @@
             const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE');
             const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME');
             const chip = c => `
-                <div class="mgmt-chip" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
+                <div class="mgmt-chip" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" style="cursor:pointer">
                     <div class="mgmt-chip-name">${escH(c.name)}</div>
-                    <div class="mgmt-item-btns" onclick="event.stopPropagation()">
-                        <button class="act-btn" style="width:22px;height:22px;font-size:10px;" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">✎</button>
-                        <button class="act-btn del" style="width:22px;height:22px;font-size:10px;" onclick="deleteCat('${c.id}','${escH(c.name)}')">✕</button>
-                    </div>
                 </div>`;
             
             document.getElementById('catListExpense').className = 'mgmt-grid';
@@ -4106,7 +4109,27 @@
             document.getElementById('catListIncome').innerHTML = inc.map(chip).join('') || '<div class="empty-s">No income categories</div>';
         }
         window.doAddCategory = async function () { const name = document.getElementById('cat-add-name').value.trim(), type = document.getElementById('cat-add-type').value; if (!name) return; await addDoc(uRef('categories'), { name, type }); document.getElementById('cat-add-name').value = ''; hideMiniForm('cat-add'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category added'); };
-        window.editCat = function (id, name, type) { document.getElementById('edit-modal-title').textContent = 'Edit Category'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Name</label><input class="form-input" id="em-name" value="' + escH(name) + '"></div><div class="form-row"><label class="form-label">Type</label><select class="form-input" id="em-type" style="cursor:pointer"><option value="EXPENSE"' + (type === 'EXPENSE' ? ' selected' : '') + '>Expense</option><option value="INCOME"' + (type === 'INCOME' ? ' selected' : '') + '>Income</option></select></div><button class="add-btn" onclick="saveCatEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
+        window.editCat = function (id, name, type) { 
+            document.getElementById('edit-modal-title').textContent = 'Edit Category'; 
+            document.getElementById('edit-modal-body').innerHTML = `
+                <div class="form-row">
+                    <label class="form-label">Name</label>
+                    <input class="form-input" id="em-name" value="${escH(name)}">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Type</label>
+                    <select class="form-input" id="em-type" style="cursor:pointer">
+                        <option value="EXPENSE" ${type === 'EXPENSE' ? 'selected' : ''}>Expense</option>
+                        <option value="INCOME" ${type === 'INCOME' ? 'selected' : ''}>Income</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="add-btn" style="margin:0; flex:1;" onclick="saveCatEdit('${id}')">Save Changes</button>
+                    <button class="txn-clr-btn" style="flex:1; border-color:var(--red); color:var(--red);" onclick="deleteCat('${id}','${escH(name)}')">Delete Category</button>
+                </div>
+            `; 
+            openM('editModal'); 
+        };
         window.saveCatEdit = async function (id) {
             const name = document.getElementById('em-name').value.trim(), type = document.getElementById('em-type').value;
             if (!name) return;
@@ -4119,7 +4142,21 @@
             }
             closeM('editModal'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category updated');
         };
-        window.deleteCat = async function (id, name) { if (!confirm('Delete category "' + name + '"?')) return; await deleteDoc(uDoc('categories', id)); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category deleted'); };
+            if (oldName && oldName !== name) {
+                await propagateRename('category', oldName, name);
+                await loadAllTransactions();
+            }
+            closeM('editModal'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category updated');
+        };
+        window.deleteCat = async function (id, name) { 
+            if (!confirm('Delete category "' + name + '"?')) return; 
+            closeM('editModal');
+            await deleteDoc(uDoc('categories', id)); 
+            await loadCategories(); 
+            renderCatList(); 
+            setupAddFormDropdowns(); 
+            toast('Category deleted'); 
+        };
         /* ═══ TEMPLATES ═══ */
         async function renderTemplatesPage() { 
             await loadTemplates(); 
