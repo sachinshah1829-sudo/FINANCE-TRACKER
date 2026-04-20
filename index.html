@@ -3451,8 +3451,16 @@
             if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
         };
-        window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('mob-open'); document.getElementById('sbOverlay').classList.toggle('show'); };
-        function closeSidebar() { document.getElementById('sidebar').classList.remove('mob-open'); document.getElementById('sbOverlay').classList.remove('show'); }
+        window.toggleSidebar = () => { 
+            const isOpening = document.getElementById('sidebar').classList.toggle('mob-open'); 
+            document.getElementById('sbOverlay').classList.toggle('show'); 
+            document.getElementById('mobToggle').style.display = isOpening ? 'none' : 'flex';
+        };
+        function closeSidebar() { 
+            document.getElementById('sidebar').classList.remove('mob-open'); 
+            document.getElementById('sbOverlay').classList.remove('show'); 
+            document.getElementById('mobToggle').style.display = 'flex';
+        }
 
         /* ═══ ACCOUNTS ═══ */
         function renderAccounts(accs, total, avg) {
