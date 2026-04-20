@@ -867,7 +867,8 @@
         .cc-brand-area {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 12px;
         }
 
         .cc-bank-name {
@@ -877,15 +878,17 @@
             text-transform: uppercase;
             color: var(--accent);
             opacity: 1;
+            flex: 1;
         }
 
         .cc-chip-mock {
-            width: 34px;
-            height: 26px;
+            width: 32px;
+            height: 24px;
             background: linear-gradient(135deg, #EAD7BA 0%, #D4AF37 50%, #C97B4B 100%);
             border-radius: 4px;
             position: relative;
             box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .cc-chip-mock::after {
@@ -915,20 +918,57 @@
         }
 
         .cc-util-val-big {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 26px;
+            font-weight: 900;
             color: var(--accent);
             font-family: var(--font-big);
             line-height: 1;
         }
 
         .cc-util-label {
-            font-size: 9px;
+            font-size: 8px;
+            font-weight: 800;
+            color: var(--t4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2px;
+        }
+
+        .cc-util-group {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            margin: 12px 0 8px 0;
+        }
+
+        .cc-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cc-util-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cc-util-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cc-limit-tag {
+            font-size: 10px;
             font-weight: 700;
             color: var(--t3);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
+            font-family: var(--font-big);
+            white-space: nowrap;
         }
 
         .cc-footer {
@@ -3494,27 +3534,26 @@
                 return `
                     <div class="acc-item real-cc" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)">
                         <div class="cc-brand-area" style="margin-bottom:auto">
-                            <div class="cc-bank-name" style="font-size:12px; font-family:var(--font-big);">${escH(a.name)}</div>
+                            <div class="cc-bank-name">${escH(a.name)}</div>
                             <div class="cc-chip-mock"></div>
                         </div>
                         
-                        <div style="margin: 15px 0;">
-                            <div class="cc-util-label">Card Utilization</div>
-                            <div class="cc-util-val-big">${pct.toFixed(0)}%</div>
-                            <div class="cc-util-bar" style="height:6px; background:rgba(0,0,0,0.05); border-radius:10px; margin-top:8px; overflow:hidden;">
-                                <div class="cc-util-fill" style="width:${pct}%"></div>
+                        <div class="cc-util-group">
+                            <div>
+                                <div class="cc-util-label">Utilization</div>
+                                <div class="cc-util-val-big">${pct.toFixed(0)}%</div>
+                            </div>
+                            <div>
+                                <div class="cc-util-label">Spent</div>
+                                <div class="cc-util-val-big" style="font-size:18px; color:var(--t2);">₹${fmt(spent)}</div>
                             </div>
                         </div>
 
-                        <div class="cc-footer">
-                            <div class="cc-footer-item">
-                                <div class="cc-f-lbl">Limit</div>
-                                <div class="cc-f-val">₹${fmt(limit)}</div>
+                        <div class="cc-bar-row">
+                            <div class="cc-util-bar">
+                                <div class="cc-util-fill" style="width:${pct}%"></div>
                             </div>
-                            <div class="cc-footer-item" style="text-align:right">
-                                <div class="cc-f-lbl">Utilized</div>
-                                <div class="cc-f-val" style="color:var(--accent)">₹${fmt(spent)}</div>
-                            </div>
+                            <div class="cc-limit-tag">₹${fmt(limit)}</div>
                         </div>
                         
                         <div class="acc-acts" onclick="event.stopPropagation()" style="bottom: auto; top: 10px; right: 10px;">
@@ -4131,12 +4170,6 @@
             const old = _categories.find(c => c.id === id);
             const oldName = old ? old.name : '';
             await updateDoc(uDoc('categories', id), { name, type });
-            if (oldName && oldName !== name) {
-                await propagateRename('category', oldName, name);
-                await loadAllTransactions();
-            }
-            closeM('editModal'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category updated');
-        };
             if (oldName && oldName !== name) {
                 await propagateRename('category', oldName, name);
                 await loadAllTransactions();
