@@ -1151,6 +1151,7 @@
             font-weight: 600;
             cursor: pointer;
             color: var(--t2);
+            font-family: var(--font-big);
             transition: all var(--t-fast);
         }
 
@@ -1158,6 +1159,35 @@
             background: var(--accent-bg);
             color: var(--accent);
             border-color: rgba(201, 123, 75, 0.3);
+        }
+
+        .form-save-tpl {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-bg);
+            color: var(--accent);
+            border: 1.5px solid rgba(217, 119, 87, 0.2);
+            border-radius: var(--r-sm);
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            transition: all var(--t-fast);
+        }
+
+        .form-save-tpl:hover {
+            background: #fdf6f0;
+            border-color: var(--accent);
+        }
+
+        .form-save-tpl.saved {
+            background: #ecfdf5;
+            color: #059669;
+            border-color: #059669;
         }
 
         .add-section-title {
@@ -2684,7 +2714,7 @@
 
                     <div class="form-err" id="e-err"></div>
                     <button class="add-btn" id="e-btn" onclick="submitExp()">Save Expense</button>
-                    <span class="form-save-tpl" id="e-tpl-btn" onclick="saveExpTpl()">+ Save as Template</span>
+                    <button class="form-save-tpl" id="e-tpl-btn" onclick="saveExpTpl()">+ Save as Template</button>
                 </div>
                 <!-- INCOME -->
                 <div class="add-form" id="form-income">
@@ -2722,7 +2752,7 @@
                     </div>
                     <div class="form-err" id="i-err"></div>
                     <button class="add-btn" id="i-btn" onclick="submitInc()">Save Income</button>
-                    <span class="form-save-tpl" id="i-tpl-btn" onclick="saveIncTpl()">+ Save as Template</span>
+                    <button class="form-save-tpl" id="i-tpl-btn" onclick="saveIncTpl()">+ Save as Template</button>
                 </div>
                 <!-- TRANSFER -->
                 <div class="add-form" id="form-transfer">
@@ -3798,7 +3828,20 @@
         const gv = id => document.getElementById(id).value.trim();
         const setInv = id => document.getElementById(id).classList.add('invalid');
         const clrInv = ids => ids.forEach(id => document.getElementById(id).classList.remove('invalid'));
-        function btnDone(id) { const b = document.getElementById(id), orig = b.textContent; b.classList.add('done'); b.textContent = '✓ Saved'; setTimeout(() => { b.classList.remove('done'); b.textContent = orig; }, 1800); }
+        function btnDone(id) { 
+            const b = document.getElementById(id);
+            let orig = b.textContent; 
+            // Safety: if called when button shows "Saving...", reset to standard text
+            if (orig.includes('Saving')) {
+                if (id === 'e-btn') orig = 'Save Expense';
+                else if (id === 'i-btn') orig = 'Save Income';
+                else if (id === 't-btn') orig = 'Execute Transfer';
+                else if (id === 'e-tpl-btn' || id === 'i-tpl-btn') orig = '+ Save as Template';
+            }
+            b.classList.add('done'); 
+            b.textContent = '✓ Saved'; 
+            setTimeout(() => { b.classList.remove('done'); b.textContent = orig; }, 1800); 
+        }
         function clearForm(ids, errId) { ids.forEach(id => { document.getElementById(id).value = ''; document.getElementById(id).classList.remove('invalid'); }); document.getElementById(errId).textContent = ''; }
 
         let _splitRows = 0;
