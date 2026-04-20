@@ -936,21 +936,22 @@
 
         .cc-util-group {
             display: flex;
-            align-items: flex-end;
-            gap: 15px;
-            margin: 12px 0 8px 0;
+            align-items: baseline;
+            gap: 12px;
+            margin: 10px 0 6px 0;
         }
 
         .cc-bar-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            margin-top: 4px;
         }
 
         .cc-util-bar {
             flex: 1;
-            height: 6px;
-            background: rgba(0,0,0,0.05);
+            height: 7px;
+            background: rgba(0,0,0,0.08);
             border-radius: 10px;
             overflow: hidden;
             position: relative;
@@ -958,8 +959,9 @@
 
         .cc-util-fill {
             height: 100%;
-            background: var(--accent);
+            background: var(--accent) !important;
             border-radius: 10px;
+            min-width: 2px;
             transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -3539,12 +3541,12 @@
                         </div>
                         
                         <div class="cc-util-group">
-                            <div>
-                                <div class="cc-util-label">Utilization</div>
+                            <div style="display:flex; align-items:baseline; gap:8px;">
                                 <div class="cc-util-val-big">${pct.toFixed(0)}%</div>
+                                <div class="cc-util-label" style="margin:0">Utilization</div>
                             </div>
-                            <div>
-                                <div class="cc-util-label">Spent</div>
+                            <div style="display:flex; align-items:baseline; gap:8px; margin-left:auto;">
+                                <div class="cc-util-label" style="margin:0">Spent</div>
                                 <div class="cc-util-val-big" style="font-size:18px; color:var(--t2);">₹${fmt(spent)}</div>
                             </div>
                         </div>
@@ -3553,7 +3555,7 @@
                             <div class="cc-util-bar">
                                 <div class="cc-util-fill" style="width:${pct}%"></div>
                             </div>
-                            <div class="cc-limit-tag">₹${fmt(limit)}</div>
+                            <div class="cc-limit-tag" style="color:var(--t4); font-size:9px;">₹${fmt(limit)}</div>
                         </div>
                         
                         <div class="acc-acts" onclick="event.stopPropagation()" style="bottom: auto; top: 10px; right: 10px;">
