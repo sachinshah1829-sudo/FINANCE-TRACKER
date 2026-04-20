@@ -1692,10 +1692,10 @@
             font-size: 12px;
             font-weight: 700;
             color: var(--t1);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            word-break: break-word;
             font-family: var(--font-big);
+            line-height: 1.2;
         }
 
         .mgmt-item-btns {
@@ -4473,7 +4473,7 @@
                 sx = e.touches[0].clientX; 
                 sy = e.touches[0].clientY; 
                 st = Date.now(); 
-                blocked = !!(e.target.closest('.tbl-scroll-wrap') || e.target.closest('.card table') || e.target.closest('.cal-grid')); 
+                blocked = !!(e.target.closest('.tbl-scroll-wrap') || e.target.closest('.card table')); 
             }, { passive: true }); 
             
             main.addEventListener('touchend', e => { 
