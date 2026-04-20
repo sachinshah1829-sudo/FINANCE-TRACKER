@@ -3366,10 +3366,9 @@
             populateLdrSel(_accounts);
             if (document.getElementById('ldrAccSel').value) loadLedger();
             const p = MO_SHORT[curM - 1] + ' ' + curY;
-            document.getElementById('acc-period').textContent = p;
-            document.getElementById('ana-period').textContent = p;
-            document.getElementById('hm-title').textContent = 'Heatmap — ' + MO_LONG[curM - 1] + ' ' + curY;
-            document.getElementById('hm-lbl').textContent = MO_LONG[curM - 1] + ' ' + curY;
+            const pel = document.getElementById('acc-period'); if (pel) pel.textContent = p;
+            const ael = document.getElementById('ana-period'); if (ael) ael.textContent = p;
+            const hlbl = document.getElementById('hm-lbl'); if (hlbl) hlbl.textContent = MO_LONG[curM - 1] + ' ' + curY;
             setupAddFormDropdowns();
         }
 
