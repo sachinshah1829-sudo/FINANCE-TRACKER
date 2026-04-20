@@ -3750,6 +3750,24 @@
             }
             return exists.id;
         }
+        async function ensureItem(val) {
+            if (!val) return;
+            const exists = _items.find(i => i.value.toLowerCase() === val.toLowerCase());
+            if (!exists) {
+                const ref = await addDoc(uRef('items'), { value: val });
+                _items.push({ id: ref.id, value: val });
+                setupAddFormDropdowns();
+            }
+        }
+        async function ensurePerson(val) {
+            if (!val) return;
+            const exists = _people.find(p => p.value.toLowerCase() === val.toLowerCase());
+            if (!exists) {
+                const ref = await addDoc(uRef('people'), { value: val });
+                _people.push({ id: ref.id, value: val });
+                setupAddFormDropdowns();
+            }
+        }
 
         function setupAddFormDropdowns() {
             const txns = _allTxns || [];
