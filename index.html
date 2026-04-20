@@ -3769,8 +3769,74 @@
 
         function getFieldOrder(inputId) { for (const [, fields] of Object.entries(FIELD_ORDER)) { const i = fields.indexOf(inputId); if (i >= 0) return fields; } return null; }
         function focusNext(inputId) { const fields = getFieldOrder(inputId); if (!fields) return; const idx = fields.indexOf(inputId); if (idx < 0 || idx >= fields.length - 1) return; const next = document.getElementById(fields[idx + 1]); if (next) setTimeout(() => next.focus(), 55); }
-        function renderDD(inputId, ddId, data) { const inp = document.getElementById(inputId), dd = document.getElementById(ddId); if (!inp || !dd) return; const q = inp.value.toLowerCase(); const filtered = data.filter(x => String(x).toLowerCase().includes(q)); dd.innerHTML = filtered.map(v => '<div class="fd-item" data-val="' + escH(v) + '" onmousedown="event.preventDefault();W_selectDD(\'' + inputId + '\',\'' + ddId + '\',this.dataset.val)">' + escH(v) + '</div>').join(''); dd.style.display = filtered.length ? 'block' : 'none'; }
-        function initDD(inputId, ddId, data) { const inp = document.getElementById(inputId), dd = document.getElementById(ddId); if (!inp || !dd) return; inp._ddData = data; inp.oninput = () => { renderDD(inputId, ddId, data); inp.classList.remove('invalid'); if (inputId === 'e-tpl') applyExpTpl(inp.value); if (inputId === 'i-tpl') applyIncTpl(inp.value); }; inp.onfocus = () => renderDD(inputId, ddId, data); inp.onblur = () => setTimeout(() => { dd.style.display = 'none'; }, 160); inp.onkeydown = e => { const items = [...dd.querySelectorAll('.fd-item')]; const ddOpen = dd.style.display === 'block' && items.length > 0; if (e.key === 'Enter') { e.preventDefault(); if (ddOpen) { W_selectDD(inputId, ddId, items[0].dataset.val); } else { dd.style.display = 'none'; focusNext(inputId); } } else if (e.key === 'ArrowDown' && items.length > 0) { e.preventDefault(); items[0].focus(); } else if (e.key === 'Escape') dd.style.display = 'none'; }; dd.onkeydown = e => { const items = [...dd.querySelectorAll('.fd-item')]; const idx = items.indexOf(document.activeElement); if (e.key === 'ArrowDown') { e.preventDefault(); if (idx < items.length - 1) items[idx + 1].focus(); } else if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) items[idx - 1].focus(); else inp.focus(); } else if (e.key === 'Enter') { e.preventDefault(); if (document.activeElement.dataset.val !== undefined) W_selectDD(inputId, ddId, document.activeElement.dataset.val); } }; }
+        function renderDD(inputId, ddId, data) {
+            const inp = document.getElementById(inputId), dd = document.getElementById(ddId);
+            if (!inp || !dd) return;
+            const q = inp.value.toLowerCase();
+            const filtered = data.filter(x => String(x).toLowerCase().includes(q));
+            
+            if (filtered.length === 0) {
+                if (data.length === 0) {
+                    dd.innerHTML = '<div class="fd-item" style="opacity:0.6; cursor:default">No history found</div>';
+                } else {
+                    dd.innerHTML = '<div class="fd-item" style="opacity:0.6; cursor:default">No matches</div>';
+                }
+            } else {
+                dd.innerHTML = filtered.map(v => '<div class="fd-item" data-val="' + escH(v) + '" onmousedown="event.preventDefault();W_selectDD(\'' + inputId + '\',\'' + ddId + '\',this.dataset.val)">' + escH(v) + '</div>').join('');
+            }
+            // Always show if focused and has container
+            dd.style.display = 'block'; 
+        }
+        function initDD(inputId, ddId, data) {
+            const inp = document.getElementById(inputId), dd = document.getElementById(ddId);
+            if (!inp || !dd) return;
+            inp._ddData = data;
+            inp.oninput = () => {
+                renderDD(inputId, ddId, data);
+                inp.classList.remove('invalid');
+                if (inputId === 'e-tpl') applyExpTpl(inp.value);
+                if (inputId === 'i-tpl') applyIncTpl(inp.value);
+            };
+            inp.onfocus = () => {
+                renderDD(inputId, ddId, data);
+            };
+            inp.onblur = () => setTimeout(() => {
+                dd.style.display = 'none';
+            }, 180);
+            inp.onkeydown = e => {
+                const items = [...dd.querySelectorAll('.fd-item[data-val]')]; // Only selectable items
+                const ddOpen = dd.style.display === 'block' && items.length > 0;
+                if (e.key === 'Enter') {
+                    if (ddOpen) {
+                        e.preventDefault();
+                        W_selectDD(inputId, ddId, items[0].dataset.val);
+                    } else {
+                        dd.style.display = 'none';
+                        focusNext(inputId);
+                    }
+                } else if (e.key === 'ArrowDown' && ddOpen) {
+                    e.preventDefault();
+                    items[0].focus();
+                } else if (e.key === 'Escape') {
+                    dd.style.display = 'none';
+                }
+            };
+            dd.onkeydown = e => {
+                const items = [...dd.querySelectorAll('.fd-item[data-val]')];
+                const idx = items.indexOf(document.activeElement);
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (idx < items.length - 1) items[idx + 1].focus();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (idx > 0) items[idx - 1].focus();
+                    else inp.focus();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (document.activeElement.dataset.val !== undefined) W_selectDD(inputId, ddId, document.activeElement.dataset.val);
+                }
+            };
+        }
         window.W_selectDD = function (inputId, ddId, value) { const inp = document.getElementById(inputId), dd = document.getElementById(ddId); if (!inp || !dd) return; inp.value = value; inp.classList.remove('invalid'); dd.style.display = 'none'; if (inputId === 'e-tpl') { applyExpTpl(value); return; } if (inputId === 'i-tpl') { applyIncTpl(value); return; } focusNext(inputId); };
         function applyExpTpl(n) { const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('e-acc').value = t.account; if (t.category) document.getElementById('e-cat').value = t.category; if (t.item) document.getElementById('e-item').value = t.item; if (t.tofrom) document.getElementById('e-to').value = t.tofrom; if (t.amount) document.getElementById('e-amt').value = t.amount; }
         function applyIncTpl(n) { const t = incTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('i-acc').value = t.account; if (t.category) document.getElementById('i-cat').value = t.category; if (t.item) document.getElementById('i-item').value = t.item; if (t.tofrom) document.getElementById('i-from').value = t.tofrom; if (t.amount) document.getElementById('i-amt').value = t.amount; }
@@ -3829,8 +3895,16 @@
             function render() {
                 const q = inp.value.toLowerCase();
                 const filtered = data.filter(x => String(x).toLowerCase().includes(q));
-                dd.innerHTML = filtered.map(v => '<div class="fd-item" data-val="' + escH(v) + '" onmousedown="event.preventDefault();document.getElementById(\'' + inputId + '\').value=this.dataset.val;document.getElementById(\'' + ddId + '\').style.display=\'none\';">' + escH(v) + '</div>').join('');
-                dd.style.display = filtered.length ? 'block' : 'none';
+                if (filtered.length === 0) {
+                    if (data.length === 0) {
+                        dd.innerHTML = '<div class="fd-item" style="opacity:0.6; cursor:default">No history found</div>';
+                    } else {
+                        dd.innerHTML = '<div class="fd-item" style="opacity:0.6; cursor:default">No matches</div>';
+                    }
+                } else {
+                    dd.innerHTML = filtered.map(v => '<div class="fd-item" data-val="' + escH(v) + '" onmousedown="event.preventDefault();document.getElementById(\'' + inputId + '\').value=this.dataset.val;document.getElementById(\'' + ddId + '\').style.display=\'none\';">' + escH(v) + '</div>').join('');
+                }
+                dd.style.display = 'block';
             }
             inp.oninput = render;
             inp.onfocus = render;
