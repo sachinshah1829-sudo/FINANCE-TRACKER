@@ -836,8 +836,8 @@
             background: linear-gradient(135deg, #FFFDF9 0%, #F5F2ED 100%) !important;
             border: 1.5px solid var(--accent) !important;
             color: var(--t1) !important;
-            min-height: 220px;
-            padding: 1.8rem !important;
+            aspect-ratio: 1.586 / 1;
+            padding: 1.2rem !important;
             box-shadow: 0 10px 30px -5px rgba(201, 123, 75, 0.1), 0 4px 12px -2px rgba(201, 123, 75, 0.05) !important;
             position: relative;
             z-index: 1;
@@ -846,8 +846,9 @@
             justify-content: space-between;
             overflow: hidden;
             width: 100%;
-            max-width: 380px; /* Constrain size on desktop */
+            max-width: 320px; /* Small, realistic size */
             margin: 0 auto;
+            border-radius: 12px !important;
         }
 
         .real-cc::before {
@@ -866,39 +867,39 @@
         }
 
         .cc-bank-name {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 800;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
             color: var(--accent);
             opacity: 1;
         }
 
         .cc-chip-mock {
-            width: 48px;
-            height: 36px;
+            width: 38px;
+            height: 28px;
             background: linear-gradient(135deg, #EAD7BA 0%, #D4AF37 50%, #C97B4B 100%);
-            border-radius: 6px;
+            border-radius: 5px;
             position: relative;
-            margin: 18px 0;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.1);
+            margin: 12px 0;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .cc-number-mock {
             font-family: 'Courier Prime', monospace;
-            font-size: 20px;
-            letter-spacing: 3px;
-            word-spacing: 8px;
-            margin: 10px 0;
+            font-size: 16px;
+            letter-spacing: 2px;
+            word-spacing: 6px;
+            margin: 6px 0;
             color: var(--t2);
             font-weight: 700;
         }
 
         .cc-info-row {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
-            margin-top: 10px;
+            margin-top: 6px;
         }
 
         .cc-info-block {
@@ -907,46 +908,46 @@
         }
 
         .cc-info-lbl {
-            font-size: 8px;
+            font-size: 7px;
             font-weight: 800;
             text-transform: uppercase;
             color: var(--t3);
-            letter-spacing: 1px;
-            margin-bottom: 3px;
+            letter-spacing: 0.8px;
+            margin-bottom: 2px;
         }
 
         .cc-info-val {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--t1);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
         .cc-util-section {
-            margin-top: 15px;
-            padding-top: 12px;
+            margin-top: 10px;
+            padding-top: 8px;
             border-top: 1px solid var(--border);
         }
 
         .cc-util-bar {
-            height: 5px;
+            height: 4px;
             background: var(--bg2);
-            border-radius: 3px;
-            margin: 6px 0;
+            border-radius: 2px;
+            margin: 4px 0;
             overflow: hidden;
         }
 
         .cc-util-fill {
             height: 100%;
             background: var(--accent);
-            border-radius: 3px;
+            border-radius: 2px;
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .cc-stats {
             display: flex;
             justify-content: space-between;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             color: var(--t3);
             letter-spacing: 0.02em;
@@ -1188,7 +1189,7 @@
         .hm-wrap {
             padding: 1.5rem;
             max-width: 440px;
-            margin: 0 auto;
+            margin: 0;
             background: var(--surface) !important;
             border: 1.5px solid var(--border) !important;
         }
@@ -3312,8 +3313,18 @@
 
         /* ═══ DATA LOADING ═══ */
         async function loadAllData() {
-            await Promise.all([loadAccounts(), loadCategories(), loadTemplates()]);
-            await loadPeriodData();
+            try {
+                await Promise.all([loadAccounts(), loadCategories(), loadTemplates()]);
+                await loadPeriodData();
+                // Refresh manage lists if we are on that page
+                if (document.getElementById('page-manage').classList.contains('active')) {
+                    renderCatList();
+                    if (document.getElementById('mpanel-templates').classList.contains('active')) renderTemplatesPage();
+                }
+            } catch (e) {
+                console.error("Data load failed:", e);
+                toast("Error loading data");
+            }
         }
         async function loadAccounts() { const snap = await getDocs(uRef('accounts')); _accounts = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
         async function loadCategories() { const snap = await getDocs(uRef('categories')); _categories = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
@@ -3950,8 +3961,15 @@
             el.classList.add('active'); 
             document.getElementById('mpanel-' + name).classList.add('active'); 
             if (name === 'templates') renderTemplatesPage();
+            if (name === 'cats') renderCatList();
         };
-        window.showMiniForm = id => document.getElementById(id).classList.add('show');
+        window.showMiniForm = (id, btn) => {
+            if (btn && btn.dataset.type) {
+                const typeInput = document.getElementById(id + '-type');
+                if (typeInput) typeInput.value = btn.dataset.type;
+            }
+            document.getElementById(id).classList.add('show');
+        };
         window.hideMiniForm = id => document.getElementById(id).classList.remove('show');
         async function renderManage() { 
             await loadAllData();
@@ -3970,8 +3988,8 @@
         }
 
         function renderCatList() {
-            const exp = _categories.filter(c => c.type === 'EXPENSE');
-            const inc = _categories.filter(c => c.type === 'INCOME');
+            const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE');
+            const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME');
             const row = c => `
                 <div class="mgmt-row clickable" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
                     <div style="flex:1">
@@ -4010,11 +4028,9 @@
             } 
             document.getElementById('tplList').innerHTML = _templates.map(r => {
                 const isExp = r.type === 'EXPENSE';
-                const ico = isExp ? '💸' : '💰';
                 const details = [r.account, r.category, r.amount ? rs(r.amount) : ''].filter(Boolean).join(' · ');
                 return `
                     <div class="tpl-item" onclick="editTpl('${r.id}')">
-                        <div class="tpl-ico">${ico}</div>
                         <div style="flex:1">
                             <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
                                 <div class="tpl-name">${escH(r.name || '')}</div>
