@@ -1568,9 +1568,10 @@
         }
 
         .txn-tbl td {
-            padding: 10px 12px;
+            padding: 8px 12px;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
+            transition: padding var(--t-fast);
         }
 
         .txn-tbl tr:last-child td {
@@ -1584,6 +1585,19 @@
 
         .txn-tr:hover {
             background: var(--bg);
+        }
+
+        .txn-tr .act-btn {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        @media (hover: hover) {
+            .txn-tr:hover .act-btn {
+                opacity: 1;
+                pointer-events: all;
+            }
         }
 
         .td-date {
@@ -4176,8 +4190,8 @@
             if (!rows || !rows.length) { document.getElementById('txnListWrap').innerHTML = '<div class="empty-s">No transactions match the filters.</div>'; return; }
             const CHUNK = 200;
             const visible = rows.slice(0, CHUNK);
-            let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:56px;text-align:center">⋯</th></tr></thead><tbody>';
-            visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" ondblclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Click to edit · Double-click to delete"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button><button class="act-btn del" onclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Delete">✕</button></td></tr>'; });
+            let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:40px;text-align:center"></th></tr></thead><tbody>';
+            visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" ondblclick="confirmDeleteTxn(event,\'' + r.id + '\')" title="Click to edit · Double-click to delete"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button></td></tr>'; });
             if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:\'Courier Prime\',monospace">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
             h += '</tbody></table></div>';
             document.getElementById('txnListWrap').innerHTML = h;
