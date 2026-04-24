@@ -347,7 +347,7 @@
             font-weight: 600;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--accent);
+            color: var(--t1);
             margin-bottom: 1px;
             font-family: 'Courier Prime', monospace;
         }
@@ -356,7 +356,7 @@
             font-size: 26px;
             font-weight: 700;
             letter-spacing: -0.04em;
-            color: var(--t1);
+            color: var(--accent);
             font-family: var(--font-big);
             line-height: 1.1;
         }
@@ -2628,7 +2628,7 @@
     <!-- ═══════════════════ APP SHELL ═══════════════════ -->
     <div id="appShell" class="hidden">
         <div class="mob-top-bar" id="mobTopBar">
-            <div class="mtb-title">Finance Tracker</div>
+            <div class="mtb-title">Finance <span style="color:var(--accent)">Tracker</span></div>
             <div class="mtb-profile" id="mtb-profile" onclick="toggleSidebar()">U</div>
         </div>
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
@@ -3897,44 +3897,50 @@
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
+            const orange = [241, 138, 94];
+            const darkText = [58, 58, 58];
+            const mutedText = [128, 128, 128];
+            const appBg = [251, 250, 248];
 
             // Header Section
-            doc.setFont('Courier', 'bold');
-            doc.setFontSize(22);
-            doc.text('ACCOUNT LEDGER', 14, 20);
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(24);
+            doc.setTextColor(...orange);
+            doc.text('ACCOUNT LEDGER', 14, 22);
             
-            doc.setFont('Courier', 'normal');
-            doc.setFontSize(14);
-            doc.setTextColor(80);
-            doc.text(acc, 14, 28);
+            doc.setFontSize(16);
+            doc.setTextColor(...darkText);
+            doc.text(acc, 14, 30);
             
+            doc.setFont('Helvetica', 'normal');
             doc.setFontSize(10);
-            doc.setTextColor(120);
-            const subText = `${period}  |  Filters: ${typeLbl} / ${catLbl}`;
-            doc.text(subText, 14, 34);
+            doc.setTextColor(...mutedText);
+            const subText = `${period}  •  Filters: ${typeLbl} / ${catLbl}`;
+            doc.text(subText, 14, 36);
 
-            // Summary Stats
+            // Summary Stats Box
             const spent = document.getElementById('ls-spent').textContent;
             const count = document.getElementById('ls-count').textContent;
             const balance = document.getElementById('ls-bal').textContent;
 
-            doc.setFillColor(250, 249, 247);
-            doc.rect(14, 40, 182, 18, 'F');
-            doc.setDrawColor(240);
-            doc.line(14, 40, 196, 40);
-            doc.line(14, 58, 196, 58);
+            doc.setFillColor(...appBg);
+            doc.rect(14, 42, 182, 20, 'F');
+            doc.setDrawColor(230, 230, 230);
+            doc.rect(14, 42, 182, 20, 'S');
 
-            doc.setFontSize(9);
-            doc.setTextColor(150);
-            doc.text('TOTAL SPENT', 20, 47);
-            doc.text('COUNT', 85, 47);
-            doc.text('CLOSING BALANCE', 140, 47);
+            doc.setFontSize(8);
+            doc.setTextColor(...mutedText);
+            doc.text('TOTAL SPENT', 20, 50);
+            doc.text('TRANSACTION COUNT', 85, 50);
+            doc.text('CLOSING BALANCE', 145, 50);
 
+            doc.setFont('Helvetica', 'bold');
             doc.setFontSize(14);
-            doc.setTextColor(40);
-            doc.text(spent.replace('₹', 'Rs.'), 20, 54);
-            doc.text(count, 85, 54);
-            doc.text(balance.replace('₹', 'Rs.'), 140, 54);
+            doc.setTextColor(...darkText);
+            doc.text(spent.replace('₹', 'Rs.'), 20, 57);
+            doc.text(count, 85, 57);
+            doc.setTextColor(...orange);
+            doc.text(balance.replace('₹', 'Rs.'), 145, 57);
 
             // Table
             const rsPdf = n => 'Rs.' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -3951,19 +3957,24 @@
             doc.autoTable({
                 head: [['Date', 'Item', 'Category', 'To/From', 'Amount', 'Balance']],
                 body: tableData,
-                startY: 65,
-                theme: 'striped',
+                startY: 68,
+                theme: 'plain',
                 headStyles: {
-                    fillColor: [30, 30, 30],
+                    fillColor: orange,
                     textColor: 255,
                     fontSize: 9,
-                    font: 'Courier',
-                    fontStyle: 'bold'
+                    font: 'Helvetica',
+                    fontStyle: 'bold',
+                    cellPadding: 4
                 },
                 bodyStyles: {
                     fontSize: 8,
-                    font: 'Courier',
-                    textColor: 50
+                    font: 'Helvetica',
+                    textColor: darkText,
+                    cellPadding: 3
+                },
+                alternateRowStyles: {
+                    fillColor: [253, 252, 250]
                 },
                 columnStyles: {
                     4: { halign: 'right', fontStyle: 'bold' },
@@ -3974,7 +3985,7 @@
 
             const fileName = `Ledger_${acc.replace(/\s+/g, '_')}_${period.replace(/\s+/g, '_')}.pdf`;
             doc.save(fileName);
-            toast('PDF Generated');
+            toast('Themed PDF Generated');
         };
 
         /* ═══ PERSON MODAL ═══ */
