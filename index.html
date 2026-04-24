@@ -3518,14 +3518,12 @@
             if (name === 'transactions') loadTransactionsPage();
         };
         window.toggleSidebar = () => { 
-            const isOpening = document.getElementById('sidebar').classList.toggle('mob-open'); 
+            document.getElementById('sidebar').classList.toggle('mob-open'); 
             document.getElementById('sbOverlay').classList.toggle('show'); 
-            document.getElementById('mobToggle').style.display = isOpening ? 'none' : 'flex';
         };
         function closeSidebar() { 
             document.getElementById('sidebar').classList.remove('mob-open'); 
             document.getElementById('sbOverlay').classList.remove('show'); 
-            document.getElementById('mobToggle').style.display = 'flex';
         }
 
         /* ═══ ACCOUNTS ═══ */
@@ -3811,6 +3809,7 @@
 
         window.toggleLdrMsel = function (key) {
             const ddId = 'msel-ldr-' + key + '-dd', dd = document.getElementById(ddId);
+            if (!dd) return;
             const isOpen = dd.style.display === 'block';
             ['type', 'cat'].forEach(k => {
                 const el = document.getElementById('msel-ldr-' + k + '-dd');
@@ -3819,17 +3818,22 @@
             if (!isOpen) dd.style.display = 'block';
         };
 
-        window.loadLedger = function () {
-            const acc = document.getElementById('ldrAccSel').value;
+        function loadLedger() {
+            const accEl = document.getElementById('ldrAccSel');
+            if (!accEl) return;
+            const acc = accEl.value;
 
             if (!acc) {
-                document.getElementById('ldr-pdf-btn').style.display = 'none';
+                const pdfBtn = document.getElementById('ldr-pdf-btn');
+                if (pdfBtn) pdfBtn.style.display = 'none';
                 document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">Please select an account first.</div>';
                 _ldrFilteredRows = [];
                 return;
             }
-            document.getElementById('ldrTitle').textContent = acc + ' — Ledger';
-            document.getElementById('ldr-pdf-btn').style.display = '';
+            const ldrTitle = document.getElementById('ldrTitle');
+            if (ldrTitle) ldrTitle.textContent = acc + ' — Ledger';
+            const pdfBtn = document.getElementById('ldr-pdf-btn');
+            if (pdfBtn) pdfBtn.style.display = '';
 
             const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
             
@@ -3857,7 +3861,8 @@
 
             _ldrFilteredRows = rows;
             renderLedger(rows, acc);
-        };
+        }
+        window.loadLedger = loadLedger;
 
         function renderLedger(rows, acc) {
             if (!rows || !rows.length) {
@@ -4464,38 +4469,104 @@
         window.deleteTpl = async function (id, name) { if (!confirm('Delete template "' + name + '"?')) return; await deleteDoc(uDoc('templates', id)); await renderTemplatesPage(); setupAddFormDropdowns(); toast('Template deleted'); };
 
         /* ═══ TRANSACTIONS ═══ */
-        window.loadTransactionsPage = async function () {
-            document.getElementById('txnListWrap').innerHTML = '<div class="sp-wrap"><div class="sp"></div></div>';
-            ['txn-stat-total', 'txn-stat-spent', 'txn-stat-income'].forEach(id => document.getElementById(id).textContent = '…');
+        async function loadTransactionsPage() {
+            const wrap = document.getElementById('txnListWrap');
+            if (wrap) wrap.innerHTML = '<div class="sp-wrap"><div class="sp"></div></div>';
+            ['txn-stat-total', 'txn-stat-spent', 'txn-stat-income'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '…';
+            });
             if (!_allTxns.length) await loadAllTransactions();
             buildMselOptions(); filterTxns();
-        };
+        }
+        window.loadTransactionsPage = loadTransactionsPage;
+
         function buildMselOptions() {
             const types = ['Expense', 'Income', 'Transfer'];
-            const fields = [{ key: 'type', label: 'All Types', vals: types }, { key: 'account', label: 'All Accounts', vals: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort() }, { key: 'cat', label: 'All Categories', vals: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort() }, { key: 'item', label: 'All Items', vals: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort() }, { key: 'tofrom', label: 'All To/From', vals: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort() }];
-            fields.forEach(f => { const dd = document.getElementById('msel-' + f.key + '-dd'); dd.innerHTML = f.vals.map(v => '<label class="txn-msel-item"><input type="checkbox" value="' + escH(v) + '" onchange="W_mselChange(\'' + f.key + '\')" ' + (_mselState[f.key].has(v) ? 'checked' : '') + ' /><span>' + escH(v) + '</span></label>').join(''); updateMselLabel(f.key, f.label); });
+            const fields = [
+                { key: 'type', label: 'All Types', vals: types },
+                { key: 'account', label: 'All Accounts', vals: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort() },
+                { key: 'cat', label: 'All Categories', vals: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort() },
+                { key: 'item', label: 'All Items', vals: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort() },
+                { key: 'tofrom', label: 'All To/From', vals: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort() }
+            ];
+            fields.forEach(f => {
+                const dd = document.getElementById('msel-' + f.key + '-dd');
+                if (!dd) return;
+                dd.innerHTML = f.vals.map(v => '<label class="txn-msel-item"><input type="checkbox" value="' + escH(v) + '" onchange="W_mselChange(\'' + f.key + '\')" ' + (_mselState[f.key].has(v) ? 'checked' : '') + ' /><span>' + escH(v) + '</span></label>').join('');
+                updateMselLabel(f.key, f.label);
+            });
         }
-        window.W_mselChange = function (key) { const dd = document.getElementById('msel-' + key + '-dd'); _mselState[key].clear(); dd.querySelectorAll('input[type=checkbox]:checked').forEach(cb => _mselState[key].add(cb.value)); const labels = { type: 'All Types', account: 'All Accounts', cat: 'All Categories', item: 'All Items', tofrom: 'All To/From' }; updateMselLabel(key, labels[key]); filterTxns(); };
-        function updateMselLabel(key, defaultLabel) { const sel = _mselState[key]; const trigger = document.getElementById('msel-' + key + '-wrap').querySelector('.txn-msel-trigger'); const labelEl = document.getElementById('msel-' + key + '-label'); if (sel.size === 0) { labelEl.textContent = defaultLabel; trigger.classList.remove('has-sel'); } else if (sel.size === 1) { labelEl.textContent = [...sel][0]; trigger.classList.add('has-sel'); } else { labelEl.textContent = sel.size + ' selected'; trigger.classList.add('has-sel'); } }
-        window.toggleMsel = function (key) { const ddId = 'msel-' + key + '-dd', dd = document.getElementById(ddId); const isOpen = dd.style.display === 'block';['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { document.getElementById('msel-' + k + '-dd').style.display = 'none'; }); if (!isOpen) dd.style.display = 'block'; };
-        window.clearDateRange = function () { document.getElementById('txn-date-from').value = ''; document.getElementById('txn-date-to').value = ''; filterTxns(); };
-        window.clearAllFilters = function () { document.getElementById('txn-search').value = ''; clearDateRange();['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { _mselState[k].clear(); const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false); }); buildMselOptions(); filterTxns(); };
-        window.filterTxns = function () {
-            const q = (document.getElementById('txn-search').value || '').toLowerCase().trim();
-            const fromVal = document.getElementById('txn-date-from').value, toVal = document.getElementById('txn-date-to').value;
-            const fromDate = fromVal ? new Date(fromVal) : null, toDate = toVal ? new Date(toVal + 'T23:59:59') : null;
+        window.buildMselOptions = buildMselOptions;
+
+        window.W_mselChange = function (key) {
+            const dd = document.getElementById('msel-' + key + '-dd');
+            if (!dd) return;
+            _mselState[key].clear();
+            dd.querySelectorAll('input[type=checkbox]:checked').forEach(cb => _mselState[key].add(cb.value));
+            const labels = { type: 'All Types', account: 'All Accounts', cat: 'All Categories', item: 'All Items', tofrom: 'All To/From' };
+            updateMselLabel(key, labels[key]);
+            filterTxns();
+        };
+
+        function updateMselLabel(key, defaultLabel) {
+            const sel = _mselState[key];
+            const wrap = document.getElementById('msel-' + key + '-wrap');
+            if (!wrap) return;
+            const trigger = wrap.querySelector('.txn-msel-trigger');
+            const labelEl = document.getElementById('msel-' + key + '-label');
+            if (sel.size === 0) { labelEl.textContent = defaultLabel; trigger.classList.remove('has-sel'); }
+            else if (sel.size === 1) { labelEl.textContent = [...sel][0]; trigger.classList.add('has-sel'); }
+            else { labelEl.textContent = sel.size + ' selected'; trigger.classList.add('has-sel'); }
+        }
+        window.updateMselLabel = updateMselLabel;
+
+        window.toggleMsel = function (key) {
+            const ddId = 'msel-' + key + '-dd', dd = document.getElementById(ddId);
+            if (!dd) return;
+            const isOpen = dd.style.display === 'block';
+            ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => {
+                const el = document.getElementById('msel-' + k + '-dd');
+                if (el) el.style.display = 'none';
+            });
+            if (!isOpen) dd.style.display = 'block';
+        };
+
+        window.clearDateRange = function () {
+            const df = document.getElementById('txn-date-from'), dt = document.getElementById('txn-date-to');
+            if (df) df.value = ''; if (dt) dt.value = '';
+            filterTxns();
+        };
+
+        window.clearAllFilters = function () {
+            const search = document.getElementById('txn-search');
+            if (search) search.value = '';
+            clearDateRange();
+            ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => {
+                _mselState[k].clear();
+                const dd = document.getElementById('msel-' + k + '-dd');
+                if (dd) dd.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+            });
+            buildMselOptions();
+            filterTxns();
+        };
+
+        function filterTxns() {
+            const searchEl = document.getElementById('txn-search');
+            const q = (searchEl ? searchEl.value : '').toLowerCase().trim();
+            const fromVal = document.getElementById('txn-date-from')?.value || '';
+            const toVal = document.getElementById('txn-date-to')?.value || '';
+            const fromDate = fromVal ? new Date(fromVal) : null, toValFull = toVal ? toVal + 'T23:59:59' : null;
+            const toDate = toValFull ? new Date(toValFull) : null;
+            
             _filteredTxns = _allTxns.filter(r => {
                 const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
                 if (fromDate && d < fromDate) return false; if (toDate && d > toDate) return false;
-
                 if (_mselState.type.size > 0) {
                     let t = 'Transfer';
-                    if (r.category?.toUpperCase() !== 'TRANSFER') {
-                        t = Number(r.amount) < 0 ? 'Expense' : 'Income';
-                    }
+                    if (r.category?.toUpperCase() !== 'TRANSFER') { t = Number(r.amount) < 0 ? 'Expense' : 'Income'; }
                     if (!_mselState.type.has(t)) return false;
                 }
-
                 if (_mselState.account.size > 0 && !_mselState.account.has(r.account)) return false;
                 if (_mselState.cat.size > 0 && !_mselState.cat.has(r.category)) return false;
                 if (_mselState.item.size > 0 && !_mselState.item.has(r.item)) return false;
@@ -4503,23 +4574,32 @@
                 if (q) { const hay = ((r.item || '') + ' ' + (r.category || '') + ' ' + (r.account || '') + ' ' + (r.toFrom || '')).toLowerCase(); if (!hay.includes(q)) return false; }
                 return true;
             }).reverse();
+            
             const spent = _filteredTxns.filter(r => Number(r.amount) < 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Math.abs(Number(r.amount)), 0);
             const income = _filteredTxns.filter(r => Number(r.amount) > 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Number(r.amount), 0);
-            document.getElementById('txn-stat-total').textContent = _filteredTxns.length;
-            document.getElementById('txn-stat-spent').textContent = rs(spent);
-            document.getElementById('txn-stat-income').textContent = rs(income);
+            
+            const sTotal = document.getElementById('txn-stat-total'); if (sTotal) sTotal.textContent = _filteredTxns.length;
+            const sSpent = document.getElementById('txn-stat-spent'); if (sSpent) sSpent.textContent = rs(spent);
+            const sInc = document.getElementById('txn-stat-income'); if (sInc) sInc.textContent = rs(income);
+            
             renderTxnTable(_filteredTxns);
-        };
+        }
+        window.filterTxns = filterTxns;
+
         function renderTxnTable(rows) {
-            if (!rows || !rows.length) { document.getElementById('txnListWrap').innerHTML = '<div class="empty-s">No transactions match the filters.</div>'; return; }
+            const wrap = document.getElementById('txnListWrap');
+            if (!wrap) return;
+            if (!rows || !rows.length) { wrap.innerHTML = '<div class="empty-s">No transactions match the filters.</div>'; return; }
             const CHUNK = 200;
             const visible = rows.slice(0, CHUNK);
             let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:40px;text-align:center"></th></tr></thead><tbody>';
             visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Click to edit"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button></td></tr>'; });
             if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:\'Courier Prime\',monospace">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
             h += '</tbody></table></div>';
-            document.getElementById('txnListWrap').innerHTML = h;
+            wrap.innerHTML = h;
         }
+        window.renderTxnTable = renderTxnTable;
+
         window.openTxnEdit = function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); if (!r) return; const d = r.date?.toDate ? r.date.toDate() : new Date(r.date); document.getElementById('txn-edit-id').value = id; document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10); document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || ''); document.getElementById('txn-edit-acc').value = r.account || ''; document.getElementById('txn-edit-cat').value = r.category || ''; document.getElementById('txn-edit-item').value = r.item || ''; document.getElementById('txn-edit-amt').value = r.amount || ''; document.getElementById('txn-edit-tofrom').value = r.toFrom || ''; openM('txnEditModal'); };
         window.saveTxnEdit = async function () { const id = document.getElementById('txn-edit-id').value, dateStr = document.getElementById('txn-edit-date').value, acc = document.getElementById('txn-edit-acc').value.trim(), cat = document.getElementById('txn-edit-cat').value.trim(), item = document.getElementById('txn-edit-item').value.trim(), amt = document.getElementById('txn-edit-amt').value, tofrom = document.getElementById('txn-edit-tofrom').value.trim(); if (!acc || !cat || !item || !amt || !dateStr) return; const newDate = new Date(dateStr + "T12:00:00"); const btn = document.querySelector('#txnEditModal .add-btn'); btn.textContent = 'Saving…'; btn.disabled = true; try { await updateDoc(uDoc('transactions', id), { date: Timestamp.fromDate(newDate), account: acc, category: cat, item, amount: Number(amt), toFrom: tofrom }); closeM('txnEditModal'); await loadPeriodData(); loadTransactionsPage(); toast('Transaction updated'); } catch (e) { alert('Error saving.'); } btn.textContent = 'Save Changes'; btn.disabled = false; };
         window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(); loadTransactionsPage(); toast('Transaction deleted'); closeM('txnEditModal'); };
