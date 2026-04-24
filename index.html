@@ -526,24 +526,49 @@
             border-color: rgba(220, 38, 38, 0.2);
         }
 
-        /* Mobile toggle */
-        .mob-toggle {
+        /* Mobile Top Bar */
+        .mob-top-bar {
             display: none;
             position: fixed;
-            top: 0.75rem;
-            left: 0.75rem;
-            z-index: 200;
-            width: 40px;
-            height: 40px;
-            border-radius: var(--r-sm);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
             background: var(--surface);
-            border: 1px solid var(--border);
-            box-shadow: var(--el-2);
-            cursor: pointer;
+            border-bottom: 1.5px solid var(--border);
+            z-index: 100;
+            align-items: center;
+            justify-content: space-between;
+            padding: env(safe-area-inset-top, 0) 1.5rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .mtb-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--t1);
+            font-family: var(--font-big);
+            letter-spacing: -0.01em;
+        }
+
+        .mtb-profile {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-bg);
+            color: var(--accent);
+            display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            color: var(--t1);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid rgba(201, 123, 75, 0.2);
+            transition: transform var(--t-fast);
+        }
+
+        .mtb-profile:active {
+            transform: scale(0.9);
         }
 
         .sidebar-overlay {
@@ -2399,6 +2424,10 @@
                 display: block;
             }
 
+            .mob-top-bar {
+                display: flex;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
                 box-shadow: 8px 0 32px rgba(0, 0, 0, 0.15);
@@ -2414,10 +2443,6 @@
                 display: block;
             }
 
-            .mob-toggle {
-                display: flex;
-            }
-
             .mob-nav {
                 display: none;
             }
@@ -2425,6 +2450,7 @@
             .main {
                 margin-left: 0;
                 padding-bottom: 0;
+                padding-top: 60px;
             }
 
             .page {
@@ -2601,7 +2627,10 @@
 
     <!-- ═══════════════════ APP SHELL ═══════════════════ -->
     <div id="appShell" class="hidden">
-        <div class="mob-toggle" id="mobToggle" onclick="toggleSidebar()">☰</div>
+        <div class="mob-top-bar" id="mobTopBar">
+            <div class="mtb-title">Finance Tracker</div>
+            <div class="mtb-profile" id="mtb-profile" onclick="toggleSidebar()">U</div>
+        </div>
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
         <nav class="sidebar" id="sidebar">
@@ -2954,21 +2983,17 @@
                             <span class="ldr-sel-lbl">Account</span>
                             <select class="ldr-sel" id="ldrAccSel" onchange="loadLedger()"><option value="">— select —</option></select>
                         </div>
-                        <div class="ldr-sel-wrap">
-                            <span class="ldr-sel-lbl">Type</span>
-                            <select class="ldr-sel" id="ldrTypeSel" onchange="loadLedger()">
-                                <option value="ALL">All Types</option>
-                                <option value="EXPENSE">Expense</option>
-                                <option value="INCOME">Income</option>
-                                <option value="TRANSFER">Transfer</option>
-                            </select>
+                        
+                        <div class="txn-msel-wrap" id="msel-ldr-type-wrap">
+                            <div class="txn-msel-trigger" onclick="toggleLdrMsel('type')"><span id="msel-ldr-type-label">All Types</span><span class="txn-msel-caret">▾</span></div>
+                            <div class="txn-msel-dd" id="msel-ldr-type-dd" style="display:none"></div>
                         </div>
-                        <div class="ldr-sel-wrap">
-                            <span class="ldr-sel-lbl">Category</span>
-                            <select class="ldr-sel" id="ldrCatSel" onchange="loadLedger()">
-                                <option value="ALL">All Categories</option>
-                            </select>
+
+                        <div class="txn-msel-wrap" id="msel-ldr-cat-wrap">
+                            <div class="txn-msel-trigger" onclick="toggleLdrMsel('cat')"><span id="msel-ldr-cat-label">All Categories</span><span class="txn-msel-caret">▾</span></div>
+                            <div class="txn-msel-dd" id="msel-ldr-cat-dd" style="display:none"></div>
                         </div>
+
                         <button class="add-inline-btn" id="ldr-pdf-btn" onclick="downloadLedgerPDF()"
                             title="Download PDF" style="display:none; padding: 8px 16px; font-size: 13px;">⬇ PDF Download</button>
                     </div>
@@ -3308,6 +3333,7 @@
         let curM, curY;
         let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [];
         let _ldrFilteredRows = [];
+        const _ldrMselState = { type: new Set(), cat: new Set() };
         let expTpls = [], incTpls = [];
         const _mselState = { type: new Set(), account: new Set(), cat: new Set(), item: new Set(), tofrom: new Set() };
         let _importRows = [];
@@ -3379,9 +3405,14 @@
                 document.getElementById('appShell').classList.remove('hidden');
                 document.getElementById('sbUserName').textContent = user.displayName || 'User';
                 document.getElementById('sbUserEmail').textContent = user.email || '';
-                // Update avatar initial
+                
+                // Update avatar initials
+                const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
                 const ava = document.querySelector('.sb-ava');
-                if (ava) ava.textContent = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+                if (ava) ava.textContent = initial;
+                const mtbProfile = document.getElementById('mtb-profile');
+                if (mtbProfile) mtbProfile.textContent = initial;
+
                 initApp();
             } else {
                 document.getElementById('authScreen').classList.remove('hidden');
@@ -3726,16 +3757,70 @@
             }
             if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
 
-            // Populate Category Filter in Ledger
-            const catSel = document.getElementById('ldrCatSel'), prevCat = catSel.value;
-            const cats = [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort();
-            catSel.innerHTML = '<option value="ALL">All Categories</option>' + cats.map(c => `<option value="${escH(c)}">${escH(c)}</option>`).join('');
-            if (prevCat && [...catSel.options].some(o => o.value === prevCat)) catSel.value = prevCat;
+            buildLdrMselOptions();
         }
+
+        function buildLdrMselOptions() {
+            const types = ['Expense', 'Income', 'Transfer'];
+            const cats = [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort();
+            
+            const fields = [
+                { key: 'type', label: 'All Types', vals: types },
+                { key: 'cat', label: 'All Categories', vals: cats }
+            ];
+
+            fields.forEach(f => {
+                const dd = document.getElementById('msel-ldr-' + f.key + '-dd');
+                if (!dd) return;
+                dd.innerHTML = f.vals.map(v => `
+                    <label class="txn-msel-item">
+                        <input type="checkbox" value="${escH(v)}" onchange="W_ldrMselChange('${f.key}')" ${_ldrMselState[f.key].has(v) ? 'checked' : ''} />
+                        <span>${escH(v)}</span>
+                    </label>
+                `).join('');
+                updateLdrMselLabel(f.key, f.label);
+            });
+        }
+
+        window.W_ldrMselChange = function (key) {
+            const dd = document.getElementById('msel-ldr-' + key + '-dd');
+            _ldrMselState[key].clear();
+            dd.querySelectorAll('input[type=checkbox]:checked').forEach(cb => _ldrMselState[key].add(cb.value));
+            const labels = { type: 'All Types', cat: 'All Categories' };
+            updateLdrMselLabel(key, labels[key]);
+            loadLedger();
+        };
+
+        function updateLdrMselLabel(key, defaultLabel) {
+            const sel = _ldrMselState[key];
+            const wrap = document.getElementById('msel-ldr-' + key + '-wrap');
+            if (!wrap) return;
+            const trigger = wrap.querySelector('.txn-msel-trigger');
+            const labelEl = document.getElementById('msel-ldr-' + key + '-label');
+            if (sel.size === 0) {
+                labelEl.textContent = defaultLabel;
+                trigger.classList.remove('has-sel');
+            } else if (sel.size === 1) {
+                labelEl.textContent = [...sel][0];
+                trigger.classList.add('has-sel');
+            } else {
+                labelEl.textContent = sel.size + ' selected';
+                trigger.classList.add('has-sel');
+            }
+        }
+
+        window.toggleLdrMsel = function (key) {
+            const ddId = 'msel-ldr-' + key + '-dd', dd = document.getElementById(ddId);
+            const isOpen = dd.style.display === 'block';
+            ['type', 'cat'].forEach(k => {
+                const el = document.getElementById('msel-ldr-' + k + '-dd');
+                if (el) el.style.display = 'none';
+            });
+            if (!isOpen) dd.style.display = 'block';
+        };
+
         window.loadLedger = function () {
             const acc = document.getElementById('ldrAccSel').value;
-            const type = document.getElementById('ldrTypeSel').value;
-            const cat = document.getElementById('ldrCatSel').value;
 
             if (!acc) {
                 document.getElementById('ldr-pdf-btn').style.display = 'none';
@@ -3754,18 +3839,20 @@
                 return t.account === acc && d >= sd && d <= ed;
             });
 
-            // Filter by Type
-            if (type !== 'ALL') {
+            // Filter by Type (Multi-select)
+            if (_ldrMselState.type.size > 0) {
                 rows = rows.filter(r => {
-                    if (r.category?.toUpperCase() === 'TRANSFER') return type === 'TRANSFER';
-                    const isExp = Number(r.amount) < 0;
-                    return type === (isExp ? 'EXPENSE' : 'INCOME');
+                    let t = 'Transfer';
+                    if (r.category?.toUpperCase() !== 'TRANSFER') {
+                        t = Number(r.amount) < 0 ? 'Expense' : 'Income';
+                    }
+                    return _ldrMselState.type.has(t);
                 });
             }
 
-            // Filter by Category
-            if (cat !== 'ALL') {
-                rows = rows.filter(r => (r.category || '') === cat);
+            // Filter by Category (Multi-select)
+            if (_ldrMselState.cat.size > 0) {
+                rows = rows.filter(r => _ldrMselState.cat.has(r.category));
             }
 
             _ldrFilteredRows = rows;
@@ -3800,8 +3887,8 @@
         window.downloadLedgerPDF = function () {
             const acc = document.getElementById('ldrAccSel').value || 'Ledger';
             const period = document.getElementById('acc-period')?.textContent || '';
-            const type = document.getElementById('ldrTypeSel').options[document.getElementById('ldrTypeSel').selectedIndex].text;
-            const cat = document.getElementById('ldrCatSel').options[document.getElementById('ldrCatSel').selectedIndex].text;
+            const typeLbl = document.getElementById('msel-ldr-type-label').textContent;
+            const catLbl = document.getElementById('msel-ldr-cat-label').textContent;
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -3818,7 +3905,7 @@
             
             doc.setFontSize(10);
             doc.setTextColor(120);
-            const subText = `${period}  |  Filtered by: ${type} / ${cat}`;
+            const subText = `${period}  |  Filters: ${typeLbl} / ${catLbl}`;
             doc.text(subText, 14, 34);
 
             // Summary Stats
