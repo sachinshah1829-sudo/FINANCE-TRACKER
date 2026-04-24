@@ -347,7 +347,7 @@
             font-weight: 600;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--t1);
+            color: var(--accent);
             margin-bottom: 1px;
             font-family: 'Courier Prime', monospace;
         }
@@ -356,7 +356,7 @@
             font-size: 26px;
             font-weight: 700;
             letter-spacing: -0.04em;
-            color: var(--accent);
+            color: var(--t1);
             font-family: var(--font-big);
             line-height: 1.1;
         }
@@ -2628,7 +2628,7 @@
     <!-- ═══════════════════ APP SHELL ═══════════════════ -->
     <div id="appShell" class="hidden">
         <div class="mob-top-bar" id="mobTopBar">
-            <div class="mtb-title">Finance <span style="color:var(--accent)">Tracker</span></div>
+            <div class="mtb-title">Finance Tracker</div>
             <div class="mtb-profile" id="mtb-profile" onclick="toggleSidebar()">U</div>
         </div>
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
@@ -3897,50 +3897,49 @@
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
-            const orange = [241, 138, 94];
-            const darkText = [58, 58, 58];
-            const mutedText = [128, 128, 128];
-            const appBg = [251, 250, 248];
 
             // Header Section
-            doc.setFont('Helvetica', 'bold');
-            doc.setFontSize(24);
-            doc.setTextColor(...orange);
-            doc.text('ACCOUNT LEDGER', 14, 22);
+            doc.setFillColor(217, 119, 6); // --amber / Claude Orange
+            doc.rect(14, 14, 3, 14, 'F'); // Vertical accent bar from UI
             
-            doc.setFontSize(16);
-            doc.setTextColor(...darkText);
-            doc.text(acc, 14, 30);
+            doc.setFont('Courier', 'bold');
+            doc.setFontSize(22);
+            doc.setTextColor(28, 25, 23); // --t1
+            doc.text('ACCOUNT LEDGER', 22, 21);
             
-            doc.setFont('Helvetica', 'normal');
-            doc.setFontSize(10);
-            doc.setTextColor(...mutedText);
-            const subText = `${period}  •  Filters: ${typeLbl} / ${catLbl}`;
-            doc.text(subText, 14, 36);
+            doc.setFont('Courier', 'normal');
+            doc.setFontSize(13);
+            doc.setTextColor(68, 64, 60); // --t2
+            doc.text(acc.toUpperCase(), 22, 27);
+            
+            doc.setFontSize(9);
+            doc.setTextColor(120, 113, 108); // --t3
+            const subText = `${period}  |  Filters: ${typeLbl} / ${catLbl}`;
+            doc.text(subText, 14, 38);
 
-            // Summary Stats Box
+            // Summary Stats (stat-tile look)
             const spent = document.getElementById('ls-spent').textContent;
             const count = document.getElementById('ls-count').textContent;
             const balance = document.getElementById('ls-bal').textContent;
 
-            doc.setFillColor(...appBg);
-            doc.rect(14, 42, 182, 20, 'F');
-            doc.setDrawColor(230, 230, 230);
-            doc.rect(14, 42, 182, 20, 'S');
+            // Background for stats
+            doc.setFillColor(250, 249, 247); // --bg
+            doc.roundedRect(14, 42, 182, 20, 2, 2, 'F');
+            doc.setDrawColor(230, 225, 220); // soft border
+            doc.roundedRect(14, 42, 182, 20, 2, 2, 'S');
 
             doc.setFontSize(8);
-            doc.setTextColor(...mutedText);
-            doc.text('TOTAL SPENT', 20, 50);
-            doc.text('TRANSACTION COUNT', 85, 50);
-            doc.text('CLOSING BALANCE', 145, 50);
+            doc.setTextColor(120, 113, 108); // --t3
+            doc.text('TOTAL SPENT', 20, 49);
+            doc.text('COUNT', 85, 49);
+            doc.text('CLOSING BALANCE', 140, 49);
 
-            doc.setFont('Helvetica', 'bold');
             doc.setFontSize(14);
-            doc.setTextColor(...darkText);
-            doc.text(spent.replace('₹', 'Rs.'), 20, 57);
-            doc.text(count, 85, 57);
-            doc.setTextColor(...orange);
-            doc.text(balance.replace('₹', 'Rs.'), 145, 57);
+            doc.setFont('Courier', 'bold');
+            doc.setTextColor(28, 25, 23); // --t1
+            doc.text(spent.replace('₹', 'Rs.'), 20, 56);
+            doc.text(count, 85, 56);
+            doc.text(balance.replace('₹', 'Rs.'), 140, 56);
 
             // Table
             const rsPdf = n => 'Rs.' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -3960,32 +3959,44 @@
                 startY: 68,
                 theme: 'plain',
                 headStyles: {
-                    fillColor: orange,
+                    fillColor: [217, 119, 6], // Claude Orange
                     textColor: 255,
                     fontSize: 9,
-                    font: 'Helvetica',
+                    font: 'Courier',
                     fontStyle: 'bold',
-                    cellPadding: 4
+                    halign: 'left'
                 },
                 bodyStyles: {
-                    fontSize: 8,
-                    font: 'Helvetica',
-                    textColor: darkText,
+                    fontSize: 8.5,
+                    font: 'Courier',
+                    textColor: [44, 40, 60], // --t2
                     cellPadding: 3
-                },
-                alternateRowStyles: {
-                    fillColor: [253, 252, 250]
                 },
                 columnStyles: {
                     4: { halign: 'right', fontStyle: 'bold' },
                     5: { halign: 'right' }
+                },
+                didParseCell: function (data) {
+                    // Draw borders like in UI
+                    data.cell.styles.lineWidth = 0.1;
+                    data.cell.styles.lineColor = [230, 225, 220];
+                    
+                    // Color Amount Column
+                    if (data.column.index === 4 && data.section === 'body') {
+                        const txt = data.cell.text[0];
+                        if (txt.includes('+')) {
+                            data.cell.styles.textColor = [22, 163, 74]; // --green
+                        } else if (txt.includes('Rs.-') || txt.includes('-')) {
+                            data.cell.styles.textColor = [220, 38, 38]; // --red
+                        }
+                    }
                 },
                 margin: { horizontal: 14 }
             });
 
             const fileName = `Ledger_${acc.replace(/\s+/g, '_')}_${period.replace(/\s+/g, '_')}.pdf`;
             doc.save(fileName);
-            toast('Themed PDF Generated');
+            toast('PDF Generated');
         };
 
         /* ═══ PERSON MODAL ═══ */
