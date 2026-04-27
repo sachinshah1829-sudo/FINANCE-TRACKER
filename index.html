@@ -3976,8 +3976,8 @@
         window.toggleLdrFilterOpt = function(key, val) {
             if (_tempLdrMselState[key].has(val)) _tempLdrMselState[key].delete(val);
             else _tempLdrMselState[key].add(val);
-            updateLdrFilterBadges();
-            renderLdrFilterOptions();
+            window.updateLdrFilterBadges();
+            window.renderLdrFilterOptions();
         };
 
         window.toggleAllLdrFilters = function(sel) {
@@ -3992,8 +3992,8 @@
                 if (sel) _tempLdrMselState[window._activeLdrFilterTab].add(o);
                 else _tempLdrMselState[window._activeLdrFilterTab].delete(o);
             });
-            updateLdrFilterBadges();
-            renderLdrFilterOptions();
+            window.updateLdrFilterBadges();
+            window.renderLdrFilterOptions();
         };
 
         window.updateLdrFilterBadges = function() {
@@ -4905,8 +4905,8 @@
             ['type','account','cat','item','tofrom'].forEach(k => {
                 _tempMselState[k] = new Set(_mselState[k]);
             });
-            _tempMselState.dateFrom = document.getElementById('txn-date-from')?.value || '';
-            _tempMselState.dateTo = document.getElementById('txn-date-to')?.value || '';
+            _tempMselState.dateFrom = document.getElementById('f-date-from')?.value || '';
+            _tempMselState.dateTo = document.getElementById('f-date-to')?.value || '';
             
             window.updateFilterBadges();
             const el = document.querySelector(`#txnFilterModal .f-side-item[onclick*="${window._activeFilterTab}"]`);
@@ -5006,8 +5006,8 @@
         window.toggleFilterOpt = function(key, val) {
             if (_tempMselState[key].has(val)) _tempMselState[key].delete(val);
             else _tempMselState[key].add(val);
-            updateFilterBadges();
-            renderFilterOptions();
+            window.updateFilterBadges();
+            window.renderFilterOptions();
         };
 
         window.updateFilterBadges = function() {
@@ -5030,7 +5030,7 @@
                 _mselState[k] = new Set(_tempMselState[k]);
             });
             
-            const df = document.getElementById('txn-date-from'), dt = document.getElementById('txn-date-to');
+            const df = document.getElementById('f-date-from'), dt = document.getElementById('f-date-to');
             if (df) df.value = _tempMselState.dateFrom;
             if (dt) dt.value = _tempMselState.dateTo;
             
@@ -5044,7 +5044,7 @@
                 badge.style.display = totalActive > 0 ? 'block' : 'none';
             }
             
-            closeM('txnFilterModal');
+            window.closeM('txnFilterModal');
             filterTxns();
         };
 
@@ -5055,12 +5055,12 @@
                 _mselState[k].clear();
                 if (_tempMselState[k]) _tempMselState[k].clear();
             });
-            const df = document.getElementById('txn-date-from'), dt = document.getElementById('txn-date-to');
+            const df = document.getElementById('f-date-from'), dt = document.getElementById('f-date-to');
             if (df) df.value = ''; if (dt) dt.value = '';
             _tempMselState.dateFrom = ''; _tempMselState.dateTo = '';
             
-            updateFilterBadges();
-            renderFilterOptions();
+            window.updateFilterBadges();
+            window.renderFilterOptions();
             filterTxns();
         };
 
