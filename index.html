@@ -2167,59 +2167,6 @@
             color: var(--accent);
         }
 
-        /* Filter Pills Bar */
-        .f-pills {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px 2px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        .f-pills::-webkit-scrollbar { display: none; }
-
-        .f-pill {
-            padding: 8px 16px;
-            background: var(--surface);
-            border: 1.5px solid var(--border);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--t2);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all var(--t-fast);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            user-select: none;
-        }
-
-        .f-pill:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-bg);
-            transform: translateY(-1px);
-        }
-
-        .f-pill.active {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(201, 123, 75, 0.2);
-        }
-
-        .f-pill-count {
-            background: var(--accent);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 2px 8px;
-            border-radius: 10px;
-            min-width: 20px;
-            text-align: center;
-        }
-
         .txn-msel-caret {
             font-size: 9px;
             color: var(--t3);
@@ -3238,14 +3185,11 @@
                 <div class="ldr-hdr">
                     <div class="ldr-title" id="ldrTitle">Account Ledger</div>
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                <div class="card card-p" style="margin-bottom:12px; padding:10px;">
-                    <div class="f-pills">
-                        <div class="f-pill" onclick="openLdrFilterModal('account')">Account</div>
-                        <div class="f-pill" onclick="openLdrFilterModal('type')">Type</div>
-                        <div class="f-pill" onclick="openLdrFilterModal('cat')">Category</div>
-                        <div class="f-pill" id="lf-count-badge" onclick="openLdrFilterModal()" style="display:none; background:var(--accent); color:#fff; border-color:var(--accent);">0</div>
-                    </div>
-                </div>
+                        <button class="txn-clr-btn" onclick="openLdrFilterModal()" style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                            <span>Filters</span>
+                            <span id="lf-count-badge" style="background:var(--accent); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; display:none;">0</span>
+                        </button>
                         <button class="add-inline-btn" id="ldr-pdf-btn" onclick="downloadLedgerPDF()"
                             title="Download PDF" style="display:none; padding: 10px 18px; font-size: 13px;">⬇ PDF Download</button>
                     </div>
@@ -3299,15 +3243,11 @@
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             </div>
                         </div>
-                        <div class="f-pills" style="margin-top:12px; border-top:1px solid var(--border); padding-top:12px;">
-                            <div class="f-pill" onclick="openFilterModal('type')">Type</div>
-                            <div class="f-pill" onclick="openFilterModal('date')">Date</div>
-                            <div class="f-pill" onclick="openFilterModal('cat')">Category</div>
-                            <div class="f-pill" onclick="openFilterModal('account')">Account</div>
-                            <div class="f-pill" onclick="openFilterModal('tofrom')">To/From</div>
-                            <div class="f-pill" onclick="openFilterModal('item')">Item</div>
-                            <div class="f-pill" id="f-count-badge" onclick="openFilterModal()" style="display:none; background:var(--accent); color:#fff; border-color:var(--accent);">0</div>
-                        </div>
+                        <button class="txn-clr-btn" onclick="openFilterModal()" style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                            <span>Filters</span>
+                            <span id="f-count-badge" style="background:var(--accent); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; display:none;">0</span>
+                        </button>
                     </div>
                 </div>
                 <div class="card" id="txnListWrap">
@@ -3360,9 +3300,7 @@
                         </div>
                         <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showAddTplModal()">+ Add Template</button>
                     </div>
-                    <div class="tbl-scroll-wrap">
-                        <div id="tplList"></div>
-                    </div>
+                    <div id="tplList"></div>
                 </div>
             </div>
         </main>
@@ -3968,8 +3906,7 @@
         window._lfSearchQuery = '';
         let _tempLdrMselState = {};
 
-        window.openLdrFilterModal = function(tab) {
-            if (tab) window._activeLdrFilterTab = tab;
+        window.openLdrFilterModal = function() {
             window._lfSearchQuery = '';
             ['type','cat','account'].forEach(k => {
                 _tempLdrMselState[k] = new Set(_ldrMselState[k]);
@@ -3982,7 +3919,7 @@
         window.switchLdrFilterTab = function(tab, el) {
             window._activeLdrFilterTab = tab;
             document.querySelectorAll('#ldrFilterModal .f-side-item').forEach(i => i.classList.remove('active'));
-            if (el) el.classList.add('active');
+            el.classList.add('active');
             renderLdrFilterOptions();
         };
 
@@ -4715,42 +4652,18 @@
             const q = (document.getElementById('cat-search')?.value || '').toLowerCase();
             const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE' && c.name.toLowerCase().includes(q));
             const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME' && c.name.toLowerCase().includes(q));
+            const chip = c => `
+                <div class="mgmt-chip" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
+                    <div class="mgmt-chip-name">${escH(c.name)}</div>
+                    <div class="mgmt-item-btns">
+                        <button class="act-btn" style="width:20px;height:20px;font-size:10px;">✎</button>
+                    </div>
+                </div>`;
             
-            const table = (items, type) => `
-                <table class="txn-tbl">
-                    <thead>
-                        <tr>
-                            <th>Category Name</th>
-                            <th style="width:80px"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${items.map(c => `
-                            <tr class="txn-tr" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
-                                <td><div class="td-item">${escH(c.name)}</div></td>
-                                <td class="ra">
-                                    <div class="mgmt-item-btns" onclick="event.stopPropagation()">
-                                        <button class="act-btn" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" title="Edit">✎</button>
-                                        <button class="act-btn del" onclick="deleteCat('${c.id}','${escH(c.name)}')" title="Delete">✕</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `).join('') || `<tr><td colspan="2" class="empty-s">No ${type.toLowerCase()} categories found</td></tr>`}
-                    </tbody>
-                </table>
-            `;
-            
-            const expWrap = document.getElementById('catListExpense');
-            const incWrap = document.getElementById('catListIncome');
-            
-            if (expWrap) {
-                expWrap.className = 'tbl-scroll-wrap';
-                expWrap.innerHTML = table(exp, 'Expense');
-            }
-            if (incWrap) {
-                incWrap.className = 'tbl-scroll-wrap';
-                incWrap.innerHTML = table(inc, 'Income');
-            }
+            document.getElementById('catListExpense').className = 'mgmt-grid';
+            document.getElementById('catListIncome').className = 'mgmt-grid';
+            document.getElementById('catListExpense').innerHTML = exp.map(chip).join('') || '<div class="empty-s">No expense categories match</div>';
+            document.getElementById('catListIncome').innerHTML = inc.map(chip).join('') || '<div class="empty-s">No income categories match</div>';
         }
         window.showAddCatModal = function() {
             document.getElementById('edit-modal-title').textContent = 'Add Category';
@@ -4824,8 +4737,8 @@
             toast('Category deleted'); 
         };
         /* ═══ TEMPLATES ═══ */
-        window.renderTemplatesPage = async function(refresh = false) { 
-            if (refresh) await loadTemplates(); 
+        window.renderTemplatesPage = async function() { 
+            await loadTemplates(); 
             const q = (document.getElementById('tpl-search')?.value || '').toLowerCase();
             const filtered = _templates.filter(t => t.name.toLowerCase().includes(q));
             
@@ -4835,48 +4748,23 @@
                 list.innerHTML = '<div class="empty-s">' + (q ? 'No templates match' : 'No templates yet') + '</div>'; 
                 return; 
             } 
-
-            list.innerHTML = `
-                <table class="txn-tbl">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Template Name</th>
-                            <th>Account</th>
-                            <th>Category</th>
-                            <th class="ra">Amount</th>
-                            <th style="width:80px"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${filtered.map(r => {
-                            const isExp = r.type === 'EXPENSE';
-                            const amt = r.amount ? Number(r.amount) : 0;
-                            return `
-                                <tr class="txn-tr" onclick="editTpl('${r.id}')">
-                                    <td>
-                                        <span class="td-cat ${isExp ? 'exp' : 'inc'}">${r.type}</span>
-                                    </td>
-                                    <td>
-                                        <div class="td-item">${escH(r.name || '')}</div>
-                                    </td>
-                                    <td><div class="td-acc">${escH(r.account || '—')}</div></td>
-                                    <td><div class="td-acc">${escH(r.category || '—')}</div></td>
-                                    <td class="ra">
-                                        <div class="${isExp ? 'td-neg' : 'td-pos'}">${amt ? (isExp ? '−' : '+') + rs(amt) : '—'}</div>
-                                    </td>
-                                    <td class="ra">
-                                        <div class="mgmt-item-btns" onclick="event.stopPropagation()">
-                                            <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
-                                            <button class="act-btn del" onclick="deleteTpl('${r.id}','${escH(r.name || '')}')" title="Delete">✕</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                </table>
-            `; 
+            list.className = 'tpl-grid';
+            list.innerHTML = filtered.map(r => {
+                const isExp = r.type === 'EXPENSE';
+                const details = [r.account, r.category, r.amount ? rs(r.amount) : ''].filter(Boolean).join(' · ');
+                return `
+                    <div class="tpl-item ${isExp ? 'exp' : 'inc'}" onclick="editTpl('${r.id}')">
+                        <div class="tpl-ico">${isExp ? '↓' : '↑'}</div>
+                        <div style="flex:1; min-width:0;">
+                            <div class="tpl-name">${escH(r.name || '')}</div>
+                            <div class="tpl-detail">${escH(details)}</div>
+                        </div>
+                        <div class="mgmt-item-btns" onclick="event.stopPropagation()">
+                            <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
+                            <button class="act-btn del" onclick="deleteTpl('${r.id}','${escH(r.name || '')}')" title="Delete">✕</button>
+                        </div>
+                    </div>`;
+            }).join(''); 
         }
         window.showAddTplModal = function() {
             document.getElementById('edit-modal-title').textContent = 'Add Template';
@@ -4925,7 +4813,7 @@
                 tofrom: document.getElementById('tpl-m-to').value.trim() 
             }); 
             closeM('editModal');
-            await renderTemplatesPage(true); 
+            await renderTemplatesPage(); 
             setupAddFormDropdowns(); 
             toast('Template added'); 
         };
@@ -4981,7 +4869,7 @@
                 tofrom: document.getElementById('et-to').value.trim()
             });
             closeM('editModal');
-            await renderTemplatesPage(true);
+            await renderTemplatesPage();
             setupAddFormDropdowns();
             toast('Template updated');
         };
@@ -4989,7 +4877,7 @@
             if (!confirm('Delete template "' + name + '"?')) return;
             closeM('editModal');
             await deleteDoc(uDoc('templates', id));
-            await renderTemplatesPage(true);
+            await renderTemplatesPage();
             setupAddFormDropdowns();
             toast('Template deleted');
         };
@@ -5012,8 +4900,7 @@
         window._fSearchQuery = '';
         let _tempMselState = {};
 
-        window.openFilterModal = function(tab) {
-            if (tab) window._activeFilterTab = tab;
+        window.openFilterModal = function() {
             window._fSearchQuery = '';
             ['type','account','cat','item','tofrom'].forEach(k => {
                 _tempMselState[k] = new Set(_mselState[k]);
