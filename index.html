@@ -1397,54 +1397,38 @@
 
         /* ─── HEATMAP ─── */
         .hm-wrap {
-            padding: 2rem;
-            max-width: 580px;
+            padding: 1.25rem;
+            max-width: 480px;
             margin: 0;
             background: var(--surface) !important;
             border: 1.5px solid var(--border) !important;
         }
 
-        .dcl-row {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-
-        .dcl {
-            font-size: 11px;
-            font-weight: 800;
-            text-align: center;
-            color: var(--t4);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
         .cal-hdr {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            margin-bottom: 8px;
+            gap: 4px;
+            margin-bottom: 6px;
         }
 
-        .cal-hdr-day {
-            font-size: 11px;
+        .dcl {
+            font-size: 9px;
             font-weight: 800;
-            color: var(--t4);
             text-align: center;
+            color: var(--t4);
+            letter-spacing: 0.05em;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
         }
 
         .cal-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 4px;
         }
 
         .cd {
             aspect-ratio: 1;
-            border-radius: 10px;
+            border-radius: 6px;
             background: var(--bg2);
             cursor: default;
             transition: all var(--t-spring);
@@ -1452,7 +1436,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--t3);
             position: relative;
@@ -1462,11 +1446,42 @@
         .cd.has-e {
             cursor: pointer;
             color: #fff;
-            box-shadow: 0 4px 12px -2px rgba(201, 123, 75, 0.2);
         }
 
-        .cd-n { z-index: 1; }
-        .cd-a { font-size: 10px; opacity: 0.9; margin-top: 2px; }
+        .cd:hover .cd-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cd-tooltip {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: var(--t1);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .cd-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -4px;
+            border-width: 4px;
+            border-style: solid;
+            border-color: var(--t1) transparent transparent transparent;
+        }
 
         .hm-legend {
             display: flex;
@@ -1494,12 +1509,13 @@
         /* ─── ANALYTICS ─── */
         .ana-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.25rem;
         }
 
-        .ana-full {
-            grid-column: 1 / -1;
+        .ana-card {
+            display: flex;
+            flex-direction: column;
         }
 
         .br-item {
@@ -3121,34 +3137,27 @@
                     <div class="cal-grid" id="calGrid"></div>
                 </div>
                 <div class="ana-grid pie-colors">
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Weekly Expenses</div>
-                        <div class="bar-rows" id="weeklyChart">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
+                    <div class="card card-p ana-card">
+                        <div class="card-h">Weekly Activity</div>
+                        <div class="bar-rows" id="weeklyChart" style="min-height: 200px;">
+                            <div class="sp-wrap"><div class="sp"></div></div>
                         </div>
                     </div>
-                    <div class="card card-p ana-full">
+                    <div class="card card-p ana-card">
+                        <div class="card-h">Spending Trends</div>
+                        <div style="flex:1; display:flex; align-items:center; justify-content:center; padding-top:10px;">
+                            <canvas id="trendsCanvas" width="400" height="200" style="width:100%; height:auto;"></canvas>
+                        </div>
+                    </div>
+                    <div class="card card-p ana-card" style="grid-column: 1 / -1;">
                         <div class="card-h">Category Breakdown</div>
-                        <div class="pie-layout"><canvas id="pieCanvas" width="180" height="180"
-                                style="flex-shrink:0"></canvas>
-                            <div class="pie-leg" id="pieLegend">
-                                <div class="sp-wrap">
-                                    <div class="sp"></div>
-                                </div>
+                        <div class="pie-layout">
+                            <canvas id="pieCanvas" width="180" height="180" style="flex-shrink:0"></canvas>
+                            <div class="pie-leg" id="pieLegend" style="flex:1">
+                                <div class="sp-wrap"><div class="sp"></div></div>
                             </div>
                         </div>
                     </div>
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Monthly Trends</div>
-                        <div class="bar-rows" id="momChart">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
@@ -3779,23 +3788,26 @@
             const { days, firstDayOfWeek } = data;
             const amts = days.filter(d => d.total > 0).map(d => d.total);
             const mx = amts.length ? Math.max(...amts) : 1, mn = amts.length ? Math.min(...amts) : 0;
-            document.getElementById('lgdSw').innerHTML = [0.1, 0.3, 0.5, 0.7, 0.9].map(r => '<div class="sw" style="background:' + rSh(r) + '; width:18px; height:18px; border-radius:4px; border:1px solid rgba(0,0,0,0.05);"></div>').join('');
+            document.getElementById('lgdSw').innerHTML = [0.1, 0.3, 0.5, 0.7, 0.9].map(r => '<div class="sw" style="background:' + rSh(r) + '; width:14px; height:14px; border-radius:3px; border:1px solid rgba(0,0,0,0.05);"></div>').join('');
             
             const now = new Date(), todayD = (now.getMonth() + 1 === curM && now.getFullYear() === curY) ? now.getDate() : -1;
             
-            // Weekday Headers
-            const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const hdrH = daysShort.map(d => `<div class="cal-hdr-day">${d}</div>`).join('');
+            const daysShort = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            const hdrH = daysShort.map(d => `<div class="dcl">${d}</div>`).join('');
             
             let h = '';
-            for (let i = 0; i < firstDayOfWeek; i++)h += '<div class="cd emp"></div>';
+            for (let i = 0; i < firstDayOfWeek; i++) h += '<div class="cd emp"></div>';
             days.forEach(d => { 
                 const ratio = d.total > 0 ? hRatio(d.total, mn, mx) : 0, col = d.total > 0 ? rSh(ratio) : null; 
-                const amtS = d.total > 0 ? (d.total >= 1000 ? '₹' + (d.total / 1000).toFixed(1) + 'k' : '₹' + Math.round(d.total)) : ''; 
+                const amtS = d.total > 0 ? rs(d.total) : 'No expenses'; 
                 const cls = 'cd ' + (col ? 'has-e' : 'no-e') + (d.day === todayD ? ' today-c' : ''); 
                 const sty = col ? ' style="background:' + col + '"' : ''; 
                 const clk = d.total > 0 ? ' onclick="openDayM(' + d.day + ')"' : ''; 
-                h += '<div class="' + cls + '"' + sty + clk + '><div class="cd-n">' + d.day + '</div>' + (amtS ? '<div class="cd-a">' + amtS + '</div>' : '') + '</div>'; 
+                h += `
+                    <div class="${cls}" ${sty} ${clk}>
+                        <div class="cd-n">${d.day}</div>
+                        <div class="cd-tooltip">${d.day} ${MO_SHORT[curM-1]}: ${amtS}</div>
+                    </div>`; 
             });
             
             const gridEl = document.getElementById('calGrid');
@@ -3829,26 +3841,74 @@
                 trends.push({ label: MO_SHORT[trackM - 1] + ' ' + trackY, total: totalExpense, avg: avgDaily });
                 trackM--; if (trackM === 0) { trackM = 12; trackY--; }
             }
-            renderMoMTrends(trends);
+            renderTrendsChart(trends);
         };
-        function renderMoMTrends(data) {
-            if (!data || !data.length) { document.getElementById('momChart').innerHTML = '<div class="empty-s">No data</div>'; return; }
-            const mx = Math.max(...data.map(d => d.total), 1);
-            document.getElementById('momChart').innerHTML = data.map((d, i) => {
-                const pct = d.total > 0 ? Math.max((d.total / mx) * 100, 2) : 0;
-                return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
-                    '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
-                    '<div class="br-track-wrap">' +
-                    '<div class="br-track" style="flex:1">' +
-                    (d.total > 0 ? '<span class="br-val-base">' + rs(d.total) + '</span>' : '') +
-                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                    (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total) + '</span>' : '') +
-                    '</div>' +
-                    '</div>' +
-                    '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
-                    '</div>' +
-                    '</div>';
-            }).join('');
+
+        function renderTrendsChart(data) {
+            const canvas = document.getElementById('trendsCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const d = data.slice().reverse(); 
+            const W = canvas.width, H = canvas.height;
+            const pX = 40, pY = 30;
+            
+            ctx.clearRect(0, 0, W, H);
+            if (!d.length) return;
+            
+            const mx = Math.max(...d.map(x => x.total), 1);
+            const getX = i => pX + (i * (W - 2 * pX) / (d.length - 1 || 1));
+            const getY = v => (H - pY) - (v / mx * (H - 2 * pY));
+
+            // Grid Lines
+            ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+            ctx.lineWidth = 1;
+            for(let i=0; i<=4; i++) {
+                const y = getY(mx * i / 4);
+                ctx.beginPath(); ctx.moveTo(pX, y); ctx.lineTo(W - pX, y); ctx.stroke();
+            }
+
+            // Area Gradient
+            const grad = ctx.createLinearGradient(0, getY(mx), 0, H - pY);
+            grad.addColorStop(0, 'rgba(201, 123, 75, 0.15)');
+            grad.addColorStop(1, 'rgba(201, 123, 75, 0)');
+            
+            ctx.beginPath();
+            d.forEach((x, i) => { if(i===0) ctx.moveTo(getX(i), getY(x.total)); else ctx.lineTo(getX(i), getY(x.total)); });
+            ctx.lineTo(getX(d.length-1), H - pY);
+            ctx.lineTo(getX(0), H - pY);
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // The Line
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'var(--accent)';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            d.forEach((x, i) => { if(i===0) ctx.moveTo(getX(i), getY(x.total)); else ctx.lineTo(getX(i), getY(x.total)); });
+            ctx.stroke();
+
+            // Points & Labels
+            d.forEach((x, i) => {
+                const vx = getX(i), vy = getY(x.total);
+                
+                // Point
+                ctx.beginPath(); ctx.arc(vx, vy, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff'; ctx.fill();
+                ctx.strokeStyle = 'var(--accent)'; ctx.lineWidth = 2; ctx.stroke();
+                
+                // Month Label
+                ctx.fillStyle = 'var(--t3)';
+                ctx.font = 'bold 10px Courier Prime';
+                ctx.textAlign = 'center';
+                ctx.fillText(x.label.split(' ')[0], vx, H - 10);
+                
+                // Amount Label (only if not too crowded)
+                if (d.length <= 8) {
+                    ctx.fillStyle = 'var(--t2)';
+                    ctx.fillText('₹' + Math.round(x.total/1000) + 'k', vx, vy - 10);
+                }
+            });
         }
 
         function renderWeekly(weeks) {
