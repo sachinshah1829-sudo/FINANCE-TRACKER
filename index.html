@@ -3629,7 +3629,7 @@
             renderPie(categoryExpenses);
             updateMoMTrends();
             populateLdrSel(_accounts);
-            if (document.getElementById('ldrAccSel').value) loadLedger();
+            if (_ldrMselState.account.size > 0) loadLedger();
             const p = MO_SHORT[curM - 1] + ' ' + curY;
             const pel = document.getElementById('acc-period'); if (pel) pel.textContent = p;
             const ael = document.getElementById('ana-period'); if (ael) ael.textContent = p;
@@ -4900,7 +4900,7 @@
         let _tempMselState = {};
 
         window.openFilterModal = function() {
-            _fSearchQuery = '';
+            window._fSearchQuery = '';
             ['type','account','cat','item','tofrom'].forEach(k => {
                 _tempMselState[k] = new Set(_mselState[k]);
             });
