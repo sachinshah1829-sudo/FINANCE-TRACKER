@@ -3911,9 +3911,9 @@
             ['type','cat','account'].forEach(k => {
                 _tempLdrMselState[k] = new Set(_ldrMselState[k]);
             });
-            updateLdrFilterBadges();
-            switchLdrFilterTab(window._activeLdrFilterTab, document.querySelector(`#ldrFilterModal .f-side-item[onclick*="${window._activeLdrFilterTab}"]`));
-            openM('ldrFilterModal');
+            window.updateLdrFilterBadges();
+            window.switchLdrFilterTab(window._activeLdrFilterTab, document.querySelector(`#ldrFilterModal .f-side-item[onclick*="${window._activeLdrFilterTab}"]`));
+            window.openM('ldrFilterModal');
         };
 
         window.switchLdrFilterTab = function(tab, el) {
@@ -3996,8 +3996,9 @@
             renderLdrFilterOptions();
         };
 
-        function updateLdrFilterBadges() {
+        window.updateLdrFilterBadges = function() {
             ['type','cat','account'].forEach(k => {
+                if (!_tempLdrMselState[k]) return;
                 const count = _tempLdrMselState[k].size;
                 const badge = document.getElementById('lf-badge-' + k);
                 if (badge) {
@@ -4907,10 +4908,10 @@
             _tempMselState.dateFrom = document.getElementById('txn-date-from')?.value || '';
             _tempMselState.dateTo = document.getElementById('txn-date-to')?.value || '';
             
-            updateFilterBadges();
+            window.updateFilterBadges();
             const el = document.querySelector(`#txnFilterModal .f-side-item[onclick*="${window._activeFilterTab}"]`);
-            switchFilterTab(window._activeFilterTab, el);
-            openM('txnFilterModal');
+            window.switchFilterTab(window._activeFilterTab, el);
+            window.openM('txnFilterModal');
         };
 
         window.switchFilterTab = function(tab, el) {
@@ -5009,9 +5010,10 @@
             renderFilterOptions();
         };
 
-        function updateFilterBadges() {
+        window.updateFilterBadges = function() {
             let total = 0;
             ['type','account','cat','item','tofrom'].forEach(k => {
+                if (!_tempMselState[k]) return;
                 const count = _tempMselState[k].size;
                 const badge = document.getElementById('f-badge-' + k);
                 if (badge) {
@@ -5021,7 +5023,7 @@
                 total += count;
             });
             if (_tempMselState.dateFrom || _tempMselState.dateTo) total++;
-        }
+        };
 
         window.applyFilters = function() {
             ['type','account','cat','item','tofrom'].forEach(k => {
