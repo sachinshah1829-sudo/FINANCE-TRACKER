@@ -677,8 +677,149 @@
             margin-bottom: 0.9rem;
         }
 
-        .card-shine {
+        /* ─── AI CHAT ─── */
+        .chat-page {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 4rem);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        #chatHistory {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scrollbar-width: thin;
+        }
+
+        #chatHistory::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #chatHistory::-webkit-scrollbar-thumb {
+            background: var(--border-strong);
+            border-radius: 4px;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 0.8rem 1.1rem;
+            border-radius: var(--r);
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+            animation: msgIn 0.3s ease;
+        }
+
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg.user {
+            align-self: flex-end;
+            background: var(--accent);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg.ai {
+            align-self: flex-start;
+            background: var(--bg2);
+            color: var(--t1);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .msg-cmd {
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px dashed var(--border-strong);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-wrap {
+            margin-top: 1rem;
+            background: var(--surface);
+            border: 1.5px solid var(--border-strong);
+            border-radius: var(--r-lg);
+            padding: 0.6rem;
+            display: flex;
+            gap: 8px;
+            box-shadow: var(--el-2);
+        }
+
+        #chatInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 0.5rem 0.8rem;
+            font-family: var(--font);
+            font-size: 14px;
+            background: transparent;
+            color: var(--t1);
+        }
+
+        .chat-send-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--r-sm);
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--t-fast);
+        }
+
+        .chat-send-btn:hover {
+            background: var(--accent-dark);
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .typing {
+            font-size: 12px;
+            color: var(--t3);
+            margin-left: 1rem;
+            margin-bottom: 0.5rem;
+            font-style: italic;
             display: none;
+        }
+
+        .api-key-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--t3);
+            cursor: pointer;
+        }
+
+        .api-key-badge:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         /* ─── STAT TILES ─── */
@@ -2654,6 +2795,9 @@
                 <div class="nav-item" id="nav-transactions" onclick="nav('transactions',this)">
                     <div class="nav-ico">☰</div>Transactions
                 </div>
+                <div class="nav-item" id="nav-aichat" onclick="nav('aichat',this)">
+                    <div class="nav-ico">✨</div>AI Assistant
+                </div>
                 <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
                     <div class="nav-ico">⚙</div>Manage
                 </div>
@@ -3095,6 +3239,34 @@
                 </div>
             </div>
 
+            <!-- AI CHAT -->
+            <div class="page" id="page-aichat">
+                <div class="chat-page">
+                    <div class="chat-header">
+                        <div>
+                            <div class="pg-title">AI Assistant</div>
+                            <div class="pg-sub">Paste bank SMS or ask questions</div>
+                        </div>
+                        <div class="api-key-badge" onclick="setGroqKey()">Groq API: <span id="apiKeyStatus">Set</span></div>
+                    </div>
+
+                    <div id="chatHistory">
+                        <div class="msg ai">
+                            Hi! I'm your financial assistant. You can paste a bank message or describe an expense, and I'll help you record it. You can also ask me questions about your spending!
+                        </div>
+                    </div>
+
+                    <div class="typing" id="chatTyping">Assistant is thinking...</div>
+
+                    <div class="chat-input-wrap">
+                        <input type="text" id="chatInput" placeholder="Type a message or paste SMS..." autocomplete="off">
+                        <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- MANAGE -->
             <div class="page" id="page-manage">
                 <div class="pg-header">
@@ -3327,7 +3499,7 @@
         const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         // Greyscale pie colors
         const PC = ['#C97B4B', '#E8956A', '#D4845A', '#B5693A', '#F0A87D', '#7C6EAA', '#5B9BD5', '#3BAA6F', '#E86C5D', '#D4A853', '#8B9DC3', '#A8C5B5'];
-        const PAGE_ORDER = ['add', 'accounts', 'analytics', 'ledger', 'transactions', 'manage'];
+        const PAGE_ORDER = ['add', 'accounts', 'analytics', 'ledger', 'transactions', 'aichat', 'manage'];
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
         let curM, curY;
@@ -3508,14 +3680,20 @@
         window.nav = function (name, el) {
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-            (el || document.getElementById('nav-' + name)).classList.add('active');
-            document.getElementById('page-' + name).classList.add('active');
+            const targetEl = el || document.getElementById('nav-' + name);
+            if (targetEl) targetEl.classList.add('active');
+            const targetPage = document.getElementById('page-' + name);
+            if (targetPage) targetPage.classList.add('active');
             document.getElementById('mainArea').scrollTop = 0;
             closeSidebar();
             if (name === 'ledger' && !document.getElementById('ldrAccSel').value) { const f = _accounts.find(a => a.name.toUpperCase().includes('HDFC')) || _accounts.find(a => a.type === 'BANK'); if (f) { document.getElementById('ldrAccSel').value = f.name; loadLedger(); } }
             if (name === 'manage') renderManage();
             if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
+            if (name === 'aichat') {
+                updateApiKeyStatus();
+                document.getElementById('chatInput').focus();
+            }
         };
         window.toggleSidebar = () => { 
             document.getElementById('sidebar').classList.toggle('mob-open'); 
@@ -4949,6 +5127,187 @@
             if (el.type === 'number') { e.preventDefault(); focusNext(el.id); }
             if (el.id === 'l-pwd') doLogin();
             if (el.id === 's-pwd') doSignup();
+        });
+
+        /* ═══ AI CHAT LOGIC ═══ */
+        const DEFAULT_GROQ_KEY = '';
+        
+        function getGroqKey() {
+            const key = localStorage.getItem('groq_api_key') || DEFAULT_GROQ_KEY;
+            if (!key) {
+                toast('Please set your Groq API Key in the AI Assistant tab');
+                return null;
+            }
+            return key;
+        }
+
+        window.setGroqKey = function() {
+            const current = localStorage.getItem('groq_api_key') || '';
+            const key = prompt('Enter your Groq API Key (leave empty to use default):', current);
+            if (key !== null) {
+                if (key.trim() === '') localStorage.removeItem('groq_api_key');
+                else localStorage.setItem('groq_api_key', key.trim());
+                updateApiKeyStatus();
+            }
+        };
+
+        function updateApiKeyStatus() {
+            const isCustom = !!localStorage.getItem('groq_api_key');
+            const el = document.getElementById('apiKeyStatus');
+            if (el) el.textContent = isCustom ? 'Custom' : 'Default';
+        }
+
+        function appendMsg(text, type, data = null) {
+            const hist = document.getElementById('chatHistory');
+            const div = document.createElement('div');
+            div.className = 'msg ' + type;
+            div.innerHTML = escH(text).replace(/\n/g, '<br>');
+            
+            if (data && data.action === 'ADD_EXPENSE') {
+                const cmdDiv = document.createElement('div');
+                cmdDiv.className = 'msg-cmd';
+                const btn = document.createElement('button');
+                btn.className = 'add-btn';
+                btn.style.margin = '0';
+                btn.style.padding = '4px 10px';
+                btn.style.fontSize = '12px';
+                btn.textContent = 'Add ' + rs(data.data.amount);
+                btn.onclick = async () => {
+                    btn.disabled = true;
+                    btn.textContent = 'Adding...';
+                    try {
+                        await executeAICommand(data);
+                        btn.textContent = '✓ Added';
+                        btn.style.background = 'var(--green)';
+                    } catch (e) {
+                        btn.textContent = 'Error';
+                        btn.disabled = false;
+                    }
+                };
+                cmdDiv.appendChild(btn);
+                div.appendChild(cmdDiv);
+            }
+            
+            hist.appendChild(div);
+            hist.scrollTop = hist.scrollHeight;
+        }
+
+        async function executeAICommand(cmd) {
+            if (cmd.action === 'ADD_EXPENSE') {
+                const d = cmd.data;
+                const batch = writeBatch(db);
+                const now = serverTimestamp();
+                
+                await ensureCategory(d.category, 'EXPENSE');
+                await ensureAccount(d.account);
+                await ensureItem(d.item);
+                
+                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    date: now,
+                    account: d.account,
+                    category: d.category,
+                    item: d.item,
+                    amount: -Math.abs(Number(d.amount)),
+                    toFrom: d.toFrom || ''
+                });
+                
+                await batch.commit();
+                await loadPeriodData();
+                toast('Expense added via AI');
+            }
+        }
+
+        window.sendChat = async function() {
+            const inp = document.getElementById('chatInput');
+            const btn = document.getElementById('chatSendBtn');
+            const text = inp.value.trim();
+            if (!text) return;
+            
+            appendMsg(text, 'user');
+            inp.value = '';
+            btn.disabled = true;
+            document.getElementById('chatTyping').style.display = 'block';
+            
+            try {
+                const response = await callGroq(text);
+                const aiMsg = response.choices[0].message.content;
+                
+                let cleanMsg = aiMsg;
+                let data = null;
+                const jsonMatch = aiMsg.match(/```json\n([\s\S]*?)\n```/) || aiMsg.match(/{[\s\S]*?"action"[\s\S]*?}/);
+                
+                if (jsonMatch) {
+                    try {
+                        const jsonStr = jsonMatch[1] || jsonMatch[0];
+                        data = JSON.parse(jsonStr);
+                        cleanMsg = aiMsg.replace(/```json[\s\S]*?```/, '').replace(/{[\s\S]*?"action"[\s\S]*?}/, '').trim();
+                    } catch (e) { console.error("JSON parse error", e); }
+                }
+                
+                appendMsg(cleanMsg, 'ai', data);
+            } catch (e) {
+                appendMsg("Sorry, I'm having trouble connecting to the brain. Check your API key.", 'ai');
+            } finally {
+                btn.disabled = false;
+                document.getElementById('chatTyping').style.display = 'none';
+            }
+        };
+
+        async function callGroq(userMsg) {
+            const key = getGroqKey();
+            if (!key) throw new Error('API Key not set');
+            const accountsList = _accounts.map(a => a.name).join(', ');
+            const categoriesList = _categories.map(c => c.name).join(', ');
+            const recent = _allTxns.slice(-20).map(t => `${fmtDate(t.date)}: ${t.account} -> ${t.item} (${rs(t.amount)})`).join('\n');
+            
+            const systemPrompt = `You are a financial assistant for 'Finance Tracker'. 
+Current Date: ${new Date().toDateString()}
+User Accounts: ${accountsList}
+User Categories: ${categoriesList}
+Recent Transactions:
+${recent}
+
+Instructions:
+1. Help users track expenses. If they paste a bank SMS or describe an expense, extract details.
+2. If an expense is identified, respond naturally and append a JSON block:
+\`\`\`json
+{
+  "action": "ADD_EXPENSE",
+  "data": {
+    "account": "matched account or best guess",
+    "category": "matched category or best guess",
+    "item": "description",
+    "amount": 100.0,
+    "toFrom": "recipient"
+  }
+}
+\`\`\`
+3. Use existing accounts/categories if they match.
+4. Answer financial questions based on the provided recent transactions.
+5. Be concise and friendly.`;
+
+            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + key,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userMsg }
+                    ],
+                    temperature: 0.3
+                })
+            });
+            
+            if (!resp.ok) throw new Error('API Error');
+            return await resp.json();
+        }
+
+        document.getElementById('chatInput')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') sendChat();
         });
     </script>
 </body>
