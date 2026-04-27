@@ -3902,22 +3902,22 @@
         }
 
         /* ═══ LEDGER FILTERS ═══ */
-        let _activeLdrFilterTab = 'account';
+        window._activeLdrFilterTab = 'account';
+        window._lfSearchQuery = '';
         let _tempLdrMselState = {};
-        let _lfSearchQuery = '';
 
         window.openLdrFilterModal = function() {
-            _lfSearchQuery = '';
+            window._lfSearchQuery = '';
             ['type','cat','account'].forEach(k => {
                 _tempLdrMselState[k] = new Set(_ldrMselState[k]);
             });
             updateLdrFilterBadges();
-            switchLdrFilterTab(_activeLdrFilterTab, document.querySelector(`#ldrFilterModal .f-side-item[onclick*="${_activeLdrFilterTab}"]`));
+            switchLdrFilterTab(window._activeLdrFilterTab, document.querySelector(`#ldrFilterModal .f-side-item[onclick*="${window._activeLdrFilterTab}"]`));
             openM('ldrFilterModal');
         };
 
         window.switchLdrFilterTab = function(tab, el) {
-            _activeLdrFilterTab = tab;
+            window._activeLdrFilterTab = tab;
             document.querySelectorAll('#ldrFilterModal .f-side-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
             renderLdrFilterOptions();
@@ -3926,23 +3926,23 @@
         function renderLdrFilterOptions() {
             const content = document.getElementById('lf-content');
             
-            const isAccount = _activeLdrFilterTab === 'account';
+            const isAccount = window._activeLdrFilterTab === 'account';
             const dataMap = {
                 account: _accounts.filter(a => a.type !== 'PERSON').sort((a,b) => a.name.localeCompare(b.name)).map(a => a.name),
                 type: ['Expense', 'Income', 'Transfer'],
                 cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
             };
 
-            let options = dataMap[_activeLdrFilterTab] || [];
-            if (_lfSearchQuery) {
-                options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+            let options = dataMap[window._activeLdrFilterTab] || [];
+            if (window._lfSearchQuery) {
+                options = options.filter(o => o.toLowerCase().includes(window._lfSearchQuery.toLowerCase()));
             }
 
-            const allSelected = options.length > 0 && options.every(o => _tempLdrMselState[_activeLdrFilterTab].has(o));
+            const allSelected = options.length > 0 && options.every(o => _tempLdrMselState[window._activeLdrFilterTab].has(o));
 
             content.innerHTML = `
                 <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
-                    <input class="form-input" placeholder="Search in ${_activeFilterTab}..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptionsList()" style="margin-bottom:10px;">
+                    <input class="form-input" placeholder="Search in ${window._activeLdrFilterTab}..." value="${window._lfSearchQuery}" oninput="window._lfSearchQuery=this.value; renderLdrFilterOptionsList()" style="margin-bottom:10px;">
                     <div class="f-opt-item" onclick="toggleAllLdrFilters(!${allSelected})" style="background:var(--bg); border:1px solid var(--border);">
                         <input type="checkbox" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAllLdrFilters(!${allSelected})">
                         <div class="f-opt-label">Select All (${options.length})</div>
@@ -3962,12 +3962,12 @@
                 type: ['Expense', 'Income', 'Transfer'],
                 cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
             };
-            let options = dataMap[_activeLdrFilterTab] || [];
-            if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+            let options = dataMap[window._activeLdrFilterTab] || [];
+            if (window._lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(window._lfSearchQuery.toLowerCase()));
 
             listEl.innerHTML = options.map(opt => `
-                <div class="f-opt-item" onclick="toggleLdrFilterOpt('${_activeLdrFilterTab}', '${opt.replace(/'/g, "\\'")}')">
-                    <input type="checkbox" ${(_tempLdrMselState[_activeLdrFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleLdrFilterOpt('${_activeLdrFilterTab}', '${opt.replace(/'/g, "\\'")}')">
+                <div class="f-opt-item" onclick="toggleLdrFilterOpt('${window._activeLdrFilterTab}', '${opt.replace(/'/g, "\\'")}')">
+                    <input type="checkbox" ${(_tempLdrMselState[window._activeLdrFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleLdrFilterOpt('${window._activeLdrFilterTab}', '${opt.replace(/'/g, "\\'")}')">
                     <div class="f-opt-label">${escH(opt)}</div>
                 </div>
             `).join('') || '<div class="empty-s">No options found</div>';
@@ -3986,11 +3986,11 @@
                 type: ['Expense', 'Income', 'Transfer'],
                 cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
             };
-            let options = dataMap[_activeLdrFilterTab] || [];
-            if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+            let options = dataMap[window._activeLdrFilterTab] || [];
+            if (window._lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(window._lfSearchQuery.toLowerCase()));
             options.forEach(o => {
-                if (sel) _tempLdrMselState[_activeLdrFilterTab].add(o);
-                else _tempLdrMselState[_activeLdrFilterTab].delete(o);
+                if (sel) _tempLdrMselState[window._activeLdrFilterTab].add(o);
+                else _tempLdrMselState[window._activeLdrFilterTab].delete(o);
             });
             updateLdrFilterBadges();
             renderLdrFilterOptions();
@@ -4895,7 +4895,8 @@
         window.loadTransactionsPage = loadTransactionsPage;
 
         /* ═══ TRANSACTION FILTERS ═══ */
-        let _activeFilterTab = 'type';
+        window._activeFilterTab = 'type';
+        window._fSearchQuery = '';
         let _tempMselState = {};
 
         window.openFilterModal = function() {
@@ -4907,22 +4908,21 @@
             _tempMselState.dateTo = document.getElementById('txn-date-to')?.value || '';
             
             updateFilterBadges();
-            switchFilterTab(_activeFilterTab, document.querySelector(`.f-side-item[onclick*="${_activeFilterTab}"]`));
+            switchFilterTab(window._activeFilterTab, document.querySelector(`.f-side-item[onclick*="${window._activeFilterTab}"]`));
             openM('txnFilterModal');
         };
 
         window.switchFilterTab = function(tab, el) {
-            _activeFilterTab = tab;
+            window._activeFilterTab = tab;
             document.querySelectorAll('.f-side-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
             renderFilterOptions();
         };
 
-        let _fSearchQuery = '';
 
         function renderFilterOptions() {
             const content = document.getElementById('f-content');
-            if (_activeFilterTab === 'date') {
+            if (window._activeFilterTab === 'date') {
                 content.innerHTML = `
                     <div class="f-date-grid">
                         <div class="form-row">
@@ -4939,25 +4939,16 @@
                 return;
             }
 
-            const types = ['Expense', 'Income', 'Transfer'];
-            const dataMap = {
-                type: types,
-                account: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort(),
-                cat: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort(),
-                item: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort(),
-                tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
-            };
-
-            let options = dataMap[_activeFilterTab] || [];
-            if (_fSearchQuery) {
-                options = options.filter(o => o.toLowerCase().includes(_fSearchQuery.toLowerCase()));
+            let options = dataMap[window._activeFilterTab] || [];
+            if (window._fSearchQuery) {
+                options = options.filter(o => o.toLowerCase().includes(window._fSearchQuery.toLowerCase()));
             }
 
-            const allSelected = options.length > 0 && options.every(o => _tempMselState[_activeFilterTab].has(o));
+            const allSelected = options.length > 0 && options.every(o => _tempMselState[window._activeFilterTab].has(o));
 
             content.innerHTML = `
                 <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
-                    <input class="form-input" placeholder="Search in ${_activeFilterTab}..." value="${_fSearchQuery}" oninput="_fSearchQuery=this.value; renderFilterOptionsList()" style="margin-bottom:10px;">
+                    <input class="form-input" placeholder="Search in ${window._activeFilterTab}..." value="${window._fSearchQuery}" oninput="window._fSearchQuery=this.value; renderFilterOptionsList()" style="margin-bottom:10px;">
                     <div class="f-opt-item" onclick="toggleAllFilters(!${allSelected})" style="background:var(--bg); border:1px solid var(--border);">
                         <input type="checkbox" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAllFilters(!${allSelected})">
                         <div class="f-opt-label">Select All (${options.length})</div>
@@ -4978,12 +4969,12 @@
                 item: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort(),
                 tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
             };
-            let options = dataMap[_activeFilterTab] || [];
-            if (_fSearchQuery) options = options.filter(o => o.toLowerCase().includes(_fSearchQuery.toLowerCase()));
+            let options = dataMap[window._activeFilterTab] || [];
+            if (window._fSearchQuery) options = options.filter(o => o.toLowerCase().includes(window._fSearchQuery.toLowerCase()));
 
             listEl.innerHTML = options.map(opt => `
-                <div class="f-opt-item" onclick="toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
-                    <input type="checkbox" ${(_tempMselState[_activeFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
+                <div class="f-opt-item" onclick="toggleFilterOpt('${window._activeFilterTab}', '${opt.replace(/'/g, "\\'")}')">
+                    <input type="checkbox" ${(_tempMselState[window._activeFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleFilterOpt('${window._activeFilterTab}', '${opt.replace(/'/g, "\\'")}')">
                     <div class="f-opt-label">${escH(opt)}</div>
                 </div>
             `).join('') || '<div class="empty-s">No options found</div>';
