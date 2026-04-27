@@ -3300,7 +3300,9 @@
                         </div>
                         <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showAddTplModal()">+ Add Template</button>
                     </div>
-                    <div id="tplList"></div>
+                    <div class="tbl-scroll-wrap">
+                        <div id="tplList"></div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -4652,18 +4654,42 @@
             const q = (document.getElementById('cat-search')?.value || '').toLowerCase();
             const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE' && c.name.toLowerCase().includes(q));
             const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME' && c.name.toLowerCase().includes(q));
-            const chip = c => `
-                <div class="mgmt-chip" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
-                    <div class="mgmt-chip-name">${escH(c.name)}</div>
-                    <div class="mgmt-item-btns">
-                        <button class="act-btn" style="width:20px;height:20px;font-size:10px;">✎</button>
-                    </div>
-                </div>`;
             
-            document.getElementById('catListExpense').className = 'mgmt-grid';
-            document.getElementById('catListIncome').className = 'mgmt-grid';
-            document.getElementById('catListExpense').innerHTML = exp.map(chip).join('') || '<div class="empty-s">No expense categories match</div>';
-            document.getElementById('catListIncome').innerHTML = inc.map(chip).join('') || '<div class="empty-s">No income categories match</div>';
+            const table = (items, type) => `
+                <table class="txn-tbl">
+                    <thead>
+                        <tr>
+                            <th>Category Name</th>
+                            <th style="width:80px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(c => `
+                            <tr class="txn-tr" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
+                                <td><div class="td-item">${escH(c.name)}</div></td>
+                                <td class="ra">
+                                    <div class="mgmt-item-btns" onclick="event.stopPropagation()">
+                                        <button class="act-btn" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" title="Edit">✎</button>
+                                        <button class="act-btn del" onclick="deleteCat('${c.id}','${escH(c.name)}')" title="Delete">✕</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('') || `<tr><td colspan="2" class="empty-s">No ${type.toLowerCase()} categories found</td></tr>`}
+                    </tbody>
+                </table>
+            `;
+            
+            const expWrap = document.getElementById('catListExpense');
+            const incWrap = document.getElementById('catListIncome');
+            
+            if (expWrap) {
+                expWrap.className = 'tbl-scroll-wrap';
+                expWrap.innerHTML = table(exp, 'Expense');
+            }
+            if (incWrap) {
+                incWrap.className = 'tbl-scroll-wrap';
+                incWrap.innerHTML = table(inc, 'Income');
+            }
         }
         window.showAddCatModal = function() {
             document.getElementById('edit-modal-title').textContent = 'Add Category';
@@ -4737,8 +4763,8 @@
             toast('Category deleted'); 
         };
         /* ═══ TEMPLATES ═══ */
-        window.renderTemplatesPage = async function() { 
-            await loadTemplates(); 
+        window.renderTemplatesPage = async function(refresh = false) { 
+            if (refresh) await loadTemplates(); 
             const q = (document.getElementById('tpl-search')?.value || '').toLowerCase();
             const filtered = _templates.filter(t => t.name.toLowerCase().includes(q));
             
@@ -4748,54 +4774,49 @@
                 list.innerHTML = '<div class="empty-s">' + (q ? 'No templates match' : 'No templates yet') + '</div>'; 
                 return; 
             } 
-            
-            list.className = '';
+
             list.innerHTML = `
-                <div class="card" style="padding:0; overflow:hidden;">
-                    <div class="tbl-scroll-wrap">
-                        <table class="g-tbl">
-                            <thead>
-                                <tr>
-                                    <th style="width:60px">Type</th>
-                                    <th>Template Name</th>
-                                    <th>Account</th>
-                                    <th>Category</th>
-                                    <th style="text-align:right">Amount</th>
-                                    <th style="text-align:right; width:80px">Actions</th>
+                <table class="txn-tbl">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Template Name</th>
+                            <th>Account</th>
+                            <th>Category</th>
+                            <th class="ra">Amount</th>
+                            <th style="width:80px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filtered.map(r => {
+                            const isExp = r.type === 'EXPENSE';
+                            const amt = r.amount ? Number(r.amount) : 0;
+                            return `
+                                <tr class="txn-tr" onclick="editTpl('${r.id}')">
+                                    <td>
+                                        <span class="td-cat ${isExp ? 'exp' : 'inc'}">${r.type}</span>
+                                    </td>
+                                    <td>
+                                        <div class="td-item">${escH(r.name || '')}</div>
+                                    </td>
+                                    <td><div class="td-acc">${escH(r.account || '—')}</div></td>
+                                    <td><div class="td-acc">${escH(r.category || '—')}</div></td>
+                                    <td class="ra">
+                                        <div class="${isExp ? 'td-neg' : 'td-pos'}">${amt ? (isExp ? '−' : '+') + rs(amt) : '—'}</div>
+                                    </td>
+                                    <td class="ra">
+                                        <div class="mgmt-item-btns" onclick="event.stopPropagation()">
+                                            <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
+                                            <button class="act-btn del" onclick="deleteTpl('${r.id}','${escH(r.name || '')}')" title="Delete">✕</button>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                ${filtered.map(r => {
-                                    const isExp = r.type === 'EXPENSE';
-                                    const col = isExp ? 'var(--amt-neg)' : 'var(--amt-pos)';
-                                    return `
-                                        <tr>
-                                            <td>
-                                                <div class="tpl-ico" style="width:24px; height:24px; font-size:12px; border-radius:4px; background:${isExp ? 'var(--red-bg)' : 'var(--green-bg)'}; color:${col}; border:none;">
-                                                    ${isExp ? '↓' : '↑'}
-                                                </div>
-                                            </td>
-                                            <td style="font-weight:600; color:var(--t1)">${escH(r.name || '')}</td>
-                                            <td><span class="tag-acc">${escH(r.account || '—')}</span></td>
-                                            <td><span class="tag-cat">${escH(r.category || '—')}</span></td>
-                                            <td style="text-align:right; font-weight:700; color:${col}">
-                                                ${r.amount ? (isExp ? '−' : '+') + rs(r.amount) : '—'}
-                                            </td>
-                                            <td style="text-align:right">
-                                                <div class="mgmt-item-btns" style="justify-content:flex-end">
-                                                    <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
-                                                    <button class="act-btn del" onclick="deleteTpl('${r.id}','${escH(r.name || '')}')" title="Delete">✕</button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-        };
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `; 
+        }
         window.showAddTplModal = function() {
             document.getElementById('edit-modal-title').textContent = 'Add Template';
             document.getElementById('edit-modal-body').innerHTML = `
@@ -4843,7 +4864,7 @@
                 tofrom: document.getElementById('tpl-m-to').value.trim() 
             }); 
             closeM('editModal');
-            await renderTemplatesPage(); 
+            await renderTemplatesPage(true); 
             setupAddFormDropdowns(); 
             toast('Template added'); 
         };
@@ -4899,7 +4920,7 @@
                 tofrom: document.getElementById('et-to').value.trim()
             });
             closeM('editModal');
-            await renderTemplatesPage();
+            await renderTemplatesPage(true);
             setupAddFormDropdowns();
             toast('Template updated');
         };
@@ -4907,7 +4928,7 @@
             if (!confirm('Delete template "' + name + '"?')) return;
             closeM('editModal');
             await deleteDoc(uDoc('templates', id));
-            await renderTemplatesPage();
+            await renderTemplatesPage(true);
             setupAddFormDropdowns();
             toast('Template deleted');
         };
