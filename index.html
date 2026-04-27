@@ -1799,6 +1799,7 @@
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
             transition: padding var(--t-fast);
+            height: 48px;
         }
 
         .txn-tbl tr:last-child td {
@@ -2992,11 +2993,11 @@
                 <div class="nav-item" id="nav-analytics" onclick="nav('analytics',this)">
                     <div class="nav-ico">◈</div>Analytics
                 </div>
-                <div class="nav-item" id="nav-ledger" onclick="nav('ledger',this)">
-                    <div class="nav-ico">≡</div>Ledger
-                </div>
                 <div class="nav-item" id="nav-transactions" onclick="nav('transactions',this)">
                     <div class="nav-ico">☰</div>Transactions
+                </div>
+                <div class="nav-item" id="nav-ledger" onclick="nav('ledger',this)">
+                    <div class="nav-ico">≡</div>Ledger
                 </div>
                 <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
                     <div class="nav-ico">⚙</div>Manage
@@ -3690,7 +3691,7 @@
         const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         // Greyscale pie colors
         const PC = ['#C97B4B', '#E8956A', '#D4845A', '#B5693A', '#F0A87D', '#7C6EAA', '#5B9BD5', '#3BAA6F', '#E86C5D', '#D4A853', '#8B9DC3', '#A8C5B5'];
-        const PAGE_ORDER = ['add', 'accounts', 'analytics', 'ledger', 'transactions', 'aichat', 'manage'];
+        const PAGE_ORDER = ['aichat', 'add', 'accounts', 'analytics', 'transactions', 'ledger', 'manage'];
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
         let curM, curY;
@@ -5645,13 +5646,28 @@
         /* ── MOBILE NAV SYNC ── */
         window.updateMobNav = function (page) {
             document.querySelectorAll('.mob-nav-item').forEach(el => el.classList.remove('active'));
-            const mapping = { add: 'add', accounts: 'accounts', analytics: 'analytics', ledger: 'ledger', heatmap: 'analytics', transactions: 'ledger', manage: 'more', templates: 'more', import: 'more' };
-            const target = mapping[page] || page;
+            const mapping = { 
+                aichat: 'aichat',
+                add: 'more', 
+                accounts: 'accounts', 
+                analytics: 'analytics', 
+                transactions: 'ledger', 
+                ledger: 'ledger', 
+                manage: 'more', 
+                templates: 'more', 
+                import: 'more' 
+            };
+            const target = mapping[page] || 'more';
             const btn = document.getElementById('mobnav-' + target);
             if (btn) btn.classList.add('active');
         };
+
         /* Patch nav to also update mob nav */
         const _origNav = window.nav;
+        window.nav = function (name, el) {
+            _origNav(name, el);
+            updateMobNav(name);
+        };
 
         /* ═══ SWIPE ═══ */
         function setupSwipe() {
@@ -5675,7 +5691,7 @@
                 // dx > 50: Swiped at least 50px
                 // Math.abs(dx) > Math.abs(dy) * 0.8: Swipe is more horizontal than vertical (relaxed from 1.5)
                 // dt < 600: Swipe completed within 600ms (increased from 500ms)
-                if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 0.8 || dt > 600) return;
+                if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 0.6 || dt > 600) return;
 
                 const cur = PAGE_ORDER.findIndex(p => document.getElementById('page-' + p)?.classList.contains('active'));
                 if (cur < 0) return;
