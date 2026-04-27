@@ -2796,7 +2796,7 @@
                     <div class="nav-ico">☰</div>Transactions
                 </div>
                 <div class="nav-item" id="nav-aichat" onclick="nav('aichat',this)">
-                    <div class="nav-ico">✨</div>AI Assistant
+                    <div class="nav-ico">✦</div>AI Assistant
                 </div>
                 <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
                     <div class="nav-ico">⚙</div>Manage
@@ -3503,7 +3503,7 @@
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
         let curM, curY;
-        let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [];
+        let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [], _aiSettings = {};
         let _ldrFilteredRows = [];
         const _ldrMselState = { type: new Set(), cat: new Set() };
         let expTpls = [], incTpls = [];
@@ -3608,7 +3608,7 @@
         /* ═══ DATA LOADING ═══ */
         async function loadAllData() {
             try {
-                await Promise.all([loadAccounts(), loadCategories(), loadTemplates(), loadItems(), loadPeople()]);
+                await Promise.all([loadAccounts(), loadCategories(), loadTemplates(), loadItems(), loadPeople(), loadAiSettings()]);
                 await loadPeriodData();
                 // Refresh manage lists if we are on that page
                 if (document.getElementById('page-manage').classList.contains('active')) {
@@ -3625,6 +3625,7 @@
         async function loadItems() { const snap = await getDocs(uRef('items')); _items = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
         async function loadPeople() { const snap = await getDocs(uRef('people')); _people = snap.docs.map(d => ({ id: d.id, ...d.data() })); }
         async function loadTemplates() { const snap = await getDocs(uRef('templates')); _templates = snap.docs.map(d => ({ id: d.id, ...d.data() })); expTpls = _templates.filter(t => t.type === 'EXPENSE'); incTpls = _templates.filter(t => t.type === 'INCOME'); }
+        async function loadAiSettings() { try { const snap = await getDoc(uDoc('settings', 'ai')); if (snap.exists()) _aiSettings = snap.data(); else _aiSettings = {}; } catch (e) { console.error("AI settings load failed", e); } }
 
         async function loadAllTransactions() {
             const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
@@ -5133,7 +5134,7 @@
         const DEFAULT_GROQ_KEY = '';
         
         function getGroqKey() {
-            const key = localStorage.getItem('groq_api_key') || DEFAULT_GROQ_KEY;
+            const key = _aiSettings.groq_api_key || DEFAULT_GROQ_KEY;
             if (!key) {
                 toast('Please set your Groq API Key in the AI Assistant tab');
                 return null;
@@ -5141,20 +5142,27 @@
             return key;
         }
 
-        window.setGroqKey = function() {
-            const current = localStorage.getItem('groq_api_key') || '';
+        window.setGroqKey = async function() {
+            const current = _aiSettings.groq_api_key || '';
             const key = prompt('Enter your Groq API Key (leave empty to use default):', current);
             if (key !== null) {
-                if (key.trim() === '') localStorage.removeItem('groq_api_key');
-                else localStorage.setItem('groq_api_key', key.trim());
-                updateApiKeyStatus();
+                const trimmed = key.trim();
+                try {
+                    await setDoc(uDoc('settings', 'ai'), { groq_api_key: trimmed }, { merge: true });
+                    _aiSettings.groq_api_key = trimmed;
+                    updateApiKeyStatus();
+                    toast('AI key saved to your account');
+                } catch (e) {
+                    console.error("Save failed", e);
+                    toast('Error saving key');
+                }
             }
         };
 
         function updateApiKeyStatus() {
-            const isCustom = !!localStorage.getItem('groq_api_key');
+            const hasKey = !!_aiSettings.groq_api_key;
             const el = document.getElementById('apiKeyStatus');
-            if (el) el.textContent = isCustom ? 'Custom' : 'Default';
+            if (el) el.textContent = hasKey ? 'Linked' : 'Set';
         }
 
         function appendMsg(text, type, data = null) {
