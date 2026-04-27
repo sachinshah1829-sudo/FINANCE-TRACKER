@@ -3880,7 +3880,6 @@
             if (targetPage) targetPage.classList.add('active');
             document.getElementById('mainArea').scrollTop = 0;
             closeSidebar();
-            if (name === 'ledger' && !document.getElementById('ldrAccSel').value) { const f = _accounts.find(a => a.name.toUpperCase().includes('HDFC')) || _accounts.find(a => a.type === 'BANK'); if (f) { document.getElementById('ldrAccSel').value = f.name; loadLedger(); } }
             if (name === 'manage') renderManage();
             if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
@@ -4117,9 +4116,23 @@
         /* ═══ LEDGER ═══ */
         function populateLdrSel(accs) {
             if (_ldrMselState.account.size === 0 && accs.length) {
-                const banks = accs.filter(a => a.type === 'BANK');
-                if (banks.length) _ldrMselState.account.add(banks[0].name);
-                else _ldrMselState.account.add(accs[0].name);
+                // Find account with most transactions
+                const counts = {};
+                _allTxns.forEach(t => {
+                    if (t.account) counts[t.account] = (counts[t.account] || 0) + 1;
+                });
+
+                let maxAcc = null, maxCount = -1;
+                accs.forEach(a => {
+                    const c = counts[a.name] || 0;
+                    if (c > maxCount) {
+                        maxCount = c;
+                        maxAcc = a.name;
+                    }
+                });
+
+                if (maxAcc) _ldrMselState.account.add(maxAcc);
+                else if (accs.length) _ldrMselState.account.add(accs[0].name);
             }
             loadLedger();
         }
