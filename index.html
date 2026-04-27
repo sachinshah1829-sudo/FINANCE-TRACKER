@@ -2167,6 +2167,59 @@
             color: var(--accent);
         }
 
+        /* Filter Pills Bar */
+        .f-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 2px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .f-pills::-webkit-scrollbar { display: none; }
+
+        .f-pill {
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--t2);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all var(--t-fast);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .f-pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-bg);
+            transform: translateY(-1px);
+        }
+
+        .f-pill.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(201, 123, 75, 0.2);
+        }
+
+        .f-pill-count {
+            background: var(--accent);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
         .txn-msel-caret {
             font-size: 9px;
             color: var(--t3);
@@ -3185,11 +3238,14 @@
                 <div class="ldr-hdr">
                     <div class="ldr-title" id="ldrTitle">Account Ledger</div>
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                        <button class="txn-clr-btn" onclick="openLdrFilterModal()" style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                            <span>Filters</span>
-                            <span id="lf-count-badge" style="background:var(--accent); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; display:none;">0</span>
-                        </button>
+                <div class="card card-p" style="margin-bottom:12px; padding:10px;">
+                    <div class="f-pills">
+                        <div class="f-pill" onclick="openLdrFilterModal('account')">Account</div>
+                        <div class="f-pill" onclick="openLdrFilterModal('type')">Type</div>
+                        <div class="f-pill" onclick="openLdrFilterModal('cat')">Category</div>
+                        <div class="f-pill" id="lf-count-badge" onclick="openLdrFilterModal()" style="display:none; background:var(--accent); color:#fff; border-color:var(--accent);">0</div>
+                    </div>
+                </div>
                         <button class="add-inline-btn" id="ldr-pdf-btn" onclick="downloadLedgerPDF()"
                             title="Download PDF" style="display:none; padding: 10px 18px; font-size: 13px;">⬇ PDF Download</button>
                     </div>
@@ -3243,11 +3299,15 @@
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             </div>
                         </div>
-                        <button class="txn-clr-btn" onclick="openFilterModal()" style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                            <span>Filters</span>
-                            <span id="f-count-badge" style="background:var(--accent); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; display:none;">0</span>
-                        </button>
+                        <div class="f-pills" style="margin-top:12px; border-top:1px solid var(--border); padding-top:12px;">
+                            <div class="f-pill" onclick="openFilterModal('type')">Type</div>
+                            <div class="f-pill" onclick="openFilterModal('date')">Date</div>
+                            <div class="f-pill" onclick="openFilterModal('cat')">Category</div>
+                            <div class="f-pill" onclick="openFilterModal('account')">Account</div>
+                            <div class="f-pill" onclick="openFilterModal('tofrom')">To/From</div>
+                            <div class="f-pill" onclick="openFilterModal('item')">Item</div>
+                            <div class="f-pill" id="f-count-badge" onclick="openFilterModal()" style="display:none; background:var(--accent); color:#fff; border-color:var(--accent);">0</div>
+                        </div>
                     </div>
                 </div>
                 <div class="card" id="txnListWrap">
@@ -3908,7 +3968,8 @@
         window._lfSearchQuery = '';
         let _tempLdrMselState = {};
 
-        window.openLdrFilterModal = function() {
+        window.openLdrFilterModal = function(tab) {
+            if (tab) window._activeLdrFilterTab = tab;
             window._lfSearchQuery = '';
             ['type','cat','account'].forEach(k => {
                 _tempLdrMselState[k] = new Set(_ldrMselState[k]);
@@ -3921,7 +3982,7 @@
         window.switchLdrFilterTab = function(tab, el) {
             window._activeLdrFilterTab = tab;
             document.querySelectorAll('#ldrFilterModal .f-side-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
+            if (el) el.classList.add('active');
             renderLdrFilterOptions();
         };
 
@@ -4951,7 +5012,8 @@
         window._fSearchQuery = '';
         let _tempMselState = {};
 
-        window.openFilterModal = function() {
+        window.openFilterModal = function(tab) {
+            if (tab) window._activeFilterTab = tab;
             window._fSearchQuery = '';
             ['type','account','cat','item','tofrom'].forEach(k => {
                 _tempMselState[k] = new Set(_mselState[k]);
