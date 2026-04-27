@@ -4908,14 +4908,16 @@
             _tempMselState.dateTo = document.getElementById('txn-date-to')?.value || '';
             
             updateFilterBadges();
-            switchFilterTab(window._activeFilterTab, document.querySelector(`.f-side-item[onclick*="${window._activeFilterTab}"]`));
+            const el = document.querySelector(`#txnFilterModal .f-side-item[onclick*="${window._activeFilterTab}"]`);
+            switchFilterTab(window._activeFilterTab, el);
             openM('txnFilterModal');
         };
 
         window.switchFilterTab = function(tab, el) {
             window._activeFilterTab = tab;
-            document.querySelectorAll('.f-side-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
+            const sidebar = el ? el.closest('.f-sidebar') : document.querySelector('#txnFilterModal .f-sidebar');
+            if (sidebar) sidebar.querySelectorAll('.f-side-item').forEach(i => i.classList.remove('active'));
+            if (el) el.classList.add('active');
             renderFilterOptions();
         };
 
@@ -4989,12 +4991,12 @@
                 item: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort(),
                 tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
             };
-            let options = dataMap[_activeFilterTab] || [];
-            if (_fSearchQuery) options = options.filter(o => o.toLowerCase().includes(_fSearchQuery.toLowerCase()));
+            let options = dataMap[window._activeFilterTab] || [];
+            if (window._fSearchQuery) options = options.filter(o => o.toLowerCase().includes(window._fSearchQuery.toLowerCase()));
             
             options.forEach(o => {
-                if (sel) _tempMselState[_activeFilterTab].add(o);
-                else _tempMselState[_activeFilterTab].delete(o);
+                if (sel) _tempMselState[window._activeFilterTab].add(o);
+                else _tempMselState[window._activeFilterTab].delete(o);
             });
             updateFilterBadges();
             renderFilterOptions();
