@@ -5169,6 +5169,14 @@
                 return;
             }
 
+            const dataMap = {
+                type: ['Expense', 'Income', 'Transfer'],
+                account: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort(),
+                cat: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort(),
+                item: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort(),
+                tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
+            };
+
             let options = dataMap[window._activeFilterTab] || [];
             if (window._fSearchQuery) {
                 options = options.filter(o => o.toLowerCase().includes(window._fSearchQuery.toLowerCase()));
