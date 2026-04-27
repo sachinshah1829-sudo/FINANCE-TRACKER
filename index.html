@@ -3157,10 +3157,6 @@
                 <div class="ldr-hdr">
                     <div class="ldr-title" id="ldrTitle">Account Ledger</div>
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                        <div class="ldr-sel-wrap">
-                            <span class="ldr-sel-lbl">Account</span>
-                            <select class="ldr-sel" id="ldrAccSel" onchange="loadLedger()"><option value="">— select —</option></select>
-                        </div>
                         <button class="txn-clr-btn" onclick="openLdrFilterModal()" style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                             <span>Filters</span>
@@ -3273,7 +3269,13 @@
                 </div>
 
                 <div class="mgmt-panel active" id="mpanel-cats">
-                    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:200px; position:relative;">
+                            <input class="form-input" id="cat-search" placeholder="Search categories..." oninput="renderCatList()" style="padding-left:38px;">
+                            <div style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--t3); pointer-events:none;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                        </div>
                         <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showAddCatModal()">+ Add Category</button>
                     </div>
 
@@ -3288,7 +3290,13 @@
                 </div>
 
                 <div class="mgmt-panel" id="mpanel-templates">
-                    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div style="flex:1; min-width:200px; position:relative;">
+                            <input class="form-input" id="tpl-search" placeholder="Search templates..." oninput="renderTemplatesPage()" style="padding-left:38px;">
+                            <div style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--t3); pointer-events:none;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                        </div>
                         <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showAddTplModal()">+ Add Template</button>
                     </div>
                     <div id="tplList"></div>
@@ -3877,35 +3885,26 @@
 
         /* ═══ LEDGER ═══ */
         function populateLdrSel(accs) {
-            const sel = document.getElementById('ldrAccSel'), prev = sel.value;
-            sel.innerHTML = '<option value="">— select —</option>';
-            const banks = accs.filter(a => a.type === 'BANK');
-            const credits = accs.filter(a => a.type === 'CREDIT_CARD');
-            if (banks.length) {
-                const g = document.createElement('optgroup'); g.label = 'Bank Accounts';
-                banks.forEach(a => { const o = document.createElement('option'); o.value = a.name; o.textContent = a.name; g.appendChild(o); });
-                sel.appendChild(g);
+            if (!_ldrActiveAccount && accs.length) {
+                const banks = accs.filter(a => a.type === 'BANK');
+                if (banks.length) _ldrActiveAccount = banks[0].name;
+                else _ldrActiveAccount = accs[0].name;
             }
-            if (credits.length) {
-                const g = document.createElement('optgroup'); g.label = 'Credit Cards';
-                credits.forEach(a => { const o = document.createElement('option'); o.value = a.name; o.textContent = a.name; g.appendChild(o); });
-                sel.appendChild(g);
-            }
-            if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
-
-            buildLdrMselOptions();
+            loadLedger();
         }
 
         /* ═══ LEDGER FILTERS ═══ */
-        let _activeLdrFilterTab = 'type';
+        let _activeLdrFilterTab = 'account';
         let _tempLdrMselState = {};
         let _lfSearchQuery = '';
+        let _ldrActiveAccount = '';
 
         window.openLdrFilterModal = function() {
             _lfSearchQuery = '';
             ['type','cat'].forEach(k => {
                 _tempLdrMselState[k] = new Set(_ldrMselState[k]);
             });
+            _tempLdrMselState.account = _ldrActiveAccount;
             updateLdrFilterBadges();
             switchLdrFilterTab(_activeLdrFilterTab, document.querySelector(`#ldrFilterModal .f-side-item[onclick*="${_activeLdrFilterTab}"]`));
             openM('ldrFilterModal');
@@ -3920,6 +3919,26 @@
 
         function renderLdrFilterOptions() {
             const content = document.getElementById('lf-content');
+            
+            if (_activeLdrFilterTab === 'account') {
+                const accs = _accounts.filter(a => a.type !== 'PERSON').sort((a,b) => a.name.localeCompare(b.name));
+                let options = accs.map(a => a.name);
+                if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+                
+                content.innerHTML = `
+                    <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
+                        <input class="form-input" placeholder="Search account..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptions()" style="margin-bottom:10px;">
+                    </div>
+                    ${options.map(opt => `
+                        <div class="f-opt-item" onclick="_tempLdrMselState.account='${escH(opt)}'; renderLdrFilterOptions()">
+                            <input type="radio" name="ldr-acc" ${(_tempLdrMselState.account === opt) ? 'checked' : ''} onclick="event.stopPropagation(); _tempLdrMselState.account='${escH(opt)}'; renderLdrFilterOptions()" style="width:18px; height:18px; accent-color:var(--accent);">
+                            <div class="f-opt-label">${escH(opt)}</div>
+                        </div>
+                    `).join('') || '<div class="empty-s">No accounts match</div>'}
+                `;
+                return;
+            }
+
             const dataMap = {
                 type: ['Expense', 'Income', 'Transfer'],
                 cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
@@ -3986,6 +4005,8 @@
             ['type','cat'].forEach(k => {
                 _ldrMselState[k] = new Set(_tempLdrMselState[k]);
             });
+            _ldrActiveAccount = _tempLdrMselState.account;
+            
             let totalActive = _ldrMselState.type.size + _ldrMselState.cat.size;
             const badge = document.getElementById('lf-count-badge');
             if (badge) {
@@ -4001,20 +4022,19 @@
                 _ldrMselState[k].clear();
                 if (_tempLdrMselState[k]) _tempLdrMselState[k].clear();
             });
+            // We don't clear the account here, as ledger needs one
             _lfSearchQuery = '';
             updateLdrFilterBadges();
             renderLdrFilterOptions();
         };
 
         function loadLedger() {
-            const accEl = document.getElementById('ldrAccSel');
-            if (!accEl) return;
-            const acc = accEl.value;
+            const acc = _ldrActiveAccount;
 
             if (!acc) {
                 const pdfBtn = document.getElementById('ldr-pdf-btn');
                 if (pdfBtn) pdfBtn.style.display = 'none';
-                document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">Please select an account first.</div>';
+                document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">Please select an account from the filters.</div>';
                 _ldrFilteredRows = [];
                 return;
             }
@@ -4594,8 +4614,9 @@
         }
 
         function renderCatList() {
-            const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE');
-            const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME');
+            const q = (document.getElementById('cat-search')?.value || '').toLowerCase();
+            const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE' && c.name.toLowerCase().includes(q));
+            const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME' && c.name.toLowerCase().includes(q));
             const chip = c => `
                 <div class="mgmt-chip" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
                     <div class="mgmt-chip-name">${escH(c.name)}</div>
@@ -4606,8 +4627,8 @@
             
             document.getElementById('catListExpense').className = 'mgmt-grid';
             document.getElementById('catListIncome').className = 'mgmt-grid';
-            document.getElementById('catListExpense').innerHTML = exp.map(chip).join('') || '<div class="empty-s">No expense categories</div>';
-            document.getElementById('catListIncome').innerHTML = inc.map(chip).join('') || '<div class="empty-s">No income categories</div>';
+            document.getElementById('catListExpense').innerHTML = exp.map(chip).join('') || '<div class="empty-s">No expense categories match</div>';
+            document.getElementById('catListIncome').innerHTML = inc.map(chip).join('') || '<div class="empty-s">No income categories match</div>';
         }
         window.showAddCatModal = function() {
             document.getElementById('edit-modal-title').textContent = 'Add Category';
@@ -4683,12 +4704,15 @@
         /* ═══ TEMPLATES ═══ */
         async function renderTemplatesPage() { 
             await loadTemplates(); 
-            if (!_templates.length) { 
-                document.getElementById('tplList').innerHTML = '<div class="empty-s">No templates yet. Click "Save as Template" while adding an entry or add one here.</div>'; 
+            const q = (document.getElementById('tpl-search')?.value || '').toLowerCase();
+            const filtered = _templates.filter(t => t.name.toLowerCase().includes(q));
+            
+            if (!filtered.length) { 
+                document.getElementById('tplList').innerHTML = '<div class="empty-s">' + (q ? 'No templates match' : 'No templates yet') + '</div>'; 
                 return; 
             } 
             document.getElementById('tplList').className = 'tpl-grid';
-            document.getElementById('tplList').innerHTML = _templates.map(r => {
+            document.getElementById('tplList').innerHTML = filtered.map(r => {
                 const isExp = r.type === 'EXPENSE';
                 const details = [r.account, r.category, r.amount ? rs(r.amount) : ''].filter(Boolean).join(' · ');
                 return `
@@ -5630,7 +5654,8 @@ Instructions:
             </div>
             <div class="f-layout">
                 <div class="f-sidebar">
-                    <div class="f-side-item active" onclick="switchLdrFilterTab('type',this)">Type<span class="f-side-badge" id="lf-badge-type" style="display:none">0</span></div>
+                    <div class="f-side-item active" onclick="switchLdrFilterTab('account',this)">Account</div>
+                    <div class="f-side-item" onclick="switchLdrFilterTab('type',this)">Type<span class="f-side-badge" id="lf-badge-type" style="display:none">0</span></div>
                     <div class="f-side-item" onclick="switchLdrFilterTab('cat',this)">Category<span class="f-side-badge" id="lf-badge-cat" style="display:none">0</span></div>
                 </div>
                 <div class="f-content" id="lf-content"></div>
