@@ -1795,11 +1795,11 @@
         }
 
         .txn-tbl td {
-            padding: 6px 12px;
+            padding: 8px 12px;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
             transition: padding var(--t-fast);
-            height: 40px;
+            height: 48px;
         }
 
         .txn-tbl tr:last-child td {
@@ -2057,14 +2057,47 @@
             position: relative;
         }
 
+        .tpl-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: transparent;
+            transition: background var(--t-fast);
+        }
+
+        .tpl-item:hover {
+            border-color: var(--accent);
+            background: var(--accent-bg);
+            border-left-color: var(--accent);
+        }
+
+        .tpl-item.exp::before {
+            background: var(--red);
+        }
+
+        .tpl-item.inc::before {
+            background: var(--green);
+        }
+
+        .tpl-ico {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--r-sm);
+            background: var(--bg2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            border: 1px solid var(--border);
+        }
+
         .tpl-badge {
             font-size: 9px;
             font-weight: 800;
             padding: 3px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
             border-radius: 4px;
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -3490,7 +3523,7 @@
                         <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;"
                             onclick="showAddTplModal()">+ Add Template</button>
                     </div>
-                    <div class="card" id="tplList" style="padding:0; overflow:hidden;"></div>
+                    <div id="tplList"></div>
                 </div>
             </div>
         </main>
@@ -4956,42 +4989,23 @@
                 list.innerHTML = '<div class="empty-s">' + (q ? 'No templates match' : 'No templates yet') + '</div>';
                 return;
             }
-            list.className = 'card';
-            let h = `
-                <div class="tbl-scroll-wrap">
-                    <table class="txn-tbl">
-                        <thead>
-                            <tr>
-                                <th style="width:50px; text-align:center;">Type</th>
-                                <th>Name</th>
-                                <th>Account</th>
-                                <th>Category</th>
-                                <th>To/From</th>
-                                <th class="ra">Amount</th>
-                                <th style="width:80px; text-align:center;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            h += filtered.map((r, i) => {
+            list.className = 'tpl-grid';
+            list.innerHTML = filtered.map(r => {
                 const isExp = r.type === 'EXPENSE';
+                const details = [r.account, r.category, r.amount ? rs(r.amount) : ''].filter(Boolean).join(' · ');
                 return `
-                    <tr class="txn-tr" onclick="editTpl('${r.id}')" style="animation-delay:${Math.min(i, 25) * 0.02}s">
-                        <td style="text-align:center; color:${isExp ? 'var(--red)' : 'var(--green)'}; font-weight:bold; font-size:14px; line-height:1;">${isExp ? '↓' : '↑'}</td>
-                        <td class="td-item">${escH(r.name || '')}</td>
-                        <td class="td-acc" style="font-size:10px; color:var(--t3);">${escH(r.account || '—')}</td>
-                        <td><span class="td-cat">${escH(r.category || '—')}</span></td>
-                        <td class="td-tof">${escH(r.tofrom || r.toFrom || '—')}</td>
-                        <td class="ra" style="font-family:var(--font-big); font-weight:700;">${r.amount ? rs(r.amount) : '—'}</td>
-                        <td class="td-acts" onclick="event.stopPropagation()" style="text-align:center">
+                    <div class="tpl-item ${isExp ? 'exp' : 'inc'}" onclick="editTpl('${r.id}')">
+                        <div class="tpl-ico">${isExp ? '↓' : '↑'}</div>
+                        <div style="flex:1; min-width:0;">
+                            <div class="tpl-name">${escH(r.name || '')}</div>
+                            <div class="tpl-detail">${escH(details)}</div>
+                        </div>
+                        <div class="mgmt-item-btns" onclick="event.stopPropagation()">
                             <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
                             <button class="act-btn del" onclick="deleteTpl('${r.id}','${escH(r.name || '')}')" title="Delete">✕</button>
-                        </td>
-                    </tr>
-                `;
+                        </div>
+                    </div>`;
             }).join('');
-            h += '</tbody></table></div>';
-            list.innerHTML = h;
         }
         window.showAddTplModal = function () {
             document.getElementById('edit-modal-title').textContent = 'Add Template';
