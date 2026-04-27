@@ -3473,7 +3473,8 @@
         let curM, curY;
         let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [], _aiSettings = {};
         let _ldrFilteredRows = [];
-        const _ldrMselState = { type: new Set(), cat: new Set() };
+        const _ldrMselState = { type: new Set(), cat: new Set(), account: new Set() };
+        let _ldrActiveAccount = '';
         let expTpls = [], incTpls = [];
         const _mselState = { type: new Set(), account: new Set(), cat: new Set(), item: new Set(), tofrom: new Set() };
         let _importRows = [];
@@ -3892,10 +3893,10 @@
 
         /* ═══ LEDGER ═══ */
         function populateLdrSel(accs) {
-            if (!_ldrActiveAccount && accs.length) {
+            if (_ldrMselState.account.size === 0 && accs.length) {
                 const banks = accs.filter(a => a.type === 'BANK');
-                if (banks.length) _ldrActiveAccount = banks[0].name;
-                else _ldrActiveAccount = accs[0].name;
+                if (banks.length) _ldrMselState.account.add(banks[0].name);
+                else _ldrMselState.account.add(accs[0].name);
             }
             loadLedger();
         }
@@ -3904,14 +3905,12 @@
         let _activeLdrFilterTab = 'account';
         let _tempLdrMselState = {};
         let _lfSearchQuery = '';
-        let _ldrActiveAccount = '';
 
         window.openLdrFilterModal = function() {
             _lfSearchQuery = '';
-            ['type','cat'].forEach(k => {
+            ['type','cat','account'].forEach(k => {
                 _tempLdrMselState[k] = new Set(_ldrMselState[k]);
             });
-            _tempLdrMselState.account = _ldrActiveAccount;
             updateLdrFilterBadges();
             switchLdrFilterTab(_activeLdrFilterTab, document.querySelector(`#ldrFilterModal .f-side-item[onclick*="${_activeLdrFilterTab}"]`));
             openM('ldrFilterModal');
@@ -3927,22 +3926,9 @@
         function renderLdrFilterOptions() {
             const content = document.getElementById('lf-content');
             
-            if (_activeLdrFilterTab === 'account') {
-                const accs = _accounts.filter(a => a.type !== 'PERSON').sort((a,b) => a.name.localeCompare(b.name));
-                let options = accs.map(a => a.name);
-                if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
-                
-                content.innerHTML = `
-                    <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
-                        <input class="form-input" placeholder="Search account..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptionsList()" style="margin-bottom:10px;">
-                    </div>
-                    <div id="lf-results-list"></div>
-                `;
-                renderLdrFilterOptionsList();
-                return;
-            }
-
+            const isAccount = _activeLdrFilterTab === 'account';
             const dataMap = {
+                account: _accounts.filter(a => a.type !== 'PERSON').sort((a,b) => a.name.localeCompare(b.name)).map(a => a.name),
                 type: ['Expense', 'Income', 'Transfer'],
                 cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
             };
@@ -3956,7 +3942,7 @@
 
             content.innerHTML = `
                 <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
-                    <input class="form-input" placeholder="Search in ${_activeLdrFilterTab}..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptionsList()" style="margin-bottom:10px;">
+                    <input class="form-input" placeholder="Search in ${_activeFilterTab}..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptionsList()" style="margin-bottom:10px;">
                     <div class="f-opt-item" onclick="toggleAllLdrFilters(!${allSelected})" style="background:var(--bg); border:1px solid var(--border);">
                         <input type="checkbox" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAllLdrFilters(!${allSelected})">
                         <div class="f-opt-label">Select All (${options.length})</div>
@@ -3971,21 +3957,8 @@
             const listEl = document.getElementById('lf-results-list');
             if (!listEl) return;
             
-            if (_activeLdrFilterTab === 'account') {
-                const accs = _accounts.filter(a => a.type !== 'PERSON').sort((a,b) => a.name.localeCompare(b.name));
-                let options = accs.map(a => a.name);
-                if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
-                
-                listEl.innerHTML = options.map(opt => `
-                    <div class="f-opt-item" onclick="_tempLdrMselState.account='${opt.replace(/'/g, "\\'")}'; renderLdrFilterOptionsList()">
-                        <input type="checkbox" ${(_tempLdrMselState.account === opt) ? 'checked' : ''} onclick="event.stopPropagation(); _tempLdrMselState.account='${opt.replace(/'/g, "\\'")}'; renderLdrFilterOptionsList()">
-                        <div class="f-opt-label">${escH(opt)}</div>
-                    </div>
-                `).join('') || '<div class="empty-s">No accounts match</div>';
-                return;
-            }
-
             const dataMap = {
+                account: _accounts.filter(a => a.type !== 'PERSON').sort((a,b) => a.name.localeCompare(b.name)).map(a => a.name),
                 type: ['Expense', 'Income', 'Transfer'],
                 cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
             };
@@ -3993,8 +3966,8 @@
             if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
 
             listEl.innerHTML = options.map(opt => `
-                <div class="f-opt-item" onclick="toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
-                    <input type="checkbox" ${(_tempLdrMselState[_activeLdrFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
+                <div class="f-opt-item" onclick="toggleLdrFilterOpt('${_activeLdrFilterTab}', '${opt.replace(/'/g, "\\'")}')">
+                    <input type="checkbox" ${(_tempLdrMselState[_activeLdrFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleLdrFilterOpt('${_activeLdrFilterTab}', '${opt.replace(/'/g, "\\'")}')">
                     <div class="f-opt-label">${escH(opt)}</div>
                 </div>
             `).join('') || '<div class="empty-s">No options found</div>';
@@ -4009,6 +3982,7 @@
 
         window.toggleAllLdrFilters = function(sel) {
             const dataMap = {
+                account: _accounts.filter(a => a.type !== 'PERSON').map(a => a.name),
                 type: ['Expense', 'Income', 'Transfer'],
                 cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
             };
@@ -4023,7 +3997,7 @@
         };
 
         function updateLdrFilterBadges() {
-            ['type','cat'].forEach(k => {
+            ['type','cat','account'].forEach(k => {
                 const count = _tempLdrMselState[k].size;
                 const badge = document.getElementById('lf-badge-' + k);
                 if (badge) {
@@ -4034,12 +4008,11 @@
         }
 
         window.applyLdrFilters = function() {
-            ['type','cat'].forEach(k => {
+            ['type','cat','account'].forEach(k => {
                 _ldrMselState[k] = new Set(_tempLdrMselState[k]);
             });
-            _ldrActiveAccount = _tempLdrMselState.account;
             
-            let totalActive = _ldrMselState.type.size + _ldrMselState.cat.size;
+            let totalActive = _ldrMselState.type.size + _ldrMselState.cat.size + _ldrMselState.account.size;
             const badge = document.getElementById('lf-count-badge');
             if (badge) {
                 badge.textContent = totalActive;
@@ -4050,37 +4023,39 @@
         };
 
         window.clearLdrFilters = function() {
-            ['type','cat'].forEach(k => {
+            ['type','cat','account'].forEach(k => {
                 _ldrMselState[k].clear();
                 if (_tempLdrMselState[k]) _tempLdrMselState[k].clear();
             });
-            // We don't clear the account here, as ledger needs one
             _lfSearchQuery = '';
             updateLdrFilterBadges();
             renderLdrFilterOptions();
         };
 
         function loadLedger() {
-            const acc = _ldrActiveAccount;
+            const accs = _ldrMselState.account;
 
-            if (!acc) {
+            if (accs.size === 0) {
                 const pdfBtn = document.getElementById('ldr-pdf-btn');
                 if (pdfBtn) pdfBtn.style.display = 'none';
-                document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">Please select an account from the filters.</div>';
+                document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">Please select at least one account from the filters.</div>';
                 _ldrFilteredRows = [];
                 return;
             }
             const ldrTitle = document.getElementById('ldrTitle');
-            if (ldrTitle) ldrTitle.textContent = acc + ' — Ledger';
+            if (ldrTitle) {
+                if (accs.size === 1) ldrTitle.textContent = [...accs][0] + ' — Ledger';
+                else ldrTitle.textContent = accs.size + ' Accounts — Combined Ledger';
+            }
             const pdfBtn = document.getElementById('ldr-pdf-btn');
             if (pdfBtn) pdfBtn.style.display = '';
 
             const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
             
-            // Initial filter by account and date
+            // Initial filter by accounts and date
             let rows = _allTxns.filter(t => {
                 const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
-                return t.account === acc && d >= sd && d <= ed;
+                return accs.has(t.account) && d >= sd && d <= ed;
             });
 
             // Filter by Type (Multi-select)
@@ -4100,26 +4075,53 @@
             }
 
             _ldrFilteredRows = rows;
-            renderLedger(rows, acc);
+            
+            const totalSpent = rows.filter(r => (r.category || '').toUpperCase() !== 'TRANSFER' && Number(r.amount) < 0).reduce((s, r) => s + Math.abs(Number(r.amount)), 0);
+            
+            // Total balance is sum of current balances of all selected accounts
+            const totalBal = [...accs].reduce((sum, accName) => {
+                const acc = _accounts.find(a => a.name === accName);
+                return sum + (acc ? (acc.currentBalance || 0) : 0);
+            }, 0);
+
+            document.getElementById('ls-spent').textContent = rs(totalSpent);
+            document.getElementById('ls-count').textContent = rows.length;
+            document.getElementById('ls-bal').textContent = rs(totalBal);
+            
+            renderLedger(rows);
         }
         window.loadLedger = loadLedger;
 
-        function renderLedger(rows, acc) {
+        function renderLedger(rows) {
+            const accs = _ldrMselState.account;
             if (!rows || !rows.length) {
-                ['ls-spent', 'ls-count', 'ls-bal'].forEach(id => document.getElementById(id).textContent = '0');
-                document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">No matching transactions for ' + escH(acc) + ' this period.</div>';
+                document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">No matching transactions for the selected filters this period.</div>';
                 return;
             }
-            const spent = rows.filter(r => Number(r.amount) < 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Math.abs(Number(r.amount)), 0);
-            document.getElementById('ls-spent').textContent = rs(spent);
-            document.getElementById('ls-count').textContent = rows.length;
-            // Balance is tricky when filtered, but we'll show the closing balance of the last MATCHING row relative to the sequence
-            document.getElementById('ls-bal').textContent = rs(rows[rows.length - 1].closingBalance || 0);
+            
+            const isMulti = accs.size > 1;
+            const tableHdr = `
+                <div class="tbl-scroll-wrap">
+                    <table class="txn-tbl">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                ${isMulti ? '<th>Account</th>' : ''}
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>To/From</th>
+                                <th class="ra">Amount</th>
+                                <th class="ra">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
 
-            document.getElementById('ldrTblWrap').innerHTML = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Item</th><th>Category</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th></tr></thead><tbody>' + rows.map((r, i) => {
+            document.getElementById('ldrTblWrap').innerHTML = tableHdr + rows.map((r, i) => {
                 const amt = Number(r.amount), cls = amt >= 0 ? 'td-pos' : 'td-neg';
                 return `<tr class="txn-tr" style="animation-delay:${Math.min(i, 25) * 0.022}s">
                     <td class="td-date">${fmtDate(r.date)}</td>
+                    ${isMulti ? `<td style="font-size:10px; color:var(--t3);">${escH(r.account)}</td>` : ''}
                     <td class="td-item">${escH(r.item || '—')}</td>
                     <td><span class="td-cat">${escH(r.category || '')}</span></td>
                     <td class="td-tof">${escH(r.toFrom || '—')}</td>
