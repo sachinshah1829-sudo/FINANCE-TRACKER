@@ -3997,6 +3997,7 @@
         };
 
         window.updateLdrFilterBadges = function() {
+            let total = 0;
             ['type','cat','account'].forEach(k => {
                 if (!_tempLdrMselState[k]) return;
                 const count = _tempLdrMselState[k].size;
@@ -4005,8 +4006,11 @@
                     badge.textContent = count;
                     badge.style.display = count > 0 ? 'block' : 'none';
                 }
+                total += count;
             });
-        }
+            const btn = document.getElementById('ldr-apply-btn');
+            if (btn) btn.textContent = total > 0 ? `Apply (${total})` : 'Apply Filters';
+        };
 
         window.applyLdrFilters = function() {
             ['type','cat','account'].forEach(k => {
@@ -5023,6 +5027,15 @@
                 total += count;
             });
             if (_tempMselState.dateFrom || _tempMselState.dateTo) total++;
+            
+            const btn = document.getElementById('txn-apply-btn');
+            if (btn) btn.textContent = total > 0 ? `Apply (${total})` : 'Apply Filters';
+            
+            const mainBadge = document.getElementById('f-count-badge');
+            if (mainBadge) {
+                mainBadge.textContent = total;
+                mainBadge.style.display = total > 0 ? 'block' : 'none';
+            }
         };
 
         window.applyFilters = function() {
@@ -5684,7 +5697,7 @@ Instructions:
             </div>
             <div class="f-footer">
                 <button class="txn-clr-btn" style="width:auto" onclick="closeM('txnFilterModal')">Close</button>
-                <button class="add-btn" style="width:auto; margin:0; padding:10px 24px;" onclick="applyFilters()">Apply Filters</button>
+                <button class="add-btn" id="txn-apply-btn" style="width:auto; margin:0; padding:10px 24px;" onclick="applyFilters()">Apply Filters</button>
             </div>
         </div>
     </div>
@@ -5707,7 +5720,7 @@ Instructions:
             </div>
             <div class="f-footer">
                 <button class="txn-clr-btn" style="width:auto" onclick="closeM('ldrFilterModal')">Close</button>
-                <button class="add-btn" style="width:auto; margin:0; padding:10px 24px;" onclick="applyLdrFilters()">Apply Filters</button>
+                <button class="add-btn" id="ldr-apply-btn" style="width:auto; margin:0; padding:10px 24px;" onclick="applyLdrFilters()">Apply Filters</button>
             </div>
         </div>
     </div>
