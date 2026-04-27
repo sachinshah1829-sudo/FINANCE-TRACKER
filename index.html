@@ -4966,6 +4966,7 @@
                                 <th>Name</th>
                                 <th>Account</th>
                                 <th>Category</th>
+                                <th>To/From</th>
                                 <th class="ra">Amount</th>
                                 <th style="width:80px; text-align:center;">Actions</th>
                             </tr>
@@ -4978,8 +4979,9 @@
                     <tr class="txn-tr" onclick="editTpl('${r.id}')" style="animation-delay:${Math.min(i, 25) * 0.02}s">
                         <td style="text-align:center; color:${isExp ? 'var(--red)' : 'var(--green)'}; font-weight:bold; font-size:16px;">${isExp ? '↓' : '↑'}</td>
                         <td class="td-item">${escH(r.name || '')}</td>
-                        <td class="td-acc" style="font-size:12px; color:var(--t2);">${escH(r.account || '—')}</td>
+                        <td class="td-acc" style="font-size:10px; color:var(--t3);">${escH(r.account || '—')}</td>
                         <td><span class="td-cat">${escH(r.category || '—')}</span></td>
+                        <td class="td-tof">${escH(r.tofrom || '—')}</td>
                         <td class="ra" style="font-family:var(--font-big); font-weight:700;">${r.amount ? rs(r.amount) : '—'}</td>
                         <td class="td-acts" onclick="event.stopPropagation()" style="text-align:center">
                             <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
