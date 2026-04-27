@@ -3401,7 +3401,7 @@
                     <div class="mhd-name" id="acc-modal-title">Add Account</div>
                 </div><button class="m-close" onclick="closeM('accModal')">✕</button>
             </div>
-            <div style="padding:20px 24px 24px">
+            <div style="padding:20px 24px 24px; overflow-y:auto; flex:1;">
                 <div class="form-row"><label class="form-label">Account Name</label><input class="form-input"
                         id="acc-m-name" placeholder="e.g. HDFC BANK"></div>
                 <div class="form-row"><label class="form-label">Opening Balance (₹)</label><input class="form-input"
@@ -3424,7 +3424,7 @@
                     <div class="mhd-name" id="edit-modal-title">Edit</div>
                 </div><button class="m-close" onclick="closeM('editModal')">✕</button>
             </div>
-            <div style="padding:20px 24px 24px" id="edit-modal-body"></div>
+            <div style="padding:20px 24px 24px; overflow-y:auto; flex:1;" id="edit-modal-body"></div>
         </div>
     </div>
     <div class="modal-ov" id="txnEditModal" onclick="if(event.target===this)closeM('txnEditModal')">
