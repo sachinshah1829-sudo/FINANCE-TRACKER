@@ -3294,21 +3294,7 @@
 
                 <div class="mgmt-panel active" id="mpanel-cats">
                     <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-                        <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showMiniForm('cat-add',this)">+ Add Category</button>
-                    </div>
-
-                    <div class="mini-form" id="cat-add" style="margin-bottom:24px;">
-                        <div style="display:grid; grid-template-columns: 1fr 120px; gap:8px; margin-bottom:8px;">
-                            <input class="form-input" id="cat-add-name" placeholder="Category Name" autocomplete="off">
-                            <select class="form-input" id="cat-add-type" style="cursor:pointer">
-                                <option value="EXPENSE">Expense</option>
-                                <option value="INCOME">Income</option>
-                            </select>
-                        </div>
-                        <div style="display:flex;gap:8px;">
-                            <button class="add-btn" style="margin:0" onclick="doAddCategory()">Save Category</button>
-                            <button class="txn-clr-btn" onclick="hideMiniForm('cat-add')">Cancel</button>
-                        </div>
+                        <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showAddCatModal()">+ Add Category</button>
                     </div>
 
                     <div class="mgmt-section">
@@ -3322,16 +3308,9 @@
                 </div>
 
                 <div class="mgmt-panel" id="mpanel-templates">
-                    <div class="mgmt-section" style="margin-bottom:14px">
-                        <div class="mgmt-sec-hdr">
-                            <div class="mgmt-sec-title">Add New Template</div>
-                        </div>
-                        <div class="mini-form show" style="margin-bottom:0">
-                            <div class="mini-form-row" style="margin-bottom:7px">
-                                <select class="mini-select" id="tpl-add-type">
-                                    <option value="EXPENSE">Expense</option>
-                                    <option value="INCOME">Income</option>
-                                </select>
+                    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                        <button class="add-btn" style="margin:0; width:auto; padding:8px 16px;" onclick="showAddTplModal()">+ Add Template</button>
+                    </div>
                                 <input class="mini-input" id="tpl-add-name" placeholder="Template name (item)">
                                 <input class="mini-input" id="tpl-add-acc" placeholder="Account">
                                 <input class="mini-input" id="tpl-add-cat" placeholder="Category">
@@ -4614,7 +4593,35 @@
             document.getElementById('catListExpense').innerHTML = exp.map(chip).join('') || '<div class="empty-s">No expense categories</div>';
             document.getElementById('catListIncome').innerHTML = inc.map(chip).join('') || '<div class="empty-s">No income categories</div>';
         }
-        window.doAddCategory = async function () { const name = document.getElementById('cat-add-name').value.trim(), type = document.getElementById('cat-add-type').value; if (!name) return; await addDoc(uRef('categories'), { name, type }); document.getElementById('cat-add-name').value = ''; hideMiniForm('cat-add'); await loadCategories(); renderCatList(); setupAddFormDropdowns(); toast('Category added'); };
+        window.showAddCatModal = function() {
+            document.getElementById('edit-modal-title').textContent = 'Add Category';
+            document.getElementById('edit-modal-body').innerHTML = `
+                <div class="form-row">
+                    <label class="form-label">Category Name</label>
+                    <input class="form-input" id="cat-m-name" placeholder="e.g. Shopping" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Type</label>
+                    <select class="form-input" id="cat-m-type" style="cursor:pointer">
+                        <option value="EXPENSE">Expense</option>
+                        <option value="INCOME">Income</option>
+                    </select>
+                </div>
+                <button class="add-btn" style="margin-top:10px" onclick="doAddCategory()">Save Category</button>
+            `;
+            openM('editModal');
+        };
+        window.doAddCategory = async function () { 
+            const name = document.getElementById('cat-m-name').value.trim(), 
+                  type = document.getElementById('cat-m-type').value; 
+            if (!name) return; 
+            await addDoc(uRef('categories'), { name, type }); 
+            closeM('editModal'); 
+            await loadCategories(); 
+            renderCatList(); 
+            setupAddFormDropdowns(); 
+            toast('Category added'); 
+        };
         window.editCat = function (id, name, type) { 
             document.getElementById('edit-modal-title').textContent = 'Edit Category'; 
             document.getElementById('edit-modal-body').innerHTML = `
@@ -4682,7 +4689,57 @@
                     </div>`;
             }).join(''); 
         }
-        window.doAddTemplate = async function () { const type = document.getElementById('tpl-add-type').value, name = document.getElementById('tpl-add-name').value.trim(); if (!name) { document.getElementById('tpl-add-name').classList.add('invalid'); return; } await addDoc(uRef('templates'), { type, name, account: document.getElementById('tpl-add-acc').value.trim(), category: document.getElementById('tpl-add-cat').value.trim(), item: document.getElementById('tpl-add-item').value.trim(), amount: document.getElementById('tpl-add-amt').value || '', tofrom: document.getElementById('tpl-add-to').value.trim() });['tpl-add-name', 'tpl-add-acc', 'tpl-add-cat', 'tpl-add-item', 'tpl-add-amt', 'tpl-add-to'].forEach(id => document.getElementById(id).value = ''); await renderTemplatesPage(); setupAddFormDropdowns(); toast('Template added'); };
+        window.showAddTplModal = function() {
+            document.getElementById('edit-modal-title').textContent = 'Add Template';
+            document.getElementById('edit-modal-body').innerHTML = `
+                <div class="form-row">
+                    <label class="form-label">Type</label>
+                    <select class="form-input" id="tpl-m-type" style="cursor:pointer">
+                        <option value="EXPENSE">Expense</option>
+                        <option value="INCOME">Income</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Template Name (e.g. Netflix)</label>
+                    <input class="form-input" id="tpl-m-name" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Account</label>
+                    <input class="form-input" id="tpl-m-acc" placeholder="Default account">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Category</label>
+                    <input class="form-input" id="tpl-m-cat" placeholder="Default category">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Amount</label>
+                    <input class="form-input" id="tpl-m-amt" type="number" placeholder="0.00">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">To/From</label>
+                    <input class="form-input" id="tpl-m-to" placeholder="Recipient/Sender">
+                </div>
+                <button class="add-btn" style="margin-top:10px" onclick="doAddTemplate()">Create Template</button>
+            `;
+            openM('editModal');
+        };
+        window.doAddTemplate = async function () { 
+            const name = document.getElementById('tpl-m-name').value.trim();
+            if (!name) return;
+            await addDoc(uRef('templates'), { 
+                type: document.getElementById('tpl-m-type').value, 
+                name, 
+                account: document.getElementById('tpl-m-acc').value.trim(), 
+                category: document.getElementById('tpl-m-cat').value.trim(), 
+                item: name, 
+                amount: document.getElementById('tpl-m-amt').value || '', 
+                tofrom: document.getElementById('tpl-m-to').value.trim() 
+            }); 
+            closeM('editModal');
+            await renderTemplatesPage(); 
+            setupAddFormDropdowns(); 
+            toast('Template added'); 
+        };
         window.editTpl = function (id) { const r = _templates.find(x => x.id === id); if (!r) return; document.getElementById('edit-modal-title').textContent = 'Edit Template'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Type</label><select class="form-input" id="et-type" style="cursor:pointer"><option value="EXPENSE"' + (r.type === 'EXPENSE' ? ' selected' : '') + '>Expense</option><option value="INCOME"' + (r.type === 'INCOME' ? ' selected' : '') + '>Income</option></select></div><div class="form-row"><label class="form-label">Name</label><input class="form-input" id="et-name" value="' + escH(r.name || '') + '"></div><div class="form-row"><label class="form-label">Account</label><input class="form-input" id="et-acc" value="' + escH(r.account || '') + '"></div><div class="form-row"><label class="form-label">Category</label><input class="form-input" id="et-cat" value="' + escH(r.category || '') + '"></div><div class="form-row"><label class="form-label">Item</label><input class="form-input" id="et-item" value="' + escH(r.item || '') + '"></div><div class="form-row"><label class="form-label">Amount</label><input class="form-input" id="et-amt" type="number" value="' + (r.amount || '') + '"></div><div class="form-row"><label class="form-label">To/From</label><input class="form-input" id="et-to" value="' + escH(r.tofrom || '') + '"></div><button class="add-btn" onclick="saveTplEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
         window.saveTplEdit = async function (id) { const name = document.getElementById('et-name').value.trim(); if (!name) return; await updateDoc(uDoc('templates', id), { type: document.getElementById('et-type').value, name, account: document.getElementById('et-acc').value.trim(), category: document.getElementById('et-cat').value.trim(), item: document.getElementById('et-item').value.trim(), amount: document.getElementById('et-amt').value || '', tofrom: document.getElementById('et-to').value.trim() }); closeM('editModal'); await renderTemplatesPage(); setupAddFormDropdowns(); toast('Template updated'); };
         window.deleteTpl = async function (id, name) { if (!confirm('Delete template "' + name + '"?')) return; await deleteDoc(uDoc('templates', id)); await renderTemplatesPage(); setupAddFormDropdowns(); toast('Template deleted'); };
@@ -5189,7 +5246,7 @@
             div.className = 'msg ' + type;
             div.innerHTML = escH(text).replace(/\n/g, '<br>');
             
-            if (data && data.action === 'ADD_EXPENSE') {
+            if (data && data.action) {
                 const cmdDiv = document.createElement('div');
                 cmdDiv.className = 'msg-cmd';
                 const btn = document.createElement('button');
@@ -5197,13 +5254,22 @@
                 btn.style.margin = '0';
                 btn.style.padding = '4px 10px';
                 btn.style.fontSize = '12px';
-                btn.textContent = 'Add ' + rs(data.data.amount);
+                
+                let btnText = 'Approve';
+                if (data.action === 'ADD_EXPENSE') btnText = 'Add Expense: ' + rs(data.data.amount);
+                if (data.action === 'ADD_INCOME') btnText = 'Add Income: ' + rs(data.data.amount);
+                if (data.action === 'ADD_TRANSFER') btnText = 'Add Transfer: ' + rs(data.data.amount);
+                if (data.action === 'ADD_ACCOUNT') btnText = 'Create Account: ' + data.data.name;
+                if (data.action === 'ADD_CATEGORY') btnText = 'Create Category: ' + data.data.name;
+                if (data.action === 'ADD_TEMPLATE') btnText = 'Create Template: ' + data.data.name;
+                
+                btn.textContent = btnText;
                 btn.onclick = async () => {
                     btn.disabled = true;
-                    btn.textContent = 'Adding...';
+                    btn.textContent = 'Processing...';
                     try {
                         await executeAICommand(data);
-                        btn.textContent = '✓ Added';
+                        btn.textContent = '✓ Done';
                         btn.style.background = 'var(--green)';
                     } catch (e) {
                         btn.textContent = 'Error';
@@ -5219,28 +5285,55 @@
         }
 
         async function executeAICommand(cmd) {
+            const d = cmd.data;
+            const now = serverTimestamp();
+            const batch = writeBatch(db);
+
             if (cmd.action === 'ADD_EXPENSE') {
-                const d = cmd.data;
-                const batch = writeBatch(db);
-                const now = serverTimestamp();
-                
                 await ensureCategory(d.category, 'EXPENSE');
                 await ensureAccount(d.account);
                 await ensureItem(d.item);
-                
                 batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
-                    date: now,
-                    account: d.account,
-                    category: d.category,
-                    item: d.item,
-                    amount: -Math.abs(Number(d.amount)),
-                    toFrom: d.toFrom || ''
+                    date: now, account: d.account, category: d.category, item: d.item,
+                    amount: -Math.abs(Number(d.amount)), toFrom: d.toFrom || ''
                 });
-                
-                await batch.commit();
-                await loadPeriodData();
-                toast('Expense added via AI');
+            } else if (cmd.action === 'ADD_INCOME') {
+                await ensureCategory(d.category, 'INCOME');
+                await ensureAccount(d.account);
+                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    date: now, account: d.account, category: d.category, item: d.item,
+                    amount: Math.abs(Number(d.amount)), toFrom: d.toFrom || ''
+                });
+            } else if (cmd.action === 'ADD_TRANSFER') {
+                await ensureAccount(d.fromAccount);
+                await ensureAccount(d.toAccount);
+                const amt = Math.abs(Number(d.amount));
+                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    date: now, account: d.fromAccount, category: 'TRANSFER', item: d.item || 'Transfer',
+                    amount: -amt, toFrom: d.toAccount
+                });
+                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    date: now, account: d.toAccount, category: 'TRANSFER', item: d.item || 'Transfer',
+                    amount: amt, toFrom: d.fromAccount
+                });
+            } else if (cmd.action === 'ADD_ACCOUNT') {
+                batch.set(doc(collection(db, 'users', uid(), 'accounts')), {
+                    name: d.name, type: d.type || 'BANK', openingBalance: Number(d.openingBalance) || 0
+                });
+            } else if (cmd.action === 'ADD_CATEGORY') {
+                batch.set(doc(collection(db, 'users', uid(), 'categories')), {
+                    name: d.name, type: d.type || 'EXPENSE'
+                });
+            } else if (cmd.action === 'ADD_TEMPLATE') {
+                batch.set(doc(collection(db, 'users', uid(), 'templates')), {
+                    type: d.type || 'EXPENSE', name: d.name, account: d.account || '',
+                    category: d.category || '', item: d.item || d.name, amount: d.amount || '', tofrom: d.toFrom || ''
+                });
             }
+            
+            await batch.commit();
+            await loadAllData();
+            toast('AI Command Executed');
         }
 
         window.sendChat = async function() {
@@ -5294,23 +5387,19 @@ Recent Transactions:
 ${recent}
 
 Instructions:
-1. Help users track expenses. If they paste a bank SMS or describe an expense, extract details.
-2. If an expense is identified, respond naturally and append a JSON block:
-\`\`\`json
-{
-  "action": "ADD_EXPENSE",
-  "data": {
-    "account": "matched account or best guess",
-    "category": "matched category or best guess",
-    "item": "description",
-    "amount": 100.0,
-    "toFrom": "recipient"
-  }
-}
-\`\`\`
+1. Help users track finances. Extract details from messages or descriptions.
+2. If an action is identified, respond naturally and append a JSON block. Supported actions:
+
+- ADD_EXPENSE: {"action":"ADD_EXPENSE","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
+- ADD_INCOME: {"action":"ADD_INCOME","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
+- ADD_TRANSFER: {"action":"ADD_TRANSFER","data":{"fromAccount":"...","toAccount":"...","amount":100,"item":"..."}}
+- ADD_ACCOUNT: {"action":"ADD_ACCOUNT","data":{"name":"...","type":"BANK|CREDIT_CARD|PERSON","openingBalance":0}}
+- ADD_CATEGORY: {"action":"ADD_CATEGORY","data":{"name":"...","type":"EXPENSE|INCOME"}}
+- ADD_TEMPLATE: {"action":"ADD_TEMPLATE","data":{"name":"...","type":"EXPENSE|INCOME","account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
+
 3. Use existing accounts/categories if they match.
 4. Answer financial questions based on the provided recent transactions.
-5. Be concise and friendly.`;
+5. Be concise and friendly. Always include the JSON block if a modification is requested.`;
 
             const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
