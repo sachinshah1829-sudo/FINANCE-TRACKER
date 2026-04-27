@@ -3161,19 +3161,13 @@
                             <span class="ldr-sel-lbl">Account</span>
                             <select class="ldr-sel" id="ldrAccSel" onchange="loadLedger()"><option value="">— select —</option></select>
                         </div>
-                        
-                        <div class="txn-msel-wrap" id="msel-ldr-type-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleLdrMsel('type')"><span id="msel-ldr-type-label">All Types</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-ldr-type-dd" style="display:none"></div>
-                        </div>
-
-                        <div class="txn-msel-wrap" id="msel-ldr-cat-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleLdrMsel('cat')"><span id="msel-ldr-cat-label">All Categories</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-ldr-cat-dd" style="display:none"></div>
-                        </div>
-
+                        <button class="txn-clr-btn" onclick="openLdrFilterModal()" style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                            <span>Filters</span>
+                            <span id="lf-count-badge" style="background:var(--accent); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; display:none;">0</span>
+                        </button>
                         <button class="add-inline-btn" id="ldr-pdf-btn" onclick="downloadLedgerPDF()"
-                            title="Download PDF" style="display:none; padding: 8px 16px; font-size: 13px;">⬇ PDF Download</button>
+                            title="Download PDF" style="display:none; padding: 10px 18px; font-size: 13px;">⬇ PDF Download</button>
                     </div>
                 </div>
                 <div class="ldr-stats">
@@ -3902,64 +3896,114 @@
             buildLdrMselOptions();
         }
 
-        function buildLdrMselOptions() {
-            const types = ['Expense', 'Income', 'Transfer'];
-            const cats = [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort();
-            
-            const fields = [
-                { key: 'type', label: 'All Types', vals: types },
-                { key: 'cat', label: 'All Categories', vals: cats }
-            ];
+        /* ═══ LEDGER FILTERS ═══ */
+        let _activeLdrFilterTab = 'type';
+        let _tempLdrMselState = {};
+        let _lfSearchQuery = '';
 
-            fields.forEach(f => {
-                const dd = document.getElementById('msel-ldr-' + f.key + '-dd');
-                if (!dd) return;
-                dd.innerHTML = f.vals.map(v => `
-                    <label class="txn-msel-item">
-                        <input type="checkbox" value="${escH(v)}" onchange="W_ldrMselChange('${f.key}')" ${_ldrMselState[f.key].has(v) ? 'checked' : ''} />
-                        <span>${escH(v)}</span>
-                    </label>
-                `).join('');
-                updateLdrMselLabel(f.key, f.label);
+        window.openLdrFilterModal = function() {
+            _lfSearchQuery = '';
+            ['type','cat'].forEach(k => {
+                _tempLdrMselState[k] = new Set(_ldrMselState[k]);
+            });
+            updateLdrFilterBadges();
+            switchLdrFilterTab(_activeLdrFilterTab, document.querySelector(`#ldrFilterModal .f-side-item[onclick*="${_activeLdrFilterTab}"]`));
+            openM('ldrFilterModal');
+        };
+
+        window.switchLdrFilterTab = function(tab, el) {
+            _activeLdrFilterTab = tab;
+            document.querySelectorAll('#ldrFilterModal .f-side-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            renderLdrFilterOptions();
+        };
+
+        function renderLdrFilterOptions() {
+            const content = document.getElementById('lf-content');
+            const dataMap = {
+                type: ['Expense', 'Income', 'Transfer'],
+                cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
+            };
+
+            let options = dataMap[_activeLdrFilterTab] || [];
+            if (_lfSearchQuery) {
+                options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+            }
+
+            const allSelected = options.length > 0 && options.every(o => _tempLdrMselState[_activeLdrFilterTab].has(o));
+
+            content.innerHTML = `
+                <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
+                    <input class="form-input" placeholder="Search in ${_activeLdrFilterTab}..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptions()" style="margin-bottom:10px;">
+                    <div class="f-opt-item" onclick="toggleAllLdrFilters(!${allSelected})" style="background:var(--bg); border:1px solid var(--border);">
+                        <input type="checkbox" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAllLdrFilters(!${allSelected})">
+                        <div class="f-opt-label">Select All (${options.length})</div>
+                    </div>
+                </div>
+                ${options.map(opt => `
+                    <div class="f-opt-item" onclick="toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
+                        <input type="checkbox" ${(_tempLdrMselState[_activeLdrFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
+                        <div class="f-opt-label">${escH(opt)}</div>
+                    </div>
+                `).join('') || '<div class="empty-s">No options found</div>'}
+            `;
+        }
+
+        window.toggleLdrFilterOpt = function(key, val) {
+            if (_tempLdrMselState[key].has(val)) _tempLdrMselState[key].delete(val);
+            else _tempLdrMselState[key].add(val);
+            updateLdrFilterBadges();
+            renderLdrFilterOptions();
+        };
+
+        window.toggleAllLdrFilters = function(sel) {
+            const dataMap = {
+                type: ['Expense', 'Income', 'Transfer'],
+                cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
+            };
+            let options = dataMap[_activeLdrFilterTab] || [];
+            if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+            options.forEach(o => {
+                if (sel) _tempLdrMselState[_activeLdrFilterTab].add(o);
+                else _tempLdrMselState[_activeLdrFilterTab].delete(o);
+            });
+            updateLdrFilterBadges();
+            renderLdrFilterOptions();
+        };
+
+        function updateLdrFilterBadges() {
+            ['type','cat'].forEach(k => {
+                const count = _tempLdrMselState[k].size;
+                const badge = document.getElementById('lf-badge-' + k);
+                if (badge) {
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'block' : 'none';
+                }
             });
         }
 
-        window.W_ldrMselChange = function (key) {
-            const dd = document.getElementById('msel-ldr-' + key + '-dd');
-            _ldrMselState[key].clear();
-            dd.querySelectorAll('input[type=checkbox]:checked').forEach(cb => _ldrMselState[key].add(cb.value));
-            const labels = { type: 'All Types', cat: 'All Categories' };
-            updateLdrMselLabel(key, labels[key]);
+        window.applyLdrFilters = function() {
+            ['type','cat'].forEach(k => {
+                _ldrMselState[k] = new Set(_tempLdrMselState[k]);
+            });
+            let totalActive = _ldrMselState.type.size + _ldrMselState.cat.size;
+            const badge = document.getElementById('lf-count-badge');
+            if (badge) {
+                badge.textContent = totalActive;
+                badge.style.display = totalActive > 0 ? 'block' : 'none';
+            }
+            closeM('ldrFilterModal');
             loadLedger();
         };
 
-        function updateLdrMselLabel(key, defaultLabel) {
-            const sel = _ldrMselState[key];
-            const wrap = document.getElementById('msel-ldr-' + key + '-wrap');
-            if (!wrap) return;
-            const trigger = wrap.querySelector('.txn-msel-trigger');
-            const labelEl = document.getElementById('msel-ldr-' + key + '-label');
-            if (sel.size === 0) {
-                labelEl.textContent = defaultLabel;
-                trigger.classList.remove('has-sel');
-            } else if (sel.size === 1) {
-                labelEl.textContent = [...sel][0];
-                trigger.classList.add('has-sel');
-            } else {
-                labelEl.textContent = sel.size + ' selected';
-                trigger.classList.add('has-sel');
-            }
-        }
-
-        window.toggleLdrMsel = function (key) {
-            const ddId = 'msel-ldr-' + key + '-dd', dd = document.getElementById(ddId);
-            if (!dd) return;
-            const isOpen = dd.style.display === 'block';
-            ['type', 'cat'].forEach(k => {
-                const el = document.getElementById('msel-ldr-' + k + '-dd');
-                if (el) el.style.display = 'none';
+        window.clearLdrFilters = function() {
+            ['type','cat'].forEach(k => {
+                _ldrMselState[k].clear();
+                if (_tempLdrMselState[k]) _tempLdrMselState[k].clear();
             });
-            if (!isOpen) dd.style.display = 'block';
+            _lfSearchQuery = '';
+            updateLdrFilterBadges();
+            renderLdrFilterOptions();
         };
 
         function loadLedger() {
@@ -5572,6 +5616,28 @@ Instructions:
             <div class="f-footer">
                 <button class="txn-clr-btn" style="width:auto" onclick="closeM('txnFilterModal')">Close</button>
                 <button class="add-btn" style="width:auto; margin:0; padding:10px 24px;" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-ov" id="ldrFilterModal" onclick="if(event.target===this)closeM('ldrFilterModal')">
+        <div class="modal-box f-modal-box">
+            <div class="modal-hd">
+                <div>
+                    <div class="mhd-name">Ledger Filters</div>
+                    <div class="mhd-sub">Filter entries for the selected account</div>
+                </div>
+                <div class="f-clear-all" onclick="clearLdrFilters(); applyLdrFilters()">Clear All</div>
+            </div>
+            <div class="f-layout">
+                <div class="f-sidebar">
+                    <div class="f-side-item active" onclick="switchLdrFilterTab('type',this)">Type<span class="f-side-badge" id="lf-badge-type" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchLdrFilterTab('cat',this)">Category<span class="f-side-badge" id="lf-badge-cat" style="display:none">0</span></div>
+                </div>
+                <div class="f-content" id="lf-content"></div>
+            </div>
+            <div class="f-footer">
+                <button class="txn-clr-btn" style="width:auto" onclick="closeM('ldrFilterModal')">Close</button>
+                <button class="add-btn" style="width:auto; margin:0; padding:10px 24px;" onclick="applyLdrFilters()">Apply Filters</button>
             </div>
         </div>
     </div>
