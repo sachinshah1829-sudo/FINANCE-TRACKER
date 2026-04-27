@@ -4795,6 +4795,7 @@
         let _tempMselState = {};
 
         window.openFilterModal = function() {
+            _fSearchQuery = '';
             ['type','account','cat','item','tofrom'].forEach(k => {
                 _tempMselState[k] = new Set(_mselState[k]);
             });
@@ -4812,6 +4813,8 @@
             el.classList.add('active');
             renderFilterOptions();
         };
+
+        let _fSearchQuery = '';
 
         function renderFilterOptions() {
             const content = document.getElementById('f-content');
@@ -4841,14 +4844,52 @@
                 tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
             };
 
-            const options = dataMap[_activeFilterTab];
-            content.innerHTML = options.map(opt => `
+            let options = dataMap[_activeFilterTab] || [];
+            if (_fSearchQuery) {
+                options = options.filter(o => o.toLowerCase().includes(_fSearchQuery.toLowerCase()));
+            }
+
+            const allSelected = options.length > 0 && options.every(o => _tempMselState[_activeFilterTab].has(o));
+
+            let h = `
+                <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
+                    <input class="form-input" placeholder="Search in ${_activeFilterTab}..." value="${_fSearchQuery}" oninput="_fSearchQuery=this.value; renderFilterOptions()" style="margin-bottom:10px;">
+                    <div class="f-opt-item" onclick="toggleAllFilters(!${allSelected})" style="background:var(--bg); border:1px solid var(--border);">
+                        <input type="checkbox" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAllFilters(!${allSelected})">
+                        <div class="f-opt-label">Select All (${options.length})</div>
+                    </div>
+                </div>
+            `;
+
+            h += options.map(opt => `
                 <div class="f-opt-item" onclick="toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
                     <input type="checkbox" ${(_tempMselState[_activeFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
                     <div class="f-opt-label">${escH(opt)}</div>
                 </div>
             `).join('') || '<div class="empty-s">No options found</div>';
+            
+            content.innerHTML = h;
         }
+
+        window.toggleAllFilters = function(sel) {
+            const types = ['Expense', 'Income', 'Transfer'];
+            const dataMap = {
+                type: types,
+                account: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort(),
+                cat: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort(),
+                item: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort(),
+                tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
+            };
+            let options = dataMap[_activeFilterTab] || [];
+            if (_fSearchQuery) options = options.filter(o => o.toLowerCase().includes(_fSearchQuery.toLowerCase()));
+            
+            options.forEach(o => {
+                if (sel) _tempMselState[_activeFilterTab].add(o);
+                else _tempMselState[_activeFilterTab].delete(o);
+            });
+            updateFilterBadges();
+            renderFilterOptions();
+        };
 
         window.toggleFilterOpt = function(key, val) {
             if (_tempMselState[key].has(val)) _tempMselState[key].delete(val);
