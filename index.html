@@ -4726,9 +4726,70 @@
             setupAddFormDropdowns(); 
             toast('Template added'); 
         };
-        window.editTpl = function (id) { const r = _templates.find(x => x.id === id); if (!r) return; document.getElementById('edit-modal-title').textContent = 'Edit Template'; document.getElementById('edit-modal-body').innerHTML = '<div class="form-row"><label class="form-label">Type</label><select class="form-input" id="et-type" style="cursor:pointer"><option value="EXPENSE"' + (r.type === 'EXPENSE' ? ' selected' : '') + '>Expense</option><option value="INCOME"' + (r.type === 'INCOME' ? ' selected' : '') + '>Income</option></select></div><div class="form-row"><label class="form-label">Name</label><input class="form-input" id="et-name" value="' + escH(r.name || '') + '"></div><div class="form-row"><label class="form-label">Account</label><input class="form-input" id="et-acc" value="' + escH(r.account || '') + '"></div><div class="form-row"><label class="form-label">Category</label><input class="form-input" id="et-cat" value="' + escH(r.category || '') + '"></div><div class="form-row"><label class="form-label">Item</label><input class="form-input" id="et-item" value="' + escH(r.item || '') + '"></div><div class="form-row"><label class="form-label">Amount</label><input class="form-input" id="et-amt" type="number" value="' + (r.amount || '') + '"></div><div class="form-row"><label class="form-label">To/From</label><input class="form-input" id="et-to" value="' + escH(r.tofrom || '') + '"></div><button class="add-btn" onclick="saveTplEdit(\'' + id + '\')">Save</button>'; openM('editModal'); };
-        window.saveTplEdit = async function (id) { const name = document.getElementById('et-name').value.trim(); if (!name) return; await updateDoc(uDoc('templates', id), { type: document.getElementById('et-type').value, name, account: document.getElementById('et-acc').value.trim(), category: document.getElementById('et-cat').value.trim(), item: document.getElementById('et-item').value.trim(), amount: document.getElementById('et-amt').value || '', tofrom: document.getElementById('et-to').value.trim() }); closeM('editModal'); await renderTemplatesPage(); setupAddFormDropdowns(); toast('Template updated'); };
-        window.deleteTpl = async function (id, name) { if (!confirm('Delete template "' + name + '"?')) return; await deleteDoc(uDoc('templates', id)); await renderTemplatesPage(); setupAddFormDropdowns(); toast('Template deleted'); };
+        window.editTpl = function (id) {
+            const r = _templates.find(x => x.id === id);
+            if (!r) return;
+            document.getElementById('edit-modal-title').textContent = 'Edit Template';
+            document.getElementById('edit-modal-body').innerHTML = `
+                <div class="form-row">
+                    <label class="form-label">Type</label>
+                    <select class="form-input" id="et-type" style="cursor:pointer">
+                        <option value="EXPENSE" ${r.type === 'EXPENSE' ? 'selected' : ''}>Expense</option>
+                        <option value="INCOME" ${r.type === 'INCOME' ? 'selected' : ''}>Income</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Template Name (e.g. Netflix)</label>
+                    <input class="form-input" id="et-name" value="${escH(r.name || '')}" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Account</label>
+                    <input class="form-input" id="et-acc" value="${escH(r.account || '')}" placeholder="Default account">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Category</label>
+                    <input class="form-input" id="et-cat" value="${escH(r.category || '')}" placeholder="Default category">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Amount</label>
+                    <input class="form-input" id="et-amt" type="number" value="${r.amount || ''}" placeholder="0.00">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">To/From</label>
+                    <input class="form-input" id="et-to" value="${escH(r.tofrom || '')}" placeholder="Recipient/Sender">
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="add-btn" style="margin:0; flex:1;" onclick="saveTplEdit('${id}')">Save Changes</button>
+                    <button class="txn-clr-btn" style="flex:1; border-color:var(--red); color:var(--red);" onclick="deleteTpl('${id}','${escH(r.name || '')}')">Delete Template</button>
+                </div>
+            `;
+            openM('editModal');
+        };
+        window.saveTplEdit = async function (id) {
+            const name = document.getElementById('et-name').value.trim();
+            if (!name) return;
+            await updateDoc(uDoc('templates', id), {
+                type: document.getElementById('et-type').value,
+                name,
+                account: document.getElementById('et-acc').value.trim(),
+                category: document.getElementById('et-cat').value.trim(),
+                item: name,
+                amount: document.getElementById('et-amt').value || '',
+                tofrom: document.getElementById('et-to').value.trim()
+            });
+            closeM('editModal');
+            await renderTemplatesPage();
+            setupAddFormDropdowns();
+            toast('Template updated');
+        };
+        window.deleteTpl = async function (id, name) {
+            if (!confirm('Delete template "' + name + '"?')) return;
+            closeM('editModal');
+            await deleteDoc(uDoc('templates', id));
+            await renderTemplatesPage();
+            setupAddFormDropdowns();
+            toast('Template deleted');
+        };
 
         /* ═══ TRANSACTIONS ═══ */
         async function loadTransactionsPage() {
