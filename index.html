@@ -2714,6 +2714,26 @@
                 grid-column: auto;
             }
         }
+        /* ─── FILTER MODAL ─── */
+        .f-modal-box { width: 600px; max-width: 96vw; height: 500px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+        .f-layout { display: flex; flex: 1; overflow: hidden; border-top: 1px solid var(--border); }
+        .f-sidebar { width: 160px; background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+        .f-side-item { padding: 14px 18px; font-size: 12px; font-weight: 600; color: var(--t2); cursor: pointer; border-bottom: 1px solid var(--border); transition: all var(--t-fast); position: relative; }
+        .f-side-item.active { background: var(--surface); color: var(--accent); }
+        .f-side-item.active::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+        .f-side-badge { float: right; background: var(--accent); color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 10px; margin-top: 2px; }
+        .f-content { flex: 1; padding: 16px; overflow-y: auto; background: var(--surface); }
+        .f-opt-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--r-xs); cursor: pointer; transition: background var(--t-fast); margin-bottom: 2px; }
+        .f-opt-item:hover { background: var(--bg); }
+        .f-opt-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+        .f-opt-label { font-size: 13px; color: var(--t1); font-weight: 500; flex: 1; }
+        .f-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface); }
+        .f-clear-all { font-size: 11px; font-weight: 700; color: var(--red); cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; }
+        .f-date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 600px) {
+            .f-sidebar { width: 110px; }
+            .f-side-item { padding: 12px 10px; font-size: 11px; }
+        }
     </style>
 </head>
 
@@ -3197,53 +3217,19 @@
                         <div class="ldr-stat-val" id="txn-stat-income">—</div>
                     </div>
                 </div>
-                <div class="card card-p" style="margin-bottom:16px;overflow:visible;position:relative;z-index:10;">
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
-                        <div>
-                            <label class="form-label">Search</label>
-                            <input class="txn-search-inp" id="txn-search" placeholder="Search transactions…"
-                                oninput="filterTxns()">
-                        </div>
-                        <div>
-                            <label class="form-label">Date Range <a href="#" onclick="clearDateRange();return false;"
-                                    style="float:right;color:var(--t2);text-decoration:none">Clear</a></label>
-                            <div style="display:flex;gap:6px">
-                                <input class="txn-date-inp" type="date" id="txn-date-from" onchange="filterTxns()"
-                                    style="flex:1">
-                                <input class="txn-date-inp" type="date" id="txn-date-to" onchange="filterTxns()"
-                                    style="flex:1">
+                <div class="card card-p" style="margin-bottom:16px;">
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <div style="flex:1; position:relative;">
+                            <input class="txn-search-inp" id="txn-search" placeholder="Search transactions…" oninput="filterTxns()" style="padding-left:38px;">
+                            <div style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--t3); pointer-events:none;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px;">
-                        <div class="txn-msel-wrap" id="msel-type-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('type')"><span id="msel-type-label">All
-                                    Types</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-type-dd" style="display:none"></div>
-                        </div>
-                        <div class="txn-msel-wrap" id="msel-account-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('account')"><span
-                                    id="msel-account-label">All Accounts</span><span class="txn-msel-caret">▾</span>
-                            </div>
-                            <div class="txn-msel-dd" id="msel-account-dd" style="display:none"></div>
-                        </div>
-                        <div class="txn-msel-wrap" id="msel-cat-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('cat')"><span id="msel-cat-label">All
-                                    Categories</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-cat-dd" style="display:none"></div>
-                        </div>
-                        <div class="txn-msel-wrap" id="msel-item-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('item')"><span id="msel-item-label">All
-                                    Items</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-item-dd" style="display:none"></div>
-                        </div>
-                        <div class="txn-msel-wrap" id="msel-tofrom-wrap">
-                            <div class="txn-msel-trigger" onclick="toggleMsel('tofrom')"><span
-                                    id="msel-tofrom-label">All To/From</span><span class="txn-msel-caret">▾</span></div>
-                            <div class="txn-msel-dd" id="msel-tofrom-dd" style="display:none"></div>
-                        </div>
-                        <button class="txn-clr-btn" onclick="clearAllFilters()">Reset Filters</button>
+                        <button class="txn-clr-btn" onclick="openFilterModal()" style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                            <span>Filters</span>
+                            <span id="f-count-badge" style="background:var(--accent); color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; display:none;">0</span>
+                        </button>
                     </div>
                 </div>
                 <div class="card" id="txnListWrap">
@@ -4804,73 +4790,123 @@
         }
         window.loadTransactionsPage = loadTransactionsPage;
 
-        function buildMselOptions() {
+        /* ═══ TRANSACTION FILTERS ═══ */
+        let _activeFilterTab = 'type';
+        let _tempMselState = {};
+
+        window.openFilterModal = function() {
+            ['type','account','cat','item','tofrom'].forEach(k => {
+                _tempMselState[k] = new Set(_mselState[k]);
+            });
+            _tempMselState.dateFrom = document.getElementById('txn-date-from')?.value || '';
+            _tempMselState.dateTo = document.getElementById('txn-date-to')?.value || '';
+            
+            updateFilterBadges();
+            switchFilterTab(_activeFilterTab, document.querySelector(`.f-side-item[onclick*="${_activeFilterTab}"]`));
+            openM('txnFilterModal');
+        };
+
+        window.switchFilterTab = function(tab, el) {
+            _activeFilterTab = tab;
+            document.querySelectorAll('.f-side-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            renderFilterOptions();
+        };
+
+        function renderFilterOptions() {
+            const content = document.getElementById('f-content');
+            if (_activeFilterTab === 'date') {
+                content.innerHTML = `
+                    <div class="f-date-grid">
+                        <div class="form-row">
+                            <label class="form-label">From Date</label>
+                            <input class="form-input" type="date" id="f-date-from" value="${_tempMselState.dateFrom}" onchange="_tempMselState.dateFrom=this.value">
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label">To Date</label>
+                            <input class="form-input" type="date" id="f-date-to" value="${_tempMselState.dateTo}" onchange="_tempMselState.dateTo=this.value">
+                        </div>
+                    </div>
+                    <button class="txn-clr-btn" style="margin-top:10px; width:auto;" onclick="document.getElementById('f-date-from').value='';document.getElementById('f-date-to').value='';_tempMselState.dateFrom='';_tempMselState.dateTo=''">Clear Dates</button>
+                `;
+                return;
+            }
+
             const types = ['Expense', 'Income', 'Transfer'];
-            const fields = [
-                { key: 'type', label: 'All Types', vals: types },
-                { key: 'account', label: 'All Accounts', vals: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort() },
-                { key: 'cat', label: 'All Categories', vals: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort() },
-                { key: 'item', label: 'All Items', vals: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort() },
-                { key: 'tofrom', label: 'All To/From', vals: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort() }
-            ];
-            fields.forEach(f => {
-                const dd = document.getElementById('msel-' + f.key + '-dd');
-                if (!dd) return;
-                dd.innerHTML = f.vals.map(v => '<label class="txn-msel-item"><input type="checkbox" value="' + escH(v) + '" onchange="W_mselChange(\'' + f.key + '\')" ' + (_mselState[f.key].has(v) ? 'checked' : '') + ' /><span>' + escH(v) + '</span></label>').join('');
-                updateMselLabel(f.key, f.label);
-            });
-        }
-        window.buildMselOptions = buildMselOptions;
+            const dataMap = {
+                type: types,
+                account: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort(),
+                cat: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort(),
+                item: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort(),
+                tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
+            };
 
-        window.W_mselChange = function (key) {
-            const dd = document.getElementById('msel-' + key + '-dd');
-            if (!dd) return;
-            _mselState[key].clear();
-            dd.querySelectorAll('input[type=checkbox]:checked').forEach(cb => _mselState[key].add(cb.value));
-            const labels = { type: 'All Types', account: 'All Accounts', cat: 'All Categories', item: 'All Items', tofrom: 'All To/From' };
-            updateMselLabel(key, labels[key]);
-            filterTxns();
+            const options = dataMap[_activeFilterTab];
+            content.innerHTML = options.map(opt => `
+                <div class="f-opt-item" onclick="toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
+                    <input type="checkbox" ${(_tempMselState[_activeFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
+                    <div class="f-opt-label">${escH(opt)}</div>
+                </div>
+            `).join('') || '<div class="empty-s">No options found</div>';
+        }
+
+        window.toggleFilterOpt = function(key, val) {
+            if (_tempMselState[key].has(val)) _tempMselState[key].delete(val);
+            else _tempMselState[key].add(val);
+            updateFilterBadges();
+            renderFilterOptions();
         };
 
-        function updateMselLabel(key, defaultLabel) {
-            const sel = _mselState[key];
-            const wrap = document.getElementById('msel-' + key + '-wrap');
-            if (!wrap) return;
-            const trigger = wrap.querySelector('.txn-msel-trigger');
-            const labelEl = document.getElementById('msel-' + key + '-label');
-            if (sel.size === 0) { labelEl.textContent = defaultLabel; trigger.classList.remove('has-sel'); }
-            else if (sel.size === 1) { labelEl.textContent = [...sel][0]; trigger.classList.add('has-sel'); }
-            else { labelEl.textContent = sel.size + ' selected'; trigger.classList.add('has-sel'); }
-        }
-        window.updateMselLabel = updateMselLabel;
-
-        window.toggleMsel = function (key) {
-            const ddId = 'msel-' + key + '-dd', dd = document.getElementById(ddId);
-            if (!dd) return;
-            const isOpen = dd.style.display === 'block';
-            ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => {
-                const el = document.getElementById('msel-' + k + '-dd');
-                if (el) el.style.display = 'none';
+        function updateFilterBadges() {
+            let total = 0;
+            ['type','account','cat','item','tofrom'].forEach(k => {
+                const count = _tempMselState[k].size;
+                const badge = document.getElementById('f-badge-' + k);
+                if (badge) {
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'block' : 'none';
+                }
+                total += count;
             });
-            if (!isOpen) dd.style.display = 'block';
-        };
+            if (_tempMselState.dateFrom || _tempMselState.dateTo) total++;
+        }
 
-        window.clearDateRange = function () {
+        window.applyFilters = function() {
+            ['type','account','cat','item','tofrom'].forEach(k => {
+                _mselState[k] = new Set(_tempMselState[k]);
+            });
+            
             const df = document.getElementById('txn-date-from'), dt = document.getElementById('txn-date-to');
-            if (df) df.value = ''; if (dt) dt.value = '';
+            if (df) df.value = _tempMselState.dateFrom;
+            if (dt) dt.value = _tempMselState.dateTo;
+            
+            let totalActive = 0;
+            ['type','account','cat','item','tofrom'].forEach(k => totalActive += _mselState[k].size);
+            if (_tempMselState.dateFrom || _tempMselState.dateTo) totalActive++;
+            
+            const badge = document.getElementById('f-count-badge');
+            if (badge) {
+                badge.textContent = totalActive;
+                badge.style.display = totalActive > 0 ? 'block' : 'none';
+            }
+            
+            closeM('txnFilterModal');
             filterTxns();
         };
 
-        window.clearAllFilters = function () {
+        window.clearAllFilters = function() {
             const search = document.getElementById('txn-search');
             if (search) search.value = '';
-            clearDateRange();
-            ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => {
+            ['type','account','cat','item','tofrom'].forEach(k => {
                 _mselState[k].clear();
-                const dd = document.getElementById('msel-' + k + '-dd');
-                if (dd) dd.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+                if (_tempMselState[k]) _tempMselState[k].clear();
             });
-            buildMselOptions();
+            const df = document.getElementById('txn-date-from'), dt = document.getElementById('txn-date-to');
+            if (df) df.value = ''; if (dt) dt.value = '';
+            _tempMselState.dateFrom = ''; _tempMselState.dateTo = '';
+            
+            updateFilterBadges();
+            renderFilterOptions();
             filterTxns();
         };
 
@@ -5472,6 +5508,32 @@ Instructions:
             if (e.key === 'Enter') sendChat();
         });
     </script>
+    <div class="modal-ov" id="txnFilterModal" onclick="if(event.target===this)closeM('txnFilterModal')">
+        <div class="modal-box f-modal-box">
+            <div class="modal-hd">
+                <div>
+                    <div class="mhd-name">Filters</div>
+                    <div class="mhd-sub">Narrow down transactions</div>
+                </div>
+                <div class="f-clear-all" onclick="clearAllFilters(); applyFilters()">Clear All</div>
+            </div>
+            <div class="f-layout">
+                <div class="f-sidebar" id="f-sidebar">
+                    <div class="f-side-item active" onclick="switchFilterTab('type',this)">Type<span class="f-side-badge" id="f-badge-type" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('account',this)">Account<span class="f-side-badge" id="f-badge-account" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('cat',this)">Category<span class="f-side-badge" id="f-badge-cat" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('item',this)">Item<span class="f-side-badge" id="f-badge-item" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('tofrom',this)">To/From<span class="f-side-badge" id="f-badge-tofrom" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('date',this)">Date Range</div>
+                </div>
+                <div class="f-content" id="f-content"></div>
+            </div>
+            <div class="f-footer">
+                <button class="txn-clr-btn" style="width:auto" onclick="closeM('txnFilterModal')">Close</button>
+                <button class="add-btn" style="width:auto; margin:0; padding:10px 24px;" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
