@@ -3934,15 +3934,11 @@
                 
                 content.innerHTML = `
                     <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
-                        <input class="form-input" placeholder="Search account..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptions()" style="margin-bottom:10px;">
+                        <input class="form-input" placeholder="Search account..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptionsList()" style="margin-bottom:10px;">
                     </div>
-                    ${options.map(opt => `
-                        <div class="f-opt-item" onclick="_tempLdrMselState.account='${opt.replace(/'/g, "\\'")}'; renderLdrFilterOptions()">
-                            <input type="checkbox" ${(_tempLdrMselState.account === opt) ? 'checked' : ''} onclick="event.stopPropagation(); _tempLdrMselState.account='${opt.replace(/'/g, "\\'")}'; renderLdrFilterOptions()">
-                            <div class="f-opt-label">${escH(opt)}</div>
-                        </div>
-                    `).join('') || '<div class="empty-s">No accounts match</div>'}
+                    <div id="lf-results-list"></div>
                 `;
+                renderLdrFilterOptionsList();
                 return;
             }
 
@@ -3960,20 +3956,49 @@
 
             content.innerHTML = `
                 <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
-                    <input class="form-input" placeholder="Search in ${_activeLdrFilterTab}..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptions()" style="margin-bottom:10px;">
+                    <input class="form-input" placeholder="Search in ${_activeLdrFilterTab}..." value="${_lfSearchQuery}" oninput="_lfSearchQuery=this.value; renderLdrFilterOptionsList()" style="margin-bottom:10px;">
                     <div class="f-opt-item" onclick="toggleAllLdrFilters(!${allSelected})" style="background:var(--bg); border:1px solid var(--border);">
                         <input type="checkbox" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAllLdrFilters(!${allSelected})">
                         <div class="f-opt-label">Select All (${options.length})</div>
                     </div>
                 </div>
-                ${options.map(opt => `
-                    <div class="f-opt-item" onclick="toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
-                        <input type="checkbox" ${(_tempLdrMselState[_activeLdrFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
+                <div id="lf-results-list"></div>
+            `;
+            renderLdrFilterOptionsList();
+        }
+
+        window.renderLdrFilterOptionsList = function() {
+            const listEl = document.getElementById('lf-results-list');
+            if (!listEl) return;
+            
+            if (_activeLdrFilterTab === 'account') {
+                const accs = _accounts.filter(a => a.type !== 'PERSON').sort((a,b) => a.name.localeCompare(b.name));
+                let options = accs.map(a => a.name);
+                if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+                
+                listEl.innerHTML = options.map(opt => `
+                    <div class="f-opt-item" onclick="_tempLdrMselState.account='${opt.replace(/'/g, "\\'")}'; renderLdrFilterOptionsList()">
+                        <input type="checkbox" ${(_tempLdrMselState.account === opt) ? 'checked' : ''} onclick="event.stopPropagation(); _tempLdrMselState.account='${opt.replace(/'/g, "\\'")}'; renderLdrFilterOptionsList()">
                         <div class="f-opt-label">${escH(opt)}</div>
                     </div>
-                `).join('') || '<div class="empty-s">No options found</div>'}
-            `;
-        }
+                `).join('') || '<div class="empty-s">No accounts match</div>';
+                return;
+            }
+
+            const dataMap = {
+                type: ['Expense', 'Income', 'Transfer'],
+                cat: [...new Set(_allTxns.map(t => t.category).filter(Boolean))].sort()
+            };
+            let options = dataMap[_activeLdrFilterTab] || [];
+            if (_lfSearchQuery) options = options.filter(o => o.toLowerCase().includes(_lfSearchQuery.toLowerCase()));
+
+            listEl.innerHTML = options.map(opt => `
+                <div class="f-opt-item" onclick="toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
+                    <input type="checkbox" ${(_tempLdrMselState[_activeLdrFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleLdrFilterOpt('${_activeLdrFilterTab}', '${escH(opt)}')">
+                    <div class="f-opt-label">${escH(opt)}</div>
+                </div>
+            `).join('') || '<div class="empty-s">No options found</div>';
+        };
 
         window.toggleLdrFilterOpt = function(key, val) {
             if (_tempLdrMselState[key].has(val)) _tempLdrMselState[key].delete(val);
@@ -4620,7 +4645,7 @@
             await batch.commit();
         }
 
-        function renderCatList() {
+        window.renderCatList = function() {
             const q = (document.getElementById('cat-search')?.value || '').toLowerCase();
             const exp = _categories.filter(c => (c.type || '').toUpperCase() === 'EXPENSE' && c.name.toLowerCase().includes(q));
             const inc = _categories.filter(c => (c.type || '').toUpperCase() === 'INCOME' && c.name.toLowerCase().includes(q));
@@ -4709,17 +4734,19 @@
             toast('Category deleted'); 
         };
         /* ═══ TEMPLATES ═══ */
-        async function renderTemplatesPage() { 
+        window.renderTemplatesPage = async function() { 
             await loadTemplates(); 
             const q = (document.getElementById('tpl-search')?.value || '').toLowerCase();
             const filtered = _templates.filter(t => t.name.toLowerCase().includes(q));
             
+            const list = document.getElementById('tplList');
+            if (!list) return;
             if (!filtered.length) { 
-                document.getElementById('tplList').innerHTML = '<div class="empty-s">' + (q ? 'No templates match' : 'No templates yet') + '</div>'; 
+                list.innerHTML = '<div class="empty-s">' + (q ? 'No templates match' : 'No templates yet') + '</div>'; 
                 return; 
             } 
-            document.getElementById('tplList').className = 'tpl-grid';
-            document.getElementById('tplList').innerHTML = filtered.map(r => {
+            list.className = 'tpl-grid';
+            list.innerHTML = filtered.map(r => {
                 const isExp = r.type === 'EXPENSE';
                 const details = [r.account, r.category, r.amount ? rs(r.amount) : ''].filter(Boolean).join(' · ');
                 return `
@@ -4926,25 +4953,39 @@
 
             const allSelected = options.length > 0 && options.every(o => _tempMselState[_activeFilterTab].has(o));
 
-            let h = `
+            content.innerHTML = `
                 <div style="margin-bottom:12px; position:sticky; top:-16px; background:var(--surface); padding-bottom:10px; z-index:5;">
-                    <input class="form-input" placeholder="Search in ${_activeFilterTab}..." value="${_fSearchQuery}" oninput="_fSearchQuery=this.value; renderFilterOptions()" style="margin-bottom:10px;">
+                    <input class="form-input" placeholder="Search in ${_activeFilterTab}..." value="${_fSearchQuery}" oninput="_fSearchQuery=this.value; renderFilterOptionsList()" style="margin-bottom:10px;">
                     <div class="f-opt-item" onclick="toggleAllFilters(!${allSelected})" style="background:var(--bg); border:1px solid var(--border);">
                         <input type="checkbox" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAllFilters(!${allSelected})">
                         <div class="f-opt-label">Select All (${options.length})</div>
                     </div>
                 </div>
+                <div id="f-results-list"></div>
             `;
+            renderFilterOptionsList();
+        }
 
-            h += options.map(opt => `
+        window.renderFilterOptionsList = function() {
+            const listEl = document.getElementById('f-results-list');
+            if (!listEl) return;
+            const dataMap = {
+                type: ['Expense', 'Income', 'Transfer'],
+                account: [...new Set(_allTxns.map(r => r.account).filter(Boolean))].sort(),
+                cat: [...new Set(_allTxns.map(r => r.category).filter(Boolean))].sort(),
+                item: [...new Set(_allTxns.map(r => r.item).filter(Boolean))].sort(),
+                tofrom: [...new Set(_allTxns.map(r => r.toFrom).filter(Boolean))].sort()
+            };
+            let options = dataMap[_activeFilterTab] || [];
+            if (_fSearchQuery) options = options.filter(o => o.toLowerCase().includes(_fSearchQuery.toLowerCase()));
+
+            listEl.innerHTML = options.map(opt => `
                 <div class="f-opt-item" onclick="toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
                     <input type="checkbox" ${(_tempMselState[_activeFilterTab].has(opt)) ? 'checked' : ''} onclick="event.stopPropagation(); toggleFilterOpt('${_activeFilterTab}', '${escH(opt)}')">
                     <div class="f-opt-label">${escH(opt)}</div>
                 </div>
             `).join('') || '<div class="empty-s">No options found</div>';
-            
-            content.innerHTML = h;
-        }
+        };
 
         window.toggleAllFilters = function(sel) {
             const types = ['Expense', 'Income', 'Transfer'];
