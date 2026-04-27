@@ -1795,11 +1795,11 @@
         }
 
         .txn-tbl td {
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
             transition: padding var(--t-fast);
-            height: 48px;
+            height: 40px;
         }
 
         .txn-tbl tr:last-child td {
@@ -4977,11 +4977,11 @@
                 const isExp = r.type === 'EXPENSE';
                 return `
                     <tr class="txn-tr" onclick="editTpl('${r.id}')" style="animation-delay:${Math.min(i, 25) * 0.02}s">
-                        <td style="text-align:center; color:${isExp ? 'var(--red)' : 'var(--green)'}; font-weight:bold; font-size:16px;">${isExp ? '↓' : '↑'}</td>
+                        <td style="text-align:center; color:${isExp ? 'var(--red)' : 'var(--green)'}; font-weight:bold; font-size:14px; line-height:1;">${isExp ? '↓' : '↑'}</td>
                         <td class="td-item">${escH(r.name || '')}</td>
                         <td class="td-acc" style="font-size:10px; color:var(--t3);">${escH(r.account || '—')}</td>
                         <td><span class="td-cat">${escH(r.category || '—')}</span></td>
-                        <td class="td-tof">${escH(r.tofrom || '—')}</td>
+                        <td class="td-tof">${escH(r.tofrom || r.toFrom || '—')}</td>
                         <td class="ra" style="font-family:var(--font-big); font-weight:700;">${r.amount ? rs(r.amount) : '—'}</td>
                         <td class="td-acts" onclick="event.stopPropagation()" style="text-align:center">
                             <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
