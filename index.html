@@ -5646,16 +5646,16 @@
         /* ── MOBILE NAV SYNC ── */
         window.updateMobNav = function (page) {
             document.querySelectorAll('.mob-nav-item').forEach(el => el.classList.remove('active'));
-            const mapping = { 
+            const mapping = {
                 aichat: 'aichat',
-                add: 'more', 
-                accounts: 'accounts', 
-                analytics: 'analytics', 
-                transactions: 'ledger', 
-                ledger: 'ledger', 
-                manage: 'more', 
-                templates: 'more', 
-                import: 'more' 
+                add: 'more',
+                accounts: 'accounts',
+                analytics: 'analytics',
+                transactions: 'ledger',
+                ledger: 'ledger',
+                manage: 'more',
+                templates: 'more',
+                import: 'more'
             };
             const target = mapping[page] || 'more';
             const btn = document.getElementById('mobnav-' + target);
@@ -5863,13 +5863,32 @@
 
                 let cleanMsg = aiMsg;
                 let data = null;
-                const jsonMatch = aiMsg.match(/```json\n([\s\S]*?)\n```/) || aiMsg.match(/{[\s\S]*?"action"[\s\S]*?}/);
 
-                if (jsonMatch) {
+                function extractActionJSON(str) {
+                    const fence = str.match(/```json\n([\s\S]*?)\n```/);
+                    if (fence) return { json: fence[1], full: fence[0] };
+                    let depth = 0, start = -1;
+                    for (let i = 0; i < str.length; i++) {
+                        if (str[i] === '{') {
+                            if (depth === 0) start = i;
+                            depth++;
+                        } else if (str[i] === '}') {
+                            depth--;
+                            if (depth === 0 && start !== -1) {
+                                const candidate = str.substring(start, i + 1);
+                                if (candidate.includes('"action"')) return { json: candidate, full: candidate };
+                                start = -1;
+                            }
+                        }
+                    }
+                    return null;
+                }
+
+                const extracted = extractActionJSON(aiMsg);
+                if (extracted) {
                     try {
-                        const jsonStr = jsonMatch[1] || jsonMatch[0];
-                        data = JSON.parse(jsonStr);
-                        cleanMsg = aiMsg.replace(/```json[\s\S]*?```/, '').replace(/{[\s\S]*?"action"[\s\S]*?}/, '').trim();
+                        data = JSON.parse(extracted.json);
+                        cleanMsg = aiMsg.replace(extracted.full, '').trim();
                     } catch (e) { console.error("JSON parse error", e); }
                 }
 
