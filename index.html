@@ -5,14 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>Finance Tracker</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
         *,
         *::before,
@@ -20,46 +19,46 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            border-radius: 0 !important; /* Sharp edges globally */
         }
 
         :root {
-            --bg: #F7F5F2;
-            /* Claude off-white */
-            --bg2: #F0EDE8;
+            --bg: #FAF9F7;
+            --bg2: #F2EFE9;
             --surface: #FFFFFF;
-            --border: rgba(100, 80, 55, 0.08);
-            --border-strong: rgba(100, 80, 55, 0.15);
-            --el-1: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --el-2: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --el-3: 0 12px 24px rgba(0, 0, 0, 0.06);
-            --el-4: 0 20px 48px rgba(0, 0, 0, 0.08);
-            --font: 'Outfit', sans-serif;
-            --font-big: 'Plus Jakarta Sans', sans-serif;
-            --t1: #2D2A26;
-            --t2: #524F4A;
-            --t3: #8C8882;
-            --t4: rgba(45, 42, 38, 0.2);
-            --accent: #D97706;
-            --accent-bg: rgba(217, 119, 6, 0.08);
-            --accent-dark: #B45309;
-            --green: #059669;
-            --green-bg: #ECFDF5;
+            --border: rgba(100, 80, 55, 0.10);
+            --border-strong: rgba(100, 80, 55, 0.22);
+            --el-1: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --el-2: 0 4px 12px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --el-3: 0 8px 24px rgba(0, 0, 0, 0.08), 0 3px 8px rgba(0, 0, 0, 0.04);
+            --el-4: 0 20px 48px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.06);
+            --font: 'Courier Prime', 'Courier New', Courier, monospace;
+            --font-big: 'Courier Prime', 'Courier New', Courier, monospace;
+            --t1: #1C1917;
+            --t2: #44403C;
+            --t3: #78716C;
+            --t4: rgba(28, 25, 23, 0.25);
+            --accent: #C97B4B;
+            --accent-bg: #FEF4EC;
+            --accent-dark: #9E5E33;
+            --green: #16A34A;
+            --green-bg: #DCFCE7;
             --red: #DC2626;
-            --red-bg: #FEF2F2;
+            --red-bg: #FEE2E2;
             --amber: #D97706;
-            --amber-bg: #FFFBEB;
+            --amber-bg: #FEF3C7;
             --amt-neg: #DC2626;
-            --amt-pos: #059669;
-            --r-xs: 4px;
-            --r-sm: 8px;
-            --r: 12px;
-            --r-lg: 16px;
-            --r-xl: 24px;
-            --nav-w: 260px;
+            --amt-pos: #16A34A;
+            --r-xs: 0;
+            --r-sm: 0;
+            --r: 0;
+            --r-lg: 0;
+            --r-xl: 0;
+            --nav-w: 248px;
             --mob-nav-h: 72px;
-            --t-fast: 0.2s ease;
-            --t-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --t-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --t-fast: 0.14s ease;
+            --t-spring: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            --t-smooth: 0.2s ease;
         }
 
         html {
@@ -835,115 +834,49 @@
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.25rem;
-            margin-bottom: 2rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-tile {
             background: var(--surface);
-            padding: 24px;
+            padding: 20px;
             border: 1px solid var(--border);
-            border-radius: var(--r-lg);
-            box-shadow: var(--el-1);
-            transition: all var(--t-smooth);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: 0.2s ease;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-tile::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent);
-            opacity: 0;
-            transition: opacity var(--t-fast);
+            gap: 10px;
         }
 
         .stat-tile:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--el-3);
-            border-color: var(--accent-bg);
-        }
-
-        .stat-tile:hover::before {
-            opacity: 1;
-        }
-
-        .stat-tile.spent {
-            background: #FFF5F5;
-            border-color: #FEE2E2;
-        }
-
-        .stat-tile.avg {
-            background: #F5F7FF;
-            border-color: #E0E7FF;
-        }
-
-        .stat-tile.net {
-            background: #F0FDF4;
-            border-color: #DCFCE7;
-        }
-
-        .stat-tile.spent .s-icon {
-            color: #DC2626;
-            background: #FEE2E2;
-        }
-
-        .stat-tile.avg .s-icon {
-            color: #4F46E5;
-            background: #E0E7FF;
-        }
-
-        .stat-tile.net .s-icon {
-            color: #059669;
-            background: #DCFCE7;
-        }
-
-        .s-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 4px;
-        }
-
-        .s-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
 
         .s-eye {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 600;
+            letter-spacing: 0.1em;
             color: var(--t3);
+            margin-bottom: 0.6rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
 
         .s-val {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.04em;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.03em;
             color: var(--t1);
-            line-height: 1;
+            line-height: 1.1;
             font-family: var(--font-big);
         }
 
         .s-rs {
-            font-size: 20px;
-            color: var(--t3);
-            margin-right: 2px;
-            font-weight: 500;
+            font-size: 17px;
+            color: var(--t2);
+            font-family: var(--font-big);
         }
 
         /* ─── ACCOUNTS MODERNISED ─── */
@@ -992,8 +925,7 @@
             color: var(--red);
         }
 
-        .acc-emo,
-        .acc-chev {
+        .acc-emo, .acc-chev {
             display: none;
         }
 
@@ -1035,66 +967,108 @@
             border-color: var(--red);
         }
 
-        /* ─── ACCOUNTS TAB SYSTEM ─── */
+        /* ─── ACCOUNTS CLASSIC TABS ─── */
         .acc-tabs-bar {
-            display: inline-flex;
-            background: var(--bg2);
-            padding: 4px;
-            border-radius: 100px;
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
+            display: flex;
+            margin-bottom: -1px;
             position: relative;
+            z-index: 10;
+        }
+
+        /* ─── ACCOUNTS CLASSIC TABS ─── */
+        .acc-tabs-bar {
+            display: flex;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
         }
 
         .acc-tab {
-            padding: 10px 24px;
-            border-radius: 100px;
+            padding: 18px 50px;
+            background: var(--bg2); /* Claude beige */
+            border: 1px solid var(--border); /* Light brown border */
+            border-bottom: 1px solid var(--accent); /* Bottom border follows accent for continuity */
             cursor: pointer;
-            font-family: var(--font);
-            font-size: 14px;
-            font-weight: 500;
+            font-family: var(--font-big);
+            font-size: 16px;
+            font-weight: 700;
             color: var(--t3);
             transition: all var(--t-smooth);
             user-select: none;
+            border-radius: 0;
+            margin-right: -1px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            border: none;
-            position: relative;
-            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
-        .acc-tab:hover {
-            color: var(--t1);
+        .acc-tab:hover:not(.active) {
+            background: #FFF9F2; /* Very light orange hover */
+            color: var(--accent);
         }
 
         .acc-tab.active {
-            background: var(--surface);
+            background: #FFF9F2; /* Very very light orange shade */
+            border: 1px solid var(--accent);
+            border-bottom: 1px solid #FFF9F2;
             color: var(--accent);
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            z-index: 11;
+        }
+
+        .acc-tab-content {
+            background: #FFF9F2;
+            border: 1px solid var(--accent);
+            border-radius: 0;
+            padding: 2.5rem;
+            min-height: 480px;
+            position: relative;
+        }
+
+        .acc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            max-width: 100%;
+        }
+
+        .acc-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 1.25rem;
+            min-height: 110px;
+        }
+
+        .acc-bal {
+            text-align: left;
+            margin-top: auto;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .acc-name {
+            font-size: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        #creditList {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         }
 
         .acc-pane {
             display: none;
-            animation: paneFade 0.3s ease;
-        }
-
-        @keyframes paneFade {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            animation: paneIn 0.25s ease backwards;
         }
 
         .acc-pane.active {
             display: block;
+        }
+
+        @keyframes paneIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .acc-pane-hd {
@@ -1102,13 +1076,15 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border);
         }
 
         .acc-pane-title {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--t1);
-            letter-spacing: -0.01em;
+            font-family: var(--font-big);
         }
 
         /* Responsive tabs */
@@ -1118,7 +1094,6 @@
                 font-size: 12px;
                 margin-right: 2px;
             }
-
             .acc-tab-content {
                 padding: 16px;
                 border-radius: 0 8px 8px 8px;
@@ -3355,25 +3330,16 @@
                     <div class="pg-sub" id="acc-period">—</div>
                 </div>
                 <div class="stats-row">
-                    <div class="stat-tile spent">
-                        <div class="s-header">
-                            <div class="s-icon">↓</div>
-                            <div class="s-eye">Total Spent</div>
-                        </div>
+                    <div class="stat-tile">
+                        <div class="s-eye">Total Spent</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
                     </div>
-                    <div class="stat-tile avg">
-                        <div class="s-header">
-                            <div class="s-icon">~</div>
-                            <div class="s-eye">Daily Average</div>
-                        </div>
+                    <div class="stat-tile">
+                        <div class="s-eye">Daily Average</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
                     </div>
-                    <div class="stat-tile net">
-                        <div class="s-header">
-                            <div class="s-icon">⚡</div>
-                            <div class="s-eye">Net Balance</div>
-                        </div>
+                    <div class="stat-tile">
+                        <div class="s-eye">Net Balance</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
                     </div>
                 </div>
@@ -3401,8 +3367,7 @@
                             <div class="acc-pane-title">Credit Cards</div>
                             <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
                         </div>
-                        <div class="acc-list" id="creditList"
-                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <div class="acc-list" id="creditList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
                             <div class="sp-wrap">
                                 <div class="sp"></div>
                             </div>
@@ -4028,10 +3993,10 @@
         }
 
         /* ─── ACCOUNTS TABS ─── */
-        window.switchAccTab = function (type, el) {
+        window.switchAccTab = function(type, el) {
             document.querySelectorAll('.acc-tab').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.acc-pane').forEach(x => x.classList.remove('active'));
-
+            
             el.classList.add('active');
             document.getElementById('acc-pane-' + type).classList.add('active');
         };
@@ -4040,7 +4005,7 @@
         function renderAccounts(accs, total, avg) {
             cntUp('st-spent', total); cntUp('st-avg', avg);
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
-
+            
             // Sort accounts descending by balance
             accs.sort((a, b) => (b.currentBalance || 0) - (a.currentBalance || 0));
 
