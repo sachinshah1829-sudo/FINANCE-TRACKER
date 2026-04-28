@@ -5,13 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>Finance Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
         *,
         *::before,
@@ -19,35 +18,45 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            border-radius: 0 !important; /* Sharp edges globally */
         }
 
         :root {
-            --bg: #F5F0E8;
-            --bg2: #EDE6D9;
+            --bg: #F7F5F2; /* Claude off-white */
+            --bg2: #F0EDE8;
             --surface: #FFFFFF;
-            --surface-warm: #FAF7F2;
-            --border: rgba(0, 0, 0, 0.08);
-            --border-strong: rgba(0, 0, 0, 0.15);
-            --el-1: 0 1px 2px rgba(0, 0, 0, 0.02);
+            --border: rgba(100, 80, 55, 0.08);
+            --border-strong: rgba(100, 80, 55, 0.15);
+            --el-1: 0 1px 2px rgba(0, 0, 0, 0.05);
             --el-2: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --font: 'Courier Prime', monospace;
-            --font-big: 'Courier Prime', monospace;
-            --t1: #1C1C1E;
-            --t2: #444446;
-            --t3: #8E8E93;
-            --t4: rgba(28, 28, 30, 0.2);
-            --accent: #D4860A;
-            --accent-dark: #B36F08;
-            --accent-muted: #F0EAD8;
-            --green: #16A34A;
+            --el-3: 0 12px 24px rgba(0, 0, 0, 0.06);
+            --el-4: 0 20px 48px rgba(0, 0, 0, 0.08);
+            --font: 'Outfit', sans-serif;
+            --font-big: 'Plus Jakarta Sans', sans-serif;
+            --t1: #2D2A26;
+            --t2: #524F4A;
+            --t3: #8C8882;
+            --t4: rgba(45, 42, 38, 0.2);
+            --accent: #D97706;
+            --accent-bg: rgba(217, 119, 6, 0.08);
+            --accent-dark: #B45309;
+            --green: #059669;
+            --green-bg: #ECFDF5;
             --red: #DC2626;
-            --charcoal: #1C1C1E;
-            --r: 0px;
-            --nav-w: 248px;
+            --red-bg: #FEF2F2;
+            --amber: #D97706;
+            --amber-bg: #FFFBEB;
+            --amt-neg: #DC2626;
+            --amt-pos: #059669;
+            --r-xs: 4px;
+            --r-sm: 8px;
+            --r: 12px;
+            --r-lg: 16px;
+            --r-xl: 24px;
+            --nav-w: 260px;
             --mob-nav-h: 72px;
-            --t-fast: 0.1s ease;
-            --t-smooth: 0.2s ease;
+            --t-fast: 0.2s ease;
+            --t-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --t-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         html {
@@ -823,49 +832,93 @@
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
         }
 
         .stat-tile {
             background: var(--surface);
-            padding: 20px;
+            padding: 24px;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            transition: 0.2s ease;
+            border-radius: var(--r-lg);
+            box-shadow: var(--el-1);
+            transition: all var(--t-smooth);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+            opacity: 0;
+            transition: opacity var(--t-fast);
         }
 
         .stat-tile:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transform: translateY(-4px);
+            box-shadow: var(--el-3);
+            border-color: var(--accent-bg);
+        }
+
+        .stat-tile:hover::before {
+            opacity: 1;
+        }
+
+        .stat-tile.spent { background: #FFF5F5; border-color: #FEE2E2; }
+        .stat-tile.avg { background: #F5F7FF; border-color: #E0E7FF; }
+        .stat-tile.net { background: #F0FDF4; border-color: #DCFCE7; }
+
+        .stat-tile.spent .s-icon { color: #DC2626; background: #FEE2E2; }
+        .stat-tile.avg .s-icon { color: #4F46E5; background: #E0E7FF; }
+        .stat-tile.net .s-icon { color: #059669; background: #DCFCE7; }
+
+        .s-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .s-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
         }
 
         .s-eye {
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 600;
-            letter-spacing: 0.1em;
             color: var(--t3);
-            margin-bottom: 0.6rem;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .s-val {
-            font-size: 28px;
-            font-weight: 600;
-            letter-spacing: -0.03em;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
             color: var(--t1);
-            line-height: 1.1;
+            line-height: 1;
             font-family: var(--font-big);
         }
 
         .s-rs {
-            font-size: 17px;
-            color: var(--t2);
-            font-family: var(--font-big);
+            font-size: 20px;
+            color: var(--t3);
+            margin-right: 2px;
+            font-weight: 500;
         }
 
         /* ─── ACCOUNTS MODERNISED ─── */
@@ -956,134 +1009,34 @@
             border-color: var(--red);
         }
 
-        /* ─── ACCOUNTS CLASSIC TABS ─── */
+                /* ─── ACCOUNTS TAB SYSTEM ─── */
         .acc-tabs-bar {
-            display: flex;
-            margin-bottom: -1px;
+            display: inline-flex;
+            background: var(--bg2);
+            padding: 4px;
+            border-radius: 100px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
             position: relative;
-            z-index: 10;
-        }
-
-        /* ─── ACCOUNTS CLASSIC TABS ─── */
-        .acc-tabs-bar {
-            display: flex;
-            margin-bottom: -1px;
-            position: relative;
-            z-index: 10;
         }
 
         .acc-tab {
-            padding: 18px 50px;
-            background: var(--bg2); /* Claude beige */
-            border: 1px solid var(--border); /* Light brown border */
-            border-bottom: 1px solid var(--accent); /* Bottom border follows accent for continuity */
+            padding: 10px 24px;
+            border-radius: 100px;
             cursor: pointer;
-            font-family: var(--font-big);
-            font-size: 16px;
-            font-weight: 700;
+            font-family: var(--font);
+            font-size: 14px;
+            font-weight: 500;
             color: var(--t3);
             transition: all var(--t-smooth);
             user-select: none;
-            border-radius: 0;
-            margin-right: -1px;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
-        /* ─── ACCOUNTS REDESIGN ─── */
-        .acc-header-block {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .acc-label-caps {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--t3);
-            margin-bottom: 6px;
-        }
-
-        .acc-period-inline {
-            display: flex;
             gap: 8px;
-            align-items: center;
-        }
-
-        .acc-period-inline select {
-            background: transparent;
-            border: 1px solid var(--border);
-            padding: 4px 8px;
-            font-family: var(--font);
-            font-size: 12px;
-            color: var(--t2);
-            cursor: pointer;
-        }
-
-        /* Summary Pill Bar */
-        .summary-pill-bar {
-            background: var(--charcoal);
-            border-radius: 40px;
-            padding: 1.25rem 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-            color: #FFFFFF;
-        }
-
-        .pill-stat {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .pill-stat-label {
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .pill-stat-val {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-
-        .pill-stat-divider {
-            width: 1px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* Tabs */
-        .acc-tabs-bar {
-            display: flex;
-            gap: 2rem;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
-
-        .acc-tab {
-            padding: 0.75rem 0;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--t3);
-            cursor: pointer;
+            border: none;
             position: relative;
-            transition: color var(--t-fast);
+            z-index: 2;
         }
 
         .acc-tab:hover {
@@ -1091,227 +1044,51 @@
         }
 
         .acc-tab.active {
+            background: var(--surface);
             color: var(--accent);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
-        .acc-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--accent);
+        .acc-pane {
+            display: none;
+            animation: paneFade 0.3s ease;
         }
 
-        /* Account Lists */
-        .acc-list-horizontal {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
+        @keyframes paneFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .acc-row-item {
-            background: #FFFFFF;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            transition: background var(--t-fast);
-            cursor: pointer;
-        }
-
-        .acc-row-item:hover {
-            background: var(--accent-muted);
-        }
-
-        .acc-row-icon {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: #FFFFFF;
-            background: var(--t3);
-        }
-
-        .acc-row-main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .acc-row-name {
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: var(--t1);
-        }
-
-        .acc-row-tag {
-            font-size: 9px;
-            font-weight: 700;
-            padding: 2px 8px;
-            background: var(--bg2);
-            color: var(--t3);
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        .acc-row-balance {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--t1);
-            text-align: right;
-        }
-
-        /* Specific styles for types */
-        .acc-row-item.primary-bank { border-left: 4px solid var(--accent); }
-        .acc-row-item.wallet { border-left: 4px solid var(--t3); }
-
-        /* People List */
-        .person-row-item {
-            background: #FFFFFF;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            border-bottom: 1px solid var(--border);
-            transition: background var(--t-fast);
-            cursor: pointer;
-        }
-
-        .person-row-item:hover {
-            background: var(--accent-muted);
-        }
-
-        .person-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50% !important; /* Specific override for avatar */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-            color: #FFFFFF;
-        }
-
-        .person-info {
-            flex: 1;
-        }
-
-        .person-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--t1);
-        }
-
-        .person-amount {
-            font-size: 16px;
-            font-weight: 700;
-            text-align: right;
-        }
-
-        .owed-summary {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px dashed var(--border);
-        }
-
-        /* Skeuomorphic Card Update */
-        .fc-card-premium {
-            background: var(--charcoal) !important;
-            padding: 1.5rem !important;
-            border: none !important;
-            aspect-ratio: 1.58 / 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            color: #FFFFFF;
-        }
-
-        .fc-card-name {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--accent);
-        }
-
-        .fc-card-chip {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .fc-card-util {
-            margin-top: 1.5rem;
-        }
-
-        .fc-card-util-val {
-            font-size: 32px;
-            font-weight: 700;
-            color: #FFFFFF;
-            line-height: 1;
-        }
-
-        .fc-card-progress {
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px !important;
-            overflow: hidden;
-            margin: 1rem 0 0.5rem;
-        }
-
-        .fc-card-progress-fill {
-            height: 100%;
-            border-radius: 5px !important;
-            transition: width 0.8s ease;
-        }
-
-        .fc-card-details {
-            font-size: 11px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.6);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .acc-tab-content {
-            background: transparent;
-            border: none;
-            padding: 0;
-            min-height: auto;
+        .acc-pane.active {
+            display: block;
         }
 
         .acc-pane-hd {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.25rem;
+            margin-bottom: 20px;
         }
 
         .acc-pane-title {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: var(--t2);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--t1);
+            letter-spacing: -0.01em;
+        }
+
+        /* Responsive tabs */
+        @media (max-width: 600px) {
+            .acc-tab {
+                padding: 10px 16px;
+                font-size: 12px;
+                margin-right: 2px;
+            }
+            .acc-tab-content {
+                padding: 16px;
+                border-radius: 0 8px 8px 8px;
+            }
         }
 
         /* ─── REALISTIC CREDIT CARD ─── */
@@ -3303,7 +3080,28 @@
                     <div class="nav-ico">⚙</div>Manage
                 </div>
             </div>
-
+            <div class="sb-period">
+                <div class="period-label">Period</div>
+                <div class="period-row"><span class="period-tag">Mo.</span>
+                    <select class="g-select" id="monthSel" onchange="onPeriodChange()">
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="period-row"><span class="period-tag">Yr.</span>
+                    <select class="g-select" id="yearSel" onchange="onPeriodChange()"></select>
+                </div>
+            </div>
             <div class="sb-user">
                 <div class="sb-ava">S</div>
                 <div class="sb-user-info">
@@ -3518,44 +3316,31 @@
 
             <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
-                <div class="acc-header-block">
-                    <div>
-                        <div class="acc-label-caps">Accounts Overview</div>
-                        <div class="pg-title">Accounts</div>
-                    </div>
-                    <div class="acc-period-inline">
-                        <select id="monthSel" onchange="onPeriodChange()">
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <select id="yearSel" onchange="onPeriodChange()"></select>
-                    </div>
+                <div class="pg-header">
+                    <div class="pg-title">Accounts</div>
+                    <div class="pg-sub" id="acc-period">—</div>
                 </div>
-
-                <div class="summary-pill-bar">
-                    <div class="pill-stat">
-                        <div class="pill-stat-label">Total Spent</div>
-                        <div class="pill-stat-val">₹<span id="st-spent">—</span></div>
+                <div class="stats-row">
+                    <div class="stat-tile spent">
+                        <div class="s-header">
+                            <div class="s-icon">↓</div>
+                            <div class="s-eye">Total Spent</div>
+                        </div>
+                        <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
                     </div>
-                    <div class="pill-stat-divider"></div>
-                    <div class="pill-stat">
-                        <div class="pill-stat-label">Daily Average</div>
-                        <div class="pill-stat-val">₹<span id="st-avg">—</span></div>
+                    <div class="stat-tile avg">
+                        <div class="s-header">
+                            <div class="s-icon">~</div>
+                            <div class="s-eye">Daily Average</div>
+                        </div>
+                        <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
                     </div>
-                    <div class="pill-stat-divider"></div>
-                    <div class="pill-stat">
-                        <div class="pill-stat-label">Net Balance</div>
-                        <div class="pill-stat-val" style="color: #FFB347;">₹<span id="st-net">—</span></div>
+                    <div class="stat-tile net">
+                        <div class="s-header">
+                            <div class="s-icon">⚡</div>
+                            <div class="s-eye">Net Balance</div>
+                        </div>
+                        <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
                     </div>
                 </div>
                 <div class="acc-tabs-bar">
