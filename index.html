@@ -839,41 +839,16 @@
         }
 
         .stat-tile {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--r-lg);
-            box-shadow: var(--el-2);
-            padding: 1.25rem 1.25rem 1.1rem;
+            background: var(--bg);
+            border: 1px solid var(--border-strong);
+            padding: 1.5rem 1.5rem 1.25rem;
             position: relative;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all var(--t-fast);
         }
 
         .stat-tile:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--el-3);
-        }
-
-        .stat-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 0 0 2px 2px;
-        }
-
-        .stat-tile.t-red .stat-bar {
-            background: var(--red);
-        }
-
-        .stat-tile.t-blue .stat-bar {
-            background: #6366F1;
-        }
-
-        .stat-tile.t-green .stat-bar {
-            background: var(--green);
+            background: var(--surface);
+            border-color: var(--accent);
         }
 
         .s-eye {
@@ -903,17 +878,15 @@
         /* ─── ACCOUNTS MODERNISED ─── */
         .acc-item {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 1rem 1.25rem;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.5rem;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--r-lg);
             transition: all var(--t-spring);
             position: relative;
-            overflow: hidden;
-            box-shadow: var(--el-1);
             cursor: pointer;
+            min-height: 110px;
         }
 
         .acc-item:hover {
@@ -923,58 +896,33 @@
         }
 
         .acc-bar {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--accent);
-        }
-
-        .acc-bar.bank {
-            background: var(--t2);
-        }
-
-        .acc-bar.credit {
-            background: var(--t1);
-        }
-
-        .acc-bar.person {
-            background: var(--accent);
-        }
-
-        .acc-emo {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--r-sm);
-            background: var(--bg2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--t2);
-            border: 1px solid var(--border);
+            display: none;
         }
 
         .acc-name {
-            flex: 1;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
             color: var(--t1);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            width: 100%;
         }
 
         .acc-bal {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--t1);
             font-family: var(--font-big);
-            text-align: right;
+            width: 100%;
         }
 
-        .acc-chev {
-            color: var(--t4);
-            font-size: 18px;
-            margin-left: 4px;
+        .acc-bal.neg {
+            color: var(--red);
+        }
+
+        .acc-emo, .acc-chev {
+            display: none;
         }
 
         .acc-acts {
@@ -1053,20 +1001,20 @@
         }
 
         .acc-tab:hover:not(.active) {
-            background: var(--accent-bg);
+            background: #FFF9F2; /* Very light orange hover */
             color: var(--accent);
         }
 
         .acc-tab.active {
-            background: var(--accent-bg); /* Light amber highlight */
-            border: 1px solid var(--accent); /* Strong amber border */
-            border-bottom: 1px solid var(--accent-bg); /* Seamless connection */
+            background: #FFF9F2; /* Very very light orange shade */
+            border: 1px solid var(--accent);
+            border-bottom: 1px solid #FFF9F2;
             color: var(--accent);
             z-index: 11;
         }
 
         .acc-tab-content {
-            background: var(--accent-bg);
+            background: #FFF9F2;
             border: 1px solid var(--accent);
             border-radius: 0;
             padding: 2.5rem;
@@ -3378,18 +3326,15 @@
                     <div class="pg-sub" id="acc-period">—</div>
                 </div>
                 <div class="stats-row">
-                    <div class="stat-tile t-red">
-                        <div class="stat-bar"></div>
+                    <div class="stat-tile">
                         <div class="s-eye">Total Spent</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
                     </div>
-                    <div class="stat-tile t-blue">
-                        <div class="stat-bar"></div>
+                    <div class="stat-tile">
                         <div class="s-eye">Daily Average</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
                     </div>
-                    <div class="stat-tile t-green">
-                        <div class="stat-bar"></div>
+                    <div class="stat-tile">
                         <div class="s-eye">Net Balance</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
                     </div>
@@ -4112,11 +4057,8 @@
 
             return `
                 <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
-                    <div class="acc-bar ${accKind}"></div>
-                    <div class="acc-emo">${emo}</div>
                     <div class="acc-name">${escH(a.name)}</div>
                     ${balHTML}
-                    ${isPerson ? '<div class="acc-chev">›</div>' : ''}
                     <div class="acc-acts" onclick="event.stopPropagation()">
                         <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
                         <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
