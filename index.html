@@ -1031,38 +1031,36 @@
         }
 
         .acc-tab {
-            padding: 12px 24px;
+            padding: 18px 50px;
             background: var(--bg2);
             border: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
             cursor: pointer;
             font-family: var(--font-big);
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
             color: var(--t3);
-            transition: all var(--t-smooth);
+            transition: background 0.2s;
             user-select: none;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-            margin-right: 4px;
+            border-radius: 0;
+            margin-right: -1px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
         }
 
-        .acc-tab:hover {
-            background: var(--bg);
-            color: var(--accent);
+        .acc-tab:hover:not(.active) {
+            background: #ebebe6;
+            color: var(--t1);
         }
 
         .acc-tab.active {
             background: var(--bg);
             border-bottom: 1px solid var(--bg);
-            color: var(--accent);
-            border-top: 2px solid var(--accent);
-            padding-top: 11px;
+            color: var(--t1);
+            border-top: 1px solid var(--border);
+            z-index: 11;
         }
 
         .acc-tab-content {
@@ -1070,33 +1068,39 @@
             border: 1px solid var(--border);
             border-radius: 0;
             padding: 2.5rem;
-            box-shadow: none;
             min-height: 480px;
+            position: relative;
         }
 
         .acc-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
             max-width: 100%;
         }
 
         .acc-item {
             flex-direction: column;
             align-items: flex-start;
-            gap: 15px;
-            padding: 1.5rem;
-            min-height: 120px;
+            gap: 12px;
+            padding: 1.25rem;
+            min-height: 110px;
         }
 
         .acc-bal {
             text-align: left;
             margin-top: auto;
             width: 100%;
+            font-size: 15px;
+        }
+
+        .acc-name {
+            font-size: 12px;
+            letter-spacing: 0.05em;
         }
 
         #creditList {
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         }
 
         .acc-pane {
