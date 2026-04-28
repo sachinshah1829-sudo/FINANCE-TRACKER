@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -3200,6 +3201,362 @@
                 font-size: 11px;
             }
         }
+
+        /* ════════════════════════════════════════════════════════════════
+           ACCOUNTS PAGE — CLAUDE-INSPIRED REDESIGN
+           Soft cream surfaces · warm shadows · amber underline tabs ·
+           monogram bubbles · sparkline trends · color-coded people
+           ════════════════════════════════════════════════════════════════ */
+
+        /* ── Header pill ── */
+        #page-accounts .pg-header .pill-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 6px rgba(120, 90, 60, 0.05);
+            padding: 7px 14px;
+            font-size: 11px;
+            color: var(--t2);
+            transition: box-shadow .2s ease, transform .2s ease;
+        }
+
+        #page-accounts .pg-header .pill-btn:hover {
+            box-shadow: 0 4px 12px rgba(201, 123, 75, 0.12);
+            transform: translateY(-1px);
+        }
+
+        /* ── Stat tiles: soft cream surfaces with warm shadow, no hard borders ── */
+        #page-accounts .stats-row {
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #page-accounts .stat-tile {
+            background: linear-gradient(160deg, #FFFDF9 0%, #FBF6EE 100%);
+            border: 1px solid rgba(201, 123, 75, 0.08);
+            box-shadow: 0 8px 22px -10px rgba(120, 80, 40, 0.18),
+                        0 2px 6px -2px rgba(120, 80, 40, 0.08);
+            padding: 22px 22px 18px;
+            position: relative;
+            overflow: hidden;
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+
+        #page-accounts .stat-tile:hover {
+            transform: translateY(-3px);
+            border-color: rgba(201, 123, 75, 0.18);
+            box-shadow: 0 14px 32px -12px rgba(201, 123, 75, 0.22),
+                        0 4px 10px -3px rgba(120, 80, 40, 0.10);
+        }
+
+        #page-accounts .stat-tile .s-eye {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.4rem;
+            color: var(--t3);
+        }
+
+        #page-accounts .stat-tile .s-eye .stat-ico {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border: 1px solid rgba(201, 123, 75, 0.25);
+            background: var(--accent-bg);
+            color: var(--accent);
+        }
+
+        #page-accounts .stat-tile .s-eye .stat-ico svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        #page-accounts .stat-tile .s-val {
+            font-size: 30px;
+            color: var(--t1);
+        }
+
+        #page-accounts .stat-tile .stat-meta {
+            margin-top: 14px;
+            align-items: center;
+        }
+
+        #page-accounts .stat-tile .stat-trend {
+            background: transparent;
+            padding: 2px 0;
+            font-size: 10.5px;
+            letter-spacing: 0.02em;
+        }
+
+        #page-accounts .stat-tile .stat-spark-mini {
+            width: 88px;
+            height: 24px;
+        }
+
+        #page-accounts .stat-tile .stat-spark-mini svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ── Tab bar: soft amber active-state with underline indicator ── */
+        #page-accounts .acc-tabs-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0;
+            padding: 0 4px;
+            border-bottom: 1px solid rgba(201, 123, 75, 0.12);
+            background: transparent;
+        }
+
+        #page-accounts .acc-tab {
+            padding: 12px 22px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--t3);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            margin-right: 0;
+            text-transform: uppercase;
+            transition: color .25s ease, border-color .25s ease, background .25s ease;
+        }
+
+        #page-accounts .acc-tab:hover:not(.active) {
+            color: var(--t2);
+            background: transparent;
+        }
+
+        #page-accounts .acc-tab.active {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        /* ── Tab content: remove orange bordered container, use airy surface ── */
+        #page-accounts .acc-tab-content {
+            background: transparent;
+            border: none;
+            padding: 28px 0 0;
+            min-height: 320px;
+        }
+
+        #page-accounts .acc-pane-hd {
+            border-bottom: none;
+            margin-bottom: 18px;
+            padding-bottom: 0;
+        }
+
+        #page-accounts .acc-pane-title {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--t2);
+        }
+
+        #page-accounts .add-inline-btn {
+            background: var(--surface);
+            border: 1px solid rgba(201, 123, 75, 0.25);
+            color: var(--accent);
+            box-shadow: 0 2px 6px rgba(120, 80, 40, 0.06);
+        }
+
+        #page-accounts .add-inline-btn:hover {
+            background: var(--accent-bg);
+            border-color: var(--accent);
+        }
+
+        /* ── Bank list grid ── */
+        #page-accounts #bankList {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        /* ── Bank cards: cream surface · monogram · large balance · sparkline · caption ── */
+        #page-accounts #bankList .acc-item {
+            background: linear-gradient(160deg, #FFFDF9 0%, #FBF5EC 100%);
+            border: 1px solid rgba(201, 123, 75, 0.10);
+            box-shadow: 0 8px 22px -10px rgba(120, 80, 40, 0.18),
+                        0 2px 6px -2px rgba(120, 80, 40, 0.06);
+            padding: 18px;
+            min-height: 150px;
+            gap: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+        }
+
+        #page-accounts #bankList .acc-item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(201, 123, 75, 0.25);
+            box-shadow: 0 16px 34px -12px rgba(201, 123, 75, 0.22),
+                        0 4px 10px -3px rgba(120, 80, 40, 0.10);
+        }
+
+        #page-accounts #bankList .ax-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        #page-accounts #bankList .ax-bubble {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-big);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.02em;
+        }
+
+        #page-accounts #bankList .ax-spark {
+            width: 70px;
+            height: 22px;
+            opacity: 0.85;
+        }
+
+        #page-accounts #bankList .ax-spark svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #page-accounts #bankList .ax-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--t3);
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            margin: 0 0 6px;
+        }
+
+        #page-accounts #bankList .ax-bal {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--t1);
+            font-family: var(--font-big);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        #page-accounts #bankList .ax-bal.neg { color: var(--red); }
+
+        #page-accounts #bankList .ax-caption {
+            margin-top: 10px;
+            font-size: 9.5px;
+            font-weight: 700;
+            color: var(--t4);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        /* ── People list: avatar bubbles · color-coded amounts ── */
+        #page-accounts #personList {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        #page-accounts #personList .acc-item {
+            background: var(--surface);
+            border: 1px solid rgba(201, 123, 75, 0.08);
+            box-shadow: 0 6px 18px -10px rgba(120, 80, 40, 0.16),
+                        0 2px 5px -2px rgba(120, 80, 40, 0.06);
+            padding: 16px 18px;
+            min-height: 84px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 14px;
+            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+        }
+
+        #page-accounts #personList .acc-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(201, 123, 75, 0.22);
+            box-shadow: 0 12px 26px -12px rgba(201, 123, 75, 0.20);
+        }
+
+        #page-accounts #personList .px-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-big);
+            font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        #page-accounts #personList .px-body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        #page-accounts #personList .px-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--t1);
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #page-accounts #personList .px-sub {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: var(--t4);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        #page-accounts #personList .px-amt {
+            font-family: var(--font-big);
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+
+        #page-accounts #personList .px-amt.pos { color: var(--green); }
+        #page-accounts #personList .px-amt.neg { color: var(--red); }
+        #page-accounts #personList .px-amt.zero { color: var(--t3); }
+
+        /* Action buttons sit unobtrusively in top-right on hover */
+        #page-accounts #bankList .acc-acts,
+        #page-accounts #personList .acc-acts {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
+        #page-accounts #bankList .acc-item,
+        #page-accounts #personList .acc-item {
+            position: relative;
+        }
+
+        @media (max-width: 600px) {
+            #page-accounts .acc-tab { padding: 10px 14px; font-size: 11px; }
+            #page-accounts .acc-tab-content { padding: 18px 0 0; }
+            #page-accounts #bankList { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+            #page-accounts #bankList .acc-item { padding: 14px; min-height: 130px; }
+            #page-accounts #bankList .ax-bal { font-size: 18px; }
+            #page-accounts .stat-tile { padding: 16px; }
+            #page-accounts .stat-tile .s-val { font-size: 22px; }
+        }
     </style>
 </head>
 
@@ -3550,7 +3907,10 @@
                 </div>
                 <div class="stats-row">
                     <div class="stat-tile">
-                        <div class="s-eye">Total Spent</div>
+                        <div class="s-eye">
+                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                            Total Spent
+                        </div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
                         <div class="stat-meta">
                             <div class="stat-trend down">-1.2%</div>
@@ -3558,7 +3918,10 @@
                         </div>
                     </div>
                     <div class="stat-tile">
-                        <div class="s-eye">Daily Average</div>
+                        <div class="s-eye">
+                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                            Daily Average
+                        </div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
                         <div class="stat-meta">
                             <div class="stat-trend up">+0.8%</div>
@@ -3566,7 +3929,10 @@
                         </div>
                     </div>
                     <div class="stat-tile">
-                        <div class="s-eye">Net Balance</div>
+                        <div class="s-eye">
+                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12H3z"/><path d="M3 11h18"/><path d="M7 15h2"/></svg></span>
+                            Net Balance
+                        </div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
                         <div class="stat-meta">
                             <div class="stat-trend up">+4.5%</div>
@@ -4244,8 +4610,116 @@
             document.getElementById('bankList').innerHTML = accs.filter(a => a.type === 'BANK').map((a, i) => accHTML(a, i, 'bank')).join('') || '<div class="empty-s">No bank accounts</div>';
             document.getElementById('creditList').innerHTML = accs.filter(a => a.type === 'CREDIT_CARD').map((a, i) => accHTML(a, i, 'credit')).join('') || '<div class="empty-s">No credit cards</div>';
             document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No contacts</div>';
+
+            // Render stat sparklines from recent daily activity
+            renderStatSparklines();
         }
+
+        // ── Sparkline SVG generator (line + soft fill) ──
+        function sparkSVG(values, w, h, color) {
+            if (!values || values.length < 2) {
+                return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="0" y1="${h - 1}" x2="${w}" y2="${h - 1}" stroke="${color}" stroke-width="1" stroke-opacity="0.3"/></svg>`;
+            }
+            const min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+            const range = (max - min) || 1;
+            const step = w / (values.length - 1);
+            const pts = values.map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * (h - 2) - 1).toFixed(1)}`);
+            const linePath = `M ${pts.join(' L ')}`;
+            const areaPath = `M 0,${h} L ${pts.join(' L ')} L ${w},${h} Z`;
+            const gid = 'sg' + Math.random().toString(36).slice(2, 8);
+            return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
+                    <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+                </linearGradient></defs>
+                <path d="${areaPath}" fill="url(#${gid})"/>
+                <path d="${linePath}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
+        }
+
+        // ── Build a balance time-series for one account (downsampled) ──
+        function accountSeries(name, points) {
+            points = points || 20;
+            const acc = _accounts.find(a => a.name === name);
+            if (!acc) return [];
+            const txns = (_allTxns || []).filter(t => t.account === name);
+            // _allTxns may be in any order; sort chronologically by date
+            txns.sort((a, b) => {
+                const da = new Date(a.date || 0).getTime();
+                const db = new Date(b.date || 0).getTime();
+                return da - db;
+            });
+            let bal = acc.openingBalance || 0;
+            const series = [bal];
+            txns.forEach(t => { bal += Number(t.amount) || 0; series.push(bal); });
+            if (series.length <= points) return series;
+            const step = (series.length - 1) / (points - 1);
+            const out = [];
+            for (let i = 0; i < points; i++) out.push(series[Math.round(i * step)]);
+            return out;
+        }
+
+        // ── Daily totals over last N days (signed sum), used for stat sparklines ──
+        function dailyTotalsSeries(days, filter) {
+            days = days || 14;
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const buckets = new Array(days).fill(0);
+            (_allTxns || []).forEach(t => {
+                const d = new Date(t.date || 0); if (isNaN(d)) return;
+                d.setHours(0, 0, 0, 0);
+                const diff = Math.round((today - d) / 86400000);
+                if (diff < 0 || diff >= days) return;
+                if (filter && !filter(t)) return;
+                buckets[days - 1 - diff] += Number(t.amount) || 0;
+            });
+            return buckets;
+        }
+
+        function renderStatSparklines() {
+            const expenses = dailyTotalsSeries(14, t => (Number(t.amount) || 0) < 0).map(v => Math.abs(v));
+            const all = dailyTotalsSeries(14);
+            // Running net balance series across all txns sampled to 14 points
+            const sortedTx = (_allTxns || []).slice().sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+            let openingTotal = (_accounts || []).reduce((s, a) => s + (a.openingBalance || 0), 0);
+            let bal = openingTotal;
+            const balSeries = [bal];
+            sortedTx.forEach(t => { bal += Number(t.amount) || 0; balSeries.push(bal); });
+            const netDown = (function () {
+                if (balSeries.length <= 14) return balSeries;
+                const step = (balSeries.length - 1) / 13;
+                const out = []; for (let i = 0; i < 14; i++) out.push(balSeries[Math.round(i * step)]); return out;
+            })();
+            const elS = document.getElementById('spark-spent'); if (elS) elS.innerHTML = sparkSVG(expenses, 88, 24, '#DC2626');
+            const elA = document.getElementById('spark-avg'); if (elA) elA.innerHTML = sparkSVG(all.map(v => Math.abs(v)), 88, 24, '#C97B4B');
+            const elN = document.getElementById('spark-net'); if (elN) elN.innerHTML = sparkSVG(netDown, 88, 24, '#16A34A');
+        }
+
+        // ── Initial / monogram for a name ──
         function bkEmo(n) { n = n.toUpperCase(); if (n.includes('HDFC')) return 'H'; if (n.includes('ICICI')) return 'I'; if (n.includes('AXIS')) return 'A'; if (n.includes('SBI')) return 'S'; if (n.includes('WALLET')) return 'W'; if (n.includes('CREDIT')) return 'C'; if (n.includes('CASH')) return '$'; return 'B'; }
+
+        // ── Deterministic warm tint for monogram bubble per name ──
+        const _ACC_TINTS = [
+            { bg: '#FEF4EC', fg: '#C97B4B' }, // amber
+            { bg: '#FEF3C7', fg: '#B45309' }, // honey
+            { bg: '#FCE7F3', fg: '#BE185D' }, // rose
+            { bg: '#DCFCE7', fg: '#15803D' }, // sage
+            { bg: '#DBEAFE', fg: '#1D4ED8' }, // sky
+            { bg: '#EDE9FE', fg: '#6D28D9' }, // lilac
+            { bg: '#FFE4E6', fg: '#BE123C' }, // coral
+            { bg: '#F1F5F9', fg: '#475569' }, // stone
+        ];
+        function nameTint(name) {
+            let h = 0; for (let i = 0; i < (name || '').length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+            return _ACC_TINTS[h % _ACC_TINTS.length];
+        }
+        function bankCaption(n) {
+            const u = (n || '').toUpperCase();
+            if (u.includes('WALLET') || u.includes('PAYTM') || u.includes('PHONEPE') || u.includes('GPAY') || u.includes('UPI')) return 'Wallet';
+            if (u.includes('CASH')) return 'Cash';
+            if (u.includes('SAVING')) return 'Savings Account';
+            if (u.includes('CURRENT')) return 'Current Account';
+            return 'Bank Account';
+        }
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = a.type === 'CREDIT_CARD';
@@ -4289,12 +4763,42 @@
             }
 
             const pos = (a.currentBalance || 0) >= 0;
-            const balHTML = `<div class="acc-bal ${pos ? 'pos' : 'neg'}">${rs(a.currentBalance || 0)}</div>`;
+            const tint = nameTint(a.name);
 
+            if (isPerson) {
+                const cls = (a.currentBalance || 0) > 0 ? 'pos' : ((a.currentBalance || 0) < 0 ? 'neg' : 'zero');
+                const sub = (a.currentBalance || 0) > 0 ? 'Owes you' : ((a.currentBalance || 0) < 0 ? 'You owe' : 'Settled');
+                return `
+                    <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.04}s" onclick="accItemClick(this)">
+                        <div class="px-avatar" style="background:${tint.bg}; color:${tint.fg};">${emo}</div>
+                        <div class="px-body">
+                            <div class="px-name">${escH(a.name)}</div>
+                            <div class="px-sub">${sub}</div>
+                        </div>
+                        <div class="px-amt ${cls}">${rs(Math.abs(a.currentBalance || 0))}</div>
+                        <div class="acc-acts" onclick="event.stopPropagation()">
+                            <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
+                            <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // BANK / WALLET — cream card with monogram, sparkline, big balance, caption
+            const series = accountSeries(a.name, 16);
+            const sparkColor = pos ? '#16A34A' : '#DC2626';
+            const spark = sparkSVG(series, 70, 22, sparkColor);
             return `
                 <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
-                    <div class="acc-name">${escH(a.name)}</div>
-                    ${balHTML}
+                    <div class="ax-top">
+                        <div class="ax-bubble" style="background:${tint.bg}; color:${tint.fg};">${emo}</div>
+                        <div class="ax-spark">${spark}</div>
+                    </div>
+                    <div>
+                        <div class="ax-name">${escH(a.name)}</div>
+                        <div class="ax-bal ${pos ? '' : 'neg'}">${rs(a.currentBalance || 0)}</div>
+                        <div class="ax-caption">${bankCaption(a.name)}</div>
+                    </div>
                     <div class="acc-acts" onclick="event.stopPropagation()">
                         <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
                         <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
@@ -6343,6 +6847,6 @@ Instructions:
             </div>
         </div>
     </div>
-</body>
+<script src="https://replit-cdn.com/replit-pill/replit-pill.global.js" data-repl-id="0057447e-faa5-4085-b299-8d86be7ce052"></script></body>
 
 </html>
