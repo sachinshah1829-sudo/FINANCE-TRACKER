@@ -19,7 +19,8 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            border-radius: 0 !important; /* Sharp edges globally */
+            border-radius: 0 !important;
+            /* Sharp edges globally */
         }
 
         :root {
@@ -842,7 +843,7 @@
             background: var(--surface);
             padding: 20px;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
             transition: 0.2s ease;
             display: flex;
             flex-direction: column;
@@ -852,7 +853,7 @@
         .stat-tile:hover {
             transform: translateY(-2px);
             border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .s-eye {
@@ -904,28 +905,30 @@
         }
 
         .acc-name {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
-            color: var(--t1);
+            color: var(--t3);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
             width: 100%;
         }
 
         .acc-bal {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 20px;
+            font-weight: 700;
             color: var(--t1);
             font-family: var(--font-big);
             width: 100%;
+            letter-spacing: -0.02em;
         }
 
         .acc-bal.neg {
             color: var(--red);
         }
 
-        .acc-emo, .acc-chev {
+        .acc-emo,
+        .acc-chev {
             display: none;
         }
 
@@ -985,9 +988,12 @@
 
         .acc-tab {
             padding: 18px 50px;
-            background: var(--bg2); /* Claude beige */
-            border: 1px solid var(--border); /* Light brown border */
-            border-bottom: 1px solid var(--accent); /* Bottom border follows accent for continuity */
+            background: var(--bg2);
+            /* Claude beige */
+            border: 1px solid var(--border);
+            /* Light brown border */
+            border-bottom: 1px solid var(--accent);
+            /* Bottom border follows accent for continuity */
             cursor: pointer;
             font-family: var(--font-big);
             font-size: 16px;
@@ -1005,12 +1011,14 @@
         }
 
         .acc-tab:hover:not(.active) {
-            background: #FFF9F2; /* Very light orange hover */
+            background: #FFF9F2;
+            /* Very light orange hover */
             color: var(--accent);
         }
 
         .acc-tab.active {
-            background: #FFF9F2; /* Very very light orange shade */
+            background: #FFF9F2;
+            /* Very very light orange shade */
             border: 1px solid var(--accent);
             border-bottom: 1px solid #FFF9F2;
             color: var(--accent);
@@ -1067,8 +1075,15 @@
         }
 
         @keyframes paneIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .acc-pane-hd {
@@ -1094,10 +1109,208 @@
                 font-size: 12px;
                 margin-right: 2px;
             }
+
             .acc-tab-content {
                 padding: 16px;
-                border-radius: 0 8px 8px 8px;
+                border-radius: 0;
             }
+        }
+
+        /* ─── PREMIUM ACCOUNT CARDS ─── */
+        .acc-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all var(--t-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .acc-item:hover {
+            border-color: var(--accent);
+            box-shadow: var(--el-2);
+            transform: translateY(-2px);
+        }
+
+        .acc-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .acc-bubble {
+            width: 36px;
+            height: 36px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: var(--font-big);
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .acc-spark {
+            width: 60px;
+            height: 24px;
+            opacity: 0.6;
+        }
+
+        .acc-type-label {
+            font-size: 9px;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+
+        /* ─── STAT CARDS ENHANCEMENTS ─── */
+        .stat-tile {
+            position: relative;
+        }
+
+        .stat-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 8px;
+        }
+
+        .stat-trend {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .stat-trend.up {
+            color: var(--green);
+            background: var(--green-bg);
+        }
+
+        .stat-trend.down {
+            color: var(--red);
+            background: var(--red-bg);
+        }
+
+        .stat-spark-mini {
+            width: 40px;
+            height: 16px;
+        }
+
+        /* ─── CREDIT CARD (FC) ENHANCEMENTS ─── */
+        .fc-card {
+            background: linear-gradient(135deg, #fff 0%, #f9f7f2 100%);
+            border: 1px solid var(--border-strong);
+            min-height: 180px;
+            padding: 24px;
+            justify-content: space-between;
+        }
+
+        .fc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .fc-bank-name {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--t2);
+        }
+
+        .fc-chip {
+            width: 32px;
+            height: 24px;
+            background: #E5E1D8;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fc-chip::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 60%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .fc-body {
+            margin: 12px 0;
+        }
+
+        .fc-util-pct {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--t1);
+            line-height: 1;
+        }
+
+        .fc-spent-val {
+            font-size: 12px;
+            color: var(--t3);
+            margin-top: 4px;
+        }
+
+        .fc-bar-track {
+            height: 4px;
+            background: var(--border);
+            width: 100%;
+            margin: 12px 0 8px 0;
+        }
+
+        .fc-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.6s ease;
+        }
+
+        .fc-limit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: var(--t3);
+            font-weight: 600;
+        }
+
+        /* ─── PILL BUTTON ─── */
+        .pill-btn {
+            padding: 6px 14px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--t2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pill-btn:hover {
+            background: var(--surface);
+            border-color: var(--accent);
+        }
+
+        .pill-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
         }
 
         /* ─── REALISTIC CREDIT CARD ─── */
@@ -3325,22 +3538,40 @@
 
             <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
-                <div class="pg-header">
-                    <div class="pg-title">Accounts</div>
-                    <div class="pg-sub" id="acc-period">—</div>
+                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <div class="pg-title">Accounts</div>
+                        <div class="pg-sub" id="acc-period">—</div>
+                    </div>
+                    <div class="pill-btn">
+                        <div class="pill-dot"></div>
+                        <span>Recent</span>
+                    </div>
                 </div>
                 <div class="stats-row">
                     <div class="stat-tile">
                         <div class="s-eye">Total Spent</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
+                        <div class="stat-meta">
+                            <div class="stat-trend down">-1.2%</div>
+                            <div class="stat-spark-mini" id="spark-spent"></div>
+                        </div>
                     </div>
                     <div class="stat-tile">
                         <div class="s-eye">Daily Average</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
+                        <div class="stat-meta">
+                            <div class="stat-trend up">+0.8%</div>
+                            <div class="stat-spark-mini" id="spark-avg"></div>
+                        </div>
                     </div>
                     <div class="stat-tile">
                         <div class="s-eye">Net Balance</div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
+                        <div class="stat-meta">
+                            <div class="stat-trend up">+4.5%</div>
+                            <div class="stat-spark-mini" id="spark-net"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="acc-tabs-bar">
@@ -3367,7 +3598,8 @@
                             <div class="acc-pane-title">Credit Cards</div>
                             <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
                         </div>
-                        <div class="acc-list" id="creditList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <div class="acc-list" id="creditList"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
                             <div class="sp-wrap">
                                 <div class="sp"></div>
                             </div>
@@ -3993,10 +4225,10 @@
         }
 
         /* ─── ACCOUNTS TABS ─── */
-        window.switchAccTab = function(type, el) {
+        window.switchAccTab = function (type, el) {
             document.querySelectorAll('.acc-tab').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.acc-pane').forEach(x => x.classList.remove('active'));
-            
+
             el.classList.add('active');
             document.getElementById('acc-pane-' + type).classList.add('active');
         };
@@ -4005,7 +4237,7 @@
         function renderAccounts(accs, total, avg) {
             cntUp('st-spent', total); cntUp('st-avg', avg);
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
-            
+
             // Sort accounts descending by balance
             accs.sort((a, b) => (b.currentBalance || 0) - (a.currentBalance || 0));
 
