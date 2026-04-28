@@ -1014,6 +1014,104 @@
             border-color: var(--red);
         }
 
+        /* ─── ACCOUNTS CLASSIC TABS ─── */
+        .acc-tabs-bar {
+            display: flex;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .acc-tab {
+            padding: 14px 28px;
+            background: #f0f0f0;
+            border: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            font-family: var(--font-big);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--t3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin-right: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.85;
+        }
+
+        .acc-tab:hover {
+            background: #e8e8e8;
+            color: var(--t1);
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        .acc-tab.active {
+            background: var(--surface);
+            border-bottom: 1px solid var(--surface);
+            color: var(--accent);
+            opacity: 1;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .acc-tab-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0 12px 12px 12px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            min-height: 480px;
+            position: relative;
+        }
+
+        .acc-pane {
+            display: none;
+            animation: paneIn 0.25s ease backwards;
+        }
+
+        .acc-pane.active {
+            display: block;
+        }
+
+        @keyframes paneIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .acc-pane-hd {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .acc-pane-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--t1);
+            font-family: var(--font-big);
+        }
+
+        /* Responsive tabs */
+        @media (max-width: 600px) {
+            .acc-tab {
+                padding: 10px 16px;
+                font-size: 12px;
+                margin-right: 2px;
+            }
+            .acc-tab-content {
+                padding: 16px;
+                border-radius: 0 8px 8px 8px;
+            }
+        }
+
         /* ─── REALISTIC CREDIT CARD ─── */
         /* ─── CLAUDE THEMED CREDIT CARD ─── */
         /* ─── NEW PREMIUM FINANCIAL CARD (FC) ─── */
@@ -3260,35 +3358,41 @@
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
                     </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:24px;">
-                    <div class="acc-cols">
-                        <div>
-                            <div class="acc-sec-top">
-                                <div class="acc-sec-h">Bank Accounts</div><button class="add-inline-btn"
-                                    onclick="showAccForm('BANK')">+ Add</button>
-                            </div>
-                            <div class="acc-list" id="bankList">
-                                <div class="sp-wrap">
-                                    <div class="sp"></div>
-                                </div>
-                            </div>
+                <div class="acc-tabs-bar">
+                    <div class="acc-tab active" onclick="switchAccTab('bank', this)">🏦 Banks</div>
+                    <div class="acc-tab" onclick="switchAccTab('credit', this)">💳 Cards</div>
+                    <div class="acc-tab" onclick="switchAccTab('people', this)">👥 People</div>
+                </div>
+                <div class="acc-tab-content">
+                    <!-- BANK PANE -->
+                    <div class="acc-pane active" id="acc-pane-bank">
+                        <div class="acc-pane-hd">
+                            <div class="acc-pane-title">Bank Accounts & Wallets</div>
+                            <button class="add-inline-btn" onclick="showAccForm('BANK')">+ Add Account</button>
                         </div>
-                        <div>
-                            <div class="acc-sec-top">
-                                <div class="acc-sec-h">Credit Cards</div><button class="add-inline-btn"
-                                    onclick="showAccForm('CREDIT_CARD')">+ Add</button>
-                            </div>
-                            <div class="acc-list" id="creditList">
-                                <div class="sp-wrap">
-                                    <div class="sp"></div>
-                                </div>
+                        <div class="acc-list" id="bankList">
+                            <div class="sp-wrap">
+                                <div class="sp"></div>
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div class="acc-sec-top">
-                            <div class="acc-sec-h">People &amp; Contacts</div><button class="add-inline-btn"
-                                onclick="showAccForm('PERSON')">+ Add</button>
+                    <!-- CREDIT PANE -->
+                    <div class="acc-pane" id="acc-pane-credit">
+                        <div class="acc-pane-hd">
+                            <div class="acc-pane-title">Credit Cards</div>
+                            <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
+                        </div>
+                        <div class="acc-list" id="creditList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                            <div class="sp-wrap">
+                                <div class="sp"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- PEOPLE PANE -->
+                    <div class="acc-pane" id="acc-pane-people">
+                        <div class="acc-pane-hd">
+                            <div class="acc-pane-title">People & Contacts</div>
+                            <button class="add-inline-btn" onclick="showAccForm('PERSON')">+ Add Person</button>
                         </div>
                         <div class="acc-list" id="personList">
                             <div class="sp-wrap">
@@ -3902,6 +4006,15 @@
             const el = document.getElementById('mobnav-' + name);
             if (el) el.classList.add('active');
         }
+
+        /* ─── ACCOUNTS TABS ─── */
+        window.switchAccTab = function(type, el) {
+            document.querySelectorAll('.acc-tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.acc-pane').forEach(x => x.classList.remove('active'));
+            
+            el.classList.add('active');
+            document.getElementById('acc-pane-' + type).classList.add('active');
+        };
 
         /* ═══ ACCOUNTS ═══ */
         function renderAccounts(accs, total, avg) {
