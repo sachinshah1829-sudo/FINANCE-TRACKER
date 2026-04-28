@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>Finance Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -21,7 +23,8 @@
         }
 
         :root {
-            --bg: #F7F5F2; /* Claude off-white */
+            --bg: #F7F5F2;
+            /* Claude off-white */
             --bg2: #F0EDE8;
             --surface: #FFFFFF;
             --border: rgba(100, 80, 55, 0.08);
@@ -872,13 +875,35 @@
             opacity: 1;
         }
 
-        .stat-tile.spent { background: #FFF5F5; border-color: #FEE2E2; }
-        .stat-tile.avg { background: #F5F7FF; border-color: #E0E7FF; }
-        .stat-tile.net { background: #F0FDF4; border-color: #DCFCE7; }
+        .stat-tile.spent {
+            background: #FFF5F5;
+            border-color: #FEE2E2;
+        }
 
-        .stat-tile.spent .s-icon { color: #DC2626; background: #FEE2E2; }
-        .stat-tile.avg .s-icon { color: #4F46E5; background: #E0E7FF; }
-        .stat-tile.net .s-icon { color: #059669; background: #DCFCE7; }
+        .stat-tile.avg {
+            background: #F5F7FF;
+            border-color: #E0E7FF;
+        }
+
+        .stat-tile.net {
+            background: #F0FDF4;
+            border-color: #DCFCE7;
+        }
+
+        .stat-tile.spent .s-icon {
+            color: #DC2626;
+            background: #FEE2E2;
+        }
+
+        .stat-tile.avg .s-icon {
+            color: #4F46E5;
+            background: #E0E7FF;
+        }
+
+        .stat-tile.net .s-icon {
+            color: #059669;
+            background: #DCFCE7;
+        }
 
         .s-header {
             display: flex;
@@ -967,7 +992,8 @@
             color: var(--red);
         }
 
-        .acc-emo, .acc-chev {
+        .acc-emo,
+        .acc-chev {
             display: none;
         }
 
@@ -1009,7 +1035,7 @@
             border-color: var(--red);
         }
 
-                /* ─── ACCOUNTS TAB SYSTEM ─── */
+        /* ─── ACCOUNTS TAB SYSTEM ─── */
         .acc-tabs-bar {
             display: inline-flex;
             background: var(--bg2);
@@ -1047,7 +1073,7 @@
             background: var(--surface);
             color: var(--accent);
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .acc-pane {
@@ -1056,8 +1082,15 @@
         }
 
         @keyframes paneFade {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .acc-pane.active {
@@ -1085,6 +1118,7 @@
                 font-size: 12px;
                 margin-right: 2px;
             }
+
             .acc-tab-content {
                 padding: 16px;
                 border-radius: 0 8px 8px 8px;
@@ -3367,7 +3401,8 @@
                             <div class="acc-pane-title">Credit Cards</div>
                             <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
                         </div>
-                        <div class="acc-list" id="creditList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <div class="acc-list" id="creditList"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
                             <div class="sp-wrap">
                                 <div class="sp"></div>
                             </div>
@@ -3993,10 +4028,10 @@
         }
 
         /* ─── ACCOUNTS TABS ─── */
-        window.switchAccTab = function(type, el) {
+        window.switchAccTab = function (type, el) {
             document.querySelectorAll('.acc-tab').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.acc-pane').forEach(x => x.classList.remove('active'));
-            
+
             el.classList.add('active');
             document.getElementById('acc-pane-' + type).classList.add('active');
         };
@@ -4005,7 +4040,7 @@
         function renderAccounts(accs, total, avg) {
             cntUp('st-spent', total); cntUp('st-avg', avg);
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
-            
+
             // Sort accounts descending by balance
             accs.sort((a, b) => (b.currentBalance || 0) - (a.currentBalance || 0));
 
