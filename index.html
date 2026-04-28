@@ -1034,7 +1034,7 @@
         .acc-tab {
             padding: 18px 50px;
             background: #f5f5f5; /* Light grey for inactive */
-            border: 1px solid #ddd; /* Very light border for inactive */
+            border: 1px solid #333; /* Use consistent dark border for continuity */
             cursor: pointer;
             font-family: var(--font-big);
             font-size: 16px;
@@ -4055,6 +4055,10 @@
         function renderAccounts(accs, total, avg) {
             cntUp('st-spent', total); cntUp('st-avg', avg);
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
+            
+            // Sort accounts descending by balance
+            accs.sort((a, b) => (b.currentBalance || 0) - (a.currentBalance || 0));
+
             document.getElementById('bankList').innerHTML = accs.filter(a => a.type === 'BANK').map((a, i) => accHTML(a, i, 'bank')).join('') || '<div class="empty-s">No bank accounts</div>';
             document.getElementById('creditList').innerHTML = accs.filter(a => a.type === 'CREDIT_CARD').map((a, i) => accHTML(a, i, 'credit')).join('') || '<div class="empty-s">No credit cards</div>';
             document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No contacts</div>';
