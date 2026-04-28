@@ -1033,14 +1033,15 @@
 
         .acc-tab {
             padding: 18px 50px;
-            background: #f5f5f5; /* Light grey for inactive */
-            border: 1px solid #333; /* Use consistent dark border for continuity */
+            background: var(--bg2); /* Claude beige */
+            border: 1px solid var(--border); /* Light brown border */
+            border-bottom: 1px solid var(--accent); /* Bottom border follows accent for continuity */
             cursor: pointer;
             font-family: var(--font-big);
             font-size: 16px;
             font-weight: 700;
             color: var(--t3);
-            transition: background 0.2s;
+            transition: all var(--t-smooth);
             user-select: none;
             border-radius: 0;
             margin-right: -1px;
@@ -1052,21 +1053,21 @@
         }
 
         .acc-tab:hover:not(.active) {
-            background: #ededed;
-            color: var(--t1);
+            background: var(--accent-bg);
+            color: var(--accent);
         }
 
         .acc-tab.active {
-            background: #ffffff; /* White for active */
-            border: 1px solid #333; /* Thin black border */
-            border-bottom: 1px solid #ffffff; /* Same as background to hide border */
-            color: #000000;
+            background: var(--accent-bg); /* Light amber highlight */
+            border: 1px solid var(--accent); /* Strong amber border */
+            border-bottom: 1px solid var(--accent-bg); /* Seamless connection */
+            color: var(--accent);
             z-index: 11;
         }
 
         .acc-tab-content {
-            background: #ffffff;
-            border: 1px solid #333; /* Thin black border */
+            background: var(--accent-bg);
+            border: 1px solid var(--accent);
             border-radius: 0;
             padding: 2.5rem;
             min-height: 480px;
