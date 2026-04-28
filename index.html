@@ -931,7 +931,7 @@
         }
 
         .acc-bar.bank {
-            background: #6366F1;
+            background: var(--t2);
         }
 
         .acc-bar.credit {
@@ -1022,6 +1022,14 @@
             z-index: 10;
         }
 
+        /* ─── ACCOUNTS CLASSIC TABS ─── */
+        .acc-tabs-bar {
+            display: flex;
+            margin-bottom: -1px;
+            position: relative;
+            z-index: 10;
+        }
+
         .acc-tab {
             padding: 12px 24px;
             background: var(--bg2);
@@ -1034,8 +1042,8 @@
             color: var(--t3);
             transition: all var(--t-smooth);
             user-select: none;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
             margin-right: 4px;
             display: flex;
             align-items: center;
@@ -1045,36 +1053,50 @@
         }
 
         .acc-tab:hover {
-            background: var(--accent-bg);
+            background: var(--bg);
             color: var(--accent);
         }
 
         .acc-tab.active {
-            background: var(--surface);
-            border-bottom: 1px solid var(--surface);
+            background: var(--bg);
+            border-bottom: 1px solid var(--bg);
             color: var(--accent);
             border-top: 2px solid var(--accent);
-            padding-top: 11px; /* Adjust for border-top */
+            padding-top: 11px;
         }
 
         .acc-tab-content {
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 0 12px 12px 12px;
-            padding: 2rem;
-            box-shadow: var(--el-1);
+            border-radius: 0;
+            padding: 2.5rem;
+            box-shadow: none;
             min-height: 480px;
         }
 
         .acc-list {
-            max-width: 600px; /* Constrain width */
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 100%;
+        }
+
+        .acc-item {
             flex-direction: column;
-            gap: 12px;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 1.5rem;
+            min-height: 120px;
+        }
+
+        .acc-bal {
+            text-align: left;
+            margin-top: auto;
+            width: 100%;
         }
 
         #creditList {
-            max-width: 100%; /* Credit cards can take more room if grid */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         }
 
         .acc-pane {
