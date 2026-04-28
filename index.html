@@ -1023,50 +1023,58 @@
         }
 
         .acc-tab {
-            padding: 14px 28px;
-            background: #f0f0f0;
+            padding: 12px 24px;
+            background: var(--bg2);
             border: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             font-family: var(--font-big);
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--t3);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all var(--t-smooth);
             user-select: none;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            margin-right: 6px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            margin-right: 4px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            opacity: 0.85;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .acc-tab:hover {
-            background: #e8e8e8;
-            color: var(--t1);
-            opacity: 1;
-            transform: translateY(-1px);
+            background: var(--accent-bg);
+            color: var(--accent);
         }
 
         .acc-tab.active {
             background: var(--surface);
             border-bottom: 1px solid var(--surface);
             color: var(--accent);
-            opacity: 1;
-            transform: none;
-            box-shadow: none;
+            border-top: 2px solid var(--accent);
+            padding-top: 11px; /* Adjust for border-top */
         }
 
         .acc-tab-content {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 0 12px 12px 12px;
-            padding: 32px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            padding: 2rem;
+            box-shadow: var(--el-1);
             min-height: 480px;
-            position: relative;
+        }
+
+        .acc-list {
+            max-width: 600px; /* Constrain width */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #creditList {
+            max-width: 100%; /* Credit cards can take more room if grid */
         }
 
         .acc-pane {
@@ -3359,9 +3367,9 @@
                     </div>
                 </div>
                 <div class="acc-tabs-bar">
-                    <div class="acc-tab active" onclick="switchAccTab('bank', this)">🏦 Banks</div>
-                    <div class="acc-tab" onclick="switchAccTab('credit', this)">💳 Cards</div>
-                    <div class="acc-tab" onclick="switchAccTab('people', this)">👥 People</div>
+                    <div class="acc-tab active" onclick="switchAccTab('bank', this)">Banks</div>
+                    <div class="acc-tab" onclick="switchAccTab('credit', this)">Cards</div>
+                    <div class="acc-tab" onclick="switchAccTab('people', this)">People</div>
                 </div>
                 <div class="acc-tab-content">
                     <!-- BANK PANE -->
