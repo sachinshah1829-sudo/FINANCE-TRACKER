@@ -7,11 +7,15 @@
     <title>Finance Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- PDF Generation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         *,
         *::before,
@@ -19,7 +23,8 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            border-radius: 0 !important; /* Sharp edges globally */
+            border-radius: 0 !important;
+            /* Sharp edges globally */
         }
 
         :root {
@@ -842,7 +847,7 @@
             background: var(--surface);
             padding: 20px;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
             transition: 0.2s ease;
             display: flex;
             flex-direction: column;
@@ -852,7 +857,7 @@
         .stat-tile:hover {
             transform: translateY(-2px);
             border-color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .s-eye {
@@ -925,7 +930,8 @@
             color: var(--red);
         }
 
-        .acc-emo, .acc-chev {
+        .acc-emo,
+        .acc-chev {
             display: none;
         }
 
@@ -985,9 +991,12 @@
 
         .acc-tab {
             padding: 18px 50px;
-            background: var(--bg2); /* Claude beige */
-            border: 1px solid var(--border); /* Light brown border */
-            border-bottom: 1px solid var(--accent); /* Bottom border follows accent for continuity */
+            background: var(--bg2);
+            /* Claude beige */
+            border: 1px solid var(--border);
+            /* Light brown border */
+            border-bottom: 1px solid var(--accent);
+            /* Bottom border follows accent for continuity */
             cursor: pointer;
             font-family: var(--font-big);
             font-size: 16px;
@@ -1005,12 +1014,14 @@
         }
 
         .acc-tab:hover:not(.active) {
-            background: #FFF9F2; /* Very light orange hover */
+            background: #FFF9F2;
+            /* Very light orange hover */
             color: var(--accent);
         }
 
         .acc-tab.active {
-            background: #FFF9F2; /* Very very light orange shade */
+            background: #FFF9F2;
+            /* Very very light orange shade */
             border: 1px solid var(--accent);
             border-bottom: 1px solid #FFF9F2;
             color: var(--accent);
@@ -1067,8 +1078,15 @@
         }
 
         @keyframes paneIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .acc-pane-hd {
@@ -1094,6 +1112,7 @@
                 font-size: 12px;
                 margin-right: 2px;
             }
+
             .acc-tab-content {
                 padding: 16px;
                 border-radius: 0 8px 8px 8px;
@@ -2987,6 +3006,528 @@
                 font-size: 11px;
             }
         }
+
+        /* ─── ACCOUNTS REDESIGN ─── */
+        #page-accounts {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(230, 126, 34, 0.08), transparent 28%),
+                linear-gradient(180deg, #fbf8f4 0%, #f7f5f2 100%);
+            padding-top: 12px;
+        }
+
+        #page-accounts .pg-title,
+        #page-accounts .pg-sub,
+        #page-accounts .s-val,
+        #page-accounts .s-rs,
+        #page-accounts .acc-pane-title,
+        #page-accounts .acc-tab,
+        #page-accounts .acc-name,
+        #page-accounts .acc-bal,
+        #page-accounts .fc-util-pct,
+        #page-accounts .fc-spent-val,
+        #page-accounts .fc-limit-val {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        #page-accounts .pg-header.acc-hero {
+            margin-bottom: 28px;
+        }
+
+        #page-accounts .acc-hero-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #page-accounts .pg-title {
+            font-size: clamp(2.25rem, 4vw, 3.3rem);
+            font-weight: 800;
+            line-height: 0.95;
+            letter-spacing: -0.06em;
+            color: #2f2924;
+        }
+
+        #page-accounts .pg-sub {
+            font-size: 0.96rem;
+            color: #8c8378;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        #page-accounts .acc-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        #page-accounts .acc-stat-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 243, 236, 0.94));
+            border: none !important;
+            border-radius: 24px !important;
+            box-shadow: 0 14px 32px rgba(111, 88, 64, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            padding: 22px 24px;
+            min-height: 148px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #page-accounts .acc-stat-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #page-accounts .acc-stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px !important;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(180deg, rgba(230, 126, 34, 0.18), rgba(230, 126, 34, 0.08));
+            color: #b76622;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        #page-accounts .s-eye {
+            font-size: 0.8rem;
+            color: #8c8378;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 0;
+        }
+
+        #page-accounts .s-val {
+            font-size: clamp(1.9rem, 2.5vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.06em;
+            color: #2f2924;
+        }
+
+        #page-accounts .s-rs {
+            color: #8c8378;
+            font-size: 1.1rem;
+            margin-right: 2px;
+        }
+
+        #page-accounts .acc-stat-meta {
+            font-size: 0.92rem;
+            color: #9a9188;
+        }
+
+        #page-accounts .acc-tabs-bar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            padding: 8px;
+            background: rgba(244, 238, 231, 0.95);
+            border-radius: 999px !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 22px rgba(111, 88, 64, 0.05);
+        }
+
+        #page-accounts .acc-tab {
+            position: relative;
+            border: none !important;
+            background: transparent;
+            color: #8f867b;
+            border-radius: 999px !important;
+            padding: 14px 22px;
+            min-width: 112px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            overflow: hidden;
+        }
+
+        #page-accounts .acc-tab span {
+            position: relative;
+            z-index: 1;
+        }
+
+        #page-accounts .acc-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(180deg, rgba(230, 126, 34, 0.18), rgba(230, 126, 34, 0.08));
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+
+        #page-accounts .acc-tab:hover {
+            color: #5f564c;
+        }
+
+        #page-accounts .acc-tab.active {
+            color: #b76622;
+            background: transparent;
+        }
+
+        #page-accounts .acc-tab.active::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #page-accounts .acc-tab-content {
+            background: rgba(255, 251, 246, 0.82);
+            border: none !important;
+            border-radius: 30px !important;
+            padding: 30px;
+            min-height: 520px;
+            box-shadow: 0 18px 48px rgba(111, 88, 64, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        #page-accounts .acc-pane-hd {
+            margin-bottom: 24px;
+            padding-bottom: 0;
+            border-bottom: none;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        #page-accounts .acc-pane-title {
+            font-size: 1.55rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            color: #2f2924;
+        }
+
+        #page-accounts .add-inline-btn {
+            border: none !important;
+            border-radius: 999px !important;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(242, 234, 224, 0.95));
+            color: #7e6957;
+            padding: 12px 18px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            box-shadow: 0 10px 24px rgba(111, 88, 64, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+        }
+
+        #page-accounts .add-inline-btn:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 14px 28px rgba(230, 126, 34, 0.16);
+            color: #b76622;
+        }
+
+        #page-accounts .acc-list {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        #page-accounts #creditList {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+        }
+
+        #page-accounts #personList {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        #page-accounts .acc-item {
+            min-height: 180px;
+            padding: 22px;
+            border: none !important;
+            border-radius: 26px !important;
+            box-shadow: 0 14px 28px rgba(111, 88, 64, 0.08);
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        #page-accounts .acc-item:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 22px 40px rgba(111, 88, 64, 0.11);
+        }
+
+        #page-accounts .act-btn {
+            width: 32px;
+            height: 32px;
+            border: none !important;
+            border-radius: 999px !important;
+            background: rgba(255, 255, 255, 0.88);
+            color: #796e61;
+            box-shadow: 0 8px 16px rgba(111, 88, 64, 0.08);
+        }
+
+        #page-accounts .act-btn:hover {
+            background: #fff;
+            color: #b76622;
+        }
+
+        #page-accounts .act-btn.del:hover {
+            background: #fff2ef;
+            color: #c35d47;
+        }
+
+        #page-accounts .acc-bank-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 242, 235, 0.96));
+        }
+
+        #page-accounts .acc-bank-top,
+        #page-accounts .acc-person-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        #page-accounts .acc-bank-badge,
+        #page-accounts .acc-person-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px !important;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            color: #b76622;
+            background: linear-gradient(180deg, rgba(230, 126, 34, 0.16), rgba(230, 126, 34, 0.06));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        #page-accounts .acc-person-avatar {
+            border-radius: 50% !important;
+            color: #6a5a4d;
+            background: linear-gradient(180deg, rgba(154, 132, 107, 0.16), rgba(255, 255, 255, 0.6));
+        }
+
+        #page-accounts .acc-name {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #2f2924;
+            text-transform: none;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        #page-accounts .acc-bal {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.06em;
+            color: #2f2924;
+            margin-top: auto;
+        }
+
+        #page-accounts .acc-bal.neg {
+            color: #b85b46;
+        }
+
+        #page-accounts .acc-bank-sub,
+        #page-accounts .acc-person-note {
+            font-size: 0.92rem;
+            color: #958a7f;
+        }
+
+        #page-accounts .acc-person-card {
+            min-height: 190px;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 240, 233, 0.96));
+        }
+
+        #page-accounts .acc-person-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+        }
+
+        #page-accounts .acc-person-amount {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+
+        #page-accounts .acc-person-amount.is-positive {
+            color: #3d8a63;
+        }
+
+        #page-accounts .acc-person-amount.is-negative {
+            color: #b85b46;
+        }
+
+        #page-accounts .fc-card {
+            max-width: none;
+            min-height: 220px;
+            aspect-ratio: auto;
+            border-radius: 30px !important;
+            padding: 24px !important;
+            background:
+                radial-gradient(circle at top right, rgba(255, 209, 153, 0.35), transparent 26%),
+                linear-gradient(135deg, #fffaf2 0%, #f3e1cc 52%, #ead5b6 100%) !important;
+            box-shadow: 0 20px 42px rgba(158, 108, 55, 0.14) !important;
+            overflow: hidden;
+        }
+
+        #page-accounts .fc-orb {
+            position: absolute;
+            inset: auto -30px -45px auto;
+            width: 140px;
+            height: 140px;
+            border-radius: 50% !important;
+            background: radial-gradient(circle, rgba(230, 126, 34, 0.18), transparent 68%);
+            pointer-events: none;
+        }
+
+        #page-accounts .fc-header,
+        #page-accounts .fc-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        #page-accounts .fc-bank-name {
+            font-size: 0.82rem;
+            color: #9b5d25;
+            letter-spacing: 0.12em;
+        }
+
+        #page-accounts .fc-network {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: rgba(79, 59, 42, 0.62);
+        }
+
+        #page-accounts .fc-chip {
+            width: 44px;
+            height: 32px;
+            border-radius: 10px !important;
+            background: linear-gradient(135deg, rgba(212, 171, 96, 0.95), rgba(173, 128, 50, 0.75));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        #page-accounts .fc-body {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 18px 0 22px;
+        }
+
+        #page-accounts .fc-label,
+        #page-accounts .fc-limit-kicker {
+            font-size: 0.75rem;
+            color: rgba(79, 59, 42, 0.58);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        #page-accounts .fc-util-pct {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 0.95;
+            letter-spacing: -0.08em;
+            color: #2f2924;
+        }
+
+        #page-accounts .fc-spent-val {
+            font-size: 1rem;
+            color: #7b6047;
+            font-weight: 600;
+        }
+
+        #page-accounts .fc-spent-val span {
+            font-size: 0.82rem;
+            color: rgba(79, 59, 42, 0.56);
+            font-weight: 500;
+        }
+
+        #page-accounts .fc-bar-track {
+            height: 8px;
+            border-radius: 999px !important;
+            background: rgba(255, 255, 255, 0.56);
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(79, 59, 42, 0.08);
+        }
+
+        #page-accounts .fc-bar-fill {
+            height: 100%;
+            border-radius: inherit !important;
+            background: linear-gradient(90deg, #d68a47 0%, #efb27e 100%);
+            transition: width 0.4s ease;
+        }
+
+        #page-accounts .fc-limit-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        #page-accounts .fc-limit-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        #page-accounts .fc-limit-stat-right {
+            text-align: right;
+        }
+
+        #page-accounts .fc-limit-val {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2f2924;
+            letter-spacing: -0.03em;
+        }
+
+        #page-accounts .fc-card .acc-acts {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            opacity: 0;
+        }
+
+        #page-accounts .empty-s {
+            padding: 28px;
+            border-radius: 22px !important;
+            background: rgba(255, 255, 255, 0.74);
+            color: #91877c;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        @media (max-width: 860px) {
+            #page-accounts .acc-stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            #page-accounts .acc-tab-content {
+                padding: 22px;
+            }
+
+            #page-accounts .acc-tabs-bar {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            #page-accounts .acc-tab {
+                flex: 1 1 0;
+                min-width: 0;
+                padding-inline: 14px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #page-accounts .pg-title {
+                font-size: 2rem;
+            }
+
+            #page-accounts .acc-stat-card,
+            #page-accounts .acc-item,
+            #page-accounts .fc-card {
+                border-radius: 22px !important;
+            }
+
+            #page-accounts .fc-util-pct {
+                font-size: 2.5rem;
+            }
+        }
     </style>
 </head>
 
@@ -3324,29 +3865,43 @@
             </div>
 
             <!-- ACCOUNTS -->
-            <div class="page" id="page-accounts">
-                <div class="pg-header">
-                    <div class="pg-title">Accounts</div>
-                    <div class="pg-sub" id="acc-period">—</div>
+            <div class="page accounts-page" id="page-accounts">
+                <div class="pg-header acc-hero">
+                    <div class="acc-hero-copy">
+                        <div class="pg-title">Accounts</div>
+                        <div class="pg-sub" id="acc-period">—</div>
+                    </div>
                 </div>
-                <div class="stats-row">
-                    <div class="stat-tile">
-                        <div class="s-eye">Total Spent</div>
+                <div class="stats-row acc-stats-row">
+                    <div class="stat-tile acc-stat-card">
+                        <div class="acc-stat-top">
+                            <div class="acc-stat-icon">↗</div>
+                            <div class="s-eye">Total Spent</div>
+                        </div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
+                        <div class="acc-stat-meta" id="st-spent-meta">Monthly outflow</div>
                     </div>
-                    <div class="stat-tile">
-                        <div class="s-eye">Daily Average</div>
+                    <div class="stat-tile acc-stat-card">
+                        <div class="acc-stat-top">
+                            <div class="acc-stat-icon">∿</div>
+                            <div class="s-eye">Daily Average</div>
+                        </div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
+                        <div class="acc-stat-meta" id="st-avg-meta">Average per day</div>
                     </div>
-                    <div class="stat-tile">
-                        <div class="s-eye">Net Balance</div>
+                    <div class="stat-tile acc-stat-card">
+                        <div class="acc-stat-top">
+                            <div class="acc-stat-icon">◌</div>
+                            <div class="s-eye">Net Balance</div>
+                        </div>
                         <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
+                        <div class="acc-stat-meta" id="st-net-meta">Across all accounts</div>
                     </div>
                 </div>
                 <div class="acc-tabs-bar">
-                    <div class="acc-tab active" onclick="switchAccTab('bank', this)">Banks</div>
-                    <div class="acc-tab" onclick="switchAccTab('credit', this)">Cards</div>
-                    <div class="acc-tab" onclick="switchAccTab('people', this)">People</div>
+                    <div class="acc-tab active" onclick="switchAccTab('bank', this)"><span>Banks</span></div>
+                    <div class="acc-tab" onclick="switchAccTab('credit', this)"><span>Cards</span></div>
+                    <div class="acc-tab" onclick="switchAccTab('people', this)"><span>People</span></div>
                 </div>
                 <div class="acc-tab-content">
                     <!-- BANK PANE -->
@@ -3367,7 +3922,7 @@
                             <div class="acc-pane-title">Credit Cards</div>
                             <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
                         </div>
-                        <div class="acc-list" id="creditList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <div class="acc-list" id="creditList">
                             <div class="sp-wrap">
                                 <div class="sp"></div>
                             </div>
@@ -3993,10 +4548,10 @@
         }
 
         /* ─── ACCOUNTS TABS ─── */
-        window.switchAccTab = function(type, el) {
+        window.switchAccTab = function (type, el) {
             document.querySelectorAll('.acc-tab').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.acc-pane').forEach(x => x.classList.remove('active'));
-            
+
             el.classList.add('active');
             document.getElementById('acc-pane-' + type).classList.add('active');
         };
@@ -4005,7 +4560,16 @@
         function renderAccounts(accs, total, avg) {
             cntUp('st-spent', total); cntUp('st-avg', avg);
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
-            
+            const bankCount = accs.filter(a => a.type === 'BANK').length;
+            const creditCount = accs.filter(a => a.type === 'CREDIT_CARD').length;
+            const peopleCount = accs.filter(a => a.type === 'PERSON').length;
+            const spentMeta = document.getElementById('st-spent-meta');
+            const avgMeta = document.getElementById('st-avg-meta');
+            const netMeta = document.getElementById('st-net-meta');
+            if (spentMeta) spentMeta.textContent = total > 0 ? 'Monthly outflow snapshot' : 'No spending recorded yet';
+            if (avgMeta) avgMeta.textContent = avg > 0 ? 'Average per active day' : 'Waiting for activity';
+            if (netMeta) netMeta.textContent = `${bankCount} banks • ${creditCount} cards • ${peopleCount} people`;
+
             // Sort accounts descending by balance
             accs.sort((a, b) => (b.currentBalance || 0) - (a.currentBalance || 0));
 
@@ -4014,28 +4578,46 @@
             document.getElementById('personList').innerHTML = accs.filter(a => a.type === 'PERSON').map((a, i) => accHTML(a, i, 'person')).join('') || '<div class="empty-s">No contacts</div>';
         }
         function bkEmo(n) { n = n.toUpperCase(); if (n.includes('HDFC')) return 'H'; if (n.includes('ICICI')) return 'I'; if (n.includes('AXIS')) return 'A'; if (n.includes('SBI')) return 'S'; if (n.includes('WALLET')) return 'W'; if (n.includes('CREDIT')) return 'C'; if (n.includes('CASH')) return '$'; return 'B'; }
+        function getInitials(name) {
+            const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return '?';
+            return parts.slice(0, 2).map(p => p.charAt(0).toUpperCase()).join('');
+        }
+        function bankSubtitle(name) {
+            const n = (name || '').toUpperCase();
+            if (n.includes('WALLET')) return 'Digital Wallet';
+            if (n.includes('SAVING')) return 'Savings Account';
+            if (n.includes('CURRENT')) return 'Current Account';
+            if (n.includes('CASH')) return 'Cash Balance';
+            return 'Primary Account';
+        }
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = a.type === 'CREDIT_CARD';
-            const emo = isPerson ? (a.name || '?').charAt(0).toUpperCase() : bkEmo(a.name);
+            const emo = isPerson ? getInitials(a.name) : bkEmo(a.name);
 
             if (isCredit) {
                 const limit = a.openingBalance || 0;
                 const balance = a.currentBalance || 0;
                 const spent = limit - balance;
                 const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
+                const available = Math.max(balance, 0);
 
                 return `
                     <div class="acc-item fc-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)">
+                        <div class="fc-orb"></div>
                         <div class="fc-header">
-                            <div class="fc-bank-name">${escH(a.name)}</div>
-                            <div class="fc-chip"></div>
+                            <div>
+                                <div class="fc-bank-name">${escH(a.name)}</div>
+                                <div class="fc-network">Credit line</div>
+                            </div>
+                            <div class="fc-chip" aria-hidden="true"></div>
                         </div>
                         
                         <div class="fc-body">
-                            <div class="fc-label">Current Utilization</div>
+                            <div class="fc-label">Current utilization</div>
                             <div class="fc-util-pct">${pct.toFixed(0)}%</div>
-                            <div class="fc-spent-val">₹${fmt(spent)} <span style="font-size:9px; color:var(--t4); font-weight:500;">Spent</span></div>
+                            <div class="fc-spent-val">₹${fmt(spent)} <span>used</span></div>
                         </div>
 
                         <div class="fc-footer">
@@ -4043,12 +4625,18 @@
                                 <div class="fc-bar-fill" style="width:${pct}%"></div>
                             </div>
                             <div class="fc-limit-row">
-                                <div class="fc-label" style="margin:0">Card Limit</div>
-                                <div class="fc-limit-val">₹${fmt(limit)}</div>
+                                <div class="fc-limit-stat">
+                                    <div class="fc-limit-kicker">Available</div>
+                                    <div class="fc-limit-val">₹${fmt(available)}</div>
+                                </div>
+                                <div class="fc-limit-stat fc-limit-stat-right">
+                                    <div class="fc-limit-kicker">Limit</div>
+                                    <div class="fc-limit-val">₹${fmt(limit)}</div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="acc-acts" onclick="event.stopPropagation()" style="bottom: auto; top: 10px; right: 10px;">
+                        <div class="acc-acts" onclick="event.stopPropagation()">
                             <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
                             <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
                         </div>
@@ -4057,16 +4645,38 @@
             }
 
             const pos = (a.currentBalance || 0) >= 0;
-            const balHTML = `<div class="acc-bal ${pos ? 'pos' : 'neg'}">${rs(a.currentBalance || 0)}</div>`;
+            const balance = rs(a.currentBalance || 0);
+            if (isPerson) {
+                return `
+                    <div class="acc-item acc-person-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
+                        <div class="acc-person-top">
+                            <div class="acc-person-avatar">${emo}</div>
+                            <div class="acc-acts" onclick="event.stopPropagation()">
+                                <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
+                                <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
+                            </div>
+                        </div>
+                        <div class="acc-person-body">
+                            <div class="acc-name">${escH(a.name)}</div>
+                            <div class="acc-person-note">${pos ? 'You are owed' : 'You owe'}</div>
+                        </div>
+                        <div class="acc-person-amount ${pos ? 'is-positive' : 'is-negative'}">${balance}</div>
+                    </div>
+                `;
+            }
 
             return `
-                <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
-                    <div class="acc-name">${escH(a.name)}</div>
-                    ${balHTML}
-                    <div class="acc-acts" onclick="event.stopPropagation()">
-                        <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
-                        <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
+                <div class="acc-item acc-bank-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
+                    <div class="acc-bank-top">
+                        <div class="acc-bank-badge">${emo}</div>
+                        <div class="acc-acts" onclick="event.stopPropagation()">
+                            <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
+                            <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
+                        </div>
                     </div>
+                    <div class="acc-name">${escH(a.name)}</div>
+                    <div class="acc-bal ${pos ? 'pos' : 'neg'}">${balance}</div>
+                    <div class="acc-bank-sub">${bankSubtitle(a.name)}</div>
                 </div>
             `;
         }
