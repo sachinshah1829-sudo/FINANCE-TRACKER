@@ -839,16 +839,20 @@
         }
 
         .stat-tile {
-            background: var(--bg);
-            border: 1px solid var(--border-strong);
-            padding: 1.5rem 1.5rem 1.25rem;
-            position: relative;
-            transition: all var(--t-fast);
+            background: var(--surface);
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .stat-tile:hover {
-            background: var(--surface);
+            transform: translateY(-2px);
             border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
 
         .s-eye {
