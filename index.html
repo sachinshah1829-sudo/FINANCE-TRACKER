@@ -2352,6 +2352,36 @@
             position: relative;
         }
 
+        .health-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .health-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .health-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .health-val {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--t1);
+            font-family: var(--font-big);
+            letter-spacing: -0.02em;
+        }
+        .health-sub {
+            font-size: 11px;
+            color: var(--t3);
+            font-weight: 600;
+        }
+
         .ai-title {
             font-size: 10px;
             font-weight: 700;
@@ -5574,9 +5604,9 @@
 
                     <div class="ana-card ana-span-5">
                         <div class="ana-card-h">
-                            <div class="card-h">Top Categories</div>
+                            <div class="card-h">Financial Health</div>
                         </div>
-                        <div class="bar-rows" id="usefulChart" style="padding-top:1rem;"></div>
+                        <div id="health-metrics" class="health-grid" style="padding-top:1rem;"></div>
                     </div>
                 </div>
             </div>
@@ -6086,7 +6116,8 @@
             renderHeatmap({ days: heatmapDays, firstDayOfWeek: sd.getDay() });
             renderWeekly(weeklyExpenses);
             renderPie(categoryExpenses);
-            renderUsefulChart(categoryExpenses.slice(0, 5).map(c => ({ name: c.category, total: c.total })));
+            const totalIncome = periodTxns.filter(t => Number(t.amount) > 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Number(t.amount), 0);
+            renderFinancialHealth(periodTxns, totalIncome, totalExpense, daysInMonth);
             renderAIInsights(periodTxns, totalExpense, prevTotalExpense, categoryExpenses, heatmapDays);
             updateMoMTrends();
             updateAIPrompts();
@@ -6728,24 +6759,65 @@
             }).join('');
         }
 
-        function renderUsefulChart(data) {
-            const chart = document.getElementById('usefulChart');
-            if (!chart) return;
-            const mx = Math.max(...data.map(d => d.total), 1);
-            chart.innerHTML = data.map((d, i) => {
-                const pct = (d.total / mx) * 100;
-                return `
-                    <div class="br-item" style="animation-delay: ${i * 0.05}s; margin-bottom: 16px;">
-                        <div class="br-lbl" style="width: 100px; text-align: left; font-size: 11px;">${d.name}</div>
-                        <div class="br-track-wrap">
-                            <div class="br-track thick">
-                                <div class="br-fill" style="background: linear-gradient(90deg, #C97B4B, #9E5E33); clip-path: inset(0 ${100 - pct}% 0 0)"></div>
-                            </div>
-                            <div style="font-size: 12px; font-weight: 700; color: var(--t1); min-width: 60px; text-align: right; font-family: var(--font-big);">${rs(d.total)}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        function renderFinancialHealth(txns, income, expense, daysInMonth) {
+            const container = document.getElementById('health-metrics');
+            if (!container) return;
+
+            const netCashFlow = income - expense;
+            const savingsRate = income > 0 ? ((income - expense) / income * 100) : 0;
+            const expenseRatio = income > 0 ? (expense / income * 100) : 0;
+            
+            // Current day in month for averages (avoid division by zero)
+            const today = new Date();
+            const dayOfMonth = (curM === today.getMonth() + 1 && curY === today.getFullYear()) ? today.getDate() : daysInMonth;
+            const burnRate = (expense / dayOfMonth) * daysInMonth;
+
+            // Weekend vs Weekday
+            let weekendSpend = 0, weekdaySpend = 0;
+            txns.forEach(t => {
+                if (Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER') {
+                    const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+                    const day = d.getDay();
+                    if (day === 0 || day === 6) weekendSpend += Math.abs(Number(t.amount));
+                    else weekdaySpend += Math.abs(Number(t.amount));
+                }
+            });
+
+            // Avg Txns per Day
+            const avgTxns = (txns.length / dayOfMonth).toFixed(1);
+
+            container.innerHTML = `
+                <div class="health-item">
+                    <div class="health-lbl">Savings Rate (%)</div>
+                    <div class="health-val">${savingsRate.toFixed(1)}%</div>
+                    <div class="health-sub">Financially healthy</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-lbl">Exp to Inc Ratio</div>
+                    <div class="health-val">${expenseRatio.toFixed(1)}%</div>
+                    <div class="health-sub">Overspending check</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-lbl">Net Cash Flow</div>
+                    <div class="health-val">${rs(netCashFlow)}</div>
+                    <div class="health-sub">Income - Expenses</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-lbl">Monthly Burn Rate</div>
+                    <div class="health-val">${rs(burnRate)}</div>
+                    <div class="health-sub">Spending speed</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-lbl">Weekend / Weekday</div>
+                    <div class="health-val">${rs(weekendSpend)} / ${rs(weekdaySpend)}</div>
+                    <div class="health-sub">Spending patterns</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-lbl">Avg Txns / Day</div>
+                    <div class="health-val">${avgTxns}</div>
+                    <div class="health-sub">Transaction volume</div>
+                </div>
+            `;
         }
 
         window._pieShowAll = false;
