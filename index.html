@@ -7901,7 +7901,8 @@
                 };
 
                 return `
-                <div class="cat-card" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" style="background:white; border: 1.5px solid ${color.text}25; box-shadow: 0 4px 12px ${color.text}08;">
+                <div class="cat-card" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" style="background:white; border: 1.5px solid ${color.text}25; box-shadow: 0 4px 12px ${color.text}08; overflow: hidden;">
+                    <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle at top right, ${color.text}12, transparent 80%); pointer-events: none;"></div>
                     <div class="cat-top">
                         <div class="cat-icon-box" style="background:${color.bg}; border: 1px solid ${color.text}30;">
                             ${getIcon(c.icon, color.text)}
