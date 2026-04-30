@@ -2330,6 +2330,21 @@
             gap: 1.5rem;
         }
 
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .pie-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .ana-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -3787,7 +3802,7 @@
             }
 
             .mob-top-bar {
-                display: flex;
+                display: none;
             }
 
             .sidebar {
@@ -3806,13 +3821,13 @@
             }
 
             .mob-nav {
-                display: none;
+                display: flex;
             }
 
             .main {
                 margin-left: 0;
-                padding-bottom: 0;
-                padding-top: 60px;
+                padding-bottom: calc(var(--mob-nav-h) + 20px);
+                padding-top: 10px;
             }
 
             .page {
@@ -3851,6 +3866,15 @@
                 gap: 1rem;
             }
 
+            .ana-card {
+                padding: 1.25rem;
+            }
+
+            .ai-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
             .ana-span-6,
             .ana-span-4,
             .ana-span-10,
@@ -3861,6 +3885,7 @@
             .pie-layout {
                 flex-direction: column;
                 gap: 1.5rem;
+                align-items: stretch;
             }
 
             .v-bar-chart {
@@ -5080,12 +5105,6 @@
                                 about your money.</div>
                         </div>
                         <div class="ch-right">
-                            <div class="ch-ctrl-box">
-                                <span class="ch-ctrl-lbl">model</span>
-                                <select class="ch-ctrl-sel">
-                                    <option>Llama-3.1-70b</option>
-                                </select>
-                            </div>
                             <div class="ch-ctrl-box api" onclick="setGroqKey()">
                                 <span class="ch-ctrl-lbl">Groq API: <strong id="apiKeyStatus">Linked</strong></span>
                             </div>
@@ -5093,12 +5112,7 @@
                         </div>
                     </div>
 
-                    <div class="chat-suggested">
-                        <div class="cs-lbl">SUGGESTED</div>
-                        <div class="cs-chips" id="ai-suggested-prompts">
-                            <!-- Populated dynamically by updateAIPrompts() -->
-                        </div>
-                    </div>
+
 
                     <div id="chatHistory">
                         <div class="chat-date-sep">
@@ -5131,6 +5145,10 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
+                <div class="pg-header">
+                    <div class="pg-title">Add Entry</div>
+                    <div class="pg-sub">Log your transactions and track your spending</div>
+                </div>
                 <div class="add-entry-wrap">
                     <div class="ae-tabs" id="add-entry-tabs">
                         <div class="ae-tab active" onclick="switchAddTab('expense',this)">
@@ -5212,7 +5230,6 @@
                                     autocomplete="off">
                                 <div class="form-dropdown" id="dd-e-tpl"></div>
                             </div>
-                            <div class="ae-chips" id="e-tpl-chips"></div>
                         </div>
 
                         <!-- Account -->
@@ -5237,7 +5254,6 @@
                                     autocomplete="off">
                                 <div class="form-dropdown" id="dd-e-cat"></div>
                             </div>
-                            <div class="ae-chips" id="e-cat-chips"></div>
                         </div>
 
                         <!-- Amount -->
@@ -5538,8 +5554,7 @@
 
                 <div class="ana-grid pie-colors">
                     <!-- AI INSIGHTS ROW -->
-                    <div id="ai-insights-grid" class="ana-span-10"
-                        style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom: 0rem;">
+                    <div id="ai-insights-grid" class="ana-span-10 ai-grid">
                         <!-- Cards injected by JS -->
                     </div>
 
@@ -5567,8 +5582,7 @@
                         <div class="ana-card-h" style="justify-content:center; margin-bottom:1rem;">
                             <div class="card-h">Category Breakdown</div>
                         </div>
-                        <div class="pie-layout"
-                            style="display:flex; flex-direction:row; gap:2rem; align-items:center; justify-content:center; flex-wrap:wrap;">
+                        <div class="pie-layout">
                             <div style="position:relative; width:220px; height:220px; flex-shrink:0;">
                                 <canvas id="pieCanvas" width="220" height="220"></canvas>
                             </div>
@@ -6044,7 +6058,6 @@
             const ys = document.getElementById('yearSel'); ys.innerHTML = '';
             for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
             await loadAllData();
-            setupSwipe();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { ['personModal', 'dayModal', 'accModal', 'editModal', 'txnEditModal'].forEach(closeM); } });
             document.addEventListener('click', e => { if (!e.target.closest('.txn-msel-wrap')) ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.style.display = 'none'; }); });
         }
@@ -6120,7 +6133,6 @@
             renderFinancialHealth(periodTxns, totalIncome, totalExpense, daysInMonth);
             renderAIInsights(periodTxns, totalExpense, prevTotalExpense, categoryExpenses, heatmapDays);
             updateMoMTrends();
-            updateAIPrompts();
             populateLdrSel(_accounts);
             if (_ldrMselState.account.size > 0) loadLedger();
             const p = MO_SHORT[curM - 1] + ' ' + curY;
@@ -6211,46 +6223,6 @@
             `;
         }
 
-        function updateAIPrompts() {
-            const container = document.getElementById('ai-suggested-prompts');
-            if (!container) return;
-
-            const monthName = MO_LONG[curM - 1];
-
-            const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
-            const periodTxns = _allTxns.filter(t => {
-                const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
-                return d >= sd && d <= ed;
-            });
-            const categoryExpenses = buildCategoryTotals(periodTxns);
-
-            let topCat = '';
-            if (categoryExpenses.length > 0) {
-                topCat = categoryExpenses[0].category;
-            }
-
-            let recentMerchant = '';
-            const expTxns = _allTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER');
-            if (expTxns.length > 0) {
-                recentMerchant = expTxns[0].item || expTxns[0].category || 'recent charges';
-                // Shorten if too long
-                if (recentMerchant.length > 15) recentMerchant = recentMerchant.substring(0, 15) + '...';
-            }
-
-            const prompts = [
-                `📉 Summarize ${monthName} spending`,
-                topCat ? `🔍 Review my ${topCat} expenses` : `🔍 Review my recent expenses`,
-                recentMerchant ? `🧐 Find duplicate ${recentMerchant} charges` : `📈 Forecast next month's bills`,
-                `🔄 Re-categorize last 7 entries`,
-                `✂️ Where can I cut ₹2,000?`
-            ];
-
-            container.innerHTML = prompts.map(p => {
-                const icon = p.split(' ')[0];
-                const text = p.substring(p.indexOf(' ') + 1);
-                return `<button class="cs-chip" onclick="document.getElementById('chatInput').value='${text.replace(/'/g, "\\'")}'; sendChat();"><span class="cs-icon">${icon}</span> ${text}</button>`;
-            }).join('');
-        }
 
         window.onPeriodChange = async function () { curM = +document.getElementById('monthSel').value; curY = +document.getElementById('yearSel').value; await loadPeriodData(); };
 
@@ -7342,11 +7314,6 @@
             renderAccountCards('e-acc-cards', 'e-acc', true);
             renderAccountCards('i-acc-cards', 'i-acc', true);
 
-            renderQuickChips('e-tpl-chips', expTplNames.slice(0, 4), 'e-tpl');
-
-            // For categories, pick top 6 used, or just first 6
-            const topExpCats = expCats.slice(0, 6);
-            renderQuickChips('e-cat-chips', topExpCats, 'e-cat', true);
         }
 
         window.clearAddEntryForm = function () {
@@ -8817,37 +8784,6 @@
             updateMobNav(name);
         };
 
-        /* ═══ SWIPE ═══ */
-        function setupSwipe() {
-            const main = document.getElementById('mainArea');
-            let sx = 0, sy = 0, st = 0, blocked = false;
-
-            main.addEventListener('touchstart', e => {
-                sx = e.touches[0].clientX;
-                sy = e.touches[0].clientY;
-                st = Date.now();
-                blocked = !!(e.target.closest('.tbl-scroll-wrap') || e.target.closest('.card table'));
-            }, { passive: true });
-
-            main.addEventListener('touchend', e => {
-                if (blocked) return;
-                const dx = e.changedTouches[0].clientX - sx;
-                const dy = e.changedTouches[0].clientY - sy;
-                const dt = Date.now() - st;
-
-                // Sensitivity adjustments:
-                // dx > 50: Swiped at least 50px
-                // Math.abs(dx) > Math.abs(dy) * 0.8: Swipe is more horizontal than vertical (relaxed from 1.5)
-                // dt < 600: Swipe completed within 600ms (increased from 500ms)
-                if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 0.6 || dt > 600) return;
-
-                const cur = PAGE_ORDER.findIndex(p => document.getElementById('page-' + p)?.classList.contains('active'));
-                if (cur < 0) return;
-
-                if (dx < 0 && cur < PAGE_ORDER.length - 1) nav(PAGE_ORDER[cur + 1]);
-                if (dx > 0 && cur > 0) nav(PAGE_ORDER[cur - 1]);
-            }, { passive: true });
-        }
 
         /* ═══ MODAL HELPERS ═══ */
         window.openM = id => { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; };
