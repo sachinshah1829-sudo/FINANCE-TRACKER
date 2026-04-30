@@ -59,6 +59,20 @@
             --t-fast: 0.14s ease;
             --t-spring: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
             --t-smooth: 0.2s ease;
+            --pg-pad: 2rem;
+            --header-h: 0px;
+            --bnav-h: 0px;
+        }
+
+        @media (max-width: 800px) {
+            :root {
+                --nav-w: 0px;
+                --pg-pad: 1.25rem;
+                --header-h: 70px;
+                --bnav-h: 80px;
+                --r-lg: 20px;
+                --r-xl: 28px;
+            }
         }
 
         html {
@@ -548,49 +562,144 @@
             border-color: rgba(220, 38, 38, 0.2);
         }
 
-        /* Mobile Top Bar */
-        .mob-top-bar {
-            display: none;
+        /* ─── NEW MOBILE UI COMPONENTS ─── */
+        .top-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 60px;
-            background: var(--surface);
-            border-bottom: 1.5px solid var(--border);
-            z-index: 100;
+            height: var(--header-h);
+            background: var(--bg);
+            z-index: 900;
+            display: none;
             align-items: center;
             justify-content: space-between;
-            padding: env(safe-area-inset-top, 0) 1.5rem 0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            padding: env(safe-area-inset-top, 0) 20px 0;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(250, 249, 247, 0.8);
         }
 
-        .mtb-title {
-            font-size: 18px;
+        @media (max-width: 800px) {
+            .top-header {
+                display: flex;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+                visibility: hidden;
+            }
+            .sidebar.mob-open {
+                transform: translateX(0);
+                visibility: visible;
+            }
+            .main {
+                margin-left: 0;
+                padding-bottom: calc(var(--bnav-h) + 20px);
+                padding-top: 10px;
+            }
+            .page {
+                padding: var(--pg-pad);
+                padding-top: var(--header-h);
+            }
+        }
+
+        .th-title {
+            font-size: 20px;
             font-weight: 700;
             color: var(--t1);
             font-family: var(--font-big);
-            letter-spacing: -0.01em;
+            letter-spacing: -0.02em;
         }
 
-        .mtb-profile {
-            width: 36px;
-            height: 36px;
+        .th-ava {
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: var(--accent-bg);
+            border: 1px solid rgba(201, 123, 75, 0.2);
             color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
             font-weight: 700;
-            cursor: pointer;
-            border: 1px solid rgba(201, 123, 75, 0.2);
-            transition: transform var(--t-fast);
+            box-shadow: var(--el-1);
         }
 
-        .mtb-profile:active {
-            transform: scale(0.9);
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: var(--bnav-h);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            z-index: 1000;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 12px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 800px) {
+            .bottom-nav {
+                display: flex;
+            }
+        }
+
+        .bn-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1;
+            cursor: pointer;
+            color: var(--t3);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 8px 0;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .bn-item.active {
+            color: var(--accent);
+        }
+
+        .bn-item.active .bn-ico {
+            transform: translateY(-2px);
+        }
+
+        .bn-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .bn-ico {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .bn-lbl {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
         .sidebar-overlay {
@@ -4914,6 +5023,507 @@
             opacity: 0.7;
             flex-shrink: 0;
         }
+        /* ─── DASHBOARD & MOBILE UI COMPONENTS ─── */
+        .hero-card {
+            background: var(--accent);
+            background-image: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: white;
+            border-radius: var(--r-xl);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(201, 123, 75, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .hero-lbl {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.85;
+            margin-bottom: 6px;
+        }
+
+        .hero-val {
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            font-family: var(--font-big);
+            letter-spacing: -0.02em;
+        }
+
+        .hero-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 20px;
+        }
+
+        .hero-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hs-lbl {
+            font-size: 9px;
+            font-weight: 700;
+            opacity: 0.75;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hs-val {
+            font-size: 17px;
+            font-weight: 700;
+            font-family: var(--font-big);
+        }
+
+        .quick-stats-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            margin: 0 -20px 24px;
+            padding: 4px 20px 12px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .quick-stats-scroll::-webkit-scrollbar { display: none; }
+
+        .qs-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 16px;
+            min-width: 140px;
+            flex-shrink: 0;
+            box-shadow: var(--el-1);
+            transition: transform 0.2s ease;
+        }
+
+        .qs-item:active { transform: scale(0.96); }
+
+        .qs-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .qs-val {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--t1);
+            font-family: var(--font-big);
+        }
+
+        .section-hd {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            margin-top: 8px;
+        }
+
+        .section-hd h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--t2);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .sh-link {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .m-txn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .m-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .m-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .m-item {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--t1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .m-sub {
+            font-size: 11px;
+            color: var(--t3);
+            margin-top: 2px;
+        }
+
+        .m-amt {
+            font-size: 15px;
+            font-weight: 700;
+            font-family: var(--font-big);
+            text-align: right;
+        }
+
+        /* ─── ACCOUNTS PAGE REDESIGN ─── */
+        .acc-segment-wrap {
+            position: sticky;
+            top: calc(var(--header-h) - 1px);
+            background: var(--bg);
+            z-index: 800;
+            margin: 0 -20px 20px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(250, 249, 247, 0.8);
+        }
+
+        .acc-segments {
+            display: flex;
+            background: var(--bg2);
+            padding: 4px;
+            border-radius: 16px;
+            gap: 4px;
+        }
+
+        .acc-seg-item {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--t3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .acc-seg-item.active {
+            background: var(--surface);
+            color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .acc-list-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .acc-card-mob {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--el-1);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .acc-card-mob:active {
+            transform: scale(0.97);
+            background: var(--bg2);
+        }
+
+        .ac-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .ac-ico-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .ac-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 0;
+        }
+
+        .ac-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--t1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ac-sub {
+            font-size: 11px;
+            color: var(--t3);
+        }
+
+        .ac-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .ac-amt {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--t1);
+            font-family: var(--font-big);
+        }
+
+        /* Credit Card Premium Style */
+        .cc-card-mob {
+            background: #1C1917;
+            color: white;
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px;
+            margin-bottom: 8px;
+        }
+
+        .cc-card-mob::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 150px; height: 150px;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent 70%);
+        }
+
+        .cc-chip-mob {
+            width: 42px;
+            height: 32px;
+            background: linear-gradient(135deg, #E2B068 0%, #A67C45 100%);
+            border-radius: 6px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .cc-chip-mob::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 2px;
+        }
+
+        .cc-num-mob {
+            font-size: 18px;
+            font-family: var(--font-big);
+            letter-spacing: 0.12em;
+            margin-bottom: auto;
+            opacity: 0.95;
+        }
+
+        .cc-footer-mob {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 20px;
+        }
+
+        .cc-holder-mob {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .cc-hlbl {
+            font-size: 9px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+
+        .cc-hname {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .cc-logo {
+            font-size: 18px;
+            font-weight: 800;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        /* ─── MOBILE ENTRY FORM REDESIGN ─── */
+        .mob-add-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding-bottom: 40px;
+        }
+
+        .mob-amt-hero {
+            text-align: center;
+            padding: 32px 0;
+            background: var(--surface);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            box-shadow: var(--el-1);
+        }
+
+        .ma-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .ma-input-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .ma-sym {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--t1);
+            opacity: 0.4;
+        }
+
+        .ma-input {
+            background: transparent;
+            border: none;
+            font-size: 52px;
+            font-weight: 700;
+            color: var(--t1);
+            width: 220px;
+            text-align: center;
+            font-family: var(--font-big);
+            outline: none;
+            letter-spacing: -0.02em;
+        }
+
+        .ma-input::placeholder { color: var(--border-strong); }
+
+        .mob-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .mf-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 84px;
+            box-shadow: var(--el-1);
+            position: relative;
+        }
+
+        .mf-item:active { transform: scale(0.96); background: var(--bg2); }
+
+        .mf-lbl {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--t4);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .mf-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--t1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mf-val.empty { color: var(--t3); font-weight: 500; font-style: italic; opacity: 0.6; }
+
+        .mob-submit-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 12px;
+            box-shadow: 0 10px 25px rgba(201, 123, 75, 0.25);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .mob-submit-btn:active { transform: scale(0.98); opacity: 0.9; }
+
     </style>
 </head>
 
@@ -4982,9 +5592,9 @@
 
     <!-- ═══════════════════ APP SHELL ═══════════════════ -->
     <div id="appShell" class="hidden">
-        <div class="mob-top-bar" id="mobTopBar">
-            <div class="mtb-title">ट्रैकर.इन</div>
-            <div class="mtb-profile" id="mtb-profile" onclick="toggleSidebar()">U</div>
+        <div class="top-header" id="topHeader">
+            <div class="th-title" id="mob-page-title">Dashboard</div>
+            <div class="th-ava" onclick="toggleSidebar()">S</div>
         </div>
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
@@ -4999,7 +5609,12 @@
             <div style="padding: 0 1.25rem; font-size: 10px; font-weight: 700; color: var(--t4); letter-spacing: 0.18em; margin-bottom: 0.75rem; text-transform: uppercase;">WORKSPACE</div>
 
             <div class="sb-nav">
-                <div class="nav-item active" id="nav-aichat" onclick="nav('aichat',this)">
+                <div class="nav-item active" id="nav-dashboard" onclick="nav('dashboard',this)">
+                    <div class="nav-ico">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>Home
+                </div>
+                <div class="nav-item" id="nav-aichat" onclick="nav('aichat',this)">
                     <div class="nav-ico">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
                     </div>AI Assistant
@@ -5070,8 +5685,59 @@
 
         <main class="main" id="mainArea">
 
+            <!-- DASHBOARD (HOME) -->
+            <div class="page active" id="page-dashboard">
+                <div class="pg-header">
+                    <div class="pg-title">Overview</div>
+                    <div class="pg-sub" id="dash-period">—</div>
+                </div>
+
+                <div class="hero-card">
+                    <div class="hero-top">
+                        <div class="hero-lbl">Total Balance</div>
+                        <div class="hero-val">₹<span id="st-net-hero">—</span></div>
+                    </div>
+                    <div class="hero-bottom">
+                        <div class="hero-stat">
+                            <div class="hs-lbl">Spent</div>
+                            <div class="hs-val">₹<span id="st-spent-hero">—</span></div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hs-lbl">Net Flow</div>
+                            <div class="hs-val"><span id="st-netflow-hero">—</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-stats-scroll">
+                    <div class="qs-item">
+                        <div class="qs-lbl">Income</div>
+                        <div class="qs-val" id="st-inc-qs">—</div>
+                    </div>
+                    <div class="qs-item">
+                        <div class="qs-lbl">Expenses</div>
+                        <div class="qs-val" id="st-exp-qs">—</div>
+                    </div>
+                    <div class="qs-item">
+                        <div class="qs-lbl">Daily Avg</div>
+                        <div class="qs-val" id="st-avg-qs">—</div>
+                    </div>
+                </div>
+
+                <div class="section-hd">
+                    <h3>Spending Breakdown</h3>
+                </div>
+                <div id="dash-spending-bars"></div>
+
+                <div class="section-hd">
+                    <h3>Recent Transactions</h3>
+                    <div class="sh-link" onclick="nav('transactions')">View All</div>
+                </div>
+                <div id="dash-recent-list"></div>
+            </div>
+
             <!-- AI CHAT -->
-            <div class="page active" id="page-aichat">
+            <div class="page" id="page-aichat">
                 <div class="chat-page">
                     <div class="chat-header-new">
                         <div class="ch-left">
@@ -5131,125 +5797,60 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
-                <div class="add-entry-wrap">
-                    <div class="ae-tabs" id="add-entry-tabs">
-                        <div class="ae-tab active" onclick="switchAddTab('expense',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M12 5v14M5 12l7 7 7-7" />
-                            </svg>
-                            Expense
+                <div class="ae-tabs" id="add-entry-tabs">
+                    <div class="ae-tab active" onclick="switchAddTab('expense',this)">Expense</div>
+                    <div class="ae-tab" onclick="switchAddTab('income',this)">Income</div>
+                    <div class="ae-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
+                </div>
+
+                <!-- EXPENSE -->
+                <div class="add-form active" id="form-expense">
+                    <div class="mob-add-form">
+                        <div class="mob-amt-hero">
+                            <div class="ma-lbl">Amount</div>
+                            <div class="ma-input-wrap">
+                                <span class="ma-sym">₹</span>
+                                <input type="number" class="ma-input" id="e-amt" placeholder="0" step="0.01">
+                            </div>
                         </div>
-                        <div class="ae-tab" onclick="switchAddTab('income',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M12 19V5M5 12l7-7 7 7" />
-                            </svg>
-                            Income
+
+                        <div class="mob-form-grid">
+                            <div class="mf-item" onclick="toggleMobDropdown('e-acc-cards-mob')">
+                                <div class="mf-lbl">Account</div>
+                                <div class="mf-val" id="e-acc-label">Select Account</div>
+                                <input type="hidden" id="e-acc">
+                            </div>
+                            <div class="mf-item" onclick="document.getElementById('e-cat').focus()">
+                                <div class="mf-lbl">Category</div>
+                                <div class="mf-val" id="e-cat-label">Select Category</div>
+                                <input type="text" id="e-cat" class="ae-input" style="position:absolute; opacity:0; pointer-events:none;">
+                            </div>
+                            <div class="mf-item" onclick="document.getElementById('e-item').focus()">
+                                <div class="mf-lbl">Description</div>
+                                <div class="mf-val" id="e-item-label">What for?</div>
+                                <input type="text" id="e-item" class="ae-input" style="position:absolute; opacity:0; pointer-events:none;">
+                            </div>
+                            <div class="mf-item" onclick="document.getElementById('e-date').showPicker()">
+                                <div class="mf-lbl">Date</div>
+                                <div class="mf-val" id="e-date-label">Today</div>
+                                <input type="date" id="e-date" style="position:absolute; opacity:0; width:100%; height:100%; top:0; left:0;" onchange="document.getElementById('e-date-label').textContent=this.value || 'Today'">
+                            </div>
                         </div>
-                        <div class="ae-tab" onclick="switchAddTab('transfer',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M17 3v14M7 21V7M3 11l4-4 4 4M21 13l-4 4-4-4" />
-                            </svg>
-                            Transfer
+                        
+                        <div id="e-acc-cards-mob" style="display:none; margin-top:-10px; margin-bottom:10px;">
+                            <div id="e-acc-cards" class="ae-acc-row"></div>
                         </div>
-                        <div class="ae-tab" onclick="toggleImportSection()" style="border-style: dotted;">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="12" y1="18" x2="12" y2="12" />
-                                <line x1="9" y1="15" x2="15" y2="15" />
-                            </svg>
-                            Bulk Import
+
+                        <div class="ae-group" style="margin-top:8px">
+                            <div class="ae-lbl" style="font-size:10px">Template (Optional)</div>
+                            <input class="ae-input" id="e-tpl" placeholder="☆ Choose template" autocomplete="off">
+                            <div class="form-dropdown" id="dd-e-tpl"></div>
                         </div>
+
+                        <div class="form-err" id="e-err"></div>
+                        <button class="mob-submit-btn" id="e-btn" onclick="submitExp()">Log Expense</button>
                     </div>
-
-                    <div id="import-section" style="display:none; margin-bottom:24px;">
-                        <div class="card card-p">
-                            <div
-                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                                <div class="card-h" style="margin:0">CSV Import</div>
-                                <button class="txn-clr-btn" onclick="toggleImportSection()">✕ Close</button>
-                            </div>
-                            <div class="import-hint">
-                                Paste CSV content below. Columns:
-                                <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM</code><br>
-                                Date: DD/MM/YYYY, Amount: negative = expense.
-                            </div>
-                            <div class="form-row" style="margin-top:12px;">
-                                <select id="import-type-sel" class="form-input" style="cursor:pointer"
-                                    onchange="clearImport()">
-                                    <option value="TXN">Transactions</option>
-                                    <option value="TPL">Templates</option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <textarea id="import-csv" class="form-input" rows="6" placeholder="Paste your CSV here…"
-                                    style="font-family:monospace;font-size:12px;"></textarea>
-                            </div>
-                            <div style="display:flex; gap:10px;">
-                                <button class="add-btn" onclick="previewImport()" style="flex:1">Preview</button>
-                                <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
-                                    style="flex:1; display:none">Import to Firebase</button>
-                                <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
-                            </div>
-                            <div id="import-preview" style="margin-top:12px"></div>
-                        </div>
-                    </div>
-
-                    <!-- EXPENSE -->
-                    <div class="add-form active" id="form-expense">
-                        <!-- Template -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TEMPLATE</div>
-                                <div class="ae-hint">reuse a saved entry</div>
-                            </div>
-                            <div class="ae-input-wrap">
-                                <input class="ae-input" id="e-tpl" placeholder="☆ Choose template (optional)"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-tpl"></div>
-                            </div>
-                            <div class="ae-chips" id="e-tpl-chips"></div>
-                        </div>
-
-                        <!-- Account -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">ACCOUNT</div>
-                            </div>
-                            <input type="hidden" id="e-acc">
-                            <div class="ae-acc-row" id="e-acc-cards">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Category -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">CATEGORY</div>
-                                <div class="ae-hint">type to create new</div>
-                            </div>
-                            <div class="ae-input-wrap">
-                                <input class="ae-input" id="e-cat" placeholder="⚲ Select or type new category"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-cat"></div>
-                            </div>
-                            <div class="ae-chips" id="e-cat-chips"></div>
-                        </div>
-
-                        <!-- Amount -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div>
-                                <input class="ae-amt-input" id="e-amt" type="number" placeholder="0.00" step="0.01">
-                            </div>
-                        </div>
+                </div>
 
                         <!-- Grids -->
                         <div class="ae-grid-2">
@@ -5275,23 +5876,6 @@
                             </div>
                         </div>
 
-                        <!-- Split Payments -->
-                        <div class="ae-split-box">
-                            <div class="ae-group-hdr" style="margin-bottom:0;">
-                                <div class="ae-lbl">SPLIT PAYMENTS</div>
-                                <button class="ae-chip"
-                                    style="background:#fff; border-color:var(--border-strong); border-radius:0;"
-                                    onclick="addSplitRow(event)">+ Add Split</button>
-                            </div>
-                            <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or
-                                accounts</div>
-
-                            <div id="split-rows-container"></div>
-                            <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
-                                <button class="txn-clr-btn" onclick="splitEqually(event)"
-                                    style="padding:6px 12px;font-size:11px;">Split Equally</button>
-                            </div>
-                        </div>
 
                         <div class="form-err" id="e-err" style="margin-bottom:12px;"></div>
 
@@ -5305,220 +5889,122 @@
                         </div>
                     </div>
 
-                    <!-- INCOME (Simplified for now to match style, but functionally same) -->
-                    <div class="add-form" id="form-income">
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TEMPLATE</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="i-tpl" placeholder="Choose template"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-tpl"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">ACCOUNT</div>
-                            </div>
-                            <input type="hidden" id="i-acc">
-                            <div class="ae-acc-row" id="i-acc-cards"></div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">CATEGORY</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="i-cat" placeholder="Select category"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-cat"></div>
+                <!-- INCOME -->
+                <div class="add-form" id="form-income">
+                    <div class="mob-add-form">
+                        <div class="mob-amt-hero">
+                            <div class="ma-lbl">Amount</div>
+                            <div class="ma-input-wrap">
+                                <span class="ma-sym">₹</span>
+                                <input type="number" class="ma-input" id="i-amt" placeholder="0" step="0.01">
                             </div>
                         </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="i-amt" type="number"
-                                    placeholder="0.00">
-                            </div>
-                        </div>
-                        <div class="ae-grid-2">
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">ITEM</div>
-                                </div>
-                                <div class="ae-input-wrap"><input class="ae-input" id="i-item" placeholder="Item"
-                                        autocomplete="off">
-                                    <div class="form-dropdown" id="dd-i-item"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">RECEIVED FROM</div>
-                                </div>
-                                <div class="ae-input-wrap"><input class="ae-input" id="i-from" placeholder="Person"
-                                        autocomplete="off">
-                                    <div class="form-dropdown" id="dd-i-from"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-err" id="i-err"></div>
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="i-btn" onclick="submitInc()">Save Income
-                                →</button>
-                        </div>
-                    </div>
 
-                    <!-- TRANSFER -->
-                    <div class="add-form" id="form-transfer">
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">FROM ACCOUNT</div>
+                        <div class="mob-form-grid">
+                            <div class="mf-item" onclick="toggleMobDropdown('i-acc-cards-mob')">
+                                <div class="mf-lbl">Account</div>
+                                <div class="mf-val" id="i-acc-label">Select Account</div>
+                                <input type="hidden" id="i-acc">
                             </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-from" placeholder="Debit from"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-from"></div>
+                            <div class="mf-item" onclick="document.getElementById('i-cat').focus()">
+                                <div class="mf-lbl">Category</div>
+                                <div class="mf-val" id="i-cat-label">Select Category</div>
+                                <input type="text" id="i-cat" class="ae-input" style="position:absolute; opacity:0; pointer-events:none;">
                             </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TO ACCOUNT</div>
+                            <div class="mf-item" onclick="document.getElementById('i-item').focus()">
+                                <div class="mf-lbl">Description</div>
+                                <div class="mf-val" id="i-item-label">Source?</div>
+                                <input type="text" id="i-item" class="ae-input" style="position:absolute; opacity:0; pointer-events:none;">
                             </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-to" placeholder="Credit to"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-to"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="t-amt" type="number"
-                                    placeholder="0.00">
+                            <div class="mf-item" onclick="document.getElementById('i-date').showPicker()">
+                                <div class="mf-lbl">Date</div>
+                                <div class="mf-val" id="i-date-label">Today</div>
+                                <input type="date" id="i-date" style="position:absolute; opacity:0; width:100%; height:100%; top:0; left:0;" onchange="document.getElementById('i-date-label').textContent=this.value || 'Today'">
                             </div>
                         </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">NOTE / ITEM</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-item"
-                                    placeholder="Transfer purpose" autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-item"></div>
+                        
+                        <div id="i-acc-cards-mob" style="display:none; margin-top:-10px; margin-bottom:10px;">
+                            <div id="i-acc-cards" class="ae-acc-row"></div>
+                        </div>
+
+                        <div class="form-err" id="i-err"></div>
+                        <button class="mob-submit-btn" id="i-btn" onclick="submitInc()">Log Income</button>
+                    </div>
+                </div>
+
+                <!-- TRANSFER -->
+                <div class="add-form" id="form-transfer">
+                    <div class="mob-add-form">
+                        <div class="mob-amt-hero">
+                            <div class="ma-lbl">Amount</div>
+                            <div class="ma-input-wrap">
+                                <span class="ma-sym">₹</span>
+                                <input type="number" class="ma-input" id="t-amt" placeholder="0" step="0.01">
                             </div>
                         </div>
+
+                        <div class="mob-form-grid" style="grid-template-columns: 1fr;">
+                            <div class="mf-item" onclick="toggleMobDropdown('t-from-cards-mob')">
+                                <div class="mf-lbl">From Account</div>
+                                <div class="mf-val" id="t-from-label">Select Source</div>
+                                <input type="hidden" id="t-from">
+                            </div>
+                            <div class="mf-item" onclick="toggleMobDropdown('t-to-cards-mob')">
+                                <div class="mf-lbl">To Account</div>
+                                <div class="mf-val" id="t-to-label">Select Destination</div>
+                                <input type="hidden" id="t-to">
+                            </div>
+                            <div class="mf-item" onclick="document.getElementById('t-item').focus()">
+                                <div class="mf-lbl">Note / Description</div>
+                                <div class="mf-val" id="t-item-label">Purpose?</div>
+                                <input type="text" id="t-item" class="ae-input" style="position:absolute; opacity:0; pointer-events:none;">
+                            </div>
+                        </div>
+                        
+                        <div id="t-from-cards-mob" style="display:none; margin-top:10px">
+                            <div id="t-from-cards" class="ae-acc-row"></div>
+                        </div>
+                        <div id="t-to-cards-mob" style="display:none; margin-top:10px">
+                            <div id="t-to-cards" class="ae-acc-row"></div>
+                        </div>
+
                         <div class="form-err" id="t-err"></div>
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="t-btn" onclick="submitTr()">Execute Transfer
-                                →</button>
-                        </div>
+                        <button class="mob-submit-btn" id="t-btn" onclick="submitTr()">Log Transfer</button>
                     </div>
                 </div>
             </div>
 
             <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
-                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div>
-                        <div class="pg-title">Accounts</div>
-                        <div class="pg-sub acc-date-sub">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
-                                <rect x="3" y="4" width="18" height="18" rx="2" />
-                                <path d="M16 2v4M8 2v4M3 10h18" />
-                            </svg>
-                            <span id="acc-period">—</span>
-                        </div>
+                <div class="acc-segment-wrap">
+                    <div class="acc-segments">
+                        <div class="acc-seg-item active" onclick="switchAccTab('bank', this)">Banks</div>
+                        <div class="acc-seg-item" onclick="switchAccTab('credit', this)">Cards</div>
+                        <div class="acc-seg-item" onclick="switchAccTab('people', this)">People</div>
                     </div>
                 </div>
-                <div class="stats-row">
-                    <div class="stat-tile">
-                        <div class="s-eye">
-                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                                </svg></span>
-                            Total Spent
-                        </div>
-                        <div class="s-main">
-                            <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
-                            <div class="stat-trend-line" id="trend-spent" title="vs previous month">—</div>
-                        </div>
-                    </div>
-                    <div class="stat-tile">
-                        <div class="s-eye">
-                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="9" />
-                                    <path d="M12 7v5l3 2" />
-                                </svg></span>
-                            Daily Average
-                        </div>
-                        <div class="s-main">
-                            <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
-                            <div class="stat-trend-line" id="trend-avg" title="vs previous month">—</div>
-                        </div>
-                    </div>
-                    <div class="stat-tile">
-                        <div class="s-eye">
-                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 7h18v12H3z" />
-                                    <path d="M3 11h18" />
-                                    <path d="M7 15h2" />
-                                </svg></span>
-                            Net Balance
-                        </div>
-                        <div class="s-main">
-                            <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
-                            <div class="stat-trend-line" id="trend-net" title="vs end of previous month">—</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="acc-tabs-bar">
-                    <div class="acc-tab active" onclick="switchAccTab('bank', this)">Banks</div>
-                    <div class="acc-tab" onclick="switchAccTab('credit', this)">Cards</div>
-                    <div class="acc-tab" onclick="switchAccTab('people', this)">People</div>
-                </div>
+
                 <div class="acc-tab-content">
-                    <!-- BANK PANE -->
                     <div class="acc-pane active" id="acc-pane-bank">
-                        <div class="acc-pane-hd">
-                            <div class="acc-pane-title">Bank Accounts & Wallets</div>
-                            <button class="add-inline-btn" onclick="showAccForm('BANK')">+ Add Account</button>
-                        </div>
-                        <div class="acc-list" id="bankList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
+                        <div id="bankList" class="acc-list-mobile"></div>
+                        <button class="add-btn" style="margin-top:20px" onclick="showAccForm('BANK')">+ Add Bank Account</button>
                     </div>
+                    <div class="acc-pane" id="acc-pane-credit">
+                        <div id="creditList" class="acc-list-mobile"></div>
+                        <button class="add-btn" style="margin-top:20px" onclick="showAccForm('CREDIT_CARD')">+ Add Credit Card</button>
+                    </div>
+                    <div class="acc-pane" id="acc-pane-people">
+                        <div id="personList" class="acc-list-mobile"></div>
+                        <button class="add-btn" style="margin-top:20px" onclick="showAccForm('PERSON')">+ Add Contact</button>
+                    </div>
+                </div>
+            </div>
                     <!-- CREDIT PANE -->
                     <div class="acc-pane" id="acc-pane-credit">
                         <div class="acc-pane-hd">
                             <div class="acc-pane-title">Credit Cards</div>
                             <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
                         </div>
-                        <div class="acc-list" id="creditList"
-                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- PEOPLE PANE -->
-                    <div class="acc-pane" id="acc-pane-people">
-                        <div class="acc-pane-hd">
-                            <div class="acc-pane-title">People & Contacts</div>
-                            <button class="add-inline-btn" onclick="showAccForm('PERSON')">+ Add Person</button>
-                        </div>
-                        <div class="acc-list" id="personList">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
 
             <!-- ANALYTICS -->
@@ -5716,6 +6202,32 @@
                     <div class="add-tab active" onclick="switchMgmtTab('cats',this)">Categories</div>
                     <div class="add-tab" onclick="switchMgmtTab('templates',this)">Templates</div>
                 </div>
+                <!-- REST OF MANAGE CONTENT... -->
+            </div>
+        </div>
+
+        <div class="bottom-nav" id="bottomNav">
+            <div class="bn-item active" id="mobnav-dashboard" onclick="nav('dashboard',this)">
+                <div class="bn-ico"><i data-lucide="home"></i></div>
+                <div class="bn-lbl">Home</div>
+            </div>
+            <div class="bn-item" id="mobnav-add" onclick="nav('add',this)">
+                <div class="bn-ico"><i data-lucide="plus-circle"></i></div>
+                <div class="bn-lbl">Add</div>
+            </div>
+            <div class="bn-item" id="mobnav-accounts" onclick="nav('accounts',this)">
+                <div class="bn-ico"><i data-lucide="wallet"></i></div>
+                <div class="bn-lbl">Vault</div>
+            </div>
+            <div class="bn-item" id="mobnav-analytics" onclick="nav('analytics',this)">
+                <div class="bn-ico"><i data-lucide="bar-chart-2"></i></div>
+                <div class="bn-lbl">Stats</div>
+            </div>
+            <div class="bn-item" id="mobnav-aichat" onclick="nav('aichat',this)">
+                <div class="bn-ico"><i data-lucide="sparkles"></i></div>
+                <div class="bn-lbl">AI</div>
+            </div>
+        </div>
 
                 <div class="mgmt-panel active" id="mpanel-cats">
                     <div
@@ -6119,6 +6631,7 @@
             const totalIncome = periodTxns.filter(t => Number(t.amount) > 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Number(t.amount), 0);
             renderFinancialHealth(periodTxns, totalIncome, totalExpense, daysInMonth);
             renderAIInsights(periodTxns, totalExpense, prevTotalExpense, categoryExpenses, heatmapDays);
+            renderDashboard(periodTxns, _accounts, totalExpense, avgDaily);
             updateMoMTrends();
             updateAIPrompts();
             populateLdrSel(_accounts);
@@ -6257,38 +6770,56 @@
         /* ═══ NAV ═══ */
         window.nav = function (name, el) {
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.bn-item').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-            const targetEl = el || document.getElementById('nav-' + name);
+
+            const targetEl = el || document.getElementById('nav-' + name) || document.getElementById('mobnav-' + name);
             if (targetEl) targetEl.classList.add('active');
+            
+            const mobEl = document.getElementById('mobnav-' + name);
+            if (mobEl) mobEl.classList.add('active');
+
             const targetPage = document.getElementById('page-' + name);
             if (targetPage) targetPage.classList.add('active');
+
+            // Update Header Title
+            const titleEl = document.getElementById('mob-page-title');
+            if (titleEl) {
+                const titles = { dashboard: 'Overview', aichat: 'AI Assistant', add: 'Add Entry', accounts: 'Vault', analytics: 'Analytics', transactions: 'History', ledger: 'Ledger', manage: 'Settings' };
+                titleEl.textContent = titles[name] || 'Tracker';
+            }
+
             document.getElementById('mainArea').scrollTop = 0;
             closeSidebar();
+            if (name === 'dashboard') loadPeriodData();
             if (name === 'manage') renderManage();
             if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
             if (name === 'aichat') {
                 updateApiKeyStatus();
-                document.getElementById('chatInput').focus();
+                if(document.getElementById('chatInput')) document.getElementById('chatInput').focus();
             }
         };
+
         window.toggleSidebar = () => {
             document.getElementById('sidebar').classList.toggle('mob-open');
             document.getElementById('sbOverlay').classList.toggle('show');
         };
+
         function closeSidebar() {
             document.getElementById('sidebar').classList.remove('mob-open');
             document.getElementById('sbOverlay').classList.remove('show');
         }
+
         function updateMobNav(name) {
-            document.querySelectorAll('.mob-nav-item').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.bn-item').forEach(x => x.classList.remove('active'));
             const el = document.getElementById('mobnav-' + name);
             if (el) el.classList.add('active');
         }
 
         /* ─── ACCOUNTS TABS ─── */
         window.switchAccTab = function (type, el) {
-            document.querySelectorAll('.acc-tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.acc-seg-item').forEach(x => x.classList.remove('active'));
             document.querySelectorAll('.acc-pane').forEach(x => x.classList.remove('active'));
 
             el.classList.add('active');
@@ -6316,6 +6847,46 @@
 
             // Render stat sparklines from recent daily activity
             renderStatSparklines();
+        }
+
+        function renderDashboard(txns, accs, totalExp, avgDaily) {
+            const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0);
+            const totalInc = txns.filter(t => Number(t.amount) > 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Number(t.amount), 0);
+            const netFlow = totalInc - totalExp;
+
+            const neth = document.getElementById('st-net-hero'); if (neth) cntUp('st-net-hero', net);
+            const spenth = document.getElementById('st-spent-hero'); if (spenth) cntUp('st-spent-hero', totalExp);
+            
+            const nfEl = document.getElementById('st-netflow-hero');
+            if (nfEl) {
+                nfEl.textContent = (netFlow >= 0 ? '+' : '') + rs(netFlow);
+                nfEl.style.color = netFlow >= 0 ? 'var(--green)' : 'var(--red)';
+            }
+
+            const incq = document.getElementById('st-inc-qs'); if (incq) cntUp('st-inc-qs', totalInc);
+            const expq = document.getElementById('st-exp-qs'); if (expq) cntUp('st-exp-qs', totalExp);
+            const avgq = document.getElementById('st-avg-qs'); if (avgq) cntUp('st-avg-qs', avgDaily);
+
+            const p = MO_SHORT[curM - 1] + ' ' + curY;
+            const del = document.getElementById('dash-period'); if (del) del.textContent = p;
+
+            const cats = buildCategoryTotals(txns).slice(0, 3);
+            const bars = document.getElementById('dash-spending-bars');
+            if (bars) {
+                bars.innerHTML = cats.map(c => {
+                    const pct = totalExp > 0 ? (c.total / totalExp * 100).toFixed(0) : 0;
+                    return `<div style="margin-bottom:12px;"><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; font-weight:600;"><span>${c.category}</span><span>₹${fmt(c.total)} (${pct}%)</span></div><div style="height:6px; background:var(--bg2); border-radius:10px; overflow:hidden;"><div style="height:100%; width:${pct}%; background:var(--accent); border-radius:10px;"></div></div></div>`;
+                }).join('') || '<div class="empty-s">No spending this month</div>';
+            }
+
+            const recent = txns.filter(t => t.category?.toUpperCase() !== 'TRANSFER').slice(-5).reverse();
+            const list = document.getElementById('dash-recent-list');
+            if (list) {
+                list.innerHTML = recent.map(t => {
+                    const amt = Number(t.amount); const pos = amt > 0;
+                    return `<div class="m-txn" style="padding: 12px 0; border-bottom: 1px solid var(--border);"><div class="m-dot" style="background:${pos ? 'var(--green)' : 'var(--red)'}"></div><div class="m-info"><div class="m-item">${escH(t.item)}</div><div class="m-sub">${fmtDate(t.date)} · ${escH(t.account)}</div></div><div class="m-amt" style="color:${pos ? 'var(--green)' : 'var(--red)'}">${pos ? '+' : ''}${rs(amt)}</div></div>`;
+                }).join('') || '<div class="empty-s">No recent transactions</div>';
+            }
         }
 
         // Update a trend line with real % change vs previous period.
@@ -6460,108 +7031,24 @@
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = a.type === 'CREDIT_CARD';
-            const emo = isPerson ? (a.name || '?').charAt(0).toUpperCase() : '';
+            const tint = nameTint(a.name);
+            const bal = a.currentBalance || 0;
 
             if (isCredit) {
                 const limit = a.openingBalance || 0;
-                const balance = a.currentBalance || 0;
-                const spent = Math.max(limit - balance, 0);
-                const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
-                const barCls = pct >= 85 ? 'danger' : (pct >= 65 ? 'warn' : '');
-
-                return `
-                    <div class="acc-item cc-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
-                        <div class="cc-head">
-                            <div class="cc-name">${escH(a.name)}</div>
-                            <div class="cc-chip" aria-hidden="true"></div>
-                        </div>
-                        <div class="cc-number-main">**** **** **** ${(a.id || '').slice(-4).toUpperCase().replace(/[^A-Z0-9]/g, '0').padStart(4, '0')}</div>
-                        <div class="cc-mid">
-                            <div class="cc-col">
-                                <div class="cc-label">Used</div>
-                                <div class="cc-amt">₹${fmt(spent)}</div>
-                            </div>
-                            <div class="cc-col right">
-                                <div class="cc-label">Limit</div>
-                                <div class="cc-amt cc-limit">₹${fmt(limit)}</div>
-                            </div>
-                        </div>
-                        <div class="cc-bar-track"><div class="cc-bar-fill ${barCls}" style="width:${pct}%;"></div></div>
-                        <div class="cc-util-line">${pct.toFixed(0)}% utilized</div>
-                        <div class="acc-acts" onclick="event.stopPropagation()">
-                            <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
-                            <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
-                        </div>
-                    </div>
-                `;
+                const last4 = (a.id || '').slice(-4).toUpperCase().replace(/[^A-Z0-9]/g, '0').padStart(4, '0');
+                return `<div class="cc-card-mob" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${bal}" data-kind="${accKind}" onclick="accItemClick(this)"><div class="cc-chip-mob"></div><div class="cc-num-mob">**** **** **** ${last4}</div><div class="cc-footer-mob"><div class="cc-holder-mob"><div class="cc-hlbl">${escH(a.name)}</div><div class="cc-hname">${rs(bal)} Limit Left</div></div><div class="cc-logo">VISA</div></div></div>`;
             }
-
-            const pos = (a.currentBalance || 0) >= 0;
-            const tint = nameTint(a.name);
 
             if (isPerson) {
-                const cls = (a.currentBalance || 0) > 0 ? 'pos' : ((a.currentBalance || 0) < 0 ? 'neg' : 'zero');
-                const sub = (a.currentBalance || 0) > 0 ? 'Owes you' : ((a.currentBalance || 0) < 0 ? 'You owe' : 'Settled');
-                return `
-                    <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.04}s" onclick="accItemClick(this)">
-                        <div class="px-avatar" style="background:${tint.bg}; color:${tint.fg};">${emo}</div>
-                        <div class="px-body">
-                            <div class="px-name">${escH(a.name)}</div>
-                            <div class="px-sub">${sub}</div>
-                        </div>
-                        <div class="px-amt ${cls}">${rs(Math.abs(a.currentBalance || 0))}</div>
-                        <div class="acc-acts" onclick="event.stopPropagation()">
-                            <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
-                            <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
-                        </div>
-                    </div>
-                `;
+                const emo = (a.name || '?').charAt(0).toUpperCase();
+                const sub = bal > 0 ? 'Owes you' : (bal < 0 ? 'You owe' : 'Settled');
+                const cls = bal > 0 ? 'pos' : (bal < 0 ? 'neg' : '');
+                return `<div class="acc-card-mob" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${bal}" data-kind="${accKind}" onclick="accItemClick(this)"><div class="ac-left"><div class="ac-ico-wrap" style="background:${tint.bg}20; color:${tint.fg}">${emo}</div><div class="ac-details"><div class="ac-name">${escH(a.name)}</div><div class="ac-sub">${sub}</div></div></div><div class="ac-right"><div class="ac-amt ${cls}">${rs(Math.abs(bal))}</div></div></div>`;
             }
 
-            // BANK / WALLET — premium card matching canvas mockup
-            const series = accountSeries(a.name, 24);
-            const trend = accountMonthlyDelta(a.name);
-            const trendCls = trend.pct > 0.05 ? 'up' : (trend.pct < -0.05 ? 'down' : 'flat');
-            const trendArrow = trend.pct > 0.05 ? '↗' : (trend.pct < -0.05 ? '↘' : '·');
-            const sparkColor = trendCls === 'down' ? '#DC2626' : (trendCls === 'flat' ? '#6E5B3F' : '#2D7DE0');
-            const spark = sparkSVG(series, 130, 60, sparkColor, { endDot: true });
-            const acctLast4 = (a.id || '').slice(-4).toUpperCase().replace(/[^A-Z0-9]/g, '0').padStart(4, '0');
-            const watermark = (a.name || '?').charAt(0).toUpperCase();
-            return `
-                <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
-                    <div class="bk-water" aria-hidden="true">${watermark}</div>
-                    <div class="bk-eye" title="Hide balance" onclick="event.stopPropagation(); toggleBankBal(this)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
-                    </div>
-                    <div class="bk-top">
-                        <div class="bk-icon" style="background:${tint.bg}; color:${tint.fg};">${watermark}</div>
-                        <div class="bk-meta">
-                            <div class="bk-name">${escH(a.name)}</div>
-                            <div class="bk-type">${bankCaption(a.name)}</div>
-                        </div>
-                    </div>
-                    <div class="bk-body">
-                        <div>
-                            <div class="bk-bal-label">Available Balance</div>
-                            <div class="bk-bal ${pos ? '' : 'neg'}">${rs(a.currentBalance || 0)}</div>
-                            <div class="bk-trend ${trendCls}">${trendArrow} ${trend.pct >= 0 ? '+' : ''}${trend.pct.toFixed(1)}% this month</div>
-                        </div>
-                        <div class="bk-spark">${spark}</div>
-                    </div>
-                    <div class="bk-divider"></div>
-                    <div class="bk-foot">
-                        <div class="bk-acct">
-                            <span class="bk-acct-dots"><i></i><i></i><i></i><i></i></span>
-                            <span>${acctLast4}</span>
-                        </div>
-                        <div class="bk-details">DETAILS <span>›</span></div>
-                    </div>
-                    <div class="acc-acts" onclick="event.stopPropagation()">
-                        <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
-                        <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
-                    </div>
-                </div>
-            `;
+            const bankIco = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>';
+            return `<div class="acc-card-mob" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${bal}" data-kind="${accKind}" onclick="accItemClick(this)"><div class="ac-left"><div class="ac-ico-wrap">${bankIco}</div><div class="ac-details"><div class="ac-name">${escH(a.name)}</div><div class="ac-sub">Active Balance</div></div></div><div class="ac-right"><div class="ac-amt">${rs(bal)}</div></div></div>`;
         }
 
         // Per-account % change vs ~30 days ago (for bank trend pill)
@@ -7392,6 +7879,14 @@
             }
         }
 
+        window.toggleMobDropdown = function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isHidden = el.style.display === 'none';
+            document.querySelectorAll('[id$="-cards-mob"]').forEach(d => d.style.display = 'none');
+            el.style.display = isHidden ? 'block' : 'none';
+        };
+
         window.selectAccCard = function (el, containerId, hiddenInputId) {
             const container = document.getElementById(containerId);
             const hidden = document.getElementById(hiddenInputId);
@@ -7407,7 +7902,18 @@
             const svg = el.querySelector('.ae-icon-sm');
             if (svg) svg.style.display = 'inline-block';
 
-            hidden.value = el.dataset.name;
+            const val = el.dataset.name;
+            hidden.value = val;
+
+            // Update labels for mobile UI
+            const lbl = document.getElementById(hiddenInputId + '-label');
+            if (lbl) lbl.textContent = val;
+            if (hiddenInputId === 't-from') document.getElementById('t-from-label').textContent = val;
+            if (hiddenInputId === 't-to') document.getElementById('t-to-label').textContent = val;
+
+            // Close mobile dropdown
+            const mobWrap = document.getElementById(containerId + '-mob');
+            if (mobWrap) mobWrap.style.display = 'none';
         };
 
         function renderQuickChips(containerId, items, targetInputId, isHash = false) {
@@ -7902,7 +8408,7 @@
 
                 return `
                 <div class="cat-card" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" style="background:white; border: 1.5px solid ${color.text}25; box-shadow: 0 4px 12px ${color.text}08; overflow: hidden;">
-                    <div style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle at top right, ${color.text}12, transparent 80%); pointer-events: none;"></div>
+                    <div style="position: absolute; top: 0; right: 0; width: 100px; height: 100px; background: radial-gradient(circle at top right, ${color.text}18, transparent 75%); pointer-events: none;"></div>
                     <div class="cat-top">
                         <div class="cat-icon-box" style="background:${color.bg}; border: 1px solid ${color.text}30;">
                             ${getIcon(c.icon, color.text)}
