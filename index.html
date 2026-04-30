@@ -4964,11 +4964,10 @@
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
         <nav class="sidebar" id="sidebar">
-            <div class="sb-logo" style="display:flex; align-items:center; gap:14px; padding: 2rem 1.25rem 2.5rem; border:none;">
-                <div style="background:var(--accent); color:white; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'Courier Prime', monospace; font-size:28px; font-weight:700; font-style:italic; box-shadow: 0 4px 14px rgba(201, 123, 75, 0.35);">f</div>
+            <div class="sb-logo" style="display:flex; align-items:center; gap:12px; padding: 1.25rem 1.25rem 1.5rem; border:none;">
+                <div style="background:var(--accent); color:white; width:34px; height:34px; border-radius:0; display:flex; align-items:center; justify-content:center; font-family:'Courier Prime', monospace; font-size:20px; font-weight:700; font-style:italic; box-shadow: 0 4px 12px rgba(201, 123, 75, 0.25);">f</div>
                 <div style="display:flex; flex-direction:column; justify-content:center;">
-                    <div class="sb-wordmark" style="color:var(--t3); letter-spacing:0.25em; font-size:9px; margin-bottom: 2px;">FINANCE</div>
-                    <div class="sb-title" style="font-size:26px; line-height:1; letter-spacing:-0.03em;">ट्रैकर.इन</div>
+                    <div class="sb-title" style="font-size:22px; line-height:1; letter-spacing:-0.03em;">ट्रैकर.इन</div>
                 </div>
             </div>
 
@@ -7802,20 +7801,29 @@
                 const pct = budget > 0 ? Math.min((total / budget) * 100, 100) : 0;
                 const left = budget > 0 ? Math.max(budget - total, 0) : 0;
 
-                const colors = [
-                    { bg: '#E0F2FE', text: '#0369A1' }, { bg: '#FEE2E2', text: '#B91C1C' },
-                    { bg: '#F3E8FF', text: '#7E22CE' }, { bg: '#FCE7F3', text: '#BE185D' },
-                    { bg: '#DCFCE7', text: '#15803D' }, { bg: '#FEF3C7', text: '#B45309' },
-                    { bg: '#F1F5F9', text: '#334155' }
-                ];
-                const color = colors[Math.abs(c.name.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % colors.length];
+                // Curated color palette with card tints
+                const palette = {
+                    'FOOD': { bg: '#FEE2E2', text: '#B91C1C', tint: '#FFF5F5' },
+                    'TRAVEL': { bg: '#E0F2FE', text: '#0369A1', tint: '#F0F9FF' },
+                    'TECH': { bg: '#F3E8FF', text: '#7E22CE', tint: '#FAF5FF' },
+                    'SHOPPING': { bg: '#FCE7F3', text: '#BE185D', tint: '#FFF1F8' },
+                    'HEALTH': { bg: '#DCFCE7', text: '#15803D', tint: '#F2FFF5' },
+                    'BILLS': { bg: '#FEF3C7', text: '#B45309', tint: '#FFFBEB' },
+                    'EDUCATION': { bg: '#E0E7FF', text: '#4338CA', tint: '#F5F7FF' },
+                    'INVESTMENT': { bg: '#ECFDF5', text: '#065F46', tint: '#F0FDF4' },
+                    'SALARY': { bg: '#D1FAE5', text: '#065F46', tint: '#F0FDF9' },
+                    'MISC': { bg: '#F1F5F9', text: '#334155', tint: '#F8FAFC' }
+                };
+
+                const nameKey = c.name.toUpperCase();
+                const color = palette[nameKey] || palette['MISC'];
 
                 return `
-                <div class="cat-card" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')">
+                <div class="cat-card" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" style="background:${color.tint}; border-color:${color.text}20;">
                     <div class="cat-top">
-                        <div class="cat-icon-box" style="background:${color.bg}; color:${color.text};">${icon}</div>
+                        <div class="cat-icon-box" style="background:${color.bg}; color:${color.text}; border: 1px solid ${color.text}30;">${icon}</div>
                         <div class="mgmt-item-btns">
-                            <button class="act-btn" style="width:24px;height:24px;border-radius:50%;">✎</button>
+                            <button class="act-btn" style="width:24px;height:24px;border-radius:50%; border-color:${color.text}30;">✎</button>
                         </div>
                     </div>
                     <div class="cat-summary">
@@ -7824,17 +7832,17 @@
                     </div>
                     ${budget > 0 ? `
                         <div class="cat-progress-wrap">
-                            <div class="cat-progress-bar">
+                            <div class="cat-progress-bar" style="background:${color.text}10;">
                                 <div class="cat-progress-fill" style="width:${pct}%; background:${pct > 90 ? 'var(--red)' : color.text}"></div>
                             </div>
                             <div class="cat-footer">
-                                <div class="cat-pct">${pct.toFixed(0)}% OF ₹${fmt(budget)}</div>
-                                <div class="cat-left">₹${fmt(left)} LEFT</div>
+                                <div class="cat-pct" style="color:${color.text}; opacity:0.8;">${pct.toFixed(0)}% OF ₹${fmt(budget)}</div>
+                                <div class="cat-left" style="color:${color.text};">₹${fmt(left)} LEFT</div>
                             </div>
                         </div>
                     ` : `
-                        <div style="margin-top:auto; font-size:9px; color:var(--t4); font-weight:700; padding-top:12px;">
-                            <span style="background:var(--bg2); padding:3px 8px; border-radius:12px;">☆ NO BUDGET</span>
+                        <div style="margin-top:auto; font-size:9px; color:${color.text}; opacity:0.6; font-weight:700; padding-top:12px;">
+                            <span style="background:${color.text}10; padding:3px 8px; border-radius:12px;">☆ NO BUDGET</span>
                         </div>
                     `}
                 </div>`;
@@ -7889,7 +7897,10 @@
             document.getElementById('edit-modal-title').textContent = 'Add Category';
             document.getElementById('edit-modal-body').innerHTML = `
                 <div class="form-row">
-                    <label class="form-label">Category Name</label>
+                    <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                        Category Name
+                        <button class="ch-btn-new" style="padding:2px 8px; font-size:10px; border-radius:4px;" onclick="aiSuggestCatDetails(event)">✦ AI Suggest</button>
+                    </label>
                     <input class="form-input" id="cat-m-name" placeholder="e.g. Shopping" autocomplete="off">
                 </div>
                 <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -7931,7 +7942,10 @@
             document.getElementById('edit-modal-title').textContent = 'Edit Category';
             document.getElementById('edit-modal-body').innerHTML = `
                 <div class="form-row">
-                    <label class="form-label">Name</label>
+                    <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                        Name
+                        <button class="ch-btn-new" style="padding:2px 8px; font-size:10px; border-radius:4px;" onclick="aiSuggestCatDetails(event)">✦ AI Suggest</button>
+                    </label>
                     <input class="form-input" id="em-name" value="${escH(name)}">
                 </div>
                 <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -7957,6 +7971,40 @@
                 </div>
             `;
             openM('editModal');
+        };
+
+        window.aiSuggestCatDetails = async function (event) {
+            const name = document.getElementById('cat-m-name')?.value || document.getElementById('em-name')?.value;
+            if (!name) return toast('Enter a name first');
+            const btn = event.target;
+            const oldText = btn.textContent;
+            btn.textContent = 'Thinking...';
+            btn.disabled = true;
+            try {
+                const prompt = `Suggest a single emoji icon and a reasonable monthly budget limit (in INR, round to nearest 500 or 1000) for a finance category named "${name}". Reply ONLY in JSON format: {"icon": "emoji", "budget": number}. Example: {"icon": "🍕", "budget": 5000}`;
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_aiSettings.apiKey || ''}` },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }] })
+                });
+                const data = await resp.json();
+                const text = data.choices[0].message.content;
+                const match = text.match(/\{.*\}/s);
+                if (match) {
+                    const res = JSON.parse(match[0]);
+                    const iconInput = document.getElementById('cat-m-icon') || document.getElementById('em-icon');
+                    const budgetInput = document.getElementById('cat-m-budget') || document.getElementById('em-budget');
+                    if (iconInput) iconInput.value = res.icon || '📦';
+                    if (budgetInput) budgetInput.value = res.budget || 0;
+                    toast('AI Suggestions applied');
+                }
+            } catch (e) {
+                console.error(e);
+                toast('AI Suggestion failed');
+            } finally {
+                btn.textContent = oldText;
+                btn.disabled = false;
+            }
         };
         window.saveCatEdit = async function (id) {
             const name = document.getElementById('em-name').value.trim(),
