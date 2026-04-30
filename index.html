@@ -3861,7 +3861,8 @@
                 font-size: 22px;
             }
 
-            .acc-cols {
+            .acc-cols,
+            .acc-list {
                 grid-template-columns: 1fr;
             }
 
@@ -5542,8 +5543,7 @@
                             <div class="acc-pane-title">Credit Cards</div>
                             <button class="add-inline-btn" onclick="showAccForm('CREDIT_CARD')">+ Add Card</button>
                         </div>
-                        <div class="acc-list" id="creditList"
-                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <div class="acc-list" id="creditList">
                             <div class="sp-wrap">
                                 <div class="sp"></div>
                             </div>
@@ -8820,7 +8820,7 @@
                 sx = e.touches[0].clientX;
                 sy = e.touches[0].clientY;
                 // Don't trigger if swiping inside scrollable areas or charts
-                blocked = !!(e.target.closest('.cal-grid') || e.target.closest('.v-bar-chart') || e.target.closest('.ana-card') || e.target.closest('.card table'));
+                blocked = !!(e.target.closest('.cal-grid') || e.target.closest('.v-bar-chart') || e.target.closest('.ana-card') || e.target.closest('.card table') || e.target.closest('.ae-acc-row'));
             }, { passive: true });
 
             document.addEventListener('touchend', e => {
