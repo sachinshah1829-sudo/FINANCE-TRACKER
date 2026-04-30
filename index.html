@@ -3686,21 +3686,19 @@
         .mob-nav {
             display: none;
             position: fixed;
-            bottom: 24px;
-            left: 20px;
-            right: 20px;
-            height: 64px;
-            background: rgba(255, 255, 255, 0.95);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--mob-nav-h);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border: 1px solid rgba(0,0,0,0.05);
-            border-radius: 32px;
-            z-index: 500;
-            display: flex;
-            align-items: center;
+            border-top: 1px solid var(--border);
+            z-index: 150;
+            align-items: stretch;
             justify-content: space-around;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            padding: 0 10px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
         }
 
         .mob-nav-item {
@@ -3708,12 +3706,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
             flex: 1;
             cursor: pointer;
             color: var(--t3);
-            transition: all 0.2s ease;
-            padding: 10px 0;
+            transition: color var(--t-fast);
+            padding: 8px 4px;
             border: none;
             background: none;
             -webkit-tap-highlight-color: transparent;
@@ -3721,18 +3719,22 @@
 
         .mob-nav-item.active {
             color: var(--accent);
-            transform: translateY(-2px);
         }
 
-        .mob-nav-item i {
-            width: 20px;
-            height: 20px;
+        .mob-nav-item:active {
+            opacity: 0.7;
+        }
+
+        .mob-nav-icon {
+            font-size: 20px;
+            line-height: 1;
         }
 
         .mob-nav-label {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         .mob-nav-add {
@@ -3752,91 +3754,46 @@
         @media (max-width: 768px) {
             body {
                 display: block;
-                background: #FAF9F7;
             }
 
             .mob-top-bar {
-                display: none !important;
+                display: flex;
             }
 
             .sidebar {
-                display: none !important;
+                transform: translateX(-100%);
+                box-shadow: 8px 0 32px rgba(0, 0, 0, 0.15);
+                z-index: 150;
+                border-right: none;
             }
 
-            .sidebar-overlay {
-                display: none !important;
+            .sidebar.mob-open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
             }
 
             .mob-nav {
-                display: flex;
+                display: none;
             }
 
             .main {
                 margin-left: 0;
-                padding-bottom: 100px;
-                padding-top: 0;
+                padding-bottom: 0;
+                padding-top: 60px;
             }
 
             .page {
-                padding: 1.25rem;
-                padding-top: 1.5rem;
+                padding: 1rem;
+                padding-top: 1.25rem;
                 width: 100%;
-                background: transparent;
             }
 
             .pg-title {
-                display: none;
+                font-size: 26px;
             }
-
-            /* Native Header */
-            .mob-header {
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-                margin-bottom: 1.5rem;
-            }
-            .mh-sub {
-                font-size: 10px;
-                font-weight: 700;
-                color: var(--t4);
-                letter-spacing: 0.1em;
-                text-transform: uppercase;
-            }
-            .mh-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .mh-title {
-                font-size: 28px;
-                font-weight: 600;
-                letter-spacing: -0.02em;
-                color: var(--t1);
-            }
-            .mh-actions {
-                display: flex;
-                gap: 12px;
-            }
-            .mh-btn {
-                background: white;
-                border: 1px solid var(--border);
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: var(--t2);
-                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            }
-
-            /* Rounded App Cards */
-            .stat-tile, .cat-card, .acc-card, .chat-box, .mini-form {
-                border-radius: 24px !important;
-                border: 1px solid rgba(0,0,0,0.04) !important;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
-            }
-        }
 
             .stats-row {
                 grid-template-columns: 1fr 1fr;
@@ -5008,10 +4965,10 @@
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
         <nav class="sidebar" id="sidebar">
-            <div class="sb-logo" style="display:flex; align-items:center; gap:12px; padding: 1.25rem 1.25rem 1.5rem; border:none;">
+            <div class="sb-logo" style="display:flex; align-items:center; gap:16px; padding: 1.25rem 1.25rem 1.5rem; border:none;">
                 <div style="background:var(--accent); color:white; width:34px; height:34px; border-radius:0; display:flex; align-items:center; justify-content:center; font-family:'Courier Prime', monospace; font-size:20px; font-weight:700; font-style:italic; box-shadow: 0 4px 12px rgba(201, 123, 75, 0.25);">f</div>
                 <div style="display:flex; flex-direction:column; justify-content:center;">
-                    <div class="sb-title" style="font-size:22px; line-height:1; letter-spacing:-0.03em;">ट्रैकर.इन</div>
+                    <div class="sb-title" style="font-size:25px; line-height:1; letter-spacing:-0.03em;">ट्रैकर.इन</div>
                 </div>
             </div>
 
@@ -5091,15 +5048,6 @@
 
             <!-- AI CHAT -->
             <div class="page active" id="page-aichat">
-                <div class="mob-header">
-                    <div class="mh-sub">FINANCE / ASSISTANT</div>
-                    <div class="mh-row">
-                        <div class="mh-title">Tracker AI</div>
-                        <div class="mh-actions">
-                            <button class="mh-btn" onclick="resetChatThread()"><i data-lucide="rotate-ccw"></i></button>
-                        </div>
-                    </div>
-                </div>
                 <div class="chat-page">
                     <div class="chat-header-new">
                         <div class="ch-left">
@@ -5136,9 +5084,7 @@
                             <div class="msg-ava ai">f</div>
                             <div class="msg-content-wrapper">
                                 <div class="msg-meta">Tracker AI <span class="time">— Now</span></div>
-                                <div class="msg-bubble">Hi Sachin - I'm your financial assistant. Paste a bank SMS or
-                                    describe an expense and I'll log it for you. You can also ask things like "how much
-                                    did I spend on food in April?" or "what's draining my budget?"</div>
+                                <div class="msg-bubble">Hi Sachin - I'm your financial assistant. Paste a bank SMS or describe an expense and I'll log it for you. You can also ask things like "how much did I spend on food in April?" or "what's draining my budget?"</div>
                             </div>
                         </div>
                     </div>
@@ -5161,15 +5107,6 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
-                <div class="mob-header">
-                    <div class="mh-sub">FINANCE / ENTRY</div>
-                    <div class="mh-row">
-                        <div class="mh-title">Add Entry</div>
-                        <div class="mh-actions">
-                            <button class="mh-btn" onclick="nav('analytics',null);updateMobNav('analytics')"><i data-lucide="x"></i></button>
-                        </div>
-                    </div>
-                </div>
                 <div class="add-entry-wrap">
                     <div class="ae-tabs" id="add-entry-tabs">
                         <div class="ae-tab active" onclick="switchAddTab('expense',this)">
@@ -5456,15 +5393,6 @@
 
             <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
-                <div class="mob-header">
-                    <div class="mh-sub">FINANCE / ASSETS</div>
-                    <div class="mh-row">
-                        <div class="mh-title">Accounts</div>
-                        <div class="mh-actions">
-                            <button class="mh-btn" onclick="showAddAccountModal()"><i data-lucide="plus"></i></button>
-                        </div>
-                    </div>
-                </div>
                 <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
                         <div class="pg-title">Accounts</div>
@@ -5575,16 +5503,6 @@
 
             <!-- ANALYTICS -->
             <div class="page" id="page-analytics">
-                <div class="mob-header">
-                    <div class="mh-sub">FINANCE / ANALYTICS</div>
-                    <div class="mh-row">
-                        <div class="mh-title" id="mob-analytics-title">April Spend</div>
-                        <div class="mh-actions">
-                            <button class="mh-btn"><i data-lucide="search"></i></button>
-                            <button class="mh-btn"><i data-lucide="filter"></i></button>
-                        </div>
-                    </div>
-                </div>
                 <div class="pg-header"
                     style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
                     <div>
@@ -5770,15 +5688,6 @@
 
             <!-- MANAGE -->
             <div class="page" id="page-manage">
-                <div class="mob-header">
-                    <div class="mh-sub">FINANCE / MANAGE</div>
-                    <div class="mh-row">
-                        <div class="mh-title">Manage</div>
-                        <div class="mh-actions">
-                            <button class="mh-btn" onclick="showAddCatModal()"><i data-lucide="plus"></i></button>
-                        </div>
-                    </div>
-                </div>
                 <div class="pg-header">
                     <div class="pg-title">Manage</div>
                 </div>
@@ -5846,27 +5755,26 @@
 
         <!-- MOBILE BOTTOM NAV -->
         <nav class="mob-nav" id="mobNav">
-            <button class="mob-nav-item active" id="mobnav-analytics" onclick="nav('analytics',null);updateMobNav('analytics')">
-                <i data-lucide="layout-dashboard"></i>
-                <div class="mob-nav-label">Home</div>
-            </button>
-            <button class="mob-nav-item" id="mobnav-aichat" onclick="nav('aichat',null);updateMobNav('aichat')">
-                <i data-lucide="sparkles"></i>
+            <button class="mob-nav-item active" id="mobnav-aichat" onclick="nav('aichat',null);updateMobNav('aichat')">
+                <div class="mob-nav-icon">✦</div>
                 <div class="mob-nav-label">AI Assist</div>
             </button>
-            <button class="mob-nav-item" id="mobnav-add" onclick="nav('add',null);updateMobNav('add')">
-                <div style="background:var(--accent); color:white; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-top:-20px; box-shadow: 0 4px 14px rgba(201, 123, 75, 0.4);">
-                    <i data-lucide="plus" style="width:24px; height:24px;"></i>
-                </div>
-                <div class="mob-nav-label">Add</div>
-            </button>
-            <button class="mob-nav-item" id="mobnav-manage" onclick="nav('manage',null);updateMobNav('manage')">
-                <i data-lucide="layers"></i>
-                <div class="mob-nav-label">Manage</div>
-            </button>
             <button class="mob-nav-item" id="mobnav-accounts" onclick="nav('accounts',null);updateMobNav('accounts')">
-                <i data-lucide="wallet"></i>
+                <div class="mob-nav-icon">▦</div>
                 <div class="mob-nav-label">Accounts</div>
+            </button>
+            <button class="mob-nav-item" id="mobnav-analytics"
+                onclick="nav('analytics',null);updateMobNav('analytics')">
+                <div class="mob-nav-icon">◈</div>
+                <div class="mob-nav-label">Analytics</div>
+            </button>
+            <button class="mob-nav-item" id="mobnav-ledger" onclick="nav('ledger',null);updateMobNav('ledger')">
+                <div class="mob-nav-icon">≡</div>
+                <div class="mob-nav-label">Ledger</div>
+            </button>
+            <button class="mob-nav-item" id="mobnav-more" onclick="toggleSidebar()">
+                <div class="mob-nav-icon">⋯</div>
+                <div class="mob-nav-label">More</div>
             </button>
         </nav>
     </div>
@@ -6155,8 +6063,6 @@
         async function loadPeriodData() {
             await loadAllTransactions();
             const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
-            const mt = document.getElementById('mob-analytics-title');
-            if (mt) mt.textContent = `${_monthNames[curM - 1]} Spend`;
             const periodTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
             const totalExpense = periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
             const expDays = {};
@@ -8825,22 +8731,20 @@
         /* ── MOBILE NAV SYNC ── */
         window.updateMobNav = function (page) {
             document.querySelectorAll('.mob-nav-item').forEach(el => el.classList.remove('active'));
-            // Map sub-pages to main nav items
             const mapping = {
                 aichat: 'aichat',
-                add: 'add',
+                add: 'more',
                 accounts: 'accounts',
                 analytics: 'analytics',
-                manage: 'manage',
-                templates: 'manage',
-                import: 'manage',
-                transactions: 'manage',
-                ledger: 'manage'
+                transactions: 'ledger',
+                ledger: 'ledger',
+                manage: 'more',
+                templates: 'more',
+                import: 'more'
             };
-            const target = mapping[page] || page;
+            const target = mapping[page] || 'more';
             const btn = document.getElementById('mobnav-' + target);
             if (btn) btn.classList.add('active');
-            if (window.lucide) lucide.createIcons();
         };
 
         /* Patch nav to also update mob nav */
