@@ -5805,7 +5805,7 @@
             <div class="modal-hd">
                 <div>
                     <div class="mhd-name" id="pm-name">—</div>
-                    <div class="mhd-sub">Transfer entries</div>
+                    <div class="mhd-sub">Recent entries</div>
                 </div>
                 <div class="mhd-right">
                     <div class="mhd-total">
@@ -7242,8 +7242,8 @@
         function openPersonM(name, bal) {
             document.getElementById('pm-name').textContent = name; document.getElementById('pm-bal').textContent = rs(bal); document.getElementById('pm-body').innerHTML = '<div class="m-empty"><div class="sp" style="margin:0 auto 10px"></div></div>'; openM('personModal');
             let lastSettleIdx = -1; for (let i = 0; i < _allTxns.length; i++) { const t = _allTxns[i]; if (t.account === name && (t.item || '').toUpperCase() === 'SETTLEMENT') lastSettleIdx = i; }
-            const rows = _allTxns.filter((t, i) => i > lastSettleIdx && t.account === name && t.category?.toUpperCase() === 'TRANSFER');
-            if (!rows.length) { document.getElementById('pm-body').innerHTML = '<div class="m-empty">No transfer entries after last settlement.</div>'; return; }
+            const rows = _allTxns.filter((t, i) => i > lastSettleIdx && t.account === name);
+            if (!rows.length) { document.getElementById('pm-body').innerHTML = '<div class="m-empty">No entries after last settlement.</div>'; return; }
             document.getElementById('pm-body').innerHTML = rows.map((r, i) => { const amt = Number(r.amount), pos = amt >= 0, col = pos ? 'var(--amt-pos)' : 'var(--amt-neg)'; return '<div class="m-txn" style="animation-delay:' + (i * 0.04) + 's"><div class="m-dot" style="background:' + col + '"></div><div class="m-info"><div class="m-item">' + escH(r.item || '—') + '</div><div class="m-sub">' + fmtDate(r.date) + (r.toFrom ? ' · ' + escH(r.toFrom) : '') + '</div></div><div><div class="m-amt" style="color:' + col + '">' + (pos ? '+' : '') + rs(amt) + '</div><div class="m-xtra">' + rs(r.closingBalance || 0) + ' bal</div></div></div>'; }).join('');
         }
 
