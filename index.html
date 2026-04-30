@@ -1899,8 +1899,8 @@
 
         .as-table-hdr {
             display: grid;
-            grid-template-columns: 30px 2.5fr 1.5fr 1.2fr 1fr 30px;
-            gap: 12px;
+            grid-template-columns: 2fr 1.2fr 1.2fr 0.8fr 40px;
+            gap: 16px;
             padding: 0 16px 8px;
             font-size: 10px;
             font-weight: 700;
@@ -1912,16 +1912,15 @@
             border: 1px solid var(--border-strong);
             border-radius: 8px;
             margin-bottom: 12px;
-            padding: 16px;
+            padding: 12px 16px;
             display: grid;
-            grid-template-columns: 30px 2.5fr 1.5fr 1.2fr 1fr 30px;
+            grid-template-columns: 2fr 1.2fr 1.2fr 0.8fr 40px;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-        .as-row-main { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
-        .as-drag { color: #ccc; cursor: grab; display: flex; align-items: center; justify-content: center; }
+        .as-row-main { display: flex; align-items: center; gap: 12px; }
+        .as-drag { color: #ccc; cursor: grab; }
         .as-avatar {
             width: 32px;
             height: 32px;
@@ -7377,25 +7376,23 @@
             div.className = 'as-row';
             div.id = 'sp-row-' + rowId;
             
-            const personName = 'You';
-            const initials = 'Y';
             const colors = ['#c36c4b', '#6b8e23', '#4682b4', '#d2691e', '#556b2f', '#cd853f'];
             const color = colors[rowId % colors.length];
 
             div.innerHTML = `
                 <div class="as-drag">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" opacity="0.3"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
                 </div>
                 <div class="as-row-main">
-                    <div class="as-avatar" style="background:${color}">${initials}</div>
-                    <div class="as-info" style="position:relative">
+                    <div class="as-avatar" style="background:${color}">YOU</div>
+                    <div class="as-info">
                         <input class="as-item-input sp-item" id="sp-item-${rowId}" placeholder="Item name" autocomplete="off" value="${document.getElementById('e-item').value}">
                         <div id="sp-dd-item-${rowId}" class="form-dropdown" style="z-index:300;"></div>
-                        <input class="as-person-input sp-person" id="sp-person-${rowId}" placeholder="Assign to person" autocomplete="off" value="You">
+                        <input class="as-person-input sp-person" id="sp-person-${rowId}" placeholder="Assign to person" autocomplete="off">
                         <div id="sp-dd-person-${rowId}" class="form-dropdown" style="z-index:300;"></div>
                     </div>
                 </div>
-                <div class="as-cat-box" style="position:relative">
+                <div class="as-cat-box">
                     <div class="as-input-box">
                         <input class="as-person-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" value="${document.getElementById('e-cat').value}">
                         <div id="sp-dd-cat-${rowId}" class="form-dropdown" style="z-index:300;"></div>
@@ -7403,7 +7400,7 @@
                 </div>
                 <div class="as-amt-box">
                     <div class="as-input-box">
-                        <span style="font-size:10px; color:#aaa; font-weight:700">₹</span>
+                        <span style="font-size:11px; color:#aaa">₹</span>
                         <input type="number" class="as-amt-input sp-amt" id="sp-amt-${rowId}" placeholder="0.00" oninput="updateSplitCalculations()">
                         <span class="as-edit-label">edit</span>
                     </div>
@@ -7412,9 +7409,7 @@
                     <div class="as-share-val" id="sp-share-${rowId}">0%</div>
                     <div class="as-mini-bar"><div class="as-mini-bar-fill" id="sp-bar-${rowId}" style="background:${color}"></div></div>
                 </div>
-                <button class="as-remove" onclick="removeSplitRow(${rowId})">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
+                <button class="as-remove" onclick="removeSplitRow(${rowId})">✕</button>
             `;
             container.appendChild(div);
             
