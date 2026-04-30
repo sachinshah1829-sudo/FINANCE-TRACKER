@@ -3821,12 +3821,12 @@
             }
 
             .mob-nav {
-                display: flex;
+                display: none;
             }
 
             .main {
                 margin-left: 0;
-                padding-bottom: calc(var(--mob-nav-h) + 20px);
+                padding-bottom: 20px;
                 padding-top: 10px;
             }
 
@@ -3880,6 +3880,30 @@
             .ana-span-10,
             .ana-span-5 {
                 grid-column: span 1;
+            }
+
+            .chat-page {
+                height: auto;
+                padding-bottom: 80px;
+            }
+
+            .chat-input-wrap {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: 0;
+                border-radius: 0;
+                border: none;
+                border-top: 1.5px solid var(--border-strong);
+                background: white;
+                padding: 12px 16px;
+                z-index: 1000;
+                box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            }
+
+            #chatHistory {
+                padding-bottom: 40px;
             }
 
             .pie-layout {
@@ -6058,6 +6082,7 @@
             const ys = document.getElementById('yearSel'); ys.innerHTML = '';
             for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
             await loadAllData();
+            setupSidebarSwipe();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { ['personModal', 'dayModal', 'accModal', 'editModal', 'txnEditModal'].forEach(closeM); } });
             document.addEventListener('click', e => { if (!e.target.closest('.txn-msel-wrap')) ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.style.display = 'none'; }); });
         }
@@ -8783,6 +8808,29 @@
             _origNav(name, el);
             updateMobNav(name);
         };
+
+        /* ═══ SIDEBAR SWIPE ═══ */
+        function setupSidebarSwipe() {
+            let sx = 0, sy = 0, blocked = false;
+            document.addEventListener('touchstart', e => {
+                sx = e.touches[0].clientX;
+                sy = e.touches[0].clientY;
+                // Don't trigger if swiping inside scrollable areas or charts
+                blocked = !!(e.target.closest('.cal-grid') || e.target.closest('.v-bar-chart') || e.target.closest('.ana-card') || e.target.closest('.card table'));
+            }, { passive: true });
+
+            document.addEventListener('touchend', e => {
+                if (blocked) return;
+                const dx = e.changedTouches[0].clientX - sx;
+                const dy = e.changedTouches[0].clientY - sy;
+                // Swipe right at least 80px and more horizontal than vertical
+                if (dx > 80 && Math.abs(dx) > Math.abs(dy) * 2) {
+                    if (!document.getElementById('sidebar').classList.contains('mob-open')) {
+                        toggleSidebar();
+                    }
+                }
+            }, { passive: true });
+        }
 
 
         /* ═══ MODAL HELPERS ═══ */
