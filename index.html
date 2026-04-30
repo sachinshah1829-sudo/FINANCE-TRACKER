@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,8 +19,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            border-radius: 0 !important;
-            /* Sharp edges globally */
         }
 
         :root {
@@ -51,11 +48,11 @@
             --amber-bg: #FEF3C7;
             --amt-neg: #DC2626;
             --amt-pos: #16A34A;
-            --r-xs: 0;
-            --r-sm: 0;
-            --r: 0;
-            --r-lg: 0;
-            --r-xl: 0;
+            --r-xs: 4px;
+            --r-sm: 6px;
+            --r: 10px;
+            --r-lg: 16px;
+            --r-xl: 24px;
             --nav-w: 248px;
             --mob-nav-h: 72px;
             --t-fast: 0.14s ease;
@@ -681,92 +678,278 @@
         }
 
         /* ─── AI CHAT ─── */
+        /* ─── AI CHAT REDESIGN ─── */
+        .chat-page * {
+            font-family: 'Courier Prime', Courier, monospace !important;
+        }
+
         .chat-page {
             display: flex;
             flex-direction: column;
             height: calc(100vh - 4rem);
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
 
-        .chat-header {
+        .chat-header-new {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .ch-bread {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .ch-right {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ch-ctrl-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg2);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--t1);
+            font-family: var(--font-big);
+        }
+
+        .ch-ctrl-box.api {
+            background: rgba(210, 100, 70, 0.05);
+            border-color: rgba(210, 100, 70, 0.2);
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .ch-ctrl-lbl { color: var(--t3); font-weight: 500; font-family: var(--font); }
+        .ch-ctrl-sel { border: none; background: transparent; font-weight: 700; font-family: var(--font-big); color: var(--t1); outline: none; padding: 0; cursor: pointer; }
+
+        .ch-btn-new {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 8.5px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--t2);
+            font-family: var(--font-big);
+            cursor: pointer;
+        }
+
+        .chat-suggested {
+            margin-bottom: 1rem;
+        }
+
+        .cs-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .cs-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .cs-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--t1);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cs-chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .cs-icon { color: var(--accent); opacity: 0.8; }
+
+        .chat-date-sep {
+            text-align: center;
+            position: relative;
+            margin: 0 0 1rem 0;
+        }
+
+        .chat-date-sep::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            border-top: 1px dashed var(--border-strong);
+            z-index: 0;
+        }
+
+        .chat-date-sep span {
+            background: var(--bg);
+            padding: 0 16px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            z-index: 1;
         }
 
         #chatHistory {
             flex: 1;
             overflow-y: auto;
-            padding: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
             scrollbar-width: thin;
         }
 
-        #chatHistory::-webkit-scrollbar {
-            width: 4px;
+        .msg-row {
+            display: flex;
+            gap: 16px;
+            max-width: 100%;
         }
 
-        #chatHistory::-webkit-scrollbar-thumb {
-            background: var(--border-strong);
+        .msg-row.user {
+            flex-direction: row-reverse;
+        }
+
+        .msg-ava {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            font-family: var(--font-big);
+            margin-top: 4px;
+        }
+
+        .msg-ava.ai {
+            background: var(--accent);
             border-radius: 4px;
         }
 
-        .msg {
+        .msg-ava.user {
+            background: #8e8d69;
+            border-radius: 50%;
+        }
+
+        .msg-content-wrapper {
             max-width: 85%;
-            padding: 0.8rem 1.1rem;
-            border-radius: var(--r);
-            font-size: 14px;
-            line-height: 1.5;
-            position: relative;
-            animation: msgIn 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
-        @keyframes msgIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .msg-row.user .msg-content-wrapper {
+            align-items: flex-end;
         }
 
-        .msg.user {
-            align-self: flex-end;
-            background: var(--accent);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .msg.ai {
-            align-self: flex-start;
-            background: var(--bg2);
+        .msg-meta {
+            font-size: 10px;
+            font-weight: 700;
             color: var(--t1);
-            border-bottom-left-radius: 4px;
+            margin-bottom: 6px;
+            font-family: var(--font-big);
+        }
+
+        .msg-meta span.time {
+            color: var(--t3);
+            font-weight: 600;
+        }
+
+        .msg-bubble {
+            padding: 16px 20px;
+            border-radius: 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--t1);
+            white-space: pre-wrap;
+        }
+
+        .msg-row.ai .msg-bubble {
+            background: var(--surface);
             border: 1px solid var(--border);
         }
 
-        .msg-cmd {
-            margin-top: 0.8rem;
-            padding-top: 0.8rem;
-            border-top: 1px dashed var(--border-strong);
+        .msg-row.user .msg-bubble {
+            background: rgba(210, 100, 70, 0.12);
+            border: 1px solid rgba(210, 100, 70, 0.2);
+            border-radius: 4px 0 4px 4px; /* Slight right-tail effect */
+        }
+
+        .msg-footer {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 9px;
+            color: var(--t4);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .msg-footer svg { opacity: 0.5; cursor: pointer; }
+
+        /* AI Action Row */
+        .ai-action-row {
+            margin-top: 12px;
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .draft-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--t2);
+            border-radius: 4px;
+        }
+
+        .draft-btn.primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .draft-hint {
+            font-size: 10px;
+            color: var(--t4);
+            font-style: italic;
         }
 
         .chat-input-wrap {
             margin-top: 1rem;
             background: var(--surface);
             border: 1.5px solid var(--border-strong);
-            border-radius: var(--r-lg);
+            border-radius: 4px;
             padding: 0.6rem;
             display: flex;
             gap: 8px;
@@ -788,7 +971,7 @@
             background: var(--accent);
             color: white;
             border: none;
-            border-radius: var(--r-sm);
+            border-radius: 4px;
             width: 38px;
             height: 38px;
             display: flex;
@@ -798,38 +981,16 @@
             transition: all var(--t-fast);
         }
 
-        .chat-send-btn:hover {
-            background: var(--accent-dark);
-            transform: scale(1.05);
-        }
-
-        .chat-send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .chat-send-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
+        .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .typing {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--t3);
-            margin-left: 1rem;
+            margin-left: 44px;
             margin-bottom: 0.5rem;
             font-style: italic;
             display: none;
-        }
-
-        .api-key-badge {
-            font-size: 9px;
-            padding: 2px 6px;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--t3);
-            cursor: pointer;
-        }
-
-        .api-key-badge:hover {
-            border-color: var(--accent);
-            color: var(--accent);
         }
 
         /* ─── STAT TILES ─── */
@@ -1481,6 +1642,192 @@
             border-color: rgba(220, 38, 38, 0.2);
         }
 
+        /* ─── ADD ENTRY REDESIGN ─── */
+        #page-add * { font-family: 'Courier Prime', Courier, monospace !important; }
+        
+        .add-entry-wrap {
+            background: #fbfaf8; /* Slightly darker cream */
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 600px;
+            border: 1px dashed var(--border-strong);
+            margin-bottom: 2rem;
+        }
+
+        .ae-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            max-width: 600px;
+        }
+        .ae-tab {
+            flex: 1;
+            background: transparent;
+            border: 1px dashed var(--border-strong);
+            color: var(--t2);
+            padding: 10px 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .ae-tab.active {
+            background: #c36c4b; /* Rust orange */
+            color: #fff;
+            border-style: solid;
+            border-color: #c36c4b;
+        }
+        
+        .ae-group { margin-bottom: 24px; }
+        .ae-group-hdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .ae-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .ae-hint { font-size: 10px; color: var(--t3); }
+        
+        .ae-input-wrap {
+            position: relative;
+        }
+        .ae-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            padding: 10px 12px;
+            font-size: 12px;
+            color: var(--t1);
+            border-radius: 4px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .ae-input:focus { border-color: var(--accent); background: #fff; }
+        .ae-input::placeholder { color: #a0a0a0; }
+        
+        .ae-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .ae-chip {
+            padding: 4px 10px;
+            border: 1px solid var(--border-strong);
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t2);
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ae-chip:hover { border-color: var(--accent); color: var(--accent); }
+        .ae-chip.active { background: #fcece5; border-color: #c36c4b; color: #c36c4b; } 
+        
+        .ae-acc-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+        .ae-acc-row::-webkit-scrollbar { display: none; }
+        .ae-acc-card {
+            flex: 0 0 auto;
+            width: 140px;
+            background: #e9ebd5; /* Olive tint for unchecked */
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            padding: 10px 12px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: all 0.2s;
+        }
+        .ae-acc-card.active {
+            background: #fcece5; /* Orange tint */
+            border-color: #c36c4b;
+            opacity: 1;
+        }
+        .ae-acc-name { font-size: 11px; font-weight: 700; color: var(--t1); margin-bottom: 4px; display:flex; align-items:center; gap:4px;}
+        .ae-acc-bal { font-size: 10px; color: var(--t3); }
+        
+        .ae-amt-wrap {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            padding: 12px 16px;
+        }
+        .ae-amt-wrap:focus-within { border-color: var(--accent); background: #fff;}
+        .ae-amt-sym { font-size: 18px; color: var(--t2); margin-right: 8px; font-weight: 700;}
+        .ae-amt-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--t1);
+            outline: none;
+        }
+        .ae-amt-input::placeholder { color: #ccc; }
+        
+        .ae-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .ae-split-box {
+            background: #e9ebd5; /* Olive tint */
+            border: 1px dashed var(--border-strong);
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .ae-btn-row {
+            display: flex;
+            gap: 12px;
+        }
+        .ae-btn {
+            flex: 1;
+            padding: 14px 0;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .ae-btn-primary {
+            background: #c36c4b;
+            color: #fff;
+            border: 1px solid #c36c4b;
+        }
+        .ae-btn-primary:hover { background: #b05c3d; }
+        .ae-btn-sec {
+            background: transparent;
+            color: var(--t1);
+            border: 1px solid var(--border-strong);
+        }
+        .ae-btn-sec:hover { background: #fff; border-color: var(--accent); }
+        .ae-shortcuts {
+            text-align: center;
+            font-size: 9px;
+            color: var(--t3);
+            margin-top: 12px;
+        }
+        .ae-icon { display:inline-block; vertical-align:middle; width:12px; height:12px; opacity:0.8; }
+        .ae-icon-sm { width:10px; height:10px; }
+
         /* ─── ADD ENTRY FORM ─── */
         .add-tabs {
             display: inline-flex;
@@ -1766,12 +2113,14 @@
         .cal-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 8px;
+            max-width: 100%;
+            margin: 0 auto;
         }
 
         .cd {
             aspect-ratio: 1;
-            border-radius: 10px;
+            border-radius: 0;
             background: var(--bg2);
             cursor: default;
             transition: all var(--t-spring);
@@ -1779,7 +2128,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: var(--t3);
             position: relative;
@@ -1797,9 +2146,11 @@
         }
 
         .cd-a {
-            font-size: 10px;
-            opacity: 0.9;
-            margin-top: 2px;
+            font-size: 9px;
+            font-weight: 700;
+            opacity: 0.95;
+            margin-top: 1px;
+            font-family: var(--font-big);
         }
 
         .hm-legend {
@@ -1826,15 +2177,199 @@
         }
 
         /* ─── ANALYTICS ─── */
+        /* ─── ANALYTICS ENHANCED ─── */
         .ana-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 1.5rem;
         }
 
-        .ana-full {
-            grid-column: 1 / -1;
+        .ana-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0;
+            padding: 1.5rem;
+            box-shadow: var(--el-1);
+            position: relative;
         }
+
+        /* AI Insights Cards */
+        .ai-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: var(--el-1);
+            position: relative;
+        }
+        .ai-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .ai-val {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--t1);
+            font-family: var(--font-big);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ai-sub {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--t2);
+        }
+        .ai-sub.up { color: #d9534f; }
+        .ai-sub.down { color: #5cb85c; }
+
+        .ana-span-5 { grid-column: span 5; }
+        .ana-span-10 { grid-column: span 10; }
+
+        .ana-card-h {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Vertical Bar Chart */
+        .v-bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 240px;
+            padding: 2rem 0 1.5rem;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .v-bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            height: 100%;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .v-bar-track {
+            width: 50%;
+            max-width: 54px;
+            background: var(--bg2);
+            border-radius: 0;
+            position: relative;
+            min-height: 4px;
+            transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .v-bar-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, var(--accent), #ff9a7b);
+            height: 100%;
+            border-radius: 0;
+        }
+
+        .v-bar-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+        }
+
+        .v-bar-val {
+            position: absolute;
+            top: -24px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            margin-bottom: 0;
+            font-family: var(--font-big);
+        }
+
+        /* Toggle Button */
+        .chart-toggle {
+            display: inline-flex;
+            background: var(--bg2);
+            border-radius: 0;
+            padding: 4px;
+            gap: 2px;
+            border: 1px solid var(--border);
+        }
+
+        .ct-btn {
+            padding: 6px 12px;
+            border-radius: 0;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            color: var(--t3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: var(--font);
+        }
+
+        .ct-btn.active {
+            background: var(--surface);
+            color: var(--accent);
+            box-shadow: var(--el-1);
+        }
+
+        /* Pie Legend Enhanced */
+        .pie-leg-enhanced {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .ple-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 0;
+            transition: background 0.2s;
+        }
+
+        .ple-row:hover { background: var(--bg); }
+
+        .ple-dot { width: 10px; height: 10px; border-radius: 0; flex-shrink: 0; }
+        .ple-name { flex: 1; font-weight: 600; color: var(--t2); }
+        .ple-pct { font-weight: 700; color: var(--t3); font-size: 10px; min-width: 40px; text-align: right; }
+        .ple-amt { font-weight: 700; color: var(--t1); font-family: var(--font-big); min-width: 60px; text-align: right; }
+
+        .pie-layout {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            position: relative;
+        }
+
 
         .br-item {
             display: flex;
@@ -1875,12 +2410,17 @@
 
         .br-track {
             flex: 1;
-            height: 24px;
+            height: 12px;
             background: var(--bg2);
-            border-radius: 6px;
+            border-radius: 0;
             position: relative;
             overflow: hidden;
             border: 1px solid var(--border);
+        }
+
+        .br-track.thick {
+            height: 32px;
+            border-radius: 0;
         }
 
         .br-fill {
@@ -2994,7 +3534,11 @@
 
             .ana-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
+            .ana-span-6, .ana-span-4, .ana-span-10, .ana-span-5 { grid-column: span 1; }
+            .pie-layout { flex-direction: column; gap: 1.5rem; }
+            .v-bar-chart { height: 180px; }
 
             .pie-layout {
                 flex-direction: column;
@@ -3231,50 +3775,54 @@
         }
 
         #page-accounts .stat-tile {
-            background: linear-gradient(160deg, #FFFDF9 0%, #FBF6EE 100%);
-            border: 1px solid rgba(201, 123, 75, 0.08);
-            box-shadow: 0 8px 22px -10px rgba(120, 80, 40, 0.18),
-                        0 2px 6px -2px rgba(120, 80, 40, 0.08);
-            padding: 22px 22px 18px;
+            background: #FFFFFF !important;
+            border: 1px solid rgba(120, 100, 70, 0.10) !important;
+            border-radius: 22px !important;
+            padding: 24px 26px 20px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
             position: relative;
             overflow: hidden;
-            transition: transform .25s ease, box-shadow .25s ease;
+            transition: all 0.3s ease !important;
         }
 
         #page-accounts .stat-tile:hover {
-            transform: translateY(-3px);
-            border-color: rgba(201, 123, 75, 0.18);
-            box-shadow: 0 14px 32px -12px rgba(201, 123, 75, 0.22),
-                        0 4px 10px -3px rgba(120, 80, 40, 0.10);
+            transform: translateY(-3px) !important;
+            box-shadow: 0 10px 24px rgba(80, 60, 30, 0.06) !important;
         }
 
         #page-accounts .stat-tile .s-eye {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 0.4rem;
+            gap: 10px;
+            margin-bottom: 12px;
             color: var(--t3);
+            font-size: 13px;
         }
 
         #page-accounts .stat-tile .s-eye .stat-ico {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 22px;
-            height: 22px;
-            border: 1px solid rgba(201, 123, 75, 0.25);
-            background: var(--accent-bg);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: #FFFBF2;
+            border: 1px solid rgba(201, 123, 75, 0.15);
             color: var(--accent);
         }
 
         #page-accounts .stat-tile .s-eye .stat-ico svg {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
         }
 
         #page-accounts .stat-tile .s-val {
-            font-size: 30px;
+            font-size: 32px;
+            font-weight: 800;
             color: var(--t1);
+            font-family: var(--font-big);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
         }
 
         #page-accounts .stat-tile .stat-meta {
@@ -3283,10 +3831,10 @@
         }
 
         #page-accounts .stat-tile .stat-trend {
-            background: transparent;
-            padding: 2px 0;
-            font-size: 10.5px;
-            letter-spacing: 0.02em;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--t3);
+            letter-spacing: 0.01em;
         }
 
         #page-accounts .stat-tile .stat-spark-mini {
@@ -3351,17 +3899,23 @@
         }
 
         #page-accounts .acc-pane-title {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: 700;
-            letter-spacing: 0.02em;
-            color: var(--t2);
+            letter-spacing: -0.02em;
+            color: var(--t1);
+            font-family: var(--font-big);
         }
 
         #page-accounts .add-inline-btn {
-            background: var(--surface);
-            border: 1px solid rgba(201, 123, 75, 0.25);
+            background: #FFFFFF;
+            border: 1px solid rgba(120, 100, 70, 0.15);
             color: var(--accent);
-            box-shadow: 0 2px 6px rgba(120, 80, 40, 0.06);
+            border-radius: 100px !important;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
         }
 
         #page-accounts .add-inline-btn:hover {
@@ -3369,93 +3923,288 @@
             border-color: var(--accent);
         }
 
-        /* ── Bank list grid ── */
+        /* ════════════════════════════════════════════════════════════════
+           BANK CARDS — premium light card matching canvas mockup:
+           rounded monogram · big bank name + type · faded watermark letter ·
+           eye-off toggle · "AVAILABLE BALANCE · 30D" · big balance ·
+           green trend pill · area-fill sparkline with end dot ·
+           dashed divider · masked acct number + DETAILS link
+           ════════════════════════════════════════════════════════════════ */
         #page-accounts #bankList {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 18px;
         }
 
-        /* ── Bank cards: cream surface · monogram · large balance · sparkline · caption ── */
         #page-accounts #bankList .acc-item {
-            background: linear-gradient(160deg, #FFFDF9 0%, #FBF5EC 100%);
-            border: 1px solid rgba(201, 123, 75, 0.10);
-            box-shadow: 0 8px 22px -10px rgba(120, 80, 40, 0.18),
-                        0 2px 6px -2px rgba(120, 80, 40, 0.06);
-            padding: 18px;
-            min-height: 150px;
+            background: #FFFFFF !important;
+            border: 1px solid rgba(120, 100, 70, 0.10) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+            padding: 14px 16px 12px !important;
+            min-height: 160px;
             gap: 0;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease !important;
         }
 
         #page-accounts #bankList .acc-item:hover {
             transform: translateY(-3px);
-            border-color: rgba(201, 123, 75, 0.25);
-            box-shadow: 0 16px 34px -12px rgba(201, 123, 75, 0.22),
-                        0 4px 10px -3px rgba(120, 80, 40, 0.10);
+            border-color: rgba(120, 100, 70, 0.18);
+            box-shadow:
+                0 22px 44px -18px rgba(60, 50, 30, 0.22),
+                0 6px 12px -4px rgba(60, 50, 30, 0.10);
         }
 
-        #page-accounts #bankList .ax-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-
-        #page-accounts #bankList .ax-bubble {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
+        #page-accounts #bankList .bk-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            flex-shrink: 0;
             font-family: var(--font-big);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 8px -2px rgba(0,0,0,0.1);
+        }
+
+        #page-accounts #bankList .bk-meta {
+            margin-top: auto;
+            text-align: right;
+        }
+
+        /* Soft tinted glow in top-right */
+        #page-accounts #bankList .acc-item::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(180, 200, 240, 0.30) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #page-accounts #bankList .acc-item>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Top row: monogram + name/type, watermark + eye-off in absolute corner */
+        #page-accounts #bankList .bk-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        #page-accounts #bankList .bk-water {
+            position: absolute;
+            bottom: -10px;
+            left: -10px;
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(120, 100, 70, 0.03);
+            pointer-events: none;
+            text-transform: uppercase;
+            font-family: var(--font-big);
+        }
+
+        #page-accounts #bankList .bk-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--t1);
+            letter-spacing: 0;
+            line-height: 1.15;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: none;
+        }
+
+        #page-accounts #bankList .bk-type {
+            font-size: 11px;
             font-weight: 700;
-            font-size: 14px;
+            color: var(--t4);
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+        }
+
+        /* Eye-off icon top-right corner */
+        #page-accounts #bankList .bk-eye {
+            position: absolute;
+            top: 24px;
+            right: 22px;
+            color: var(--t3);
+            opacity: 0.55;
+            cursor: pointer;
+            transition: opacity .2s ease, color .2s ease;
+            z-index: 2;
+        }
+
+        #page-accounts #bankList .bk-eye:hover {
+            opacity: 1;
+            color: var(--t1);
+        }
+
+        /* Body row: balance label, value, trend pill on left; sparkline on right */
+        #page-accounts #bankList .bk-body {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        #page-accounts #bankList .bk-bal-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--t4);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #page-accounts #bankList .bk-bal-label .bk-pill-30d {
+            font-size: 9px;
+            color: var(--t4);
+            font-weight: 700;
+            letter-spacing: 0.10em;
+        }
+
+        #page-accounts #bankList .bk-bal {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--t1);
+            font-family: var(--font-big);
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+        }
+
+        #page-accounts #bankList .bk-bal.neg {
+            color: var(--red);
+        }
+
+        #page-accounts #bankList .bk-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding: 5px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
             letter-spacing: 0.02em;
         }
 
-        #page-accounts #bankList .ax-spark {
-            width: 70px;
-            height: 22px;
-            opacity: 0.85;
+        #page-accounts #bankList .bk-trend.up {
+            background: rgba(22, 163, 74, 0.10);
+            color: #16A34A;
         }
 
-        #page-accounts #bankList .ax-spark svg {
+        #page-accounts #bankList .bk-trend.down {
+            background: rgba(220, 38, 38, 0.08);
+            color: #DC2626;
+        }
+
+        #page-accounts #bankList .bk-trend.flat {
+            background: rgba(120, 100, 70, 0.08);
+            color: var(--t3);
+        }
+
+        /* Sparkline area on the right with end-dot */
+        #page-accounts #bankList .bk-spark {
+            width: 130px;
+            height: 60px;
+            position: relative;
+        }
+
+        #page-accounts #bankList .bk-spark svg {
             display: block;
             width: 100%;
             height: 100%;
         }
 
-        #page-accounts #bankList .ax-name {
+        /* Dashed divider then masked acct number + Details link */
+        #page-accounts #bankList .bk-divider {
+            border-top: 1px dashed rgba(120, 100, 70, 0.22);
+            margin: auto -4px 14px;
+        }
+
+        #page-accounts #bankList .bk-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
             font-size: 11px;
             font-weight: 700;
-            color: var(--t3);
-            letter-spacing: 0.10em;
-            text-transform: uppercase;
-            margin: 0 0 6px;
-        }
-
-        #page-accounts #bankList .ax-bal {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--t1);
-            font-family: var(--font-big);
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-        }
-
-        #page-accounts #bankList .ax-bal.neg { color: var(--red); }
-
-        #page-accounts #bankList .ax-caption {
-            margin-top: 10px;
-            font-size: 9.5px;
-            font-weight: 700;
             color: var(--t4);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            width: 100%;
+        }
+
+        #page-accounts #bankList .bk-acct {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #page-accounts #bankList .bk-acct-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        #page-accounts #bankList .bk-acct-dots i {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--t4);
+            display: block;
+        }
+
+        #page-accounts #bankList .bk-details {
+            color: var(--t3);
+            cursor: pointer;
+            font-size: 11px;
             letter-spacing: 0.14em;
             text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color .2s ease;
+        }
+
+        #page-accounts #bankList .bk-details:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 600px) {
+            #page-accounts #bankList {
+                grid-template-columns: 1fr;
+            }
+
+            #page-accounts #bankList .acc-item {
+                padding: 18px !important;
+                min-height: 210px;
+            }
+
+            #page-accounts #bankList .bk-bal {
+                font-size: 26px;
+            }
+
+            #page-accounts #bankList .bk-spark {
+                width: 100px;
+                height: 50px;
+            }
         }
 
         /* ── People list: avatar bubbles · color-coded amounts ── */
@@ -3465,36 +4214,36 @@
         }
 
         #page-accounts #personList .acc-item {
-            background: var(--surface);
-            border: 1px solid rgba(201, 123, 75, 0.08);
-            box-shadow: 0 6px 18px -10px rgba(120, 80, 40, 0.16),
-                        0 2px 5px -2px rgba(120, 80, 40, 0.06);
-            padding: 16px 18px;
-            min-height: 84px;
+            background: #FFFFFF !important;
+            border: 1px solid rgba(120, 100, 70, 0.10) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+            padding: 12px 16px;
+            min-height: 72px;
             display: flex;
             flex-direction: row;
             align-items: center;
             gap: 14px;
-            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+            transition: all 0.3s ease !important;
         }
 
         #page-accounts #personList .acc-item:hover {
-            transform: translateY(-2px);
-            border-color: rgba(201, 123, 75, 0.22);
-            box-shadow: 0 12px 26px -12px rgba(201, 123, 75, 0.20);
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 24px rgba(80, 60, 30, 0.06) !important;
         }
 
         #page-accounts #personList .px-avatar {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: var(--font-big);
-            font-weight: 700;
-            font-size: 15px;
+            font-weight: 800;
+            font-size: 16px;
             flex-shrink: 0;
+            border: 1px solid rgba(120, 100, 70, 0.15);
         }
 
         #page-accounts #personList .px-body {
@@ -3506,37 +4255,48 @@
         }
 
         #page-accounts #personList .px-name {
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
             color: var(--t1);
-            letter-spacing: 0.04em;
+            letter-spacing: -0.01em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         #page-accounts #personList .px-sub {
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 700;
             color: var(--t4);
-            letter-spacing: 0.12em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
         #page-accounts #personList .px-amt {
             font-family: var(--font-big);
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
             white-space: nowrap;
         }
 
-        #page-accounts #personList .px-amt.pos { color: var(--green); }
-        #page-accounts #personList .px-amt.neg { color: var(--red); }
-        #page-accounts #personList .px-amt.zero { color: var(--t3); }
+        #page-accounts #personList .px-amt.pos {
+            color: var(--green);
+        }
+
+        #page-accounts #personList .px-amt.neg {
+            color: var(--red);
+        }
+
+        #page-accounts #personList .px-amt.zero {
+            color: var(--t3);
+        }
 
         /* Action buttons sit unobtrusively in top-right on hover */
-        #page-accounts #bankList .acc-acts,
+        #page-accounts #bankList .acc-acts {
+            display: none;
+        }
+
         #page-accounts #personList .acc-acts {
             position: absolute;
             top: 8px;
@@ -3549,13 +4309,288 @@
         }
 
         @media (max-width: 600px) {
-            #page-accounts .acc-tab { padding: 10px 14px; font-size: 11px; }
-            #page-accounts .acc-tab-content { padding: 18px 0 0; }
-            #page-accounts #bankList { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
-            #page-accounts #bankList .acc-item { padding: 14px; min-height: 130px; }
-            #page-accounts #bankList .ax-bal { font-size: 18px; }
-            #page-accounts .stat-tile { padding: 16px; }
-            #page-accounts .stat-tile .s-val { font-size: 22px; }
+            #page-accounts .acc-tab {
+                padding: 10px 14px;
+                font-size: 11px;
+            }
+
+            #page-accounts .acc-tab-content {
+                padding: 18px 0 0;
+            }
+
+            #page-accounts #bankList {
+                grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+                gap: 12px;
+            }
+
+            #page-accounts #bankList .acc-item {
+                padding: 14px;
+                min-height: 130px;
+            }
+
+            #page-accounts #bankList .ax-bal {
+                font-size: 18px;
+            }
+
+            #page-accounts .stat-tile {
+                padding: 16px;
+            }
+
+            #page-accounts .stat-tile .s-val {
+                font-size: 22px;
+            }
+        }
+
+        /* ════════════════════════════════════════════════════════════════
+           CREDIT CARDS — light cream credit-card-shape · USED on left ·
+           LIMIT on right · solid dark progress bar · "% utilized" label
+           ════════════════════════════════════════════════════════════════ */
+        #page-accounts #creditList {
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)) !important;
+            gap: 22px !important;
+        }
+
+        #page-accounts .cc-card {
+            background: #FCF5EF !important;
+            border: 1px solid rgba(120, 100, 70, 0.10) !important;
+            border-radius: 20px !important;
+            padding: 22px 24px 20px !important;
+            box-shadow: 0 8px 24px rgba(80, 60, 30, 0.04) !important;
+            color: var(--t1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0 !important;
+            min-height: 190px !important;
+            aspect-ratio: 1.586 / 1;
+            max-width: 360px;
+            width: 100%;
+            transition: all 0.3s ease !important;
+            overflow: hidden;
+        }
+
+        #page-accounts .cc-card:hover {
+            transform: translateY(-4px) !important;
+            box-shadow: 0 12px 32px rgba(80, 60, 30, 0.08) !important;
+        }
+
+        /* Top row: card name + chip placeholder */
+        #page-accounts .cc-card .cc-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        #page-accounts .cc-card .cc-name {
+            color: var(--t1);
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+            text-transform: none;
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        /* Empty rounded square chip placeholder */
+        #page-accounts .cc-card .cc-chip {
+            width: 38px;
+            height: 28px;
+            background: linear-gradient(135deg, #EAE4D8 0%, #D2C8B5 100%);
+            border: 1px solid rgba(120, 100, 70, 0.20);
+            border-radius: 6px;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #page-accounts .cc-card .cc-chip::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 18px;
+            border: 1px solid rgba(120, 100, 70, 0.15);
+            background-image: 
+                linear-gradient(90deg, rgba(120, 100, 70, 0.1) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(120, 100, 70, 0.1) 1px, transparent 1px);
+            background-size: 6px 6px;
+            border-radius: 2px;
+        }
+
+        #page-accounts .cc-card .cc-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        #page-accounts .cc-card .cc-number-main {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--t1);
+            letter-spacing: 0.1em;
+            font-family: var(--font-big);
+            margin-top: 8px;
+            opacity: 0.85;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+        }
+
+        /* Middle row: USED on left, LIMIT on right */
+        #page-accounts .cc-card .cc-mid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        #page-accounts .cc-card .cc-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        #page-accounts .cc-card .cc-col.right {
+            text-align: right;
+            align-items: flex-end;
+        }
+
+        #page-accounts .cc-card .cc-label {
+            color: var(--t3);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        #page-accounts .cc-card .cc-amt {
+            color: var(--t1);
+            font-size: 30px;
+            font-weight: 800;
+            font-family: var(--font-big);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        #page-accounts .cc-card .cc-amt.cc-limit {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--t3);
+            letter-spacing: -0.02em;
+        }
+
+        /* Solid dark progress bar */
+        #page-accounts .cc-card .cc-bar-track {
+            height: 8px;
+            background: #FFFFFF;
+            border-radius: 100px;
+            overflow: hidden;
+            width: 100%;
+            display: block;
+        }
+
+        #page-accounts .cc-card .cc-bar-fill {
+            height: 100%;
+            background: #2D2A26;
+            border-radius: 100px;
+            transition: width 0.9s cubic-bezier(0.34, 1.2, 0.64, 1), background 0.4s ease;
+        }
+
+        #page-accounts .cc-card .cc-bar-fill.warn {
+            background: var(--accent);
+        }
+
+        #page-accounts .cc-card .cc-bar-fill.danger {
+            background: #B22222;
+        }
+
+        #page-accounts .cc-card .cc-util-line {
+            margin-top: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--t3);
+            letter-spacing: 0.02em;
+        }
+
+        #page-accounts .cc-card .acc-acts {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            #page-accounts #creditList {
+                grid-template-columns: 1fr !important;
+            }
+
+            #page-accounts .cc-card {
+                padding: 18px 20px !important;
+                aspect-ratio: auto;
+                min-height: 180px !important;
+                max-width: 100%;
+            }
+
+            #page-accounts .cc-card .cc-amt {
+                font-size: 22px;
+            }
+
+            #page-accounts .cc-card .cc-amt.cc-limit {
+                font-size: 16px;
+            }
+        }
+
+        #page-accounts .stat-tile .s-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 4px;
+        }
+
+        #page-accounts .stat-trend-line {
+            margin-top: 0;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--t4);
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 14px;
+            white-space: nowrap;
+        }
+
+        #page-accounts .stat-trend-line.up {
+            color: #16A34A;
+        }
+
+        #page-accounts .stat-trend-line.down {
+            color: #DC2626;
+        }
+
+        #page-accounts .stat-trend-line .stl-arrow {
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        #page-accounts .stat-trend-line .stl-suffix {
+            color: var(--t4);
+            font-weight: 600;
+            margin-left: 2px;
+        }
+
+        /* ── Date subtitle with calendar icon ── */
+        #page-accounts .acc-date-sub {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--t3);
+        }
+
+        #page-accounts .acc-date-sub svg {
+            opacity: 0.7;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -3696,19 +4731,40 @@
             <!-- AI CHAT -->
             <div class="page active" id="page-aichat">
                 <div class="chat-page">
-                    <div class="chat-header">
-                        <div>
-                            <div class="pg-title">AI Assistant</div>
-                            <div class="pg-sub">Paste bank SMS or ask questions</div>
+                    <div class="chat-header-new">
+                        <div class="ch-left">
+                            <div class="pg-title" style="font-size: 24px;">AI Assistant</div>
+                            <div class="pg-sub" style="margin-top: 4px;">Paste bank SMS, log expenses, or ask questions about your money.</div>
                         </div>
-                        <div class="api-key-badge" onclick="setGroqKey()">Groq API: <span id="apiKeyStatus">Set</span>
+                        <div class="ch-right">
+                            <div class="ch-ctrl-box">
+                                <span class="ch-ctrl-lbl">model</span>
+                                <select class="ch-ctrl-sel"><option>Llama-3.1-70b</option></select>
+                            </div>
+                            <div class="ch-ctrl-box api" onclick="setGroqKey()">
+                                <span class="ch-ctrl-lbl">Groq API: <strong id="apiKeyStatus">Linked</strong></span>
+                            </div>
+                            <button class="ch-btn-new" onclick="resetChatThread()">+ New thread</button>
+                        </div>
+                    </div>
+
+                    <div class="chat-suggested">
+                        <div class="cs-lbl">SUGGESTED</div>
+                        <div class="cs-chips" id="ai-suggested-prompts">
+                            <!-- Populated dynamically by updateAIPrompts() -->
                         </div>
                     </div>
 
                     <div id="chatHistory">
-                        <div class="msg ai">
-                            Hi! I'm your financial assistant. You can paste a bank message or describe an expense, and
-                            I'll help you record it. You can also ask me questions about your spending!
+                        <div class="chat-date-sep">
+                            <span id="chat-date-label">TODAY</span>
+                        </div>
+                        <div class="msg-row ai">
+                            <div class="msg-ava ai">f</div>
+                            <div class="msg-content-wrapper">
+                                <div class="msg-meta">Tracker AI <span class="time">— Now</span></div>
+                                <div class="msg-bubble">Hi Sachin - I'm your financial assistant. Paste a bank SMS or describe an expense and I'll log it for you. You can also ask things like "how much did I spend on food in April?" or "what's draining my budget?"</div>
+                            </div>
                         </div>
                     </div>
 
@@ -3730,166 +4786,197 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
-                <div class="pg-header">
-                    <div class="pg-title">Add Entry</div>
-                    <div class="pg-sub">Record a new expense, income, or transfer</div>
-                </div>
-                <div class="add-tabs" id="add-entry-tabs">
-                    <div class="add-tab active" onclick="switchAddTab('expense',this)">Expense</div>
-                    <div class="add-tab" onclick="switchAddTab('income',this)">Income</div>
-                    <div class="add-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
-                    <div class="add-tab" onclick="toggleImportSection()"
-                        style="margin-left:auto; border:1.5px solid var(--accent); color:var(--accent);">Bulk Import
-                    </div>
-                </div>
-
-                <div id="import-section" style="display:none; margin-bottom:24px;">
-                    <div class="card card-p">
-                        <div
-                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                            <div class="card-h" style="margin:0">CSV Import</div>
-                            <button class="txn-clr-btn" onclick="toggleImportSection()">✕ Close</button>
+                <div class="add-entry-wrap">
+                    <div class="ae-tabs" id="add-entry-tabs">
+                        <div class="ae-tab active" onclick="switchAddTab('expense',this)">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                            Expense
                         </div>
-                        <div class="import-hint">
-                            Paste CSV content below. Columns:
-                            <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM</code><br>
-                            Date: DD/MM/YYYY, Amount: negative = expense.
+                        <div class="ae-tab" onclick="switchAddTab('income',this)">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                            Income
                         </div>
-                        <div class="form-row" style="margin-top:12px;">
-                            <select id="import-type-sel" class="form-input" style="cursor:pointer"
-                                onchange="clearImport()">
-                                <option value="TXN">Transactions</option>
-                                <option value="TPL">Templates</option>
-                            </select>
+                        <div class="ae-tab" onclick="switchAddTab('transfer',this)">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3v14M7 21V7M3 11l4-4 4 4M21 13l-4 4-4-4"/></svg>
+                            Transfer
                         </div>
-                        <div class="form-row">
-                            <textarea id="import-csv" class="form-input" rows="6" placeholder="Paste your CSV here…"
-                                style="font-family:monospace;font-size:12px;"></textarea>
-                        </div>
-                        <div style="display:flex; gap:10px;">
-                            <button class="add-btn" onclick="previewImport()" style="flex:1">Preview</button>
-                            <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
-                                style="flex:1; display:none">Import to Firebase</button>
-                            <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
-                        </div>
-                        <div id="import-preview" style="margin-top:12px"></div>
-                    </div>
-                </div>
-                <!-- EXPENSE -->
-                <div class="add-form active" id="form-expense">
-                    <div class="form-row"><label class="form-label">Template</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-tpl"
-                                placeholder="Choose template (optional)" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-tpl"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-acc" placeholder="Select account"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-acc"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Category</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-cat"
-                                placeholder="Select or type new category" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-cat"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
-                            id="e-amt" type="number" placeholder="0.00"></div>
-                    <div class="form-row"><label class="form-label">Item</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-item"
-                                placeholder="Type or select item" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-item"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Paid To</label>
-                        <div class="form-input-wrap"><input class="form-input" id="e-to"
-                                placeholder="Type or select person" autocomplete="off">
-                            <div class="form-dropdown" id="dd-e-to"></div>
+                        <div class="ae-tab" onclick="toggleImportSection()" style="border-style: dotted;">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                            Bulk Import
                         </div>
                     </div>
 
-                    <div class="form-row" style="margin-top:16px;">
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                            <label class="form-label" style="margin:0">Split Payments</label>
-                            <button class="add-inline-btn" style="padding:5px 10px;font-size:10px"
-                                onclick="addSplitRow(event)">+ Add Split</button>
-                        </div>
-                        <div id="split-rows-container"></div>
-                        <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
-                            <button class="txn-clr-btn" onclick="splitEqually(event)"
-                                style="padding:6px 12px;font-size:11px;">Split Equally</button>
-                        </div>
-                    </div>
-
-                    <div class="form-err" id="e-err"></div>
-                    <button class="add-btn" id="e-btn" onclick="submitExp()">Save Expense</button>
-                    <button class="form-save-tpl" id="e-tpl-btn" onclick="saveExpTpl()">+ Save as Template</button>
-                </div>
-                <!-- INCOME -->
-                <div class="add-form" id="form-income">
-                    <div class="form-row"><label class="form-label">Template</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-tpl"
-                                placeholder="Choose template (optional)" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-tpl"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-acc" placeholder="Select account"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-acc"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Category</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-cat"
-                                placeholder="Select or type new category" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-cat"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
-                            id="i-amt" type="number" placeholder="0.00"></div>
-                    <div class="form-row"><label class="form-label">Item</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-item"
-                                placeholder="Type or select item" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-item"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">Received From</label>
-                        <div class="form-input-wrap"><input class="form-input" id="i-from"
-                                placeholder="Type or select person" autocomplete="off">
-                            <div class="form-dropdown" id="dd-i-from"></div>
-                        </div>
-                    </div>
-                    <div class="form-err" id="i-err"></div>
-                    <button class="add-btn" id="i-btn" onclick="submitInc()">Save Income</button>
-                    <button class="form-save-tpl" id="i-tpl-btn" onclick="saveIncTpl()">+ Save as Template</button>
-                </div>
-                <!-- TRANSFER -->
-                <div class="add-form" id="form-transfer">
-                    <div class="form-row"><label class="form-label">From Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-from" placeholder="Debit from"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-t-from"></div>
-                        </div>
-                    </div>
-                    <div class="form-row"><label class="form-label">To Account</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-to" placeholder="Credit to"
-                                autocomplete="off">
-                            <div class="form-dropdown" id="dd-t-to"></div>
+                    <div id="import-section" style="display:none; margin-bottom:24px;">
+                        <div class="card card-p">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <div class="card-h" style="margin:0">CSV Import</div>
+                                <button class="txn-clr-btn" onclick="toggleImportSection()">✕ Close</button>
+                            </div>
+                            <div class="import-hint">
+                                Paste CSV content below. Columns:
+                                <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM</code><br>
+                                Date: DD/MM/YYYY, Amount: negative = expense.
+                            </div>
+                            <div class="form-row" style="margin-top:12px;">
+                                <select id="import-type-sel" class="form-input" style="cursor:pointer" onchange="clearImport()">
+                                    <option value="TXN">Transactions</option>
+                                    <option value="TPL">Templates</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <textarea id="import-csv" class="form-input" rows="6" placeholder="Paste your CSV here…" style="font-family:monospace;font-size:12px;"></textarea>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button class="add-btn" onclick="previewImport()" style="flex:1">Preview</button>
+                                <button class="add-btn" id="import-execute-btn" onclick="executeImport()" style="flex:1; display:none">Import to Firebase</button>
+                                <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
+                            </div>
+                            <div id="import-preview" style="margin-top:12px"></div>
                         </div>
                     </div>
 
-                    <div class="form-row"><label class="form-label">Amount (₹)</label><input class="form-input"
-                            id="t-amt" type="number" placeholder="0.00"></div>
-                    <div class="form-row"><label class="form-label">Note / Item</label>
-                        <div class="form-input-wrap"><input class="form-input" id="t-item"
-                                placeholder="Transfer purpose" autocomplete="off">
-                            <div class="form-dropdown" id="dd-t-item"></div>
+                    <!-- EXPENSE -->
+                    <div class="add-form active" id="form-expense">
+                        <!-- Template -->
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
+                                <div class="ae-lbl">TEMPLATE</div>
+                                <div class="ae-hint">reuse a saved entry</div>
+                            </div>
+                            <div class="ae-input-wrap">
+                                <input class="ae-input" id="e-tpl" placeholder="☆ Choose template (optional)" autocomplete="off">
+                                <div class="form-dropdown" id="dd-e-tpl"></div>
+                            </div>
+                            <div class="ae-chips" id="e-tpl-chips"></div>
+                        </div>
+
+                        <!-- Account -->
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
+                                <div class="ae-lbl">ACCOUNT</div>
+                            </div>
+                            <input type="hidden" id="e-acc">
+                            <div class="ae-acc-row" id="e-acc-cards">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
+                                <div class="ae-lbl">CATEGORY</div>
+                                <div class="ae-hint">type to create new</div>
+                            </div>
+                            <div class="ae-input-wrap">
+                                <input class="ae-input" id="e-cat" placeholder="⚲ Select or type new category" autocomplete="off">
+                                <div class="form-dropdown" id="dd-e-cat"></div>
+                            </div>
+                            <div class="ae-chips" id="e-cat-chips"></div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
+                                <div class="ae-lbl">AMOUNT (₹)</div>
+                            </div>
+                            <div class="ae-amt-wrap">
+                                <div class="ae-amt-sym">₹</div>
+                                <input class="ae-amt-input" id="e-amt" type="number" placeholder="0.00" step="0.01">
+                            </div>
+                        </div>
+
+                        <!-- Grids -->
+                        <div class="ae-grid-2">
+                            <div>
+                                <div class="ae-group-hdr"><div class="ae-lbl">ITEM</div></div>
+                                <div class="ae-input-wrap">
+                                    <input class="ae-input" id="e-item" placeholder="Type or select item" autocomplete="off" onblur="autoCategorizeItem()">
+                                    <div class="form-dropdown" id="dd-e-item"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="ae-group-hdr"><div class="ae-lbl">PAID TO</div></div>
+                                <div class="ae-input-wrap">
+                                    <input class="ae-input" id="e-to" placeholder="Type or select person" autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-to"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Split Payments -->
+                        <div class="ae-split-box">
+                            <div class="ae-group-hdr" style="margin-bottom:0;">
+                                <div class="ae-lbl">SPLIT PAYMENTS</div>
+                                <button class="ae-chip" style="background:#fff; border-color:var(--border-strong); border-radius:0;" onclick="addSplitRow(event)">+ Add Split</button>
+                            </div>
+                            <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or accounts</div>
+                            
+                            <div id="split-rows-container"></div>
+                            <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
+                                <button class="txn-clr-btn" onclick="splitEqually(event)" style="padding:6px 12px;font-size:11px;">Split Equally</button>
+                            </div>
+                        </div>
+
+                        <div class="form-err" id="e-err" style="margin-bottom:12px;"></div>
+                        
+                        <div class="ae-btn-row">
+                            <button class="ae-btn ae-btn-primary" id="e-btn" onclick="submitExp()">Save Expense →</button>
+                            <button class="ae-btn ae-btn-sec" onclick="submitExp(true)">Save & add another</button>
                         </div>
                     </div>
-                    <div class="form-err" id="t-err"></div>
-                    <button class="add-btn" id="t-btn" onclick="submitTr()">Execute Transfer</button>
+
+                    <!-- INCOME (Simplified for now to match style, but functionally same) -->
+                    <div class="add-form" id="form-income">
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">TEMPLATE</div></div>
+                            <div class="ae-input-wrap"><input class="ae-input" id="i-tpl" placeholder="Choose template" autocomplete="off"><div class="form-dropdown" id="dd-i-tpl"></div></div>
+                        </div>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">ACCOUNT</div></div>
+                            <input type="hidden" id="i-acc">
+                            <div class="ae-acc-row" id="i-acc-cards"></div>
+                        </div>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">CATEGORY</div></div>
+                            <div class="ae-input-wrap"><input class="ae-input" id="i-cat" placeholder="Select category" autocomplete="off"><div class="form-dropdown" id="dd-i-cat"></div></div>
+                        </div>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">AMOUNT (₹)</div></div>
+                            <div class="ae-amt-wrap"><div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="i-amt" type="number" placeholder="0.00"></div>
+                        </div>
+                        <div class="ae-grid-2">
+                            <div><div class="ae-group-hdr"><div class="ae-lbl">ITEM</div></div><div class="ae-input-wrap"><input class="ae-input" id="i-item" placeholder="Item" autocomplete="off"><div class="form-dropdown" id="dd-i-item"></div></div></div>
+                            <div><div class="ae-group-hdr"><div class="ae-lbl">RECEIVED FROM</div></div><div class="ae-input-wrap"><input class="ae-input" id="i-from" placeholder="Person" autocomplete="off"><div class="form-dropdown" id="dd-i-from"></div></div></div>
+                        </div>
+                        <div class="form-err" id="i-err"></div>
+                        <div class="ae-btn-row">
+                            <button class="ae-btn ae-btn-primary" id="i-btn" onclick="submitInc()">Save Income →</button>
+                        </div>
+                    </div>
+
+                    <!-- TRANSFER -->
+                    <div class="add-form" id="form-transfer">
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">FROM ACCOUNT</div></div>
+                            <div class="ae-input-wrap"><input class="ae-input" id="t-from" placeholder="Debit from" autocomplete="off"><div class="form-dropdown" id="dd-t-from"></div></div>
+                        </div>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">TO ACCOUNT</div></div>
+                            <div class="ae-input-wrap"><input class="ae-input" id="t-to" placeholder="Credit to" autocomplete="off"><div class="form-dropdown" id="dd-t-to"></div></div>
+                        </div>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">AMOUNT (₹)</div></div>
+                            <div class="ae-amt-wrap"><div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="t-amt" type="number" placeholder="0.00"></div>
+                        </div>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr"><div class="ae-lbl">NOTE / ITEM</div></div>
+                            <div class="ae-input-wrap"><input class="ae-input" id="t-item" placeholder="Transfer purpose" autocomplete="off"><div class="form-dropdown" id="dd-t-item"></div></div>
+                        </div>
+                        <div class="form-err" id="t-err"></div>
+                        <div class="ae-btn-row">
+                            <button class="ae-btn ae-btn-primary" id="t-btn" onclick="submitTr()">Execute Transfer →</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -3898,45 +4985,61 @@
                 <div class="pg-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
                         <div class="pg-title">Accounts</div>
-                        <div class="pg-sub" id="acc-period">—</div>
+                        <div class="pg-sub acc-date-sub">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <path d="M16 2v4M8 2v4M3 10h18" />
+                            </svg>
+                            <span id="acc-period">—</span>
+                        </div>
                     </div>
                     <div class="pill-btn">
                         <div class="pill-dot"></div>
-                        <span>Recent</span>
+                        <span>Period</span>
                     </div>
                 </div>
                 <div class="stats-row">
                     <div class="stat-tile">
                         <div class="s-eye">
-                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                </svg></span>
                             Total Spent
                         </div>
-                        <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
-                        <div class="stat-meta">
-                            <div class="stat-trend down">-1.2%</div>
-                            <div class="stat-spark-mini" id="spark-spent"></div>
+                        <div class="s-main">
+                            <div class="s-val"><span class="s-rs">₹</span><span id="st-spent">—</span></div>
+                            <div class="stat-trend-line" id="trend-spent" title="vs previous month">—</div>
                         </div>
                     </div>
                     <div class="stat-tile">
                         <div class="s-eye">
-                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M12 7v5l3 2" />
+                                </svg></span>
                             Daily Average
                         </div>
-                        <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
-                        <div class="stat-meta">
-                            <div class="stat-trend up">+0.8%</div>
-                            <div class="stat-spark-mini" id="spark-avg"></div>
+                        <div class="s-main">
+                            <div class="s-val"><span class="s-rs">₹</span><span id="st-avg">—</span></div>
+                            <div class="stat-trend-line" id="trend-avg" title="vs previous month">—</div>
                         </div>
                     </div>
                     <div class="stat-tile">
                         <div class="s-eye">
-                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12H3z"/><path d="M3 11h18"/><path d="M7 15h2"/></svg></span>
+                            <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 7h18v12H3z" />
+                                    <path d="M3 11h18" />
+                                    <path d="M7 15h2" />
+                                </svg></span>
                             Net Balance
                         </div>
-                        <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
-                        <div class="stat-meta">
-                            <div class="stat-trend up">+4.5%</div>
-                            <div class="stat-spark-mini" id="spark-net"></div>
+                        <div class="s-main">
+                            <div class="s-val"><span class="s-rs">₹</span><span id="st-net">—</span></div>
+                            <div class="stat-trend-line" id="trend-net" title="vs end of previous month">—</div>
                         </div>
                     </div>
                 </div>
@@ -3998,58 +5101,76 @@
                     <div style="display:flex; align-items:center; gap:8px;">
                         <label class="form-label" style="margin-bottom:0; white-space:nowrap;">Look-back</label>
                         <input type="number" id="ana-lookback" class="form-input" style="width:70px; padding:6px 10px;"
-                            value="6" min="1" max="24" onchange="updateMoMTrends()">
+                            value="12" min="1" max="24" onchange="updateMoMTrends()">
                     </div>
                 </div>
 
-                <!-- HEATMAP IN ANALYTICS -->
-                <div class="card card-p hm-wrap" style="margin-bottom: 24px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <div class="card-h" id="hm-lbl" style="margin:0">—</div>
-                        <div class="hm-legend"><span>Low</span>
-                            <div class="lgd-sw" id="lgdSw"></div><span>High</span>
-                        </div>
-                    </div>
-                    <div class="cal-hdr">
-                        <div class="dcl">S</div>
-                        <div class="dcl">M</div>
-                        <div class="dcl">T</div>
-                        <div class="dcl">W</div>
-                        <div class="dcl">T</div>
-                        <div class="dcl">F</div>
-                        <div class="dcl">S</div>
-                    </div>
-                    <div class="cal-grid" id="calGrid"></div>
-                </div>
                 <div class="ana-grid pie-colors">
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Weekly Expenses</div>
-                        <div class="bar-rows" id="weeklyChart">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
+                    <!-- AI INSIGHTS ROW -->
+                    <div id="ai-insights-grid" class="ana-span-10" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin-bottom: 0rem;">
+                        <!-- Cards injected by JS -->
+                    </div>
+
+                    <!-- TOP ROW -->
+                    <div class="ana-card ana-span-5">
+                        <div class="ana-card-h">
+                            <div class="card-h" id="hm-lbl" style="margin:0">Daily Activity</div>
+                            <div class="hm-legend">
+                                <span>Less</span>
+                                <div class="lgd-sw" id="lgdSw"></div>
+                                <span>More</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Category Breakdown</div>
-                        <div class="pie-layout"><canvas id="pieCanvas" width="180" height="180"
-                                style="flex-shrink:0"></canvas>
-                            <div class="pie-leg" id="pieLegend">
-                                <div class="sp-wrap">
-                                    <div class="sp"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card card-p ana-full">
-                        <div class="card-h">Monthly Trends</div>
-                        <div class="bar-rows" id="momChart">
-                            <div class="sp-wrap">
-                                <div class="sp"></div>
-                            </div>
+                        <div class="cal-hdr" id="calHdr"></div>
+                        <div class="cal-grid" id="calGrid"></div>
+                        <div style="margin-top:1rem; display:flex; justify-content:space-between; border-top:1px dashed var(--border); padding-top:0.75rem; font-size:10px; color:var(--t3); font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">
+                            <div id="hm-busiest">Busiest Day: —</div>
+                            <div id="hm-quietest">Quietest Day: —</div>
+                            <div id="hm-streak">Streak: —</div>
                         </div>
                     </div>
 
+                    <div class="ana-card ana-span-5">
+                        <div class="ana-card-h" style="justify-content:center; margin-bottom:1rem;">
+                            <div class="card-h">Category Breakdown</div>
+                        </div>
+                        <div class="pie-layout" style="display:flex; flex-direction:row; gap:2rem; align-items:center; justify-content:center; flex-wrap:wrap;">
+                            <div style="position:relative; width:220px; height:220px; flex-shrink:0;">
+                                <canvas id="pieCanvas" width="220" height="220"></canvas>
+                            </div>
+                            <div id="pieLegend" class="pie-leg-enhanced" style="flex:1; min-width:240px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- MIDDLE ROW -->
+                    <div class="ana-card ana-span-10">
+                        <div class="ana-card-h">
+                            <div class="card-h">Monthly Spending</div>
+                            <div class="chart-toggle" id="mom-toggle">
+                                <button class="ct-btn active" id="btn-total" onclick="switchMomMode('total', this)">Total</button>
+                                <button class="ct-btn" id="btn-avg" onclick="switchMomMode('avg', this)">Daily Avg</button>
+                            </div>
+                        </div>
+                        <div id="mom-stats-summary" style="font-size: 24px; font-weight: 700; margin-bottom: 1.5rem; font-family: var(--font-big);">
+                            ₹0 across 12 months
+                        </div>
+                        <div class="v-bar-chart" id="momChart"></div>
+                    </div>
+
+                    <!-- BOTTOM ROW -->
+                    <div class="ana-card ana-span-5">
+                        <div class="ana-card-h">
+                            <div class="card-h">Weekly Trend</div>
+                        </div>
+                        <div class="bar-rows" id="weeklyChart" style="padding-top:1rem;"></div>
+                    </div>
+
+                    <div class="ana-card ana-span-5">
+                        <div class="ana-card-h">
+                            <div class="card-h">Top Categories</div>
+                        </div>
+                        <div class="bar-rows" id="usefulChart" style="padding-top:1rem;"></div>
+                    </div>
                 </div>
             </div>
 
@@ -4312,7 +5433,10 @@
                         <option value="CREDIT_CARD">Credit Card</option>
                     </select></div>
                 <input type="hidden" id="acc-m-id">
-                <button class="add-btn" onclick="saveAccountModal()">Save Account</button>
+                <div style="display:flex; gap:10px; margin-top:12px;">
+                    <button class="add-btn" style="margin:0; flex:1;" onclick="saveAccountModal()">Save Account</button>
+                    <button class="txn-clr-btn" id="acc-m-del" style="flex:1; border-color:var(--red); color:var(--red); display:none;" onclick="deleteAccFromModal()">Delete</button>
+                </div>
             </div>
         </div>
     </div>
@@ -4377,7 +5501,7 @@
         const MO_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         // Greyscale pie colors
-        const PC = ['#C97B4B', '#E8956A', '#D4845A', '#B5693A', '#F0A87D', '#7C6EAA', '#5B9BD5', '#3BAA6F', '#E86C5D', '#D4A853', '#8B9DC3', '#A8C5B5'];
+        const PC = ['#C97B4B', '#9E5E33', '#E8956A', '#7C5233', '#D4845A', '#B5693A', '#F0A87D', '#6E4228', '#8B5A3C', '#D98C5F'];
         const PAGE_ORDER = ['aichat', 'add', 'accounts', 'analytics', 'transactions', 'ledger', 'manage'];
         const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
 
@@ -4534,11 +5658,29 @@
             _accounts.forEach(a => finalBal[a.id] = (a.openingBalance || 0));
             _allTxns.forEach(t => { const acc = _accounts.find(a => a.name === t.account); if (acc) finalBal[acc.id] = (finalBal[acc.id] || 0) + (Number(t.amount) || 0); });
             _accounts.forEach(a => { a.currentBalance = finalBal[a.id] || 0; });
-            renderAccounts(_accounts, totalExpense, avgDaily);
+
+            // ── Compute previous-period stats for real trend deltas ──
+            const psd = new Date(curY, curM - 2, 1), ped = new Date(curY, curM - 1, 0, 23, 59, 59);
+            const prevTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= psd && d <= ped; });
+            const prevTotalExpense = prevTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
+            const prevExpDays = {};
+            prevTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const d = (t.date?.toDate ? t.date.toDate() : new Date(t.date)).getDate(); prevExpDays[d] = (prevExpDays[d] || 0) + Math.abs(Number(t.amount)); });
+            const prevAvgDaily = Object.keys(prevExpDays).length > 0 ? Math.round(Object.values(prevExpDays).reduce((a, b) => a + b, 0) / Object.keys(prevExpDays).length) : 0;
+            // Net balance at the END of the previous month = opening + every txn dated <= ped
+            let prevNet = _accounts.reduce((s, a) => s + (a.openingBalance || 0), 0);
+            _allTxns.forEach(t => {
+                const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+                if (d <= ped) prevNet += Number(t.amount) || 0;
+            });
+
+            renderAccounts(_accounts, totalExpense, avgDaily, { prevTotalExpense, prevAvgDaily, prevNet });
             renderHeatmap({ days: heatmapDays, firstDayOfWeek: sd.getDay() });
             renderWeekly(weeklyExpenses);
             renderPie(categoryExpenses);
+            renderUsefulChart(categoryExpenses.slice(0, 5).map(c => ({ name: c.category, total: c.total })));
+            renderAIInsights(periodTxns, totalExpense, prevTotalExpense, categoryExpenses, heatmapDays);
             updateMoMTrends();
+            updateAIPrompts();
             populateLdrSel(_accounts);
             if (_ldrMselState.account.size > 0) loadLedger();
             const p = MO_SHORT[curM - 1] + ' ' + curY;
@@ -4555,6 +5697,111 @@
             return weeks.map(w => ({ label: w.label, total: w.total }));
         }
         function buildCategoryTotals(txns) { const ct = {}; txns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').forEach(t => { const c = (t.category || 'OTHER').toUpperCase(); ct[c] = (ct[c] || 0) + Math.abs(Number(t.amount)); }); return Object.entries(ct).map(([category, total]) => ({ category, total })).sort((a, b) => b.total - a.total); }
+
+        function renderAIInsights(txns, total, prevTotal, cats, days) {
+            const grid = document.getElementById('ai-insights-grid');
+            if(!grid) return;
+            
+            let diffPct = 0;
+            let diffText = 'No prior data';
+            let diffClass = '';
+            if(prevTotal > 0) {
+                diffPct = ((total - prevTotal) / prevTotal) * 100;
+                diffClass = diffPct > 0 ? 'up' : 'down';
+                diffText = Math.abs(diffPct).toFixed(1) + '% ' + (diffPct > 0 ? 'higher' : 'lower') + ' vs last month';
+            }
+
+            let topCat = 'None';
+            let topCatAmt = '₹0';
+            if(cats && cats.length > 0) {
+                topCat = cats[0].category;
+                topCatAmt = '₹' + fmt(cats[0].total) + ` (${((cats[0].total / total)*100).toFixed(0)}% of spend)`;
+            }
+
+            let maxTxn = null;
+            txns.forEach(t => {
+                if(Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER') {
+                    if(!maxTxn || Math.abs(Number(t.amount)) > Math.abs(Number(maxTxn.amount))) {
+                        maxTxn = t;
+                    }
+                }
+            });
+            let maxTxnText = maxTxn ? maxTxn.category || 'Other' : 'No expenses';
+            let maxTxnAmt = maxTxn ? '₹' + fmt(Math.abs(Number(maxTxn.amount))) : '₹0';
+
+            let peakDay = null;
+            days.forEach(d => {
+                if(!peakDay || d.total > peakDay.total) {
+                    peakDay = d;
+                }
+            });
+            let peakDayText = peakDay && peakDay.total > 0 ? 'Day ' + peakDay.day : 'No activity';
+            let peakDayAmt = peakDay && peakDay.total > 0 ? '₹' + fmt(peakDay.total) + ' spent' : '₹0 spent';
+
+            grid.innerHTML = `
+                <div class="ai-card">
+                    <div class="ai-title">Monthly Spend</div>
+                    <div class="ai-val">₹${fmt(total)}</div>
+                    <div class="ai-sub ${diffClass}">${diffText}</div>
+                </div>
+                <div class="ai-card">
+                    <div class="ai-title">Top Category</div>
+                    <div class="ai-val">${topCat}</div>
+                    <div class="ai-sub">${topCatAmt}</div>
+                </div>
+                <div class="ai-card">
+                    <div class="ai-title">Largest Expense</div>
+                    <div class="ai-val">${maxTxnAmt}</div>
+                    <div class="ai-sub">${maxTxnText}</div>
+                </div>
+                <div class="ai-card">
+                    <div class="ai-title">Peak Day</div>
+                    <div class="ai-val">${peakDayText}</div>
+                    <div class="ai-sub">${peakDayAmt}</div>
+                </div>
+            `;
+        }
+
+        function updateAIPrompts() {
+            const container = document.getElementById('ai-suggested-prompts');
+            if (!container) return;
+
+            const monthName = MO_LONG[curM - 1];
+            
+            const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
+            const periodTxns = _allTxns.filter(t => {
+                const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+                return d >= sd && d <= ed;
+            });
+            const categoryExpenses = buildCategoryTotals(periodTxns);
+
+            let topCat = '';
+            if(categoryExpenses.length > 0) {
+                topCat = categoryExpenses[0].category;
+            }
+
+            let recentMerchant = '';
+            const expTxns = _allTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER');
+            if(expTxns.length > 0) {
+                recentMerchant = expTxns[0].item || expTxns[0].category || 'recent charges';
+                // Shorten if too long
+                if(recentMerchant.length > 15) recentMerchant = recentMerchant.substring(0, 15) + '...';
+            }
+
+            const prompts = [
+                `📉 Summarize ${monthName} spending`,
+                topCat ? `🔍 Review my ${topCat} expenses` : `🔍 Review my recent expenses`,
+                recentMerchant ? `🧐 Find duplicate ${recentMerchant} charges` : `📈 Forecast next month's bills`,
+                `🔄 Re-categorize last 7 entries`,
+                `✂️ Where can I cut ₹2,000?`
+            ];
+
+            container.innerHTML = prompts.map(p => {
+                const icon = p.split(' ')[0];
+                const text = p.substring(p.indexOf(' ') + 1);
+                return `<button class="cs-chip" onclick="document.getElementById('chatInput').value='${text.replace(/'/g, "\\'")}'; sendChat();"><span class="cs-icon">${icon}</span> ${text}</button>`;
+            }).join('');
+        }
 
         window.onPeriodChange = async function () { curM = +document.getElementById('monthSel').value; curY = +document.getElementById('yearSel').value; await loadPeriodData(); };
 
@@ -4600,9 +5847,16 @@
         };
 
         /* ═══ ACCOUNTS ═══ */
-        function renderAccounts(accs, total, avg) {
+        function renderAccounts(accs, total, avg, prev) {
             cntUp('st-spent', total); cntUp('st-avg', avg);
             const net = accs.reduce((s, a) => s + (a.currentBalance || 0), 0); cntUp('st-net', net);
+
+            // Real period-over-period trend badges (vs previous month)
+            // For "Total Spent" & "Daily Average": going DOWN is good (green), UP is bad (red).
+            // For "Net Balance": going UP is good (green), DOWN is bad (red).
+            renderTrendBadge('trend-spent', total, prev && prev.prevTotalExpense, true);
+            renderTrendBadge('trend-avg', avg, prev && prev.prevAvgDaily, true);
+            renderTrendBadge('trend-net', net, prev && prev.prevNet, false);
 
             // Sort accounts descending by balance
             accs.sort((a, b) => (b.currentBalance || 0) - (a.currentBalance || 0));
@@ -4615,25 +5869,62 @@
             renderStatSparklines();
         }
 
+        // Update a trend line with real % change vs previous period.
+        // Format matches mockup: "↑ 3.2% vs last month"
+        // higherIsBad=true means an increase is shown red (e.g. spending);
+        // higherIsBad=false means an increase is shown green (e.g. net balance).
+        function renderTrendBadge(elId, cur, prev, higherIsBad) {
+            const el = document.getElementById(elId); if (!el) return;
+            el.classList.remove('up', 'down');
+            const c = Number(cur) || 0;
+            const p = Number(prev) || 0;
+            const suffix = '<span class="stl-suffix">vs last month</span>';
+            if (p === 0 && c === 0) { el.innerHTML = '—'; el.title = 'No data for previous month'; return; }
+            if (p === 0) {
+                const isGood = higherIsBad ? false : true;
+                el.classList.add(isGood ? 'up' : 'down');
+                el.innerHTML = '<span class="stl-arrow">●</span> NEW ' + suffix;
+                el.title = 'No comparable data in previous month';
+                return;
+            }
+            const pct = ((c - p) / Math.abs(p)) * 100;
+            if (Math.abs(pct) < 0.05) {
+                el.innerHTML = '<span class="stl-arrow">●</span> 0.0% ' + suffix;
+                el.title = 'No change vs previous month';
+                return;
+            }
+            const isUp = pct > 0;
+            const isGood = higherIsBad ? !isUp : isUp;
+            el.classList.add(isGood ? 'up' : 'down');
+            const arrow = isUp ? '↑' : '↓';
+            el.innerHTML = '<span class="stl-arrow">' + arrow + '</span> ' + Math.abs(pct).toFixed(1) + '% ' + suffix;
+            el.title = (isUp ? 'Up ' : 'Down ') + Math.abs(pct).toFixed(1) + '% vs previous month';
+        }
+
         // ── Sparkline SVG generator (line + soft fill) ──
-        function sparkSVG(values, w, h, color) {
+        function sparkSVG(values, w, h, color, opts) {
+            opts = opts || {};
             if (!values || values.length < 2) {
                 return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="0" y1="${h - 1}" x2="${w}" y2="${h - 1}" stroke="${color}" stroke-width="1" stroke-opacity="0.3"/></svg>`;
             }
             const min = Math.min.apply(null, values), max = Math.max.apply(null, values);
             const range = (max - min) || 1;
             const step = w / (values.length - 1);
-            const pts = values.map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * (h - 2) - 1).toFixed(1)}`);
+            const ptsArr = values.map((v, i) => [+(i * step).toFixed(1), +(h - ((v - min) / range) * (h - 4) - 2).toFixed(1)]);
+            const pts = ptsArr.map(p => `${p[0]},${p[1]}`);
             const linePath = `M ${pts.join(' L ')}`;
             const areaPath = `M 0,${h} L ${pts.join(' L ')} L ${w},${h} Z`;
             const gid = 'sg' + Math.random().toString(36).slice(2, 8);
-            return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            const last = ptsArr[ptsArr.length - 1];
+            const endDot = opts.endDot ? `<circle cx="${last[0]}" cy="${last[1]}" r="3" fill="${color}" stroke="#fff" stroke-width="1.5"/>` : '';
+            return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
                 <defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
+                    <stop offset="0%" stop-color="${color}" stop-opacity="0.30"/>
                     <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
                 </linearGradient></defs>
                 <path d="${areaPath}" fill="url(#${gid})"/>
-                <path d="${linePath}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                ${endDot}
             </svg>`;
         }
 
@@ -4694,9 +5985,6 @@
             const elN = document.getElementById('spark-net'); if (elN) elN.innerHTML = sparkSVG(netDown, 88, 24, '#16A34A');
         }
 
-        // ── Initial / monogram for a name ──
-        function bkEmo(n) { n = n.toUpperCase(); if (n.includes('HDFC')) return 'H'; if (n.includes('ICICI')) return 'I'; if (n.includes('AXIS')) return 'A'; if (n.includes('SBI')) return 'S'; if (n.includes('WALLET')) return 'W'; if (n.includes('CREDIT')) return 'C'; if (n.includes('CASH')) return '$'; return 'B'; }
-
         // ── Deterministic warm tint for monogram bubble per name ──
         const _ACC_TINTS = [
             { bg: '#FEF4EC', fg: '#C97B4B' }, // amber
@@ -4723,38 +6011,35 @@
         function accHTML(a, i, accKind) {
             const isPerson = accKind === 'person';
             const isCredit = a.type === 'CREDIT_CARD';
-            const emo = isPerson ? (a.name || '?').charAt(0).toUpperCase() : bkEmo(a.name);
+            const emo = isPerson ? (a.name || '?').charAt(0).toUpperCase() : '';
 
             if (isCredit) {
                 const limit = a.openingBalance || 0;
                 const balance = a.currentBalance || 0;
-                const spent = limit - balance;
+                const spent = Math.max(limit - balance, 0);
                 const pct = limit > 0 ? Math.min(Math.max((spent / limit) * 100, 0), 100) : 0;
+                const barCls = pct >= 85 ? 'danger' : (pct >= 65 ? 'warn' : '');
 
                 return `
-                    <div class="acc-item fc-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" onclick="accItemClick(this)">
-                        <div class="fc-header">
-                            <div class="fc-bank-name">${escH(a.name)}</div>
-                            <div class="fc-chip"></div>
+                    <div class="acc-item cc-card" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${limit}" data-type="${a.type}" data-bal="${balance}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
+                        <div class="cc-head">
+                            <div class="cc-name">${escH(a.name)}</div>
+                            <div class="cc-chip" aria-hidden="true"></div>
                         </div>
-                        
-                        <div class="fc-body">
-                            <div class="fc-label">Current Utilization</div>
-                            <div class="fc-util-pct">${pct.toFixed(0)}%</div>
-                            <div class="fc-spent-val">₹${fmt(spent)} <span style="font-size:9px; color:var(--t4); font-weight:500;">Spent</span></div>
-                        </div>
-
-                        <div class="fc-footer">
-                            <div class="fc-bar-track">
-                                <div class="fc-bar-fill" style="width:${pct}%"></div>
+                        <div class="cc-number-main">**** **** **** ${(a.id || '').slice(-4).toUpperCase().replace(/[^A-Z0-9]/g, '0').padStart(4, '0')}</div>
+                        <div class="cc-mid">
+                            <div class="cc-col">
+                                <div class="cc-label">Used</div>
+                                <div class="cc-amt">₹${fmt(spent)}</div>
                             </div>
-                            <div class="fc-limit-row">
-                                <div class="fc-label" style="margin:0">Card Limit</div>
-                                <div class="fc-limit-val">₹${fmt(limit)}</div>
+                            <div class="cc-col right">
+                                <div class="cc-label">Limit</div>
+                                <div class="cc-amt cc-limit">₹${fmt(limit)}</div>
                             </div>
                         </div>
-                        
-                        <div class="acc-acts" onclick="event.stopPropagation()" style="bottom: auto; top: 10px; right: 10px;">
+                        <div class="cc-bar-track"><div class="cc-bar-fill ${barCls}" style="width:${pct}%;"></div></div>
+                        <div class="cc-util-line">${pct.toFixed(0)}% utilized</div>
+                        <div class="acc-acts" onclick="event.stopPropagation()">
                             <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
                             <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
                         </div>
@@ -4784,20 +6069,43 @@
                 `;
             }
 
-            // BANK / WALLET — cream card with monogram, sparkline, big balance, caption
-            const series = accountSeries(a.name, 16);
-            const sparkColor = pos ? '#16A34A' : '#DC2626';
-            const spark = sparkSVG(series, 70, 22, sparkColor);
+            // BANK / WALLET — premium card matching canvas mockup
+            const series = accountSeries(a.name, 24);
+            const trend = accountMonthlyDelta(a.name);
+            const trendCls = trend.pct > 0.05 ? 'up' : (trend.pct < -0.05 ? 'down' : 'flat');
+            const trendArrow = trend.pct > 0.05 ? '↗' : (trend.pct < -0.05 ? '↘' : '·');
+            const sparkColor = trendCls === 'down' ? '#DC2626' : (trendCls === 'flat' ? '#6E5B3F' : '#2D7DE0');
+            const spark = sparkSVG(series, 130, 60, sparkColor, { endDot: true });
+            const acctLast4 = (a.id || '').slice(-4).toUpperCase().replace(/[^A-Z0-9]/g, '0').padStart(4, '0');
+            const watermark = (a.name || '?').charAt(0).toUpperCase();
             return `
                 <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
-                    <div class="ax-top">
-                        <div class="ax-bubble" style="background:${tint.bg}; color:${tint.fg};">${emo}</div>
-                        <div class="ax-spark">${spark}</div>
+                    <div class="bk-water" aria-hidden="true">${watermark}</div>
+                    <div class="bk-eye" title="Hide balance" onclick="event.stopPropagation(); toggleBankBal(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
                     </div>
-                    <div>
-                        <div class="ax-name">${escH(a.name)}</div>
-                        <div class="ax-bal ${pos ? '' : 'neg'}">${rs(a.currentBalance || 0)}</div>
-                        <div class="ax-caption">${bankCaption(a.name)}</div>
+                    <div class="bk-top">
+                        <div class="bk-icon" style="background:${tint.bg}; color:${tint.fg};">${watermark}</div>
+                        <div class="bk-meta">
+                            <div class="bk-name">${escH(a.name)}</div>
+                            <div class="bk-type">${bankCaption(a.name)}</div>
+                        </div>
+                    </div>
+                    <div class="bk-body">
+                        <div>
+                            <div class="bk-bal-label">Available Balance <span class="bk-pill-30d">· 30D</span></div>
+                            <div class="bk-bal ${pos ? '' : 'neg'}">${rs(a.currentBalance || 0)}</div>
+                            <div class="bk-trend ${trendCls}">${trendArrow} ${trend.pct >= 0 ? '+' : ''}${trend.pct.toFixed(1)}% this month</div>
+                        </div>
+                        <div class="bk-spark">${spark}</div>
+                    </div>
+                    <div class="bk-divider"></div>
+                    <div class="bk-foot">
+                        <div class="bk-acct">
+                            <span class="bk-acct-dots"><i></i><i></i><i></i><i></i></span>
+                            <span>${acctLast4}</span>
+                        </div>
+                        <div class="bk-details">DETAILS <span>›</span></div>
                     </div>
                     <div class="acc-acts" onclick="event.stopPropagation()">
                         <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
@@ -4806,6 +6114,36 @@
                 </div>
             `;
         }
+
+        // Per-account % change vs ~30 days ago (for bank trend pill)
+        function accountMonthlyDelta(name) {
+            try {
+                const acc = (_accounts || []).find(a => a.name === name);
+                if (!acc) return { pct: 0 };
+                const now = new Date();
+                const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+                const txns = (_allTxns || []).filter(t => t.account === name);
+                let balAtCutoff = (acc.openingBalance || 0);
+                txns.forEach(t => {
+                    const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+                    if (d <= cutoff) balAtCutoff += Number(t.amount) || 0;
+                });
+                const cur = Number(acc.currentBalance || 0);
+                if (Math.abs(balAtCutoff) < 1) return { pct: cur === 0 ? 0 : 100 };
+                return { pct: ((cur - balAtCutoff) / Math.abs(balAtCutoff)) * 100 };
+            } catch (e) { return { pct: 0 }; }
+        }
+
+        // Toggle the visibility of a bank balance number (eye-off icon)
+        window.toggleBankBal = function (el) {
+            const card = el.closest('.acc-item');
+            if (!card) return;
+            const bal = card.querySelector('.bk-bal');
+            if (!bal) return;
+            const hidden = card.dataset.balHidden === '1';
+            if (hidden) { bal.textContent = bal.dataset.real || bal.textContent; card.dataset.balHidden = '0'; }
+            else { bal.dataset.real = bal.textContent; bal.textContent = '••••••'; card.dataset.balHidden = '1'; }
+        };
         window.accItemClick = function (el) {
             const kind = el.dataset.kind;
             if (kind === 'person') {
@@ -4819,8 +6157,8 @@
         window.editAccEl = function (el) { editAcc(el.dataset.id, el.dataset.name.replace(/&#39;/g, "'"), parseFloat(el.dataset.opening) || 0, el.dataset.type); };
         window.deleteAccEl = function (el) { deleteAcc(el.dataset.id, el.dataset.name.replace(/&#39;/g, "'")); };
         let _accEditId = null;
-        window.showAccForm = function (type) { _accEditId = null; document.getElementById('acc-modal-title').textContent = 'Add Account'; document.getElementById('acc-m-name').value = ''; document.getElementById('acc-m-bal').value = ''; document.getElementById('acc-m-type').value = type || 'BANK'; document.getElementById('acc-m-type').disabled = false; document.getElementById('acc-m-id').value = ''; openM('accModal'); };
-        function editAcc(id, name, opening, type) { _accEditId = id; document.getElementById('acc-modal-title').textContent = 'Edit Account'; document.getElementById('acc-m-name').value = name; document.getElementById('acc-m-bal').value = opening; document.getElementById('acc-m-type').value = type; document.getElementById('acc-m-type').disabled = false; document.getElementById('acc-m-id').value = id; openM('accModal'); }
+        window.showAccForm = function (type) { _accEditId = null; document.getElementById('acc-modal-title').textContent = 'Add Account'; document.getElementById('acc-m-name').value = ''; document.getElementById('acc-m-bal').value = ''; document.getElementById('acc-m-type').value = type || 'BANK'; document.getElementById('acc-m-type').disabled = false; document.getElementById('acc-m-id').value = ''; document.getElementById('acc-m-del').style.display = 'none'; openM('accModal'); };
+        function editAcc(id, name, opening, type) { _accEditId = id; document.getElementById('acc-modal-title').textContent = 'Edit Account'; document.getElementById('acc-m-name').value = name; document.getElementById('acc-m-bal').value = opening; document.getElementById('acc-m-type').value = type; document.getElementById('acc-m-type').disabled = false; document.getElementById('acc-m-id').value = id; document.getElementById('acc-m-del').style.display = 'block'; openM('accModal'); }
         window.saveAccountModal = async function () {
             const name = document.getElementById('acc-m-name').value.trim(), bal = parseFloat(document.getElementById('acc-m-bal').value) || 0, type = document.getElementById('acc-m-type').value, id = document.getElementById('acc-m-id').value;
             if (!name) return;
@@ -4838,115 +6176,207 @@
             closeM('accModal'); await loadAccounts(); await loadPeriodData(); setupAddFormDropdowns(); toast(id ? 'Account updated' : 'Account added');
         };
         async function deleteAcc(id, name) { if (!confirm('Delete account "' + name + '"?')) return; await deleteDoc(uDoc('accounts', id)); await loadAccounts(); await loadPeriodData(); setupAddFormDropdowns(); toast('Account deleted'); }
+        window.deleteAccFromModal = function () {
+            const id = document.getElementById('acc-m-id').value;
+            const name = document.getElementById('acc-m-name').value;
+            if (!id) return;
+            deleteAcc(id, name);
+            closeM('accModal');
+        };
 
         /* ═══ HEATMAP ═══ */
+        /* ═══ HEATMAP ENHANCED ═══ */
         function renderHeatmap(data) {
             if (!data) return;
             const { days, firstDayOfWeek } = data;
             const amts = days.filter(d => d.total > 0).map(d => d.total);
             const mx = amts.length ? Math.max(...amts) : 1, mn = amts.length ? Math.min(...amts) : 0;
-            document.getElementById('lgdSw').innerHTML = [0.1, 0.3, 0.5, 0.7, 0.9].map(r => '<div class="sw" style="background:' + rSh(r) + '; width:18px; height:18px; border-radius:4px; border:1px solid rgba(0,0,0,0.05);"></div>').join('');
+            document.getElementById('lgdSw').innerHTML = [0.1, 0.3, 0.5, 0.7, 0.9].map(r => '<div class="sw" style="background:' + rSh(r) + '; width:14px; height:14px; border-radius:0;"></div>').join('');
 
             const now = new Date(), todayD = (now.getMonth() + 1 === curM && now.getFullYear() === curY) ? now.getDate() : -1;
 
-            // Weekday Headers
             const daysShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const hdrH = daysShort.map(d => `<div class="cal-hdr-day">${d}</div>`).join('');
+            document.getElementById('calHdr').innerHTML = daysShort.map(d => `<div class="cal-hdr-day">${d}</div>`).join('');
 
             let h = '';
-            for (let i = 0; i < firstDayOfWeek; i++)h += '<div class="cd emp"></div>';
+            for (let i = 0; i < firstDayOfWeek; i++) h += '<div class="cd emp"></div>';
             days.forEach(d => {
-                const ratio = d.total > 0 ? hRatio(d.total, mn, mx) : 0, col = d.total > 0 ? rSh(ratio) : null;
-                const amtS = d.total > 0 ? (d.total >= 1000 ? '₹' + (d.total / 1000).toFixed(1) + 'k' : '₹' + Math.round(d.total)) : '';
+                const ratio = d.total > 0 ? (mx === mn ? 0.7 : 0.1 + ((d.total - mn) / (mx - mn)) * 0.9) : 0;
+                const col = d.total > 0 ? rSh(ratio) : null;
                 const cls = 'cd ' + (col ? 'has-e' : 'no-e') + (d.day === todayD ? ' today-c' : '');
                 const sty = col ? ' style="background:' + col + '"' : '';
-                const clk = d.total > 0 ? ' onclick="openDayM(' + d.day + ')"' : '';
-                h += '<div class="' + cls + '"' + sty + clk + '><div class="cd-n">' + d.day + '</div>' + (amtS ? '<div class="cd-a">' + amtS + '</div>' : '') + '</div>';
+                const amtS = d.total > 0 ? (d.total >= 1000 ? '₹' + (d.total / 1000).toFixed(1) + 'k' : '₹' + Math.round(d.total)) : '';
+                h += `<div class="${cls}"${sty} onclick="${d.total > 0 ? 'openDayM(' + d.day + ')' : ''}"><div class="cd-n">${d.day}</div>${amtS ? '<div class="cd-a">' + amtS + '</div>' : ''}</div>`;
             });
+            document.getElementById('calGrid').innerHTML = h;
 
-            const gridEl = document.getElementById('calGrid');
-            if (gridEl.previousElementSibling && gridEl.previousElementSibling.classList.contains('cal-hdr')) {
-                gridEl.previousElementSibling.innerHTML = hdrH;
-            }
-            gridEl.innerHTML = h;
+            // Summary Stats
+            const sorted = [...days].sort((a, b) => b.total - a.total);
+            const busiest = sorted[0];
+            const quietest = [...days].filter(d => d.total > 0).sort((a, b) => a.total - b.total)[0];
+            document.getElementById('hm-busiest').textContent = busiest && busiest.total > 0 ? `Busiest Day: ${MO_SHORT[curM-1]} ${busiest.day}` : 'Busiest Day: —';
+            document.getElementById('hm-quietest').textContent = quietest ? `Quietest Day: ${MO_SHORT[curM-1]} ${quietest.day}` : 'Quietest Day: —';
+            let streak = 0, maxStreak = 0;
+            days.forEach(d => { if (d.total > 0) { streak++; maxStreak = Math.max(maxStreak, streak); } else streak = 0; });
+            document.getElementById('hm-streak').textContent = `${maxStreak} days logged`;
         }
         function hRatio(v, mn, mx) { return mx === mn ? 0.7 : 0.1 + ((v - mn) / (mx - mn)) * 0.9; }
         function rSh(r) {
-            // Claude Orange (Amber/Sunset)
-            const h = 28 + (r * 12); // Hue shift from deep amber to bright orange
-            const s = 65 + (r * 30); // Higher saturation for more intensity
-            const l = 95 - (r * 55); // Luminance shift from light peach to deep orange
+            // Claude Warm Palette
+            const h = 28 + (r * 10);
+            const s = 45 + (r * 40);
+            const l = 92 - (r * 50);
             return `hsl(${h}, ${s}%, ${l}%)`;
         }
 
-        /* ═══ ANALYTICS ═══ */
+        /* ═══ ANALYTICS ENHANCED ═══ */
+        window._momMode = 'total';
+        window._cachedTrendsData = [];
+
+        window.switchMomMode = function (mode, btn) {
+            window._momMode = mode;
+            document.querySelectorAll('#mom-toggle .ct-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderVerticalTrends(window._cachedTrendsData);
+        };
+
         window.updateMoMTrends = function () {
             const lookbackInput = document.getElementById('ana-lookback');
             if (!lookbackInput) return;
             const numMonths = parseInt(lookbackInput.value) || 6;
             const trends = [];
             let trackM = curM, trackY = curY;
+            let grandTotal = 0;
+
             for (let i = 0; i < numMonths; i++) {
                 const sd = new Date(trackY, trackM - 1, 1), ed = new Date(trackY, trackM, 0, 23, 59, 59);
-                const monthTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
+                const monthTxns = _allTxns.filter(t => {
+                    const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
+                    return d >= sd && d <= ed;
+                });
                 const totalExpense = monthTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
                 const daysInMonth = ed.getDate();
                 const avgDaily = daysInMonth > 0 ? Math.round(totalExpense / daysInMonth) : 0;
-                trends.push({ label: MO_SHORT[trackM - 1] + ' ' + trackY, total: totalExpense, avg: avgDaily });
+                trends.push({ label: MO_SHORT[trackM - 1], total: totalExpense, avg: avgDaily });
+                grandTotal += totalExpense;
                 trackM--; if (trackM === 0) { trackM = 12; trackY--; }
             }
-            renderMoMTrends(trends);
+            trends.reverse();
+            window._cachedTrendsData = trends;
+            renderVerticalTrends(trends);
+            document.getElementById('mom-stats-summary').textContent = `₹${fmt(grandTotal)} across ${numMonths} months`;
+
         };
-        function renderMoMTrends(data) {
-            if (!data || !data.length) { document.getElementById('momChart').innerHTML = '<div class="empty-s">No data</div>'; return; }
-            const mx = Math.max(...data.map(d => d.total), 1);
-            document.getElementById('momChart').innerHTML = data.map((d, i) => {
-                const pct = d.total > 0 ? Math.max((d.total / mx) * 100, 2) : 0;
-                return '<div class="br-item" style="animation-delay:' + (i * 0.05) + 's">' +
-                    '<div class="br-lbl" style="width:70px">' + d.label + '</div>' +
-                    '<div class="br-track-wrap">' +
-                    '<div class="br-track" style="flex:1">' +
-                    (d.total > 0 ? '<span class="br-val-base">' + rs(d.total) + '</span>' : '') +
-                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                    (d.total > 0 ? '<span class="br-val-fill">' + rs(d.total) + '</span>' : '') +
-                    '</div>' +
-                    '</div>' +
-                    '<div style="width:100px; font-size:10px; text-align:right; font-family:var(--f-mono); color:var(--t3); flex-shrink:0;">Avg: ₹' + d.avg + '</div>' +
-                    '</div>' +
-                    '</div>';
+
+        function renderVerticalTrends(data) {
+            const chart = document.getElementById('momChart');
+            if (!chart) return;
+            const mode = window._momMode;
+            const valKey = mode === 'total' ? 'total' : 'avg';
+            const mx = Math.max(...data.map(d => d[valKey]), 1);
+
+            chart.innerHTML = data.map((d, i) => {
+                const val = d[valKey];
+                const pct = (val / mx) * 100;
+                return `
+                    <div class="v-bar-item" style="animation-delay: ${i * 0.05}s">
+                        <div class="v-bar-val">${val > 0 ? (val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val) : ''}</div>
+                        <div class="v-bar-track" style="height: ${Math.max(pct, 2)}%">
+                            <div class="v-bar-fill"></div>
+                        </div>
+                        <div class="v-bar-lbl">${d.label}</div>
+                    </div>
+                `;
             }).join('');
         }
 
         function renderWeekly(weeks) {
-            if (!weeks || !weeks.length) { document.getElementById('weeklyChart').innerHTML = '<div class="empty-s">No data</div>'; return; }
+            const chart = document.getElementById('weeklyChart');
+            if (!chart) return;
             const mx = Math.max(...weeks.map(w => w.total), 1);
-            document.getElementById('weeklyChart').innerHTML = weeks.map((w, i) => {
-                const pct = w.total > 0 ? Math.max((w.total / mx) * 100, 2) : 0;
-                return '<div class="br-item" style="animation-delay:' + (i * 0.08) + 's">' +
-                    '<div class="br-lbl">' + w.label + '</div>' +
-                    '<div class="br-track-wrap">' +
-                    '<div class="br-track">' +
-                    (w.total > 0 ? '<span class="br-val-base">' + rs(w.total) + '</span>' : '') +
-                    '<div class="br-fill" style="clip-path:inset(0 ' + (100 - pct) + '% 0 0)">' +
-                    (w.total > 0 ? '<span class="br-val-fill">' + rs(w.total) + '</span>' : '') +
-                    '</div>' +
-                    '</div>' +
-                    '</div></div>';
+            chart.innerHTML = weeks.map((w, i) => {
+                const pct = (w.total / mx) * 100;
+                return `
+                    <div class="br-item" style="animation-delay: ${i * 0.05}s; margin-bottom: 16px;">
+                        <div class="br-lbl" style="width: 50px; text-align: left;">${w.label}</div>
+                        <div class="br-track-wrap">
+                            <div class="br-track thick">
+                                <div class="br-fill" style="clip-path: inset(0 ${100 - pct}% 0 0)"></div>
+                            </div>
+                            <span style="font-size: 12px; font-weight: 700; color: var(--t1); min-width: 60px; text-align: right; font-family: var(--font-big);">${rs(w.total)}</span>
+                        </div>
+                    </div>
+                `;
             }).join('');
         }
-        function renderPie(cats) {
+
+        function renderUsefulChart(data) {
+            const chart = document.getElementById('usefulChart');
+            if (!chart) return;
+            const mx = Math.max(...data.map(d => d.total), 1);
+            chart.innerHTML = data.map((d, i) => {
+                const pct = (d.total / mx) * 100;
+                return `
+                    <div class="br-item" style="animation-delay: ${i * 0.05}s; margin-bottom: 16px;">
+                        <div class="br-lbl" style="width: 100px; text-align: left; font-size: 11px;">${d.name}</div>
+                        <div class="br-track-wrap">
+                            <div class="br-track thick">
+                                <div class="br-fill" style="background: linear-gradient(90deg, #C97B4B, #9E5E33); clip-path: inset(0 ${100 - pct}% 0 0)"></div>
+                            </div>
+                            <div style="font-size: 12px; font-weight: 700; color: var(--t1); min-width: 60px; text-align: right; font-family: var(--font-big);">${rs(d.total)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window._pieShowAll = false;
+        window._cachedPieCats = [];
+        window.renderPie = function(cats) {
             if (!cats || !cats.length) { document.getElementById('pieLegend').innerHTML = '<div class="empty-s">No data</div>'; return; }
             const total = cats.reduce((s, c) => s + c.total, 0);
             const cv = document.getElementById('pieCanvas'), ctx = cv.getContext('2d');
-            const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 6, iR = R * 0.5;
+            const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - 10, iR = R * 0.65;
             let sl = [], sa = -Math.PI / 2;
             cats.forEach((c, i) => { const a = (c.total / total) * 2 * Math.PI; sl.push({ s: sa, e: sa + a, col: PC[i % PC.length] }); sa += a; });
             ctx.clearRect(0, 0, W, H);
-            const t0 = performance.now();
+            
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const bgFill = isDark ? '#111' : '#f5f5f0';
-            (function draw(now) { const p = Math.min((now - t0) / 750, 1), ez = 1 - Math.pow(1 - p, 3); ctx.clearRect(0, 0, W, H); sl.forEach(s => { const ea = s.s + (s.e - s.s) * ez; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s.s, ea); ctx.closePath(); ctx.fillStyle = s.col; ctx.fill(); }); ctx.beginPath(); ctx.arc(cx, cy, iR, 0, 2 * Math.PI); ctx.fillStyle = bgFill; ctx.fill(); if (p > 0.65) { const al = Math.min((p - 0.65) / 0.35, 1); ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = isDark ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.85)'; ctx.font = 'bold 15px Courier Prime, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('₹' + fmt(total), cx, cy - 5); ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.38)'; ctx.font = '700 8px Courier Prime, monospace'; ctx.fillText('TOTAL', cx, cy + 9); ctx.restore(); } if (p < 1) requestAnimationFrame(draw); })(t0);
-            document.getElementById('pieLegend').innerHTML = cats.map((c, i) => '<div class="pl-row" style="animation-delay:' + (i * 0.05) + 's" onclick="openCategoryM(\'' + escH(c.category) + '\')"><div class="pl-dot" style="background:' + PC[i % PC.length] + '"></div><div class="pl-name">' + c.category + '</div><div class="pl-pct">' + ((c.total / total) * 100).toFixed(1) + '%</div><div class="pl-amt">' + rs(c.total) + '</div></div>').join('');
+            const bgFill = isDark ? '#1C1917' : '#FFFFFF';
+
+            const t0 = performance.now();
+            (function draw(now) {
+                const p = Math.min((now - t0) / 800, 1), ez = 1 - Math.pow(1 - p, 3);
+                ctx.clearRect(0, 0, W, H);
+                sl.forEach(s => {
+                    const ea = s.s + (s.e - s.s) * ez;
+                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s.s, ea); ctx.closePath();
+                    ctx.fillStyle = s.col; ctx.fill();
+                });
+                ctx.beginPath(); ctx.arc(cx, cy, iR, 0, 2 * Math.PI); ctx.fillStyle = bgFill; ctx.fill();
+                
+                if (p > 0.7) {
+                    const al = Math.min((p - 0.7) / 0.3, 1);
+                    ctx.save(); ctx.globalAlpha = al;
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--t1').trim();
+                    ctx.font = '700 24px Courier Prime, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText('₹' + fmt(total), cx, cy - 4);
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--t3').trim();
+                    ctx.font = '700 10px Courier Prime, monospace';
+                    ctx.fillText('TOTAL SPEND', cx, cy + 16);
+                    ctx.restore();
+                }
+                if (p < 1) requestAnimationFrame(draw);
+            })(t0);
+
+            document.getElementById('pieLegend').innerHTML = cats.map((c, i) => `
+                <div class="ple-row" style="animation-delay:${i * 0.03}s; padding: 6px 0; border-bottom: 1px dashed var(--border);" onclick="openCategoryM('${escH(c.category)}')">
+                    <div class="ple-dot" style="background:${PC[i % PC.length]}; width:10px; height:10px; border-radius:0; flex-shrink:0;"></div>
+                    <div class="ple-name" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.category}</div>
+                    <div class="ple-pct" style="color:var(--t3); margin:0 12px; font-size:10px;">${((c.total / total) * 100).toFixed(1)}%</div>
+                    <div class="ple-amt" style="font-weight:700; font-family:var(--font-big); font-size:11px;">₹${fmt(c.total)}</div>
+                </div>
+            `).join('');
         }
 
         /* ═══ LEDGER ═══ */
@@ -5403,9 +6833,129 @@
 
             const expTplNames = expTpls.map(t => t.name);
             const incTplNames = incTpls.map(t => t.name);
-            const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-acc', 'dd-e-acc', accNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', recentItems], ['e-to', 'dd-e-to', recentPeople], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-acc', 'dd-i-acc', accNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', recentItems], ['i-from', 'dd-i-from', recentPeople], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', recentItems]];
+            const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', recentItems], ['e-to', 'dd-e-to', recentPeople], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', recentItems], ['i-from', 'dd-i-from', recentPeople], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', recentItems]];
             pairs.forEach(([inp, dd, data]) => initDD(inp, dd, data));
+            
+            renderAccountCards('e-acc-cards', 'e-acc');
+            renderAccountCards('i-acc-cards', 'i-acc');
+            
+            renderQuickChips('e-tpl-chips', expTplNames.slice(0, 4), 'e-tpl');
+            
+            // For categories, pick top 6 used, or just first 6
+            const topExpCats = expCats.slice(0, 6);
+            renderQuickChips('e-cat-chips', topExpCats, 'e-cat', true);
         }
+
+        function renderAccountCards(containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if(!container || !hidden) return;
+            
+            let html = '';
+            _accounts.forEach(a => {
+                const bal = a.currentBalance || 0;
+                // mock last 4 digits for UI matching
+                const last4 = String(Math.abs(Math.floor(Math.random() * 9000) + 1000));
+                html += `<div class="ae-acc-card" data-name="${escH(a.name)}" onclick="selectAccCard(this, '${containerId}', '${hiddenInputId}')">
+                    <div class="ae-acc-name">
+                        <svg class="ae-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="display:none"><path d="M20 6L9 17l-5-5"/></svg>
+                        ${escH(a.name)} · ${last4}
+                    </div>
+                    <div class="ae-acc-bal">bal ₹${fmt(bal)}</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            
+            // Auto-select first if none selected
+            if(!hidden.value && _accounts.length > 0) {
+                const firstCard = container.querySelector('.ae-acc-card');
+                if(firstCard) selectAccCard(firstCard, containerId, hiddenInputId);
+            }
+        }
+
+        window.selectAccCard = function(el, containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if(!container || !hidden) return;
+            
+            container.querySelectorAll('.ae-acc-card').forEach(c => {
+                c.classList.remove('active');
+                const svg = c.querySelector('.ae-icon-sm');
+                if(svg) svg.style.display = 'none';
+            });
+            
+            el.classList.add('active');
+            const svg = el.querySelector('.ae-icon-sm');
+            if(svg) svg.style.display = 'inline-block';
+            
+            hidden.value = el.dataset.name;
+        };
+
+        function renderQuickChips(containerId, items, targetInputId, isHash = false) {
+            const container = document.getElementById(containerId);
+            const input = document.getElementById(targetInputId);
+            if(!container || !input) return;
+            
+            let html = '';
+            items.forEach(item => {
+                const prefix = isHash ? '#' : '•';
+                html += `<div class="ae-chip" onclick="selectQuickChip(this, '${targetInputId}', '${escH(item)}')">
+                    <span style="color:#c36c4b">${prefix}</span> ${escH(item)}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.selectQuickChip = function(el, targetInputId, val) {
+            const input = document.getElementById(targetInputId);
+            if(input) {
+                input.value = val;
+                if(targetInputId === 'e-tpl') applyExpTpl(val);
+                if(targetInputId === 'i-tpl') applyIncTpl(val);
+                
+                // Highlight chip visually briefly or toggle active class
+                const chips = el.parentElement.querySelectorAll('.ae-chip');
+                chips.forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+            }
+        };
+
+        window.autoCategorizeItem = async function() {
+            const itemInput = document.getElementById('e-item');
+            const catInput = document.getElementById('e-cat');
+            if(!itemInput || !catInput) return;
+            
+            const itemText = itemInput.value.trim();
+            if(!itemText || catInput.value.trim() !== '') return; // Don't overwrite existing
+            
+            const key = getGroqKey();
+            if(!key) return; // Silent fail if no API key
+            
+            catInput.placeholder = "AI predicting...";
+            const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
+            
+            const prompt = `Given the expense item/merchant: "${itemText}", which of these categories is the best fit? ${expCats.join(', ')}. Reply ONLY with the exact category name. If none fit perfectly, reply with the closest one.`;
+            
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{role:'user', content: prompt}], temperature: 0.1 })
+                });
+                if(resp.ok) {
+                    const json = await resp.json();
+                    let guess = json.choices[0].message.content.trim();
+                    // Remove quotes if AI added them
+                    if(guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1,-1);
+                    if(_categories.some(c => c.name.toUpperCase() === guess.toUpperCase())) {
+                        catInput.value = guess;
+                    }
+                }
+            } catch(e) { console.error('AI Auto-Cat failed', e); }
+            finally {
+                catInput.placeholder = "⚲ Select or type new category";
+            }
+        };
 
         function getFieldOrder(inputId) { for (const [, fields] of Object.entries(FIELD_ORDER)) { const i = fields.indexOf(inputId); if (i >= 0) return fields; } return null; }
         function focusNext(inputId) {
@@ -5496,7 +7046,7 @@
         };
         function applyExpTpl(n) { const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('e-acc').value = t.account; if (t.category) document.getElementById('e-cat').value = t.category; if (t.item) document.getElementById('e-item').value = t.item; if (t.tofrom) document.getElementById('e-to').value = t.tofrom; if (t.amount) document.getElementById('e-amt').value = t.amount; }
         function applyIncTpl(n) { const t = incTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('i-acc').value = t.account; if (t.category) document.getElementById('i-cat').value = t.category; if (t.item) document.getElementById('i-item').value = t.item; if (t.tofrom) document.getElementById('i-from').value = t.tofrom; if (t.amount) document.getElementById('i-amt').value = t.amount; }
-        window.switchAddTab = function (name, el) { document.querySelectorAll('.add-tab').forEach(x => x.classList.remove('active')); document.querySelectorAll('.add-form').forEach(x => x.classList.remove('active')); el.classList.add('active'); document.getElementById('form-' + name).classList.add('active'); };
+        window.switchAddTab = function (name, el) { document.querySelectorAll('.add-tab, .ae-tab').forEach(x => x.classList.remove('active')); document.querySelectorAll('.add-form').forEach(x => x.classList.remove('active')); el.classList.add('active'); document.getElementById('form-' + name).classList.add('active'); };
         const gv = id => document.getElementById(id).value.trim();
         const setInv = id => document.getElementById(id).classList.add('invalid');
         const clrInv = ids => ids.forEach(id => document.getElementById(id).classList.remove('invalid'));
@@ -5588,7 +7138,7 @@
             rows.forEach(r => { r.querySelector('.sp-amt').value = perPerson; });
         };
 
-        window.submitExp = async function () {
+        window.submitExp = async function (keepOpen = false) {
             clrInv(['e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to']); document.getElementById('e-err').textContent = '';
             let ok = true;
             ['e-acc', 'e-cat', 'e-amt', 'e-item'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } });
@@ -5651,7 +7201,23 @@
             document.getElementById('e-btn').textContent = 'Saving...'; document.getElementById('e-btn').disabled = true;
             try {
                 await batch.commit();
-                btnDone('e-btn'); clearForm(['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], 'e-err');
+                btnDone('e-btn'); 
+                
+                if (keepOpen) {
+                    // Only clear specific fields
+                    document.getElementById('e-amt').value = '';
+                    document.getElementById('e-item').value = '';
+                    document.getElementById('e-item').focus();
+                } else {
+                    clearForm(['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], 'e-err');
+                    // Deselect cards
+                    document.querySelectorAll('.ae-acc-card').forEach(c => {
+                        c.classList.remove('active');
+                        const svg = c.querySelector('.ae-icon-sm');
+                        if(svg) svg.style.display = 'none';
+                    });
+                }
+                
                 document.getElementById('split-rows-container').innerHTML = '';
                 document.getElementById('split-tools').style.display = 'none';
                 _splitRows = 0;
@@ -5660,6 +7226,7 @@
                 document.getElementById('e-err').textContent = 'Error: ' + e.message;
             }
             document.getElementById('e-btn').disabled = false;
+            if(!keepOpen) { document.getElementById('e-btn').textContent = 'Save Expense →'; }
         };
         window.submitInc = async function () {
             clrInv(['i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from']); document.getElementById('i-err').textContent = '';
@@ -6552,6 +8119,15 @@
 
         /* ═══ AI CHAT LOGIC ═══ */
         const DEFAULT_GROQ_KEY = '';
+        let _chatThread = [];
+
+        window.resetChatThread = function() {
+            _chatThread = [];
+            document.getElementById('chatHistory').innerHTML='<div class="chat-date-sep"><span id="chat-date-label">TODAY</span></div>'; 
+            const introMsg = 'Hi Sachin - I\'m your financial assistant. Paste a bank SMS or describe an expense and I\'ll log it for you. You can also ask things like "how much did I spend on food in April?" or "what\'s draining my budget?"';
+            appendMsg(introMsg, 'ai');
+            _chatThread.push({role: 'assistant', content: introMsg});
+        };
 
         function getGroqKey() {
             const key = _aiSettings.groq_api_key || DEFAULT_GROQ_KEY;
@@ -6587,45 +8163,93 @@
 
         function appendMsg(text, type, data = null) {
             const hist = document.getElementById('chatHistory');
-            const div = document.createElement('div');
-            div.className = 'msg ' + type;
-            div.innerHTML = escH(text).replace(/\n/g, '<br>');
+            
+            const row = document.createElement('div');
+            row.className = 'msg-row ' + type;
+            
+            const ava = document.createElement('div');
+            ava.className = 'msg-ava ' + type;
+            ava.textContent = type === 'ai' ? 'f' : 'S';
+            row.appendChild(ava);
 
-            if (data && data.action) {
-                const cmdDiv = document.createElement('div');
-                cmdDiv.className = 'msg-cmd';
-                const btn = document.createElement('button');
-                btn.className = 'add-btn';
-                btn.style.margin = '0';
-                btn.style.padding = '4px 10px';
-                btn.style.fontSize = '12px';
+            const wrap = document.createElement('div');
+            wrap.className = 'msg-content-wrapper';
 
-                let btnText = 'Approve';
-                if (data.action === 'ADD_EXPENSE') btnText = 'Add Expense: ' + rs(data.data.amount);
-                if (data.action === 'ADD_INCOME') btnText = 'Add Income: ' + rs(data.data.amount);
-                if (data.action === 'ADD_TRANSFER') btnText = 'Add Transfer: ' + rs(data.data.amount);
-                if (data.action === 'ADD_ACCOUNT') btnText = 'Create Account: ' + data.data.name;
-                if (data.action === 'ADD_CATEGORY') btnText = 'Create Category: ' + data.data.name;
-                if (data.action === 'ADD_TEMPLATE') btnText = 'Create Template: ' + data.data.name;
+            const meta = document.createElement('div');
+            meta.className = 'msg-meta';
+            const nowTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            if(type === 'ai') {
+                meta.innerHTML = `Tracker AI <span class="time">— ${nowTime}</span>`;
+            } else {
+                meta.innerHTML = `${nowTime} <span class="time">— You</span>`;
+            }
+            wrap.appendChild(meta);
 
-                btn.textContent = btnText;
-                btn.onclick = async () => {
-                    btn.disabled = true;
-                    btn.textContent = 'Processing...';
-                    try {
-                        await executeAICommand(data);
-                        btn.textContent = '✓ Done';
-                        btn.style.background = 'var(--green)';
-                    } catch (e) {
-                        btn.textContent = 'Error';
-                        btn.disabled = false;
-                    }
-                };
-                cmdDiv.appendChild(btn);
-                div.appendChild(cmdDiv);
+            const bubble = document.createElement('div');
+            bubble.className = 'msg-bubble';
+            bubble.innerHTML = escH(text).replace(/\n/g, '<br>');
+            wrap.appendChild(bubble);
+
+            if (data && data.actions && Array.isArray(data.actions)) {
+                data.actions.forEach((act) => {
+                    if (!act.action || !act.action.startsWith('ADD_')) return;
+
+                    const actionRow = document.createElement('div');
+                    actionRow.style.marginTop = '12px';
+                    
+                    let type = act.action.replace('ADD_', '').toLowerCase();
+                    let amt = Math.abs(Number(act.data.amount || 0));
+                    let item = act.data.item || act.data.name || '';
+                    let acc = act.data.account || '';
+
+                    const saveBtn = document.createElement('button');
+                    saveBtn.className = 'draft-btn primary';
+                    saveBtn.style.padding = '10px 18px';
+                    saveBtn.style.fontSize = '12px';
+                    saveBtn.style.fontWeight = '700';
+                    saveBtn.innerHTML = `✓ Add ${type}: ${item} ${amt ? '₹' + fmt(amt) : ''} ${acc ? 'to ' + acc : ''}`;
+                    
+                    saveBtn.onclick = async () => {
+                        saveBtn.disabled = true;
+                        saveBtn.textContent = 'Processing...';
+                        try {
+                            await executeAICommand(act);
+                            saveBtn.textContent = '✓ Saved';
+                            saveBtn.style.background = '#8e8d69';
+                            saveBtn.style.borderColor = '#8e8d69';
+                        } catch (e) {
+                            saveBtn.textContent = 'Error';
+                            saveBtn.disabled = false;
+                        }
+                    };
+
+                    const discardBtn = document.createElement('button');
+                    discardBtn.className = 'draft-btn';
+                    discardBtn.style.padding = '10px 14px';
+                    discardBtn.style.fontSize = '12px';
+                    discardBtn.style.marginLeft = '8px';
+                    discardBtn.textContent = '✕';
+                    discardBtn.onclick = () => { actionRow.style.opacity = '0.3'; actionRow.style.pointerEvents = 'none'; };
+
+                    actionRow.appendChild(saveBtn);
+                    actionRow.appendChild(discardBtn);
+                    wrap.appendChild(actionRow);
+                });
             }
 
-            hist.appendChild(div);
+            if(type === 'ai') {
+                const footer = document.createElement('div');
+                footer.className = 'msg-footer';
+                footer.innerHTML = `
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                    <span>2.1s - 413 tokens - groq/llama-3.1-70b</span>
+                `;
+                wrap.appendChild(footer);
+            }
+
+            row.appendChild(wrap);
+            hist.appendChild(row);
             hist.scrollTop = hist.scrollHeight;
         }
 
@@ -6688,13 +8312,15 @@
             if (!text) return;
 
             appendMsg(text, 'user');
+            _chatThread.push({ role: 'user', content: text });
             inp.value = '';
             btn.disabled = true;
             document.getElementById('chatTyping').style.display = 'block';
 
             try {
-                const response = await callGroq(text);
+                const response = await callGroq();
                 const aiMsg = response.choices[0].message.content;
+                _chatThread.push({ role: 'assistant', content: aiMsg });
 
                 let cleanMsg = aiMsg;
                 let data = null;
@@ -6711,7 +8337,7 @@
                             depth--;
                             if (depth === 0 && start !== -1) {
                                 const candidate = str.substring(start, i + 1);
-                                if (candidate.includes('"action"')) return { json: candidate, full: candidate };
+                                if (candidate.includes('"action"') || candidate.includes('"actions"')) return { json: candidate, full: candidate };
                                 start = -1;
                             }
                         }
@@ -6722,7 +8348,12 @@
                 const extracted = extractActionJSON(aiMsg);
                 if (extracted) {
                     try {
-                        data = JSON.parse(extracted.json);
+                        let rawData = JSON.parse(extracted.json);
+                        if(rawData.actions && Array.isArray(rawData.actions)) {
+                            data = rawData;
+                        } else if(rawData.action) {
+                            data = { actions: [rawData] };
+                        }
                         cleanMsg = aiMsg.replace(extracted.full, '').trim();
                     } catch (e) { console.error("JSON parse error", e); }
                 }
@@ -6736,7 +8367,7 @@
             }
         };
 
-        async function callGroq(userMsg) {
+        async function callGroq() {
             const key = getGroqKey();
             if (!key) throw new Error('API Key not set');
             const accountsList = _accounts.map(a => a.name).join(', ');
@@ -6752,14 +8383,16 @@ ${recent}
 
 Instructions:
 1. Help users track finances. Extract details from messages or descriptions.
-2. If an action is identified, respond naturally and append a JSON block. Supported actions:
+2. If an action or multiple actions are identified, respond naturally and append a JSON block with an "actions" array. Supported actions:
 
-- ADD_EXPENSE: {"action":"ADD_EXPENSE","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
-- ADD_INCOME: {"action":"ADD_INCOME","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
-- ADD_TRANSFER: {"action":"ADD_TRANSFER","data":{"fromAccount":"...","toAccount":"...","amount":100,"item":"..."}}
-- ADD_ACCOUNT: {"action":"ADD_ACCOUNT","data":{"name":"...","type":"BANK|CREDIT_CARD|PERSON","openingBalance":0}}
-- ADD_CATEGORY: {"action":"ADD_CATEGORY","data":{"name":"...","type":"EXPENSE|INCOME"}}
-- ADD_TEMPLATE: {"action":"ADD_TEMPLATE","data":{"name":"...","type":"EXPENSE|INCOME","account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
+{"actions": [
+  {"action":"ADD_EXPENSE","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}},
+  {"action":"ADD_INCOME","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}},
+  {"action":"ADD_TRANSFER","data":{"fromAccount":"...","toAccount":"...","amount":100,"item":"..."}},
+  {"action":"ADD_ACCOUNT","data":{"name":"...","type":"BANK|CREDIT_CARD|PERSON","openingBalance":0}},
+  {"action":"ADD_CATEGORY","data":{"name":"...","type":"EXPENSE|INCOME"}},
+  {"action":"ADD_TEMPLATE","data":{"name":"...","type":"EXPENSE|INCOME","account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
+]}
 
 3. Use existing accounts/categories if they match.
 4. Answer financial questions based on the provided recent transactions.
@@ -6775,7 +8408,7 @@ Instructions:
                     model: 'llama-3.3-70b-versatile',
                     messages: [
                         { role: 'system', content: systemPrompt },
-                        { role: 'user', content: userMsg }
+                        ..._chatThread
                     ],
                     temperature: 0.3
                 })
