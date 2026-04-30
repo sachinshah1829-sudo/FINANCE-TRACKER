@@ -10,6 +10,7 @@
     <!-- PDF Generation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -7818,31 +7819,54 @@
                 const nameKey = c.name.toUpperCase();
                 const color = palette[nameKey] || palette['MISC'];
 
+                const getIcon = (iconStr, col) => {
+                    if (!iconStr || iconStr === '📦') {
+                         // Auto-map common ones if no specific icon stored
+                         const n = c.name.toUpperCase();
+                         if (n.includes('FOOD') || n.includes('DINE')) return `<i data-lucide="utensils" style="width:18px;height:18px;color:${col}"></i>`;
+                         if (n.includes('TRAVEL')) return `<i data-lucide="plane" style="width:18px;height:18px;color:${col}"></i>`;
+                         if (n.includes('HEALTH')) return `<i data-lucide="heart" style="width:18px;height:18px;color:${col}"></i>`;
+                         if (n.includes('BANK') || n.includes('FINANCE')) return `<i data-lucide="wallet" style="width:18px;height:18px;color:${col}"></i>`;
+                         if (n.includes('BILL')) return `<i data-lucide="receipt" style="width:18px;height:18px;color:${col}"></i>`;
+                         if (n.includes('SHOP') || n.includes('FASHION')) return `<i data-lucide="shopping-bag" style="width:18px;height:18px;color:${col}"></i>`;
+                         if (n.includes('INVEST')) return `<i data-lucide="trending-up" style="width:18px;height:18px;color:${col}"></i>`;
+                         if (n.includes('TECH')) return `<i data-lucide="cpu" style="width:18px;height:18px;color:${col}"></i>`;
+                         return `<span style="font-size:16px;">📦</span>`;
+                    }
+                    // If it's a lucide name (lowercase, no spaces, longer than 2 chars)
+                    if (/^[a-z\-]+$/.test(iconStr) && iconStr.length > 2) {
+                        return `<i data-lucide="${iconStr}" style="width:18px;height:18px;color:${col}"></i>`;
+                    }
+                    return `<span style="font-size:16px;">${iconStr}</span>`;
+                };
+
                 return `
-                <div class="cat-card" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" style="background:${color.tint}; border-color:${color.text}20;">
+                <div class="cat-card" onclick="editCat('${c.id}','${escH(c.name)}','${c.type}')" style="background:white; border: 1.5px solid ${color.text}25; box-shadow: 0 4px 12px ${color.text}08;">
                     <div class="cat-top">
-                        <div class="cat-icon-box" style="background:${color.bg}; color:${color.text}; border: 1px solid ${color.text}30;">${icon}</div>
+                        <div class="cat-icon-box" style="background:${color.bg}; border: 1px solid ${color.text}30;">
+                            ${getIcon(c.icon, color.text)}
+                        </div>
                         <div class="mgmt-item-btns">
                             <button class="act-btn" style="width:24px;height:24px;border-radius:50%; border-color:${color.text}30;">✎</button>
                         </div>
                     </div>
                     <div class="cat-summary">
-                        <div class="cat-name">${escH(c.name)}</div>
-                        <div class="cat-stats-row">${count} entries • ₹${fmt(total)}</div>
+                        <div class="cat-name" style="color:var(--t1);">${escH(c.name)}</div>
+                        <div class="cat-stats-row" style="color:var(--t3);">${count} entries • ₹${fmt(total)}</div>
                     </div>
                     ${budget > 0 ? `
                         <div class="cat-progress-wrap">
-                            <div class="cat-progress-bar" style="background:${color.text}10;">
+                            <div class="cat-progress-bar" style="background:${color.text}10; height:4px;">
                                 <div class="cat-progress-fill" style="width:${pct}%; background:${pct > 90 ? 'var(--red)' : color.text}"></div>
                             </div>
                             <div class="cat-footer">
-                                <div class="cat-pct" style="color:${color.text}; opacity:0.8;">${pct.toFixed(0)}% OF ₹${fmt(budget)}</div>
-                                <div class="cat-left" style="color:${color.text};">₹${fmt(left)} LEFT</div>
+                                <div class="cat-pct" style="color:var(--t3); font-size:10px;">${pct.toFixed(0)}% OF ₹${fmt(budget)}</div>
+                                <div class="cat-left" style="color:var(--t2); font-weight:700;">₹${fmt(left)} LEFT</div>
                             </div>
                         </div>
                     ` : `
-                        <div style="margin-top:auto; font-size:9px; color:${color.text}; opacity:0.6; font-weight:700; padding-top:12px;">
-                            <span style="background:${color.text}10; padding:3px 8px; border-radius:12px;">☆ NO BUDGET</span>
+                        <div style="margin-top:auto; font-size:9px; color:var(--t4); font-weight:700; padding-top:12px;">
+                            <span style="background:var(--bg2); padding:3px 8px; border-radius:12px; border:1px solid var(--border);">☆ NO BUDGET</span>
                         </div>
                     `}
                 </div>`;
@@ -7892,6 +7916,7 @@
                     </div>
                 `;
             }
+            if (window.lucide) lucide.createIcons();
         }
         window.showAddCatModal = function () {
             document.getElementById('edit-modal-title').textContent = 'Add Category';
@@ -7981,26 +8006,29 @@
             btn.textContent = 'Thinking...';
             btn.disabled = true;
             try {
-                const prompt = `Suggest a single emoji icon and a reasonable monthly budget limit (in INR, round to nearest 500 or 1000) for a finance category named "${name}". Reply ONLY in JSON format: {"icon": "emoji", "budget": number}. Example: {"icon": "🍕", "budget": 5000}`;
+                const key = getGroqKey();
+                if (!key) throw new Error('API Key missing');
+                const prompt = `Suggest a Lucide icon name (like 'wallet', 'utensils', 'plane', 'shopping-bag', 'heart', 'cog', 'banknote', 'chart-bar', 'briefcase', 'zap', 'shield', 'package') and a reasonable monthly budget limit (in INR, round to nearest 500 or 1000) for a finance category named "${name}". Reply ONLY in JSON format: {"icon": "lucide-icon-name", "budget": number}. Example: {"icon": "utensils", "budget": 5000}`;
                 const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_aiSettings.apiKey || ''}` },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                     body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }] })
                 });
                 const data = await resp.json();
+                if (data.error) throw new Error(data.error.message);
                 const text = data.choices[0].message.content;
                 const match = text.match(/\{.*\}/s);
                 if (match) {
                     const res = JSON.parse(match[0]);
                     const iconInput = document.getElementById('cat-m-icon') || document.getElementById('em-icon');
                     const budgetInput = document.getElementById('cat-m-budget') || document.getElementById('em-budget');
-                    if (iconInput) iconInput.value = res.icon || '📦';
+                    if (iconInput) iconInput.value = res.icon || 'package';
                     if (budgetInput) budgetInput.value = res.budget || 0;
                     toast('AI Suggestions applied');
                 }
             } catch (e) {
                 console.error(e);
-                toast('AI Suggestion failed');
+                toast('AI Suggestion failed: ' + e.message);
             } finally {
                 btn.textContent = oldText;
                 btn.disabled = false;
