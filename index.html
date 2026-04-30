@@ -4890,7 +4890,7 @@
                             <div>
                                 <div class="ae-group-hdr"><div class="ae-lbl">ITEM</div></div>
                                 <div class="ae-input-wrap">
-                                    <input class="ae-input" id="e-item" placeholder="Type or select item" autocomplete="off" onblur="autoCategorizeItem()">
+                                    <input class="ae-input" id="e-item" placeholder="Type or select item" autocomplete="off">
                                     <div class="form-dropdown" id="dd-e-item"></div>
                                 </div>
                             </div>
@@ -4922,6 +4922,7 @@
                         <div class="ae-btn-row">
                             <button class="ae-btn ae-btn-primary" id="e-btn" onclick="submitExp()">Save Expense →</button>
                             <button class="ae-btn ae-btn-sec" onclick="submitExp(true)">Save & add another</button>
+                            <button class="ae-btn ae-btn-sec" onclick="clearAddEntryForm()" style="border:none; background:transparent; color:var(--t3); text-decoration:underline;">Clear Form</button>
                         </div>
                     </div>
 
@@ -6831,8 +6832,21 @@
             const peopleColl = _people.map(p => p.value);
             const recentPeople = [...new Set([...peopleColl, ...txns.map(t => t.toFrom)])].filter(Boolean).reverse().slice(0, 40);
 
-            const expTplNames = expTpls.map(t => t.name);
-            const incTplNames = incTpls.map(t => t.name);
+            const sortTpls = (tpls) => {
+                return tpls.map(tpl => {
+                    const count = txns.filter(t => 
+                        (t.item||'').toUpperCase() === (tpl.item||'').toUpperCase() && 
+                        (t.category||'').toUpperCase() === (tpl.category||'').toUpperCase()
+                    ).length;
+                    return { ...tpl, count };
+                }).sort((a, b) => b.count - a.count);
+            };
+
+            const sortedExpTpls = sortTpls(expTpls);
+            const sortedIncTpls = sortTpls(incTpls);
+
+            const expTplNames = sortedExpTpls.map(t => t.name);
+            const incTplNames = sortedIncTpls.map(t => t.name);
             const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', recentItems], ['e-to', 'dd-e-to', recentPeople], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', recentItems], ['i-from', 'dd-i-from', recentPeople], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', recentItems]];
             pairs.forEach(([inp, dd, data]) => initDD(inp, dd, data));
             
@@ -6845,6 +6859,21 @@
             const topExpCats = expCats.slice(0, 6);
             renderQuickChips('e-cat-chips', topExpCats, 'e-cat', true);
         }
+
+        window.clearAddEntryForm = function() {
+            clearForm(['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], 'e-err');
+            document.querySelectorAll('.ae-acc-card').forEach(c => {
+                c.classList.remove('active');
+                const svg = c.querySelector('.ae-icon-sm');
+                if(svg) svg.style.display = 'none';
+            });
+            // Re-select first card for expense and income
+            renderAccountCards('e-acc-cards', 'e-acc', true);
+            renderAccountCards('i-acc-cards', 'i-acc', true);
+            document.getElementById('split-rows-container').innerHTML = '';
+            document.getElementById('split-tools').style.display = 'none';
+            _splitRows = 0;
+        };
 
         function renderAccountCards(containerId, hiddenInputId, excludePeople = false) {
             const container = document.getElementById(containerId);
@@ -6921,40 +6950,52 @@
             }
         };
 
-        window.autoCategorizeItem = async function() {
+        let _autoCatTimer;
+        window.autoCategorizeItem = async function(isImmediate = false) {
             const itemInput = document.getElementById('e-item');
             const catInput = document.getElementById('e-cat');
             if(!itemInput || !catInput) return;
             
             const itemText = itemInput.value.trim();
-            if(!itemText || catInput.value.trim() !== '') return; // Don't overwrite existing
+            if(itemText.length < 2) return; 
             
-            const key = getGroqKey();
-            if(!key) return; // Silent fail if no API key
-            
-            catInput.placeholder = "AI predicting...";
-            const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
-            
-            const prompt = `Given the expense item/merchant: "${itemText}", which of these categories is the best fit? ${expCats.join(', ')}. Reply ONLY with the exact category name. If none fit perfectly, reply with the closest one.`;
-            
-            try {
-                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{role:'user', content: prompt}], temperature: 0.1 })
-                });
-                if(resp.ok) {
-                    const json = await resp.json();
-                    let guess = json.choices[0].message.content.trim();
-                    // Remove quotes if AI added them
-                    if(guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1,-1);
-                    if(_categories.some(c => c.name.toUpperCase() === guess.toUpperCase())) {
-                        catInput.value = guess;
+            const run = async () => {
+                const currentVal = itemInput.value.trim();
+                if(!currentVal) return;
+
+                const key = getGroqKey();
+                if(!key) return; 
+                
+                catInput.placeholder = "AI predicting...";
+                const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
+                
+                const prompt = `Given the expense item/merchant: "${currentVal}", which of these categories is the best fit? ${expCats.join(', ')}. Reply ONLY with the exact category name. If none fit perfectly, reply with the closest one.`;
+                
+                try {
+                    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{role:'user', content: prompt}], temperature: 0.1 })
+                    });
+                    if(resp.ok) {
+                        const json = await resp.json();
+                        let guess = json.choices[0].message.content.trim();
+                        if(guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1,-1);
+                        if(_categories.some(c => c.name.toUpperCase() === guess.toUpperCase())) {
+                            catInput.value = guess;
+                        }
                     }
+                } catch(e) { console.error('AI Auto-Cat failed', e); }
+                finally {
+                    catInput.placeholder = "⚲ Select or type new category";
                 }
-            } catch(e) { console.error('AI Auto-Cat failed', e); }
-            finally {
-                catInput.placeholder = "⚲ Select or type new category";
+            };
+
+            clearTimeout(_autoCatTimer);
+            if(isImmediate) {
+                run();
+            } else {
+                _autoCatTimer = setTimeout(run, 1500);
             }
         };
 
@@ -6989,9 +7030,13 @@
                 inp.classList.remove('invalid');
                 if (inputId === 'e-tpl' && inp.value === '') applyExpTpl('');
                 if (inputId === 'i-tpl' && inp.value === '') applyIncTpl('');
+                if (inputId === 'e-item') autoCategorizeItem();
             };
             inp.onfocus = () => renderDD(inputId, ddId, data);
-            inp.onblur = () => setTimeout(() => { dd.style.display = 'none'; }, 180);
+            inp.onblur = () => {
+                setTimeout(() => { dd.style.display = 'none'; }, 180);
+                if (inputId === 'e-item') autoCategorizeItem(true);
+            };
             inp.onkeydown = e => {
                 const items = [...dd.querySelectorAll('.fd-item')];
                 const ddOpen = dd.style.display === 'block' && items.length > 0;
@@ -7043,6 +7088,7 @@
             dd.style.display = 'none';
             if (inputId === 'e-tpl') { applyExpTpl(value); }
             else if (inputId === 'i-tpl') { applyIncTpl(value); }
+            if (inputId === 'e-item') { autoCategorizeItem(true); }
             focusNext(inputId);
         };
         function applyExpTpl(n) { const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('e-acc').value = t.account; if (t.category) document.getElementById('e-cat').value = t.category; if (t.item) document.getElementById('e-item').value = t.item; if (t.tofrom) document.getElementById('e-to').value = t.tofrom; if (t.amount) document.getElementById('e-amt').value = t.amount; }
@@ -7101,11 +7147,10 @@
             document.getElementById('split-tools').style.display = 'block';
             // Setup dropdowns using consolidated smart suggestion lists
             const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
-            const recentPeople = [...new Set([..._people.map(p => p.value), ..._allTxns.map(t => t.toFrom)])].filter(Boolean).reverse().slice(0, 40);
             const catNames = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
             const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse().slice(0, 40);
-
-            setupSplitDD('sp-person-' + rowId, 'sp-dd-person-' + rowId, [...new Set([...personAccNames, ...recentPeople])]);
+            
+            setupSplitDD('sp-person-' + rowId, 'sp-dd-person-' + rowId, personAccNames);
             setupSplitDD('sp-cat-' + rowId, 'sp-dd-cat-' + rowId, catNames);
             setupSplitDD('sp-item-' + rowId, 'sp-dd-item-' + rowId, itemNames);
         };
