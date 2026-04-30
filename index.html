@@ -6836,8 +6836,8 @@
             const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', recentItems], ['e-to', 'dd-e-to', recentPeople], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', recentItems], ['i-from', 'dd-i-from', recentPeople], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', recentItems]];
             pairs.forEach(([inp, dd, data]) => initDD(inp, dd, data));
             
-            renderAccountCards('e-acc-cards', 'e-acc');
-            renderAccountCards('i-acc-cards', 'i-acc');
+            renderAccountCards('e-acc-cards', 'e-acc', true);
+            renderAccountCards('i-acc-cards', 'i-acc', true);
             
             renderQuickChips('e-tpl-chips', expTplNames.slice(0, 4), 'e-tpl');
             
@@ -6846,13 +6846,14 @@
             renderQuickChips('e-cat-chips', topExpCats, 'e-cat', true);
         }
 
-        function renderAccountCards(containerId, hiddenInputId) {
+        function renderAccountCards(containerId, hiddenInputId, excludePeople = false) {
             const container = document.getElementById(containerId);
             const hidden = document.getElementById(hiddenInputId);
             if(!container || !hidden) return;
             
             let html = '';
-            _accounts.forEach(a => {
+            const list = excludePeople ? _accounts.filter(a => a.type !== 'PERSON') : _accounts;
+            list.forEach(a => {
                 const bal = a.currentBalance || 0;
                 // mock last 4 digits for UI matching
                 const last4 = String(Math.abs(Math.floor(Math.random() * 9000) + 1000));
