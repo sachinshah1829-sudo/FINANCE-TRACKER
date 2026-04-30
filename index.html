@@ -1786,13 +1786,212 @@
             margin-bottom: 24px;
         }
         
+        /* Split Payments Redesign */
         .ae-split-box {
-            background: #e9ebd5; /* Olive tint */
-            border: 1px dashed var(--border-strong);
-            border-radius: 4px;
-            padding: 16px;
+            background: #f4f5e6; /* Creamier technical paper */
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            padding: 24px;
             margin-bottom: 24px;
         }
+        .as-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            gap: 20px;
+        }
+        .as-icon-box {
+            width: 40px;
+            height: 40px;
+            background: #fcece5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c36c4b;
+        }
+        .as-badge {
+            font-size: 10px;
+            font-weight: 700;
+            background: #fff;
+            border: 1px solid var(--border-strong);
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .as-modes {
+            display: flex;
+            background: #fff;
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            padding: 4px;
+        }
+        .as-mode {
+            padding: 8px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            color: var(--t2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .as-mode.active {
+            background: #fcece5;
+            color: #c36c4b;
+        }
+        .as-allocation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .as-alloc-text {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--t3);
+        }
+        .as-alloc-val {
+            font-size: 18px;
+            color: var(--t1);
+        }
+        .as-status-badge {
+            background: #e9f5e9;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+        .as-add-btn {
+            background: #fcece5 !important;
+            border-color: #c36c4b !important;
+            color: #c36c4b !important;
+            border-radius: 0 !important;
+        }
+        .as-progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 16px;
+        }
+        .as-progress-seg {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .as-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            font-size: 11px;
+            color: var(--t2);
+        }
+        .as-leg-item { display: flex; align-items: center; gap: 6px; }
+        .as-leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+        .as-table-hdr {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1.2fr 0.8fr 40px;
+            gap: 16px;
+            padding: 0 16px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--t3);
+            text-transform: uppercase;
+        }
+        .as-row {
+            background: #fff;
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1.2fr 0.8fr 40px;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+        }
+        .as-row-main { display: flex; align-items: center; gap: 12px; }
+        .as-drag { color: #ccc; cursor: grab; }
+        .as-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .as-info { flex: 1; min-width: 0; }
+        .as-item-input {
+            width: 100%;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--t1);
+            outline: none;
+            padding: 0;
+            margin-bottom: 2px;
+            background: transparent;
+        }
+        .as-person-input {
+            width: 100%;
+            border: none;
+            font-size: 11px;
+            color: var(--t3);
+            outline: none;
+            padding: 0;
+            background: transparent;
+        }
+        .as-input-box {
+            background: #f8f8f8;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .as-amt-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 700;
+            outline: none;
+            text-align: right;
+        }
+        .as-edit-label { font-size: 10px; color: #aaa; text-transform: lowercase; }
+        .as-share-val { font-size: 12px; font-weight: 700; text-align: right; }
+        .as-mini-bar {
+            height: 3px;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        .as-mini-bar-fill { height: 100%; width: 0; transition: width 0.3s; }
+        .as-remove {
+            color: #ccc;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+        .as-remove:hover { color: #ff5252; }
         .ae-btn-row {
             display: flex;
             gap: 12px;
@@ -4905,16 +5104,61 @@
 
                         <!-- Split Payments -->
                         <div class="ae-split-box">
-                            <div class="ae-group-hdr" style="margin-bottom:0;">
-                                <div class="ae-lbl">SPLIT PAYMENTS</div>
-                                <button class="ae-chip" style="background:#fff; border-color:var(--border-strong); border-radius:0;" onclick="addSplitRow(event)">+ Add Split</button>
+                            <div class="as-header">
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div class="as-icon-box">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                    </div>
+                                    <div>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <span class="ae-lbl" style="margin:0">SPLIT PAYMENTS</span>
+                                            <span class="as-badge"><span id="as-count">0</span> PEOPLE</span>
+                                        </div>
+                                        <div class="ae-hint">divide this entry across people, accounts, or categories</div>
+                                    </div>
+                                </div>
+                                <div class="as-modes" id="as-modes">
+                                    <div class="as-mode active" onclick="setSplitMode('equal')">
+                                        <span style="font-size:14px">=</span> Equal
+                                    </div>
+                                    <div class="as-mode" onclick="setSplitMode('amount')">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                        By amount
+                                    </div>
+                                    <div class="as-mode" onclick="setSplitMode('percent')">
+                                        <span style="font-size:12px">%</span> By percent
+                                    </div>
+                                    <div class="as-mode" onclick="setSplitMode('shares')">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                        By shares
+                                    </div>
+                                </div>
                             </div>
-                            <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or accounts</div>
+                            
+                            <div class="as-allocation">
+                                <div class="as-alloc-text">
+                                    <span>ALLOCATED</span>
+                                    <span class="as-alloc-val">₹<span id="as-allocated-val">0</span> / <span id="as-total-val" style="color:var(--t3); font-size:14px">₹0</span></span>
+                                    <span class="as-status-badge" id="as-status">in progress</span>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <button class="ae-chip" style="background:#fff; border-color:var(--border-strong); border-radius:0;" onclick="splitEqually(event)">= Split equally</button>
+                                    <button class="ae-chip as-add-btn" onclick="addSplitRow(event)">+ Add person</button>
+                                </div>
+                            </div>
+                            
+                            <div class="as-progress-bar" id="as-progress-bar"></div>
+                            <div class="as-legend" id="as-legend"></div>
+                            
+                            <div class="as-table-hdr">
+                                <div>ITEM / PERSON</div>
+                                <div>CATEGORY</div>
+                                <div>AMOUNT</div>
+                                <div>SHARE</div>
+                                <div></div>
+                            </div>
                             
                             <div id="split-rows-container"></div>
-                            <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
-                                <button class="txn-clr-btn" onclick="splitEqually(event)" style="padding:6px 12px;font-size:11px;">Split Equally</button>
-                            </div>
                         </div>
 
                         <div class="form-err" id="e-err" style="margin-bottom:12px;"></div>
@@ -7114,38 +7358,61 @@
         function clearForm(ids, errId) { ids.forEach(id => { document.getElementById(id).value = ''; document.getElementById(id).classList.remove('invalid'); }); document.getElementById(errId).textContent = ''; }
 
         let _splitRows = 0;
+        let _splitMode = 'amount';
+
+        window.setSplitMode = function(mode) {
+            _splitMode = mode;
+            document.querySelectorAll('.as-mode').forEach(m => m.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            updateSplitCalculations();
+        };
+
         window.addSplitRow = function (e) {
             if (e) e.preventDefault();
             _splitRows++;
             const rowId = _splitRows;
             const container = document.getElementById('split-rows-container');
             const div = document.createElement('div');
-            div.className = 'mini-form show';
-            div.style.cssText = 'margin-bottom:5px;position:relative;';
+            div.className = 'as-row';
             div.id = 'sp-row-' + rowId;
+            
+            const colors = ['#c36c4b', '#6b8e23', '#4682b4', '#d2691e', '#556b2f', '#cd853f'];
+            const color = colors[rowId % colors.length];
+
             div.innerHTML = `
-    <div class="mini-form-row" style="margin-bottom:5px;align-items:flex-start;">
-      <div style="position:relative;flex:1;min-width:80px;">
-        <input class="mini-input sp-person" id="sp-person-${rowId}" placeholder="Person / To (Optional)" autocomplete="off" style="width:100%">
-        <div id="sp-dd-person-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
-      </div>
-      <div style="position:relative;flex:1;min-width:80px;">
-        <input class="mini-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" autocomplete="off" style="width:100%" value="${document.getElementById('e-cat').value}">
-        <div id="sp-dd-cat-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
-      </div>
-    </div>
-    <div class="mini-form-row" style="flex-wrap:nowrap;align-items:flex-start;">
-      <div style="position:relative;flex:1;min-width:80px;">
-        <input class="mini-input sp-item" id="sp-item-${rowId}" placeholder="Item" autocomplete="off" style="width:100%" value="${document.getElementById('e-item').value}">
-        <div id="sp-dd-item-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
-      </div>
-      <input class="mini-input sp-amt" type="number" placeholder="Amount (₹)" style="width:90px;min-width:auto;">
-      <button class="mini-cancel-btn" onclick="document.getElementById('sp-row-${rowId}').remove(); if(document.getElementById('split-rows-container').children.length===0) document.getElementById('split-tools').style.display='none';">✕</button>
-    </div>
-  `;
+                <div class="as-drag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                </div>
+                <div class="as-row-main">
+                    <div class="as-avatar" style="background:${color}">YOU</div>
+                    <div class="as-info">
+                        <input class="as-item-input sp-item" id="sp-item-${rowId}" placeholder="Item name" autocomplete="off" value="${document.getElementById('e-item').value}">
+                        <div id="sp-dd-item-${rowId}" class="form-dropdown" style="z-index:300;"></div>
+                        <input class="as-person-input sp-person" id="sp-person-${rowId}" placeholder="Assign to person" autocomplete="off">
+                        <div id="sp-dd-person-${rowId}" class="form-dropdown" style="z-index:300;"></div>
+                    </div>
+                </div>
+                <div class="as-cat-box">
+                    <div class="as-input-box">
+                        <input class="as-person-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" value="${document.getElementById('e-cat').value}">
+                        <div id="sp-dd-cat-${rowId}" class="form-dropdown" style="z-index:300;"></div>
+                    </div>
+                </div>
+                <div class="as-amt-box">
+                    <div class="as-input-box">
+                        <span style="font-size:11px; color:#aaa">₹</span>
+                        <input type="number" class="as-amt-input sp-amt" id="sp-amt-${rowId}" placeholder="0.00" oninput="updateSplitCalculations()">
+                        <span class="as-edit-label">edit</span>
+                    </div>
+                </div>
+                <div class="as-share-box">
+                    <div class="as-share-val" id="sp-share-${rowId}">0%</div>
+                    <div class="as-mini-bar"><div class="as-mini-bar-fill" id="sp-bar-${rowId}" style="background:${color}"></div></div>
+                </div>
+                <button class="as-remove" onclick="removeSplitRow(${rowId})">✕</button>
+            `;
             container.appendChild(div);
-            document.getElementById('split-tools').style.display = 'block';
-            // Setup dropdowns using consolidated smart suggestion lists
+            
             const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
             const catNames = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
             const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse().slice(0, 40);
@@ -7153,6 +7420,71 @@
             setupSplitDD('sp-person-' + rowId, 'sp-dd-person-' + rowId, personAccNames);
             setupSplitDD('sp-cat-' + rowId, 'sp-dd-cat-' + rowId, catNames);
             setupSplitDD('sp-item-' + rowId, 'sp-dd-item-' + rowId, itemNames);
+            
+            updateSplitCalculations();
+        };
+
+        window.removeSplitRow = function(rowId) {
+            const row = document.getElementById('sp-row-' + rowId);
+            if(row) row.remove();
+            updateSplitCalculations();
+        };
+
+        window.updateSplitCalculations = function() {
+            const total = parseFloat(document.getElementById('e-amt').value) || 0;
+            const rows = document.querySelectorAll('.as-row');
+            let allocated = 0;
+            
+            document.getElementById('as-total-val').textContent = '₹' + fmt(total);
+            document.getElementById('as-count').textContent = rows.length;
+
+            rows.forEach(row => {
+                const amtInput = row.querySelector('.sp-amt');
+                const amt = parseFloat(amtInput.value) || 0;
+                allocated += amt;
+            });
+
+            document.getElementById('as-allocated-val').textContent = fmt(allocated);
+            
+            const status = document.getElementById('as-status');
+            const progBar = document.getElementById('as-progress-bar');
+            const legend = document.getElementById('as-legend');
+            
+            progBar.innerHTML = '';
+            legend.innerHTML = '';
+
+            if (allocated === total && total > 0) {
+                status.textContent = 'fully split';
+                status.style.background = '#e9f5e9';
+                status.style.color = '#2e7d32';
+            } else {
+                status.textContent = allocated > total ? 'over allocated' : 'in progress';
+                status.style.background = allocated > total ? '#ffebee' : '#f5f5f5';
+                status.style.color = allocated > total ? '#c62828' : '#757575';
+            }
+
+            rows.forEach(row => {
+                const amt = parseFloat(row.querySelector('.sp-amt').value) || 0;
+                const pct = total > 0 ? (amt / total) * 100 : 0;
+                const rowId = row.id.split('-').pop();
+                const person = row.querySelector('.sp-person').value || 'Unknown';
+                const color = row.querySelector('.as-mini-bar-fill').style.background;
+                const initials = person.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) || '??';
+                
+                row.querySelector('.as-avatar').textContent = initials;
+                document.getElementById('sp-share-' + rowId).textContent = pct.toFixed(1) + '%';
+                document.getElementById('sp-bar-' + rowId).style.width = pct + '%';
+                
+                if (pct > 0) {
+                    const seg = document.createElement('div');
+                    seg.className = 'as-progress-seg';
+                    seg.style.width = pct + '%';
+                    seg.style.backgroundColor = color;
+                    progBar.appendChild(seg);
+                    
+                    legend.innerHTML += `<div class="as-leg-item"><div class="as-leg-dot" style="background:${color}"></div> ${person} · ${pct.toFixed(0)}%</div>`;
+                }
+            });
         };
 
         function setupSplitDD(inputId, ddId, data) {
@@ -7162,26 +7494,32 @@
             function render() {
                 const q = inp.value.toLowerCase();
                 const filtered = data.filter(x => String(x).toLowerCase().includes(q));
-                dd.innerHTML = filtered.map(v => '<div class="fd-item" data-val="' + escH(v) + '" onmousedown="event.preventDefault();document.getElementById(\'' + inputId + '\').value=this.dataset.val;document.getElementById(\'' + ddId + '\').style.display=\'none\';">' + escH(v) + '</div>').join('');
-                dd.style.display = filtered.length ? 'block' : 'none';
+                const results = (q === '') ? data.slice(0, 40) : filtered;
+                dd.innerHTML = results.map(v => `<div class="fd-item" data-val="${escH(v)}" onmousedown="event.preventDefault(); selectSplitDD('${inputId}','${ddId}',this.dataset.val)">${escH(v)}</div>`).join('');
+                dd.style.display = results.length ? 'block' : 'none';
             }
             inp.oninput = render;
             inp.onfocus = render;
-            inp.onblur = () => setTimeout(() => { dd.style.display = 'none'; }, 160);
+            inp.onblur = () => setTimeout(() => { dd.style.display = 'none'; }, 180);
         }
 
-        window.splitEqually = function (e) {
-            if (e) e.preventDefault();
-            const rows = document.querySelectorAll('#split-rows-container .mini-form');
-            if (!rows.length) return;
-            const totalStr = document.getElementById('e-amt').value;
-            const total = Number(totalStr);
-            if (isNaN(total) || total <= 0) {
-                alert("Please enter a valid total amount first.");
-                return;
-            }
-            const perPerson = +(total / (rows.length + 1)).toFixed(2);
-            rows.forEach(r => { r.querySelector('.sp-amt').value = perPerson; });
+        window.selectSplitDD = function(inputId, ddId, val) {
+            const inp = document.getElementById(inputId), dd = document.getElementById(ddId);
+            inp.value = val;
+            dd.style.display = 'none';
+            updateSplitCalculations();
+        };
+
+        window.splitEqually = function(e) {
+            if(e) e.preventDefault();
+            const total = parseFloat(document.getElementById('e-amt').value) || 0;
+            const rows = document.querySelectorAll('.as-row');
+            if(rows.length === 0 || total === 0) return;
+            const share = (total / rows.length).toFixed(2);
+            rows.forEach(row => {
+                row.querySelector('.sp-amt').value = share;
+            });
+            updateSplitCalculations();
         };
 
         window.submitExp = async function (keepOpen = false) {
@@ -7195,7 +7533,7 @@
             const mainAmt = Math.abs(Number(gv('e-amt')));
             let remainingAmt = mainAmt;
 
-            const splitRows = document.querySelectorAll('#split-rows-container .mini-form');
+            const splitRows = document.querySelectorAll('.as-row');
             const extraEntries = [];
 
             for (const r of splitRows) {
