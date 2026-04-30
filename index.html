@@ -4370,12 +4370,6 @@
             gap: 6px;
         }
 
-        #page-accounts #bankList .bk-bal-label .bk-pill-30d {
-            font-size: 9px;
-            color: var(--t4);
-            font-weight: 700;
-            letter-spacing: 0.10em;
-        }
 
         #page-accounts #bankList .bk-bal {
             font-size: 26px;
@@ -5404,10 +5398,6 @@
                             </svg>
                             <span id="acc-period">—</span>
                         </div>
-                    </div>
-                    <div class="pill-btn">
-                        <div class="pill-dot"></div>
-                        <span>Period</span>
                     </div>
                 </div>
                 <div class="stats-row">
@@ -6521,7 +6511,7 @@
                     </div>
                     <div class="bk-body">
                         <div>
-                            <div class="bk-bal-label">Available Balance <span class="bk-pill-30d">· 30D</span></div>
+                            <div class="bk-bal-label">Available Balance</div>
                             <div class="bk-bal ${pos ? '' : 'neg'}">${rs(a.currentBalance || 0)}</div>
                             <div class="bk-trend ${trendCls}">${trendArrow} ${trend.pct >= 0 ? '+' : ''}${trend.pct.toFixed(1)}% this month</div>
                         </div>
