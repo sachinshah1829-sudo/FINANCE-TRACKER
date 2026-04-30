@@ -56,11 +56,6 @@
             --r-xl: 24px;
             --nav-w: 248px;
             --mob-nav-h: 72px;
-            --mob-safe-bottom: env(safe-area-inset-bottom, 16px);
-            --mob-safe-top: env(safe-area-inset-top, 0px);
-            --mob-tap-target: 48px;
-            --mob-card-radius: 20px;
-            --mob-page-pad: 16px;
             --t-fast: 0.14s ease;
             --t-spring: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
             --t-smooth: 0.2s ease;
@@ -3738,378 +3733,181 @@
         .mob-nav-label {
             font-size: 9px;
             font-weight: 600;
-            letter-spacing: 0.04        @media (max-width: 768px) {
-            body { display: block; overflow-x: hidden; }
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
 
-            /* Shell Layout */
+        .mob-nav-add {
+            background: var(--accent);
+            color: #fff !important;
+            border-radius: var(--r-sm);
+            margin: 10px 4px;
+            flex: 1;
+            box-shadow: 0 4px 14px rgba(201, 123, 75, 0.35);
+        }
+
+        .mob-nav-add.active {
+            color: #fff;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            body {
+                display: block;
+            }
+
             .mob-top-bar {
-                display: grid;
-                grid-template-columns: 1fr auto 1fr;
-                align-items: center;
-                height: 56px;
-                padding: 0 16px;
-                background: var(--bg);
-                border-bottom: 1px solid var(--border);
-                position: fixed;
-                top: 0; left: 0; right: 0;
-                z-index: 100;
-            }
-            .mtb-center { 
-                font-family: var(--font-big); 
-                font-size: 18px; 
-                font-weight: 700; 
-                text-align: center;
-            }
-            .mtb-avatar {
-                width: 32px; height: 32px;
-                background: var(--accent);
-                color: white;
-                border-radius: 50%;
-                display: flex; align-items: center; justify-content: center;
-                font-weight: 700;
-                margin-left: auto;
-            }
-            .period-pill {
-                background: var(--bg2);
-                padding: 6px 12px;
-                border-radius: 20px;
-                font-size: 11px;
-                font-weight: 700;
-                color: var(--t2);
-                border: 1px solid var(--border);
-                display: flex; align-items: center; gap: 4px;
+                display: flex;
             }
 
             .sidebar {
-                position: fixed;
-                bottom: 0; top: auto; left: 0; right: 0;
-                width: 100%; height: 75dvh;
-                transform: translateY(100%);
-                border-radius: 24px 24px 0 0;
-                z-index: 1000;
-                border: 1px solid var(--border);
-                border-bottom: none;
-                background: var(--surface);
-                transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+                transform: translateX(-100%);
+                box-shadow: 8px 0 32px rgba(0, 0, 0, 0.15);
+                z-index: 150;
+                border-right: none;
             }
-            .sidebar.mob-open { transform: translateY(0); }
-            .sidebar-overlay { z-index: 999; }
+
+            .sidebar.mob-open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
 
             .mob-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0; left: 0; right: 0;
-                height: calc(var(--mob-nav-h) + var(--mob-safe-bottom));
-                background: var(--surface);
-                border-top: 1px solid var(--border);
-                padding-bottom: var(--mob-safe-bottom);
-                z-index: 100;
-                box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+                display: none;
             }
-            .mob-nav-item {
-                flex: 1;
-                display: flex; flex-direction: column;
-                align-items: center; justify-content: center;
-                background: none; border: none;
-                color: var(--t3);
-                gap: 4px;
-                padding-top: 8px;
-                transition: var(--t-fast);
-            }
-            .mob-nav-item.active { color: var(--accent); }
-            .mob-nav-item svg { width: 22px; height: 22px; }
-            .mob-nav-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-            
-            .mob-nav-add {
-                position: relative;
-                top: -14px;
-            }
-            .mob-nav-add .mob-nav-icon {
-                background: var(--accent);
-                color: white;
-                width: 54px; height: 54px;
-                border-radius: 50%;
-                display: flex; align-items: center; justify-content: center;
-                box-shadow: 0 6px 16px rgba(201, 123, 75, 0.45);
-            }
-            .mob-nav-add .mob-nav-label { margin-top: 18px; }
 
             .main {
                 margin-left: 0;
-                padding-top: 56px;
-                padding-bottom: calc(var(--mob-nav-h) + var(--mob-safe-bottom) + 24px);
+                padding-bottom: 0;
+                padding-top: 60px;
             }
 
-            .page { padding: var(--mob-page-pad); width: 100%; }
+            .page {
+                padding: 1rem;
+                padding-top: 1.25rem;
+                width: 100%;
+            }
 
-            /* Bottom Sheets */
+            .pg-title {
+                font-size: 26px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.6rem;
+            }
+
+            .stats-row .stat-tile:last-child {
+                grid-column: 1/-1;
+            }
+
+            .stat-tile {
+                padding: 1rem;
+            }
+
+            .s-val {
+                font-size: 22px;
+            }
+
+            .acc-cols {
+                grid-template-columns: 1fr;
+            }
+
+            .ana-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .ana-span-6,
+            .ana-span-4,
+            .ana-span-10,
+            .ana-span-5 {
+                grid-column: span 1;
+            }
+
+            .pie-layout {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .v-bar-chart {
+                height: 180px;
+            }
+
+            .pie-layout {
+                flex-direction: column;
+            }
+
+            .ldr-hdr {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .ldr-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .ldr-stats .ldr-stat:last-child {
+                grid-column: 1/-1;
+            }
+
+            .add-tabs {
+                width: 100%;
+                display: flex;
+            }
+
+            .add-tab {
+                flex: 1;
+                text-align: center;
+                padding: 8px 4px;
+            }
+
             .modal-box {
+                border-radius: var(--r-lg) var(--r-lg) 0 0;
                 position: fixed;
-                bottom: 0; left: 0; right: 0;
-                width: 100%; max-width: 100%;
-                max-height: 92dvh;
-                border-radius: 24px 24px 0 0;
-                transform: translateY(100%);
-                transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-                border: none;
-            }
-            .modal-ov.open .modal-box { transform: translateY(0); }
-            .modal-drag-handle {
-                width: 36px; height: 4px;
-                background: var(--border-strong);
-                border-radius: 2px;
-                margin: 10px auto 0;
-                display: block;
-            }
-            .sidebar .modal-drag-handle { display: none; }
-            @media (max-width: 768px) {
-                .sidebar .modal-drag-handle { display: block; }
-                .sidebar .sb-logo, .sidebar .sb-nav, .sidebar [style*="WORKSPACE"] { display: none; }
-                .sidebar .sb-period { margin-top: 20px; }
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-width: 100%;
+                transform: translateY(20px);
             }
 
-            /* Touch states */
-            @media (hover: none) {
-                .nav-item:active, .mob-nav-item:active, .ae-acc-card:active, .acc-item:active, .cs-chip:active, .stat-tile:active, .act-btn:active {
-                    transform: scale(0.96);
-                    opacity: 0.85;
-                }
+            .modal-ov.open .modal-box {
+                transform: translateY(0);
             }
 
-            /* Typo Scale */
-            .pg-title { font-size: 22px; }
-            .s-val { font-size: 24px; }
-            .bk-bal { font-size: 22px; }
-            .ae-amt-input { font-size: 36px; }
-            .ldr-title { font-size: 20px; }
-            
-            /* AI Chat Mobile Redesign */
-            .chat-page { height: calc(100dvh - 56px - var(--mob-nav-h) - var(--mob-safe-bottom)); margin: 0; }
-            .chat-header-new { display: none; }
-            .chat-suggested { margin: 0 calc(-1 * var(--mob-page-pad)) 1rem; padding: 0 var(--mob-page-pad); overflow-x: auto; scrollbar-width: none; }
-            .chat-suggested::-webkit-scrollbar { display: none; }
-            .cs-chips { flex-wrap: nowrap; gap: 8px; padding-bottom: 4px; }
-            .cs-chip { flex-shrink: 0; font-size: 12px; padding: 10px 16px; border-radius: 20px; }
-            
-            #chatHistory { padding-bottom: 80px; gap: 1rem; }
-            .msg-row { gap: 10px; }
-            .msg-ava { display: none; }
-            .msg-content-wrapper { max-width: 90%; }
-            .msg-bubble { font-size: 14px; padding: 12px 16px; border-radius: 16px; }
-            .msg-row.ai .msg-bubble { border-radius: 16px 16px 16px 4px; }
-            .msg-row.user .msg-bubble { border-radius: 16px 16px 4px 16px; background: var(--accent-bg); border-color: rgba(201, 123, 75, 0.2); }
-            
-            .chat-input-wrap {
-                position: fixed;
-                bottom: calc(var(--mob-nav-h) + var(--mob-safe-bottom));
-                left: 0; right: 0;
-                margin: 0;
-                border-radius: 0;
-                border-left: none; border-right: none;
-                padding: 12px 16px;
-                padding-bottom: 12px;
-                z-index: 101;
-                background: var(--surface);
+            .mini-form-row {
+                flex-direction: column;
             }
-            .chat-input-wrap input { font-size: 16px; }
-            
-            .ai-action-row { flex-direction: column; }
-            .draft-btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; }
 
-            /* Add Entry Mobile Redesign */
-            #page-add .pg-header { display: none; }
-            .add-tabs { 
-                position: sticky; top: -16px; z-index: 10;
-                background: var(--bg);
-                padding: 12px 16px; border-bottom: 1px solid var(--border);
-                margin: -16px -16px 16px;
-                display: flex; gap: 8px;
+            .mini-input,
+            .mini-select {
+                min-width: unset;
+                width: 100%;
             }
-            .add-tab { 
-                flex: 1; height: 44px; display: flex; align-items: center; justify-content: center;
-                border-radius: 12px; background: var(--surface); color: var(--t3);
-                font-size: 13px; font-weight: 700; border: 1px solid var(--border);
-                transition: var(--t-fast);
-            }
-            .add-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
-            
-            .ae-group { margin-bottom: 24px; }
-            .ae-group-hdr { margin-bottom: 8px; }
-            .ae-lbl { font-size: 10px; letter-spacing: 0.1em; color: var(--t3); text-transform: uppercase; }
-            
-            .ae-acc-row { 
-                display: flex; overflow-x: auto; scrollbar-width: none; 
-                margin: 0 calc(-1 * var(--mob-page-pad)); padding: 0 var(--mob-page-pad); gap: 10px;
-                scroll-snap-type: x mandatory;
-            }
-            .ae-acc-row::-webkit-scrollbar { display: none; }
-            .ae-acc-card { 
-                flex-shrink: 0; min-width: 140px; padding: 16px;
-                border-radius: 20px; background: var(--surface); border: 2px solid var(--border);
-                scroll-snap-align: start;
-                transition: var(--t-fast);
-            }
-            .ae-acc-card.active { border-color: var(--accent); background: var(--accent-bg); }
-            
-            .ae-amt-wrap { 
-                justify-content: center; margin: 32px 0; border: none !important; background: transparent !important; 
-                padding: 0 !important;
-            }
-            .ae-amt-sym { font-size: 32px; color: var(--t4); margin-right: 8px; }
-            .ae-amt-input { 
-                font-size: 44px; text-align: center; border-radius: 0;
-                border-bottom: 2px solid var(--border-strong) !important; width: 100%; 
-                max-width: 240px;
-                background: transparent !important;
-            }
-            
-            .ae-grid-2 { grid-template-columns: 1fr; gap: 20px; }
-            
-            .ae-cat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-            .ae-chip.is-cat {
-                padding: 10px 14px;
-                border-radius: 14px;
-                background: var(--surface);
-                border: 1.5px solid var(--border);
-                display: flex; align-items: center;
-                font-size: 12px; font-weight: 700;
-                transition: var(--t-fast);
-            }
-            .ae-chip.is-cat.active {
-                background: var(--accent-bg);
-                border-color: var(--accent);
-                color: var(--accent);
-            }
-            
-            .ae-btn-row {
-                position: sticky; bottom: calc(-1 * var(--mob-page-pad));
-                margin: 40px calc(-1 * var(--mob-page-pad)) 0; padding: 16px;
-                background: var(--bg); border-top: 1px solid var(--border);
-                z-index: 5;
-            }
-            .ae-btn { height: 54px; border-radius: 16px; font-size: 16px; font-weight: 700; margin-bottom: 12px; width: 100%; }
-            .ae-btn-primary { box-shadow: 0 8px 24px rgba(201, 123, 75, 0.3); }
-            .ae-btn-sec { border: none; background: transparent; color: var(--t3); text-decoration: underline; font-size: 13px; }
-
-            /* Accounts Mobile Redesign */
-            #page-accounts .pg-header { display: none; }
-            #page-accounts .stats-row { 
-                display: flex; overflow-x: auto; scrollbar-width: none; 
-                margin: 0 calc(-1 * var(--mob-page-pad)) 24px; padding: 0 var(--mob-page-pad); gap: 12px;
-                scroll-snap-type: x mandatory;
-            }
-            #page-accounts .stats-row::-webkit-scrollbar { display: none; }
-            #page-accounts .stat-tile { 
-                flex-shrink: 0; min-width: 180px; padding: 20px;
-                border-radius: 24px; border: 1.5px solid var(--border);
-                scroll-snap-align: start;
-                background: var(--surface);
-            }
-            
-            .acc-tabs { 
-                margin: 0 calc(-1 * var(--mob-page-pad)) 20px; 
-                border-bottom: 1px solid var(--border); 
-                background: var(--bg);
-                position: sticky; top: 40px; z-index: 5;
-            }
-            .acc-tab { font-size: 11px; padding: 16px 4px; font-weight: 700; letter-spacing: 0.05em; }
-            
-            .acc-cols { grid-template-columns: 1fr; gap: 16px; }
-            .bk-card { border-radius: 24px; padding: 20px; width: 100%; margin: 0; }
-            .bk-spark { display: none; }
-            
-            #personList { 
-                display: grid !important;
-                grid-template-columns: 1fr 1fr; 
-                gap: 12px; 
-            }
-            .ps-card { padding: 16px; border-radius: 20px; border: 1.5px solid var(--border); }
-
-            /* Analytics Mobile Redesign */
-            #page-analytics .pg-header { display: none; }
-            .ana-grid { grid-template-columns: 1fr !important; gap: 16px; display: flex; flex-direction: column; }
-            .ana-span-10, .ana-span-5, .ana-span-6, .ana-span-4 { grid-column: span 1 !important; width: 100%; }
-            
-            #ai-insights-grid { 
-                grid-template-columns: 1fr 1fr !important; 
-                gap: 10px !important; 
-                margin-bottom: 8px;
-            }
-            .ai-ins-card { padding: 12px !important; border-radius: 20px !important; height: 80px; }
-            .ai-ins-val { font-size: 18px !important; }
-            .ai-ins-lbl { font-size: 10px !important; margin-bottom: 2px !important; }
-            
-            .ana-card { border-radius: 24px; padding: 20px; border: 1.5px solid var(--border); }
-            .pie-layout { flex-direction: column !important; gap: 24px !important; }
-            #pieCanvas { width: 180px !important; height: 180px !important; }
-            
-            .v-bar-chart { height: 160px; overflow-x: auto; scrollbar-width: none; display: flex; align-items: flex-end; gap: 12px; }
-            .v-bar-chart::-webkit-scrollbar { display: none; }
-            .v-bar-item { flex-shrink: 0; min-width: 32px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
-            
-            .cal-grid { gap: 4px !important; }
-            .cal-cell { width: auto !important; height: auto !important; aspect-ratio: 1; }
-            .br-track.thick { height: 24px; }
-
-            /* Transaction Cards */
-            .txn-card-list { display: flex; flex-direction: column; gap: 10px; }
-            .txn-card-row {
-                background: var(--surface);
-                padding: 16px;
-                border-radius: 20px;
-                border: 1.5px solid var(--border);
-                display: flex; gap: 14px; align-items: center;
-                transition: var(--t-fast);
-            }
-            .txn-card-row:active { transform: scale(0.97); opacity: 0.9; }
-            .tcr-icon {
-                width: 42px; height: 42px;
-                border-radius: 14px;
-                background: var(--bg2);
-                color: var(--accent);
-                display: flex; align-items: center; justify-content: center;
-                font-size: 20px; font-weight: 700; flex-shrink: 0;
-            }
-            .tcr-main { flex: 1; min-width: 0; }
-            .tcr-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-            .tcr-item { font-size: 15px; font-weight: 700; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .tcr-amt { font-size: 15px; font-weight: 700; }
-            .tcr-amt.pos { color: var(--green); }
-            .tcr-amt.neg { color: var(--red); }
-            .tcr-bot { display: flex; justify-content: space-between; align-items: center; }
-            .tcr-meta { font-size: 12px; color: var(--t3); font-weight: 600; }
-            .tcr-bal { font-size: 12px; color: var(--t4); font-family: var(--font-big); }
 
             #toast {
-                bottom: calc(var(--mob-nav-h) + var(--mob-safe-bottom) + 16px);
+                bottom: calc(var(--mob-nav-h) + 12px + env(safe-area-inset-bottom, 0px));
             }
-
-            /* Ledger & Transactions Mobile Redesign */
-            #page-ledger .pg-header, #page-transactions .pg-header { display: none; }
-            .ldr-stats { 
-                grid-template-columns: 1fr 1fr 1fr !important; 
-                gap: 8px !important; 
-                margin: 0 0 20px 0 !important; 
-                padding: 0 !important; 
-                background: none !important; 
-                border: none !important;
-            }
-            .ldr-stat { padding: 12px !important; border-radius: 16px !important; border: 1.5px solid var(--border) !important; background: var(--surface) !important; }
-            .ldr-stat-lbl { font-size: 9px !important; margin-bottom: 4px !important; }
-            .ldr-stat-val { font-size: 13px !important; font-weight: 700 !important; }
-            
-            .txn-search-inp { height: 48px !important; border-radius: 14px !important; }
-            .txn-clr-btn { height: 48px !important; border-radius: 14px !important; width: 100% !important; justify-content: center !important; }
-            .card-p { background: none !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
-            .card-p > div { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
-            
-            #page-ledger .ldr-hdr-acts { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 16px; }
-            #page-ledger .ldr-hdr-acts button { width: 100% !important; height: 48px !important; border-radius: 14px !important; margin: 0 !important; }
-            
-            #txnListWrap, #ldrTblWrap { background: none !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
         }
-        .modal-drag-handle { display: none; }
 
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .ldr-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-tile:last-child {
+                grid-column: auto;
+            }
+        }
 
         /* ─── FILTER MODAL ─── */
         .f-modal-box {
@@ -5155,16 +4953,12 @@
     <!-- ═══════════════════ APP SHELL ═══════════════════ -->
     <div id="appShell" class="hidden">
         <div class="mob-top-bar" id="mobTopBar">
-            <div class="mtb-left" id="mtb-left"></div>
-            <div class="mtb-center" id="mtb-center">ट्रैकर.इन</div>
-            <div class="mtb-right" id="mtb-right">
-                <div class="mtb-avatar" id="mtb-profile" onclick="toggleSidebar()">U</div>
-            </div>
+            <div class="mtb-title">ट्रैकर.इन</div>
+            <div class="mtb-profile" id="mtb-profile" onclick="toggleSidebar()">U</div>
         </div>
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
         <nav class="sidebar" id="sidebar">
-            <div class="modal-drag-handle"></div>
             <div class="sb-logo" style="display:flex; align-items:center; gap:16px; padding: 1.25rem 1.25rem 1.5rem; border:none;">
                 <div style="background:var(--accent); color:white; width:34px; height:34px; border-radius:0; display:flex; align-items:center; justify-content:center; font-family:'Courier Prime', monospace; font-size:20px; font-weight:700; font-style:italic; box-shadow: 0 4px 12px rgba(201, 123, 75, 0.25);">f</div>
                 <div style="display:flex; flex-direction:column; justify-content:center;">
@@ -5952,23 +5746,24 @@
         <!-- MOBILE BOTTOM NAV -->
         <nav class="mob-nav" id="mobNav">
             <button class="mob-nav-item active" id="mobnav-aichat" onclick="nav('aichat',null);updateMobNav('aichat')">
-                <div class="mob-nav-icon"><i data-lucide="sparkles"></i></div>
-                <div class="mob-nav-label">AI</div>
+                <div class="mob-nav-icon">✦</div>
+                <div class="mob-nav-label">AI Assist</div>
             </button>
             <button class="mob-nav-item" id="mobnav-accounts" onclick="nav('accounts',null);updateMobNav('accounts')">
-                <div class="mob-nav-icon"><i data-lucide="layout-grid"></i></div>
-                <div class="mob-nav-label">Accts</div>
+                <div class="mob-nav-icon">▦</div>
+                <div class="mob-nav-label">Accounts</div>
             </button>
-            <button class="mob-nav-item mob-nav-add" id="mobnav-add" onclick="nav('add',null);updateMobNav('add')">
-                <div class="mob-nav-icon"><i data-lucide="plus"></i></div>
-                <div class="mob-nav-label">Add</div>
+            <button class="mob-nav-item" id="mobnav-analytics"
+                onclick="nav('analytics',null);updateMobNav('analytics')">
+                <div class="mob-nav-icon">◈</div>
+                <div class="mob-nav-label">Analytics</div>
             </button>
             <button class="mob-nav-item" id="mobnav-ledger" onclick="nav('ledger',null);updateMobNav('ledger')">
-                <div class="mob-nav-icon"><i data-lucide="menu"></i></div>
+                <div class="mob-nav-icon">≡</div>
                 <div class="mob-nav-label">Ledger</div>
             </button>
             <button class="mob-nav-item" id="mobnav-more" onclick="toggleSidebar()">
-                <div class="mob-nav-icon"><i data-lucide="more-horizontal"></i></div>
+                <div class="mob-nav-icon">⋯</div>
                 <div class="mob-nav-label">More</div>
             </button>
         </nav>
@@ -6426,13 +6221,7 @@
             }).join('');
         }
 
-        window.onPeriodChange = async function () { 
-            curM = +document.getElementById('monthSel').value; 
-            curY = +document.getElementById('yearSel').value; 
-            await loadPeriodData(); 
-            const activePage = document.querySelector('.page.active')?.id.replace('page-', '') || 'aichat';
-            updateMobTopBar(activePage);
-        };
+        window.onPeriodChange = async function () { curM = +document.getElementById('monthSel').value; curY = +document.getElementById('yearSel').value; await loadPeriodData(); };
 
         /* ═══ NAV ═══ */
         window.nav = function (name, el) {
@@ -6444,10 +6233,6 @@
             if (targetPage) targetPage.classList.add('active');
             document.getElementById('mainArea').scrollTop = 0;
             closeSidebar();
-
-            updateMobNav(name);
-            updateMobTopBar(name);
-
             if (name === 'manage') renderManage();
             if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
@@ -6455,37 +6240,7 @@
                 updateApiKeyStatus();
                 document.getElementById('chatInput').focus();
             }
-            if (window.lucide) lucide.createIcons();
         };
-
-        function updateMobTopBar(pageName) {
-            const center = document.getElementById('mtb-center');
-            const left = document.getElementById('mtb-left');
-            if (!center || !left) return;
-
-            const titles = {
-                'aichat': 'ट्रैकर.इन',
-                'add': 'Add Entry',
-                'accounts': 'Accounts',
-                'analytics': 'Analytics',
-                'ledger': 'Ledger',
-                'transactions': 'Transactions',
-                'manage': 'Manage'
-            };
-            center.textContent = titles[pageName] || 'ट्रैकर.इन';
-            
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const periodStr = `${monthNames[curM-1]} '${curY.toString().slice(-2)}`;
-            
-            if (pageName === 'add') {
-                left.innerHTML = `<button onclick="nav('aichat')" style="background:none; border:none; color:var(--t3); display:flex; align-items:center;"><i data-lucide="arrow-left"></i></button>`;
-            } else if (pageName === 'manage') {
-                left.innerHTML = '';
-            } else {
-                left.innerHTML = `<div class="period-pill" onclick="toggleSidebar()"><span>${periodStr}</span><i data-lucide="chevron-down" style="width:12px; height:12px;"></i></div>`;
-            }
-            if (window.lucide) lucide.createIcons();
-        }
         window.toggleSidebar = () => {
             document.getElementById('sidebar').classList.toggle('mob-open');
             document.getElementById('sbOverlay').classList.toggle('show');
@@ -7263,37 +7018,12 @@
         window.loadLedger = loadLedger;
 
         function renderLedger(rows) {
-            const wrap = document.getElementById('ldrTblWrap');
-            if (!wrap) return;
-            if (!rows || !rows.length) {
-                wrap.innerHTML = '<div class="empty-s">No matching transactions for the selected filters this period.</div>';
-                return;
-            }
-
-            if (window.innerWidth <= 768) {
-                let h = '<div class="txn-card-list">';
-                rows.forEach((r, i) => {
-                    const amt = Number(r.amount), pos = amt >= 0;
-                    h += `<div class="txn-card-row" onclick="openTxnEdit(event,'${r.id}')">
-                        <div class="tcr-icon">${r.category?.charAt(0) || '?'}</div>
-                        <div class="tcr-main">
-                            <div class="tcr-top">
-                                <span class="tcr-item">${escH(r.item || '—')}</span>
-                                <span class="tcr-amt ${pos ? 'pos' : 'neg'}">${pos ? '+' : ''}${rs(amt)}</span>
-                            </div>
-                            <div class="tcr-bot">
-                                <span class="tcr-meta">${escH(r.account)} · ${fmtDate(r.date)}</span>
-                                <span class="tcr-bal">${rs(r.closingBalance || 0)}</span>
-                            </div>
-                        </div>
-                    </div>`;
-                });
-                h += '</div>';
-                wrap.innerHTML = h;
-                return;
-            }
-
             const accs = _ldrMselState.account;
+            if (!rows || !rows.length) {
+                document.getElementById('ldrTblWrap').innerHTML = '<div class="empty-s">No matching transactions for the selected filters this period.</div>';
+                return;
+            }
+
             const isMulti = accs.size > 1;
             const tableHdr = `
                 <div class="tbl-scroll-wrap">
@@ -7312,7 +7042,7 @@
                         <tbody>
             `;
 
-            wrap.innerHTML = tableHdr + rows.map((r, i) => {
+            document.getElementById('ldrTblWrap').innerHTML = tableHdr + rows.map((r, i) => {
                 const amt = Number(r.amount), cls = amt >= 0 ? 'td-pos' : 'td-neg';
                 return `<tr class="txn-tr" style="animation-delay:${Math.min(i, 25) * 0.022}s">
                     <td class="td-date">${fmtDate(r.date)}</td>
@@ -7542,10 +7272,8 @@
 
             renderQuickChips('e-tpl-chips', expTplNames.slice(0, 4), 'e-tpl');
 
-            // For categories, pick top used
-            const catUsage = {};
-            txns.forEach(t => { if (t.category) catUsage[t.category] = (catUsage[t.category] || 0) + 1; });
-            const topExpCats = expCats.sort((a,b) => (catUsage[b]||0) - (catUsage[a]||0)).slice(0, 8);
+            // For categories, pick top 6 used, or just first 6
+            const topExpCats = expCats.slice(0, 6);
             renderQuickChips('e-cat-chips', topExpCats, 'e-cat', true);
         }
 
@@ -7610,32 +7338,19 @@
             hidden.value = el.dataset.name;
         };
 
-        function renderQuickChips(containerId, items, targetInputId, isCat = false) {
+        function renderQuickChips(containerId, items, targetInputId, isHash = false) {
             const container = document.getElementById(containerId);
             const input = document.getElementById(targetInputId);
             if (!container || !input) return;
 
             let html = '';
             items.forEach(item => {
-                let icon = '';
-                if (isCat) {
-                    const cat = _categories.find(c => c.name === item);
-                    const iconStr = cat?.icon || '📦';
-                    if (/^[a-z\-]+$/.test(iconStr) && iconStr.length > 2) {
-                        icon = `<i data-lucide="${iconStr}" style="width:14px;height:14px;margin-right:6px;opacity:0.8;"></i>`;
-                    } else {
-                        icon = `<span style="margin-right:6px; font-size:12px;">${iconStr}</span>`;
-                    }
-                } else {
-                    icon = `<span style="color:var(--accent); margin-right:4px;">•</span>`;
-                }
-
-                html += `<div class="ae-chip ${isCat ? 'is-cat' : ''}" onclick="selectQuickChip(this, '${targetInputId}', '${escH(item)}')">
-                    ${icon} <span>${escH(item)}</span>
+                const prefix = isHash ? '#' : '•';
+                html += `<div class="ae-chip" onclick="selectQuickChip(this, '${targetInputId}', '${escH(item)}')">
+                    <span style="color:#c36c4b">${prefix}</span> ${escH(item)}
                 </div>`;
             });
             container.innerHTML = html;
-            if (window.lucide) lucide.createIcons();
         }
 
         window.selectQuickChip = function (el, targetInputId, val) {
@@ -7677,7 +7392,7 @@
                     const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ model: 'llama-3.1-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.1 })
+                        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.1 })
                     });
                     if (resp.ok) {
                         const json = await resp.json();
@@ -8723,31 +8438,6 @@
             if (!rows || !rows.length) { wrap.innerHTML = '<div class="empty-s">No transactions match the filters.</div>'; return; }
             const CHUNK = 200;
             const visible = rows.slice(0, CHUNK);
-            
-            if (window.innerWidth <= 768) {
-                let h = '<div class="txn-card-list">';
-                visible.forEach((r, i) => {
-                    const amt = Number(r.amount), pos = amt >= 0;
-                    h += `<div class="txn-card-row" onclick="openTxnEdit(event,'${r.id}')">
-                        <div class="tcr-icon">${r.category?.charAt(0) || '?'}</div>
-                        <div class="tcr-main">
-                            <div class="tcr-top">
-                                <span class="tcr-item">${escH(r.item || '—')}</span>
-                                <span class="tcr-amt ${pos ? 'pos' : 'neg'}">${pos ? '+' : ''}${rs(amt)}</span>
-                            </div>
-                            <div class="tcr-bot">
-                                <span class="tcr-meta">${escH(r.account)} · ${fmtDate(r.date)}</span>
-                                <span class="tcr-bal">${rs(r.closingBalance || 0)}</span>
-                            </div>
-                        </div>
-                    </div>`;
-                });
-                if (rows.length > CHUNK) h += `<div class="empty-s" style="padding:20px">... and ${rows.length - CHUNK} more.</div>`;
-                h += '</div>';
-                wrap.innerHTML = h;
-                return;
-            }
-
             let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:40px;text-align:center"></th></tr></thead><tbody>';
             visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Click to edit"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button></td></tr>'; });
             if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:\'Courier Prime\',monospace">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
