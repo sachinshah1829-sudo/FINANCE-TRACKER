@@ -6086,8 +6086,8 @@
             document.getElementById('monthSel').value = curM;
             const ys = document.getElementById('yearSel'); ys.innerHTML = '';
             for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
-            await loadAllData();
             setupSidebarSwipe();
+            await loadAllData();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { ['personModal', 'dayModal', 'accModal', 'editModal', 'txnEditModal'].forEach(closeM); } });
             document.addEventListener('click', e => { if (!e.target.closest('.txn-msel-wrap')) ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.style.display = 'none'; }); });
         }
@@ -6269,6 +6269,7 @@
             if (name === 'manage') renderManage();
             if (name === 'templates') renderTemplatesPage();
             if (name === 'transactions') loadTransactionsPage();
+            if (name === 'ledger') loadLedger();
             if (name === 'aichat') {
                 updateApiKeyStatus();
                 document.getElementById('chatInput').focus();
@@ -7131,10 +7132,15 @@
         }
 
         window.downloadLedgerPDF = function () {
-            const acc = document.getElementById('ldrAccSel').value || 'Ledger';
+            const accs = [..._ldrMselState.account];
+            const acc = accs.length === 1 ? accs[0] : (accs.length + ' Accounts');
             const period = document.getElementById('acc-period')?.textContent || '';
-            const typeLbl = document.getElementById('msel-ldr-type-label').textContent;
-            const catLbl = document.getElementById('msel-ldr-cat-label').textContent;
+
+            const typeArr = [..._ldrMselState.type];
+            const typeLbl = typeArr.length ? typeArr.join(', ') : 'All Types';
+
+            const catArr = [..._ldrMselState.cat];
+            const catLbl = catArr.length ? catArr.join(', ') : 'All Categories';
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
