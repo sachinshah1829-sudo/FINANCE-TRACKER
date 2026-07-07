@@ -7374,10 +7374,10 @@
 
             // Smart Suggestions: Merge collections with recent transaction history
             const itemColl = _items.map(i => i.value);
-            const recentItems = [...new Set([...itemColl, ...txns.map(t => t.item)])].filter(Boolean).reverse().slice(0, 40);
+            const recentItems = [...new Set([...itemColl, ...txns.map(t => t.item)])].filter(Boolean).reverse();
 
             const peopleColl = _people.map(p => p.value);
-            const recentPeople = [...new Set([...peopleColl, ...txns.map(t => t.toFrom)])].filter(Boolean).reverse().slice(0, 40);
+            const recentPeople = [...new Set([...peopleColl, ...txns.map(t => t.toFrom)])].filter(Boolean).reverse();
 
             const sortTpls = (tpls) => {
                 return tpls.map(tpl => {
@@ -7690,7 +7690,7 @@
             // Setup dropdowns using consolidated smart suggestion lists
             const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
             const catNames = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
-            const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse().slice(0, 40);
+            const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse();
 
             setupSplitDD('sp-person-' + rowId, 'sp-dd-person-' + rowId, personAccNames);
             setupSplitDD('sp-cat-' + rowId, 'sp-dd-cat-' + rowId, catNames);
