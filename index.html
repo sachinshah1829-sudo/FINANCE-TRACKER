@@ -8426,12 +8426,25 @@
             list.innerHTML = filtered.map(r => {
                 const isExp = r.type === 'EXPENSE';
                 const details = [r.account, r.category, r.amount ? rs(r.amount) : ''].filter(Boolean).join(' · ');
+                let splitHtml = '';
+                if (r.splits && Array.isArray(r.splits) && r.splits.length > 0) {
+                    const splitText = r.splits.map(s => {
+                        const parts = [];
+                        if (s.person) parts.push(s.person);
+                        if (s.amt) parts.push(`₹${s.amt}`);
+                        return parts.join(' ');
+                    }).filter(Boolean).join(' · ');
+                    if (splitText) {
+                        splitHtml = `<div class="tpl-detail" style="margin-top: 4px; color: var(--accent); font-weight: 600; font-size: 11px;">✂ Split: ${escH(splitText)}</div>`;
+                    }
+                }
                 return `
                     <div class="tpl-item ${isExp ? 'exp' : 'inc'}" onclick="editTpl('${r.id}')">
                         <div class="tpl-ico">${isExp ? '↓' : '↑'}</div>
                         <div style="flex:1; min-width:0;">
                             <div class="tpl-name">${escH(r.name || '')}</div>
                             <div class="tpl-detail">${escH(details)}</div>
+                            ${splitHtml}
                         </div>
                         <div class="mgmt-item-btns" onclick="event.stopPropagation()">
                             <button class="act-btn" onclick="editTpl('${r.id}')" title="Edit">✎</button>
