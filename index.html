@@ -2372,11 +2372,13 @@
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
         }
+
         .health-item {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
+
         .health-lbl {
             font-size: 10px;
             font-weight: 700;
@@ -2384,6 +2386,7 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
+
         .health-val {
             font-size: 18px;
             font-weight: 800;
@@ -2391,6 +2394,7 @@
             font-family: var(--font-big);
             letter-spacing: -0.02em;
         }
+
         .health-sub {
             font-size: 11px;
             color: var(--t3);
@@ -3904,7 +3908,7 @@
                 background: white;
                 padding: 12px 16px;
                 z-index: 1000;
-                box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
             }
 
             #chatHistory {
@@ -5044,50 +5048,88 @@
         <div class="sidebar-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 
         <nav class="sidebar" id="sidebar">
-            <div class="sb-logo" style="display:flex; align-items:center; gap:16px; padding: 1.25rem 1.25rem 1.5rem; border:none;">
-                <div style="background:var(--accent); color:white; width:34px; height:34px; border-radius:0; display:flex; align-items:center; justify-content:center; font-family:'Courier Prime', monospace; font-size:20px; font-weight:700; font-style:italic; box-shadow: 0 4px 12px rgba(201, 123, 75, 0.25);">f</div>
+            <div class="sb-logo"
+                style="display:flex; align-items:center; gap:16px; padding: 1.25rem 1.25rem 1.5rem; border:none;">
+                <div
+                    style="background:var(--accent); color:white; width:34px; height:34px; border-radius:0; display:flex; align-items:center; justify-content:center; font-family:'Courier Prime', monospace; font-size:20px; font-weight:700; font-style:italic; box-shadow: 0 4px 12px rgba(201, 123, 75, 0.25);">
+                    f</div>
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <div class="sb-title" style="font-size:25px; line-height:1; letter-spacing:-0.03em;">ट्रैकर.इन</div>
                 </div>
             </div>
 
-            <div style="padding: 0 1.25rem; font-size: 10px; font-weight: 700; color: var(--t4); letter-spacing: 0.18em; margin-bottom: 0.75rem; text-transform: uppercase;">WORKSPACE</div>
+            <div
+                style="padding: 0 1.25rem; font-size: 10px; font-weight: 700; color: var(--t4); letter-spacing: 0.18em; margin-bottom: 0.75rem; text-transform: uppercase;">
+                WORKSPACE</div>
 
             <div class="sb-nav">
                 <div class="nav-item active" id="nav-aichat" onclick="nav('aichat',this)">
                     <div class="nav-ico">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                        </svg>
                     </div>AI Assistant
                 </div>
                 <div class="nav-item" id="nav-add" onclick="nav('add',this)">
                     <div class="nav-ico">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="16" />
+                            <line x1="8" y1="12" x2="16" y2="12" />
+                        </svg>
                     </div>Add Entry
                 </div>
                 <div class="nav-item" id="nav-accounts" onclick="nav('accounts',this)">
                     <div class="nav-ico">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                            <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+                        </svg>
                     </div>Accounts
                 </div>
                 <div class="nav-item" id="nav-analytics" onclick="nav('analytics',this)">
                     <div class="nav-ico">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10" />
+                            <line x1="12" y1="20" x2="12" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="14" />
+                        </svg>
                     </div>Analytics
                 </div>
                 <div class="nav-item" id="nav-transactions" onclick="nav('transactions',this)">
                     <div class="nav-ico">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17V7"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z" />
+                            <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+                            <path d="M12 17V7" />
+                        </svg>
                     </div>Transactions
                     <div class="nav-badge" id="nav-txn-count" style="display:none;">0</div>
                 </div>
                 <div class="nav-item" id="nav-ledger" onclick="nav('ledger',this)">
                     <div class="nav-ico">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
                     </div>Ledger
                 </div>
                 <div class="nav-item" id="nav-manage" onclick="nav('manage',this)">
                     <div class="nav-ico">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
                     </div>Manage
                 </div>
             </div>
@@ -5152,7 +5194,9 @@
                             <div class="msg-ava ai">f</div>
                             <div class="msg-content-wrapper">
                                 <div class="msg-meta">Tracker AI <span class="time">— Now</span></div>
-                                <div class="msg-bubble">Hi Sachin - I'm your financial assistant. Paste a bank SMS or describe an expense and I'll log it for you. You can also ask things like "how much did I spend on food in April?" or "what's draining my budget?"</div>
+                                <div class="msg-bubble">Hi Sachin - I'm your financial assistant. Paste a bank SMS or
+                                    describe an expense and I'll log it for you. You can also ask things like "how much
+                                    did I spend on food in April?" or "what's draining my budget?"</div>
                             </div>
                         </div>
                     </div>
@@ -5716,8 +5760,8 @@
                     </div>
                 </div>
                 <div class="card card-p" style="margin-bottom:16px;">
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <div style="flex:1; position:relative;">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap: wrap;">
+                        <div style="flex:1; min-width: 200px; position:relative;">
                             <input class="txn-search-inp" id="txn-search" placeholder="Search transactions…"
                                 oninput="filterTxns()" style="padding-left:38px;">
                             <div
@@ -5729,6 +5773,14 @@
                                 </svg>
                             </div>
                         </div>
+                        <button class="txn-clr-btn" id="txn-select-mode-btn" onclick="toggleTxnSelectMode()"
+                            style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
+                            <span>Select</span>
+                        </button>
+                        <button class="txn-clr-btn" id="txn-bulk-delete-btn" onclick="bulkDeleteTxns()"
+                            style="display:none; align-items:center; gap:8px; padding: 10px 18px; border-color:var(--red); color:var(--red);">
+                            <span>Delete Selected (<span id="txn-selected-count">0</span>)</span>
+                        </button>
                         <button class="txn-clr-btn" onclick="openFilterModal()"
                             style="display:flex; align-items:center; gap:8px; padding: 10px 18px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -6769,7 +6821,7 @@
             const netCashFlow = income - expense;
             const savingsRate = income > 0 ? ((income - expense) / income * 100) : 0;
             const expenseRatio = income > 0 ? (expense / income * 100) : 0;
-            
+
             // Current day in month for averages (avoid division by zero)
             const today = new Date();
             const dayOfMonth = (curM === today.getMonth() + 1 && curY === today.getFullYear()) ? today.getDate() : daysInMonth;
@@ -7884,17 +7936,17 @@
 
                 const getIcon = (iconStr, col) => {
                     if (!iconStr || iconStr === '📦') {
-                         // Auto-map common ones if no specific icon stored
-                         const n = c.name.toUpperCase();
-                         if (n.includes('FOOD') || n.includes('DINE')) return `<i data-lucide="utensils" style="width:18px;height:18px;color:${col}"></i>`;
-                         if (n.includes('TRAVEL')) return `<i data-lucide="plane" style="width:18px;height:18px;color:${col}"></i>`;
-                         if (n.includes('HEALTH')) return `<i data-lucide="heart" style="width:18px;height:18px;color:${col}"></i>`;
-                         if (n.includes('BANK') || n.includes('FINANCE')) return `<i data-lucide="wallet" style="width:18px;height:18px;color:${col}"></i>`;
-                         if (n.includes('BILL')) return `<i data-lucide="receipt" style="width:18px;height:18px;color:${col}"></i>`;
-                         if (n.includes('SHOP') || n.includes('FASHION')) return `<i data-lucide="shopping-bag" style="width:18px;height:18px;color:${col}"></i>`;
-                         if (n.includes('INVEST')) return `<i data-lucide="trending-up" style="width:18px;height:18px;color:${col}"></i>`;
-                         if (n.includes('TECH')) return `<i data-lucide="cpu" style="width:18px;height:18px;color:${col}"></i>`;
-                         return `<span style="font-size:16px;">📦</span>`;
+                        // Auto-map common ones if no specific icon stored
+                        const n = c.name.toUpperCase();
+                        if (n.includes('FOOD') || n.includes('DINE')) return `<i data-lucide="utensils" style="width:18px;height:18px;color:${col}"></i>`;
+                        if (n.includes('TRAVEL')) return `<i data-lucide="plane" style="width:18px;height:18px;color:${col}"></i>`;
+                        if (n.includes('HEALTH')) return `<i data-lucide="heart" style="width:18px;height:18px;color:${col}"></i>`;
+                        if (n.includes('BANK') || n.includes('FINANCE')) return `<i data-lucide="wallet" style="width:18px;height:18px;color:${col}"></i>`;
+                        if (n.includes('BILL')) return `<i data-lucide="receipt" style="width:18px;height:18px;color:${col}"></i>`;
+                        if (n.includes('SHOP') || n.includes('FASHION')) return `<i data-lucide="shopping-bag" style="width:18px;height:18px;color:${col}"></i>`;
+                        if (n.includes('INVEST')) return `<i data-lucide="trending-up" style="width:18px;height:18px;color:${col}"></i>`;
+                        if (n.includes('TECH')) return `<i data-lucide="cpu" style="width:18px;height:18px;color:${col}"></i>`;
+                        return `<span style="font-size:16px;">📦</span>`;
                     }
                     // If it's a lucide name (lowercase, no spaces, longer than 2 chars)
                     if (/^[a-z\-]+$/.test(iconStr) && iconStr.length > 2) {
@@ -8278,6 +8330,8 @@
         async function loadTransactionsPage() {
             const wrap = document.getElementById('txnListWrap');
             if (wrap) wrap.innerHTML = '<div class="sp-wrap"><div class="sp"></div></div>';
+            _visibleTxnLimit = 200;
+            _txnSelectMode = false;
             ['txn-stat-total', 'txn-stat-spent', 'txn-stat-income'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.textContent = '…';
@@ -8473,7 +8527,22 @@
             filterTxns();
         };
 
+        let _txnSelectMode = false;
+        let _visibleTxnLimit = 200;
+
         function filterTxns() {
+            _visibleTxnLimit = 200;
+            _txnSelectMode = false;
+            const selectBtn = document.getElementById('txn-select-mode-btn');
+            const bulkDelBtn = document.getElementById('txn-bulk-delete-btn');
+            if (selectBtn) {
+                selectBtn.textContent = 'Select';
+                selectBtn.style.background = '';
+            }
+            if (bulkDelBtn) {
+                bulkDelBtn.style.display = 'none';
+            }
+
             const searchEl = document.getElementById('txn-search');
             const q = (searchEl ? searchEl.value : '').toLowerCase().trim();
             const fromVal = document.getElementById('txn-date-from')?.value || '';
@@ -8512,15 +8581,137 @@
             const wrap = document.getElementById('txnListWrap');
             if (!wrap) return;
             if (!rows || !rows.length) { wrap.innerHTML = '<div class="empty-s">No transactions match the filters.</div>'; return; }
-            const CHUNK = 200;
-            const visible = rows.slice(0, CHUNK);
-            let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr><th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:40px;text-align:center"></th></tr></thead><tbody>';
-            visible.forEach((r, i) => { const amt = Number(r.amount), pos = amt >= 0; h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Click to edit"><td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button></td></tr>'; });
-            if (rows.length > CHUNK) h += '<tr><td colspan="8" style="text-align:center;padding:14px;color:var(--t3);font-size:11px;font-family:\'Courier Prime\',monospace">… and ' + (rows.length - CHUNK) + ' more rows. Use filters to narrow results.</td></tr>';
+            
+            const limit = _visibleTxnLimit || 200;
+            const visible = rows.slice(0, limit);
+            
+            let h = '<div class="tbl-scroll-wrap"><table class="txn-tbl"><thead><tr>';
+            if (_txnSelectMode) {
+                h += '<th style="width:40px;text-align:center"><input type="checkbox" id="txn-select-all" onclick="toggleSelectAllTxns(this)"></th>';
+            }
+            h += '<th>Date</th><th>Account</th><th>Category</th><th>Item</th><th>To/From</th><th class="ra">Amount</th><th class="ra">Balance</th><th style="width:40px;text-align:center"></th></tr></thead><tbody>';
+            
+            visible.forEach((r, i) => {
+                const amt = Number(r.amount), pos = amt >= 0;
+                const rowClick = _txnSelectMode 
+                    ? `toggleRowCheckbox('${r.id}')` 
+                    : `openTxnEdit(event,'${r.id}')`;
+                
+                h += '<tr class="txn-tr txn-clickable" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i, 40) * 0.012) + 's" onclick="' + rowClick + '" title="' + (_txnSelectMode ? 'Click to select' : 'Click to edit') + '">';
+                
+                if (_txnSelectMode) {
+                    h += '<td style="text-align:center" onclick="event.stopPropagation()"><input type="checkbox" class="txn-row-checkbox" data-id="' + r.id + '" onclick="event.stopPropagation(); updateSelectedTxnsCount()"></td>';
+                }
+                
+                h += '<td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td><td class="td-acts" onclick="event.stopPropagation()"><button class="act-btn" onclick="openTxnEdit(event,\'' + r.id + '\')" title="Edit">✎</button></td></tr>';
+            });
+            
+            const totalCols = _txnSelectMode ? 9 : 8;
+            if (rows.length > limit) {
+                h += '<tr><td colspan="' + totalCols + '" style="text-align:center;padding:16px;">';
+                h += '<button class="txn-clr-btn" onclick="event.stopPropagation(); loadMoreTxns()" style="font-size:12px; padding:8px 18px; width:auto; display:inline-flex; align-items:center; justify-content:center;">View More</button>';
+                h += '<div style="margin-top:8px; color:var(--t3); font-size:11px; font-family:\'Courier Prime\',monospace">Showing ' + limit + ' of ' + rows.length + ' rows</div>';
+                h += '</td></tr>';
+            }
+            
             h += '</tbody></table></div>';
             wrap.innerHTML = h;
+            
+            if (_txnSelectMode) {
+                updateSelectedTxnsCount();
+            }
         }
         window.renderTxnTable = renderTxnTable;
+
+        window.loadMoreTxns = function () {
+            _visibleTxnLimit += 200;
+            renderTxnTable(_filteredTxns);
+        };
+
+        window.toggleTxnSelectMode = function (state) {
+            if (state !== undefined) {
+                _txnSelectMode = state;
+            } else {
+                _txnSelectMode = !_txnSelectMode;
+            }
+            const selectBtn = document.getElementById('txn-select-mode-btn');
+            const bulkDelBtn = document.getElementById('txn-bulk-delete-btn');
+            if (selectBtn) {
+                selectBtn.textContent = _txnSelectMode ? 'Cancel' : 'Select';
+                if (_txnSelectMode) {
+                    selectBtn.style.background = 'var(--border)';
+                } else {
+                    selectBtn.style.background = '';
+                }
+            }
+            if (bulkDelBtn) {
+                bulkDelBtn.style.display = _txnSelectMode ? 'flex' : 'none';
+            }
+            renderTxnTable(_filteredTxns);
+        };
+
+        window.toggleRowCheckbox = function (id) {
+            const cb = document.querySelector(`.txn-row-checkbox[data-id="${id}"]`);
+            if (cb) {
+                cb.checked = !cb.checked;
+                updateSelectedTxnsCount();
+            }
+        };
+
+        window.toggleSelectAllTxns = function (headerCb) {
+            const cbs = document.querySelectorAll('.txn-row-checkbox');
+            cbs.forEach(cb => cb.checked = headerCb.checked);
+            updateSelectedTxnsCount();
+        };
+
+        window.updateSelectedTxnsCount = function () {
+            const checkedCbs = document.querySelectorAll('.txn-row-checkbox:checked');
+            const count = checkedCbs.length;
+            const countEl = document.getElementById('txn-selected-count');
+            if (countEl) countEl.textContent = count;
+            const allCbs = document.querySelectorAll('.txn-row-checkbox');
+            const headerCb = document.getElementById('txn-select-all');
+            if (headerCb && allCbs.length > 0) {
+                headerCb.checked = (checkedCbs.length === allCbs.length);
+                headerCb.indeterminate = (checkedCbs.length > 0 && checkedCbs.length < allCbs.length);
+            }
+        };
+
+        window.bulkDeleteTxns = async function () {
+            const checkedCbs = document.querySelectorAll('.txn-row-checkbox:checked');
+            const ids = Array.from(checkedCbs).map(cb => cb.getAttribute('data-id'));
+            if (ids.length === 0) {
+                toast('No transactions selected');
+                return;
+            }
+            if (!confirm(`Are you sure you want to delete ${ids.length} selected transaction(s)?\n\nThis cannot be undone.`)) {
+                return;
+            }
+            const delBtn = document.getElementById('txn-bulk-delete-btn');
+            const origHtml = delBtn.innerHTML;
+            delBtn.disabled = true;
+            delBtn.innerHTML = 'Deleting...';
+            try {
+                const BATCH_SIZE = 450;
+                for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+                    const chunk = ids.slice(i, i + BATCH_SIZE);
+                    const batch = writeBatch(db);
+                    chunk.forEach(id => {
+                        batch.delete(uDoc('transactions', id));
+                    });
+                    await batch.commit();
+                }
+                toast(`Successfully deleted ${ids.length} transaction(s)`);
+                toggleTxnSelectMode(false);
+                await loadPeriodData();
+                loadTransactionsPage();
+            } catch (e) {
+                toast('Error deleting: ' + e.message);
+                console.error(e);
+                delBtn.disabled = false;
+                delBtn.innerHTML = origHtml;
+            }
+        };
 
         window.openTxnEdit = function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); if (!r) return; const d = r.date?.toDate ? r.date.toDate() : new Date(r.date); document.getElementById('txn-edit-id').value = id; document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10); document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || ''); document.getElementById('txn-edit-acc').value = r.account || ''; document.getElementById('txn-edit-cat').value = r.category || ''; document.getElementById('txn-edit-item').value = r.item || ''; document.getElementById('txn-edit-amt').value = r.amount || ''; document.getElementById('txn-edit-tofrom').value = r.toFrom || ''; openM('txnEditModal'); };
         window.saveTxnEdit = async function () { const id = document.getElementById('txn-edit-id').value, dateStr = document.getElementById('txn-edit-date').value, acc = document.getElementById('txn-edit-acc').value.trim(), cat = document.getElementById('txn-edit-cat').value.trim(), item = document.getElementById('txn-edit-item').value.trim(), amt = document.getElementById('txn-edit-amt').value, tofrom = document.getElementById('txn-edit-tofrom').value.trim(); if (!acc || !cat || !item || !amt || !dateStr) return; const newDate = new Date(dateStr + "T12:00:00"); const btn = document.querySelector('#txnEditModal .add-btn'); btn.textContent = 'Saving…'; btn.disabled = true; try { await updateDoc(uDoc('transactions', id), { date: Timestamp.fromDate(newDate), account: acc, category: cat, item, amount: Number(amt), toFrom: tofrom }); closeM('txnEditModal'); await loadPeriodData(); loadTransactionsPage(); toast('Transaction updated'); } catch (e) { alert('Error saving.'); } btn.textContent = 'Save Changes'; btn.disabled = false; };
