@@ -6580,8 +6580,13 @@
             const spark = sparkSVG(series, 130, 60, sparkColor, { endDot: true });
             const acctLast4 = (a.id || '').slice(-4).toUpperCase().replace(/[^A-Z0-9]/g, '0').padStart(4, '0');
             const watermark = (a.name || '?').charAt(0).toUpperCase();
+            
+            const isHidden = a.hideBalance === true;
+            const balVal = isHidden ? '••••••' : rs(a.currentBalance || 0);
+            const dataReal = isHidden ? `data-real="${rs(a.currentBalance || 0)}"` : '';
+
             return `
-                <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
+                <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" data-bal-hidden="${isHidden ? '1' : '0'}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
                     <div class="bk-water" aria-hidden="true">${watermark}</div>
                     <div class="bk-eye" title="Hide balance" onclick="event.stopPropagation(); toggleBankBal(this)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
@@ -6596,7 +6601,7 @@
                     <div class="bk-body">
                         <div>
                             <div class="bk-bal-label">Available Balance</div>
-                            <div class="bk-bal ${pos ? '' : 'neg'}">${rs(a.currentBalance || 0)}</div>
+                            <div class="bk-bal ${pos ? '' : 'neg'}" ${dataReal}>${balVal}</div>
                             <div class="bk-trend ${trendCls}">${trendArrow} ${trend.pct >= 0 ? '+' : ''}${trend.pct.toFixed(1)}% this month</div>
                         </div>
                         <div class="bk-spark">${spark}</div>
@@ -6636,15 +6641,33 @@
             } catch (e) { return { pct: 0 }; }
         }
 
-        // Toggle the visibility of a bank balance number (eye-off icon)
-        window.toggleBankBal = function (el) {
+        // Toggle the visibility of a bank balance number (eye-off icon) and persist in Firestore
+        window.toggleBankBal = async function (el) {
             const card = el.closest('.acc-item');
             if (!card) return;
+            const id = card.dataset.id;
             const bal = card.querySelector('.bk-bal');
             if (!bal) return;
             const hidden = card.dataset.balHidden === '1';
-            if (hidden) { bal.textContent = bal.dataset.real || bal.textContent; card.dataset.balHidden = '0'; }
-            else { bal.dataset.real = bal.textContent; bal.textContent = '••••••'; card.dataset.balHidden = '1'; }
+            const willHide = !hidden;
+            if (hidden) { 
+                bal.textContent = bal.dataset.real || bal.textContent; 
+                card.dataset.balHidden = '0'; 
+            }
+            else { 
+                bal.dataset.real = bal.textContent; 
+                bal.textContent = '••••••'; 
+                card.dataset.balHidden = '1'; 
+            }
+            if (id) {
+                try {
+                    await updateDoc(uDoc('accounts', id), { hideBalance: willHide });
+                    const localAcc = _accounts.find(a => a.id === id);
+                    if (localAcc) localAcc.hideBalance = willHide;
+                } catch (e) {
+                    console.error("Error updating account balance visibility", e);
+                }
+            }
         };
         window.accItemClick = function (el) {
             const kind = el.dataset.kind;
@@ -9666,17 +9689,4 @@ Instructions:
                     <div class="mhd-name">Ledger Filters</div>
                     <div class="mhd-sub">Filter entries for the selected account</div>
                 </div>
-                <div class="f-clear-all" onclick="clearLdrFilters(); applyLdrFilters()">Clear All</div>
-            </div>
-            <div class="f-layout">
-                <div class="f-sidebar">
-                    <div class="f-side-item active" onclick="switchLdrFilterTab('account',this)">Account</div>
-                    <div class="f-side-item" onclick="switchLdrFilterTab('type',this)">Type<span class="f-side-badge"
-                            id="lf-badge-type" style="display:none">0</span></div>
-                    <div class="f-side-item" onclick="switchLdrFilterTab('cat',this)">Category<span class="f-side-badge"
-                            id="lf-badge-cat" style="display:none">0</span></div>
-                </div>
-                <div class="f-content" id="lf-content"></div>
-            </div>
-            <div class="f-footer">
-                <button class="txn-clr-btn" style="width:au
+           
