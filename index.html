@@ -5387,6 +5387,7 @@
                             <button class="ae-btn ae-btn-primary" id="e-btn" onclick="submitExp()">Save Expense
                                 →</button>
                             <button class="ae-btn ae-btn-sec" onclick="submitExp(true)">Save & add another</button>
+                            <button class="ae-btn ae-btn-sec" id="e-tpl-btn" onclick="saveExpTpl(event)">+ Save as Template</button>
                             <button class="ae-btn ae-btn-sec" onclick="clearAddEntryForm()"
                                 style="border:none; background:transparent; color:var(--t3); text-decoration:underline;">Clear
                                 Form</button>
@@ -5453,6 +5454,7 @@
                         <div class="ae-btn-row">
                             <button class="ae-btn ae-btn-primary" id="i-btn" onclick="submitInc()">Save Income
                                 →</button>
+                            <button class="ae-btn ae-btn-sec" id="i-tpl-btn" onclick="saveIncTpl(event)">+ Save as Template</button>
                         </div>
                     </div>
 
@@ -7633,8 +7635,66 @@
             if (inputId === 'e-item') { autoCategorizeItem(true); }
             focusNext(inputId);
         };
-        function applyExpTpl(n) { const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('e-acc').value = t.account; if (t.category) document.getElementById('e-cat').value = t.category; if (t.item) document.getElementById('e-item').value = t.item; if (t.tofrom) document.getElementById('e-to').value = t.tofrom; if (t.amount) document.getElementById('e-amt').value = t.amount; }
-        function applyIncTpl(n) { const t = incTpls.find(x => x.name.toLowerCase() === n.toLowerCase()); if (!t) return; if (t.account) document.getElementById('i-acc').value = t.account; if (t.category) document.getElementById('i-cat').value = t.category; if (t.item) document.getElementById('i-item').value = t.item; if (t.tofrom) document.getElementById('i-from').value = t.tofrom; if (t.amount) document.getElementById('i-amt').value = t.amount; }
+        function applyExpTpl(n) {
+            const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase());
+            if (!t) return;
+            if (t.account) {
+                document.getElementById('e-acc').value = t.account;
+                const container = document.getElementById('e-acc-cards');
+                if (container) {
+                    container.querySelectorAll('.ae-acc-card').forEach(c => {
+                        if (c.getAttribute('data-name') === t.account) {
+                            c.classList.add('active');
+                            const svg = c.querySelector('.ae-icon-sm');
+                            if (svg) svg.style.display = 'block';
+                        } else {
+                            c.classList.remove('active');
+                            const svg = c.querySelector('.ae-icon-sm');
+                            if (svg) svg.style.display = 'none';
+                        }
+                    });
+                }
+            }
+            if (t.category) document.getElementById('e-cat').value = t.category;
+            if (t.item) document.getElementById('e-item').value = t.item;
+            if (t.tofrom) document.getElementById('e-to').value = t.tofrom;
+            if (t.amount) document.getElementById('e-amt').value = t.amount;
+            
+            document.getElementById('split-rows-container').innerHTML = '';
+            document.getElementById('split-tools').style.display = 'none';
+            _splitRows = 0;
+            
+            if (t.splits && Array.isArray(t.splits)) {
+                t.splits.forEach(s => {
+                    window.addSplitRowWithValues(s.person || '', s.cat || '', s.item || '', s.amt || '');
+                });
+            }
+        }
+        function applyIncTpl(n) {
+            const t = incTpls.find(x => x.name.toLowerCase() === n.toLowerCase());
+            if (!t) return;
+            if (t.account) {
+                document.getElementById('i-acc').value = t.account;
+                const container = document.getElementById('i-acc-cards');
+                if (container) {
+                    container.querySelectorAll('.ae-acc-card').forEach(c => {
+                        if (c.getAttribute('data-name') === t.account) {
+                            c.classList.add('active');
+                            const svg = c.querySelector('.ae-icon-sm');
+                            if (svg) svg.style.display = 'block';
+                        } else {
+                            c.classList.remove('active');
+                            const svg = c.querySelector('.ae-icon-sm');
+                            if (svg) svg.style.display = 'none';
+                        }
+                    });
+                }
+            }
+            if (t.category) document.getElementById('i-cat').value = t.category;
+            if (t.item) document.getElementById('i-item').value = t.item;
+            if (t.tofrom) document.getElementById('i-from').value = t.tofrom;
+            if (t.amount) document.getElementById('i-amt').value = t.amount;
+        }
         window.switchAddTab = function (name, el) { document.querySelectorAll('.add-tab, .ae-tab').forEach(x => x.classList.remove('active')); document.querySelectorAll('.add-form').forEach(x => x.classList.remove('active')); el.classList.add('active'); document.getElementById('form-' + name).classList.add('active'); };
         const gv = id => document.getElementById(id).value.trim();
         const setInv = id => document.getElementById(id).classList.add('invalid');
@@ -7739,6 +7799,10 @@
         };
 
         window.addSplitRowWithName = function (name) {
+            window.addSplitRowWithValues(name, '', '', '');
+        };
+
+        window.addSplitRowWithValues = function (name, cat, item, amt) {
             _splitRows++;
             const rowId = _splitRows;
             const container = document.getElementById('split-rows-container');
@@ -7753,16 +7817,16 @@
         <div id="sp-dd-person-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
       <div style="position:relative;flex:1;min-width:80px;">
-        <input class="mini-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" autocomplete="off" style="width:100%" value="${document.getElementById('e-cat').value}">
+        <input class="mini-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" autocomplete="off" style="width:100%" value="${escH(cat || document.getElementById('e-cat').value)}">
         <div id="sp-dd-cat-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
     </div>
     <div class="mini-form-row" style="flex-wrap:nowrap;align-items:flex-start;">
       <div style="position:relative;flex:1;min-width:80px;">
-        <input class="mini-input sp-item" id="sp-item-${rowId}" placeholder="Item" autocomplete="off" style="width:100%" value="${document.getElementById('e-item').value}">
+        <input class="mini-input sp-item" id="sp-item-${rowId}" placeholder="Item" autocomplete="off" style="width:100%" value="${escH(item || document.getElementById('e-item').value)}">
         <div id="sp-dd-item-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
-      <input class="mini-input sp-amt" type="number" placeholder="Amount (₹)" style="width:90px;min-width:auto;">
+      <input class="mini-input sp-amt" type="number" placeholder="Amount (₹)" style="width:90px;min-width:auto;" value="${escH(amt || '')}">
       <button class="mini-cancel-btn" onclick="document.getElementById('sp-row-${rowId}').remove(); if(document.getElementById('split-rows-container').children.length===0) document.getElementById('split-tools').style.display='none';">✕</button>
     </div>
   `;
@@ -7921,8 +7985,95 @@
             sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
             if (sec.style.display === 'block') sec.scrollIntoView({ behavior: 'smooth' });
         };
-        window.saveExpTpl = async function () { const cat = gv('e-cat'), item = gv('e-item'); if (!cat || !item) { if (!cat) setInv('e-cat'); if (!item) setInv('e-item'); return; } const btn = document.getElementById('e-tpl-btn'); await addDoc(uRef('templates'), { type: 'EXPENSE', name: item, account: gv('e-acc'), category: cat, item, amount: gv('e-amt'), tofrom: gv('e-to') }); btn.textContent = '✓ Saved'; btn.classList.add('saved'); await loadTemplates(); setupAddFormDropdowns(); setTimeout(() => { btn.textContent = '+ Save as Template'; btn.classList.remove('saved'); }, 1400); toast('Template saved'); };
-        window.saveIncTpl = async function () { const cat = gv('i-cat'), item = gv('i-item'); if (!cat || !item) { if (!cat) setInv('i-cat'); if (!item) setInv('i-item'); return; } const btn = document.getElementById('i-tpl-btn'); await addDoc(uRef('templates'), { type: 'INCOME', name: item, account: gv('i-acc'), category: cat, item, amount: gv('i-amt'), tofrom: gv('i-from') }); btn.textContent = '✓ Saved'; btn.classList.add('saved'); await loadTemplates(); setupAddFormDropdowns(); setTimeout(() => { btn.textContent = '+ Save as Template'; btn.classList.remove('saved'); }, 1400); toast('Template saved'); };
+        window.saveExpTpl = async function (e) {
+            if (e) e.preventDefault();
+            const cat = gv('e-cat'), item = gv('e-item');
+            if (!cat || !item) {
+                if (!cat) setInv('e-cat');
+                if (!item) setInv('e-item');
+                return;
+            }
+            
+            const splitRows = document.querySelectorAll('#split-rows-container .mini-form');
+            const splits = [];
+            for (const r of splitRows) {
+                const p = r.querySelector('.sp-person').value.trim();
+                const c = r.querySelector('.sp-cat').value.trim();
+                const i = r.querySelector('.sp-item').value.trim();
+                const a = r.querySelector('.sp-amt').value.trim();
+                splits.push({ person: p, cat: c, item: i, amt: a });
+            }
+            
+            const btn = document.getElementById('e-tpl-btn');
+            const orig = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+            try {
+                await addDoc(uRef('templates'), {
+                    type: 'EXPENSE',
+                    name: item,
+                    account: gv('e-acc'),
+                    category: cat,
+                    item,
+                    amount: gv('e-amt'),
+                    tofrom: gv('e-to'),
+                    splits: splits
+                });
+                btn.textContent = '✓ Saved';
+                btn.classList.add('saved');
+                await loadTemplates();
+                setupAddFormDropdowns();
+                setTimeout(() => {
+                    btn.textContent = '+ Save as Template';
+                    btn.classList.remove('saved');
+                    btn.disabled = false;
+                }, 1400);
+                toast('Template saved');
+            } catch (err) {
+                btn.textContent = orig;
+                btn.disabled = false;
+                toast('Error saving template');
+            }
+        };
+
+        window.saveIncTpl = async function (e) {
+            if (e) e.preventDefault();
+            const cat = gv('i-cat'), item = gv('i-item');
+            if (!cat || !item) {
+                if (!cat) setInv('i-cat');
+                if (!item) setInv('i-item');
+                return;
+            }
+            const btn = document.getElementById('i-tpl-btn');
+            const orig = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+            try {
+                await addDoc(uRef('templates'), {
+                    type: 'INCOME',
+                    name: item,
+                    account: gv('i-acc'),
+                    category: cat,
+                    item,
+                    amount: gv('i-amt'),
+                    tofrom: gv('i-from')
+                });
+                btn.textContent = '✓ Saved';
+                btn.classList.add('saved');
+                await loadTemplates();
+                setupAddFormDropdowns();
+                setTimeout(() => {
+                    btn.textContent = '+ Save as Template';
+                    btn.classList.remove('saved');
+                    btn.disabled = false;
+                }, 1400);
+                toast('Template saved');
+            } catch (err) {
+                btn.textContent = orig;
+                btn.disabled = false;
+                toast('Error saving template');
+            }
+        };
 
 
 
