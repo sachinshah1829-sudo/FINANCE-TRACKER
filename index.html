@@ -5386,7 +5386,6 @@
                         <div class="ae-btn-row">
                             <button class="ae-btn ae-btn-primary" id="e-btn" onclick="submitExp()">Save Expense
                                 →</button>
-                            <button class="ae-btn ae-btn-sec" onclick="submitExp(true)">Save & add another</button>
                             <button class="ae-btn ae-btn-sec" id="e-tpl-btn" onclick="saveExpTpl(event)">+ Save as Template</button>
                             <button class="ae-btn ae-btn-sec" onclick="clearAddEntryForm()"
                                 style="border:none; background:transparent; color:var(--t3); text-decoration:underline;">Clear
@@ -5899,7 +5898,10 @@
         <div class="modal-box">
             <div class="modal-hd">
                 <div>
-                    <div class="mhd-name" id="pm-name">—</div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="mhd-name" id="pm-name">—</div>
+                        <button class="act-btn" id="pm-edit-btn" style="border:none; background:transparent; font-size:14px; cursor:pointer;" onclick="editPersonFromM()" title="Edit Contact">✎</button>
+                    </div>
                     <div class="mhd-sub">Recent entries</div>
                 </div>
                 <div class="mhd-right">
@@ -6565,10 +6567,6 @@
                             <div class="px-sub">${sub}</div>
                         </div>
                         <div class="px-amt ${cls}">${rs(Math.abs(a.currentBalance || 0))}</div>
-                        <div class="acc-acts" onclick="event.stopPropagation()">
-                            <button class="act-btn" onclick="editAccEl(this.closest('.acc-item'))">✎</button>
-                            <button class="act-btn del" onclick="deleteAccEl(this.closest('.acc-item'))">✕</button>
-                        </div>
                     </div>
                 `;
             }
@@ -7299,6 +7297,15 @@
         };
 
         /* ═══ PERSON MODAL ═══ */
+        window.editPersonFromM = function () {
+            const name = document.getElementById('pm-name').textContent;
+            const acc = _accounts.find(a => a.name === name && a.type === 'PERSON');
+            if (acc) {
+                closeM('personModal');
+                editAcc(acc.id, acc.name, acc.openingBalance || 0, acc.type);
+            }
+        };
+
         function openPersonM(name, bal) {
             document.getElementById('pm-name').textContent = name; document.getElementById('pm-bal').textContent = rs(bal); document.getElementById('pm-body').innerHTML = '<div class="m-empty"><div class="sp" style="margin:0 auto 10px"></div></div>'; openM('personModal');
             let lastSettleIdx = -1; for (let i = 0; i < _allTxns.length; i++) { const t = _allTxns[i]; if (t.account === name && (t.item || '').toUpperCase() === 'SETTLEMENT') lastSettleIdx = i; }
@@ -9672,6 +9679,4 @@ Instructions:
                 <div class="f-content" id="lf-content"></div>
             </div>
             <div class="f-footer">
-                <button class="txn-clr-btn" style="width:auto" onclick="closeM('ldrFilterModal')">Close</button>
-                <button class="add-btn" id="ldr-apply-btn" style="width:auto; margin:0; padding:10px 24px;"
-                    onclick="applyLdrFilters()">Apply Filters</bu
+                <button class="txn-clr-btn" style="width:au
