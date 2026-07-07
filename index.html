@@ -7656,8 +7656,109 @@
         function clearForm(ids, errId) { ids.forEach(id => { document.getElementById(id).value = ''; document.getElementById(id).classList.remove('invalid'); }); document.getElementById(errId).textContent = ''; }
 
         let _splitRows = 0;
+        let _splitModalPeople = [];
+        let _selectedSplitPeople = new Set();
+
+        window.openSplitPeopleModal = function () {
+            const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
+            const peopleColl = _people.map(p => p.value);
+            const recentPeople = [...new Set([...peopleColl, ..._allTxns.map(t => t.toFrom)])].filter(Boolean);
+            _splitModalPeople = [...new Set([...personAccNames, ...recentPeople])].filter(Boolean).sort();
+            
+            _selectedSplitPeople = new Set();
+            const searchInp = document.getElementById('split-person-search');
+            if (searchInp) searchInp.value = '';
+            const newInp = document.getElementById('split-person-new');
+            if (newInp) newInp.value = '';
+            
+            renderSplitPeopleList();
+            openM('splitSelModal');
+        };
+
+        window.renderSplitPeopleList = function () {
+            const listEl = document.getElementById('split-people-list');
+            if (!listEl) return;
+            const searchEl = document.getElementById('split-person-search');
+            const q = searchEl ? searchEl.value.toLowerCase().trim() : '';
+            const filtered = _splitModalPeople.filter(p => p.toLowerCase().includes(q));
+            
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div style="color:var(--t3); font-size:12px; padding:8px 0; text-align:center;">No people found. Add one above.</div>';
+                updateSplitSelCount();
+                return;
+            }
+            
+            let h = '';
+            filtered.forEach((p) => {
+                const checked = _selectedSplitPeople.has(p) ? 'checked' : '';
+                h += `
+                    <div class="f-opt-item" onclick="toggleSplitPersonCheckbox('${escH(p)}')">
+                        <input type="checkbox" class="split-person-cb" data-name="${escH(p)}" ${checked} onclick="event.stopPropagation(); toggleSplitPersonCheckbox('${escH(p)}')">
+                        <span class="f-opt-label">${escH(p)}</span>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = h;
+            updateSplitSelCount();
+        };
+
+        window.toggleSplitPersonCheckbox = function (name) {
+            if (_selectedSplitPeople.has(name)) {
+                _selectedSplitPeople.delete(name);
+            } else {
+                _selectedSplitPeople.add(name);
+            }
+            const cbs = document.querySelectorAll('.split-person-cb');
+            cbs.forEach(cb => {
+                if (cb.getAttribute('data-name') === name) {
+                    cb.checked = _selectedSplitPeople.has(name);
+                }
+            });
+            updateSplitSelCount();
+        };
+
+        window.filterSplitPeopleList = function () {
+            renderSplitPeopleList();
+        };
+
+        window.addNewPersonToSplitList = function () {
+            const inp = document.getElementById('split-person-new');
+            const val = inp ? inp.value.trim() : '';
+            if (!val) return;
+            if (_splitModalPeople.includes(val)) {
+                toast('Person already exists in the list');
+                if (inp) inp.value = '';
+                return;
+            }
+            _splitModalPeople.unshift(val);
+            if (inp) inp.value = '';
+            _selectedSplitPeople.add(val);
+            renderSplitPeopleList();
+        };
+
+        window.updateSplitSelCount = function () {
+            const countEl = document.getElementById('split-sel-count');
+            if (countEl) countEl.textContent = _selectedSplitPeople.size;
+        };
+
+        window.confirmSplitPeopleSelection = function () {
+            const selected = Array.from(_selectedSplitPeople);
+            if (selected.length === 0) {
+                window.addSplitRowWithName('');
+            } else {
+                selected.forEach(name => {
+                    window.addSplitRowWithName(name);
+                });
+            }
+            closeM('splitSelModal');
+        };
+
         window.addSplitRow = function (e) {
             if (e) e.preventDefault();
+            window.openSplitPeopleModal();
+        };
+
+        window.addSplitRowWithName = function (name) {
             _splitRows++;
             const rowId = _splitRows;
             const container = document.getElementById('split-rows-container');
@@ -7668,7 +7769,7 @@
             div.innerHTML = `
     <div class="mini-form-row" style="margin-bottom:5px;align-items:flex-start;">
       <div style="position:relative;flex:1;min-width:80px;">
-        <input class="mini-input sp-person" id="sp-person-${rowId}" placeholder="Person / To (Optional)" autocomplete="off" style="width:100%">
+        <input class="mini-input sp-person" id="sp-person-${rowId}" placeholder="Person / To (Optional)" autocomplete="off" style="width:100%" value="${escH(name || '')}">
         <div id="sp-dd-person-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
       <div style="position:relative;flex:1;min-width:80px;">
@@ -7687,7 +7788,7 @@
   `;
             container.appendChild(div);
             document.getElementById('split-tools').style.display = 'block';
-            // Setup dropdowns using consolidated smart suggestion lists
+            
             const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
             const catNames = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
             const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse();
@@ -9354,6 +9455,31 @@ Instructions:
             if (e.key === 'Enter') sendChat();
         });
     </script>
+    <div class="modal-ov" id="splitSelModal" onclick="if(event.target===this)closeM('splitSelModal')">
+        <div class="modal-box" style="width: 400px; max-width: 96vw; height: auto; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-hd">
+                <div>
+                    <div class="mhd-name">Select People for Split</div>
+                    <div class="mhd-sub">Select multiple persons to add split rows</div>
+                </div>
+                <button class="m-close" onclick="closeM('splitSelModal')">✕</button>
+            </div>
+            <div style="padding: 16px 20px 0; display: flex; gap: 8px;">
+                <input class="form-input" id="split-person-search" placeholder="Search people..." oninput="filterSplitPeopleList()" style="margin:0;">
+            </div>
+            <div style="padding: 12px 20px; display: flex; gap: 8px; align-items: center;">
+                <input class="form-input" id="split-person-new" placeholder="Add custom/new person..." style="margin:0; flex:1;">
+                <button class="txn-clr-btn" onclick="addNewPersonToSplitList()" style="padding: 10px 14px; margin:0; width:auto; font-size:12px;">Add</button>
+            </div>
+            <div class="modal-bd" id="split-people-list" style="padding: 6px 20px 16px; overflow-y: auto; flex: 1; min-height: 120px; max-height: 250px;">
+                <!-- List of checkboxes -->
+            </div>
+            <div style="padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface);">
+                <button class="txn-clr-btn" style="width:auto; margin:0; font-size:12px; padding:8px 16px;" onclick="closeM('splitSelModal')">Cancel</button>
+                <button class="add-btn" style="width:auto; margin:0; padding:10px 20px; font-size:12px;" onclick="confirmSplitPeopleSelection()">Add Selected (<span id="split-sel-count">0</span>)</button>
+            </div>
+        </div>
+    </div>
     <div class="modal-ov" id="txnFilterModal" onclick="if(event.target===this)closeM('txnFilterModal')">
         <div class="modal-box f-modal-box">
             <div class="modal-hd">
