@@ -6168,17 +6168,19 @@
         async function loadTemplates() { const snap = await getDocs(uRef('templates')); _templates = snap.docs.map(d => ({ id: d.id, ...d.data() })); expTpls = _templates.filter(t => t.type === 'EXPENSE'); incTpls = _templates.filter(t => t.type === 'INCOME'); }
         async function loadAiSettings() { try { const snap = await getDoc(uDoc('settings', 'ai')); if (snap.exists()) _aiSettings = snap.data(); else _aiSettings = {}; } catch (e) { console.error("AI settings load failed", e); } }
 
-        async function loadAllTransactions() {
-            const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
-            _allTxns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        async function loadAllTransactions(force = false) {
+            if (force || !_allTxns.length) {
+                const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
+                _allTxns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            }
             const bal = {};
             _accounts.forEach(a => bal[a.name] = (a.openingBalance || 0));
             _allTxns.forEach(t => { const a = t.account, v = Number(t.amount) || 0; if (!a) return; if (bal[a] === undefined) bal[a] = 0; bal[a] += v; t.closingBalance = bal[a]; });
             return _allTxns;
         }
 
-        async function loadPeriodData() {
-            await loadAllTransactions();
+        async function loadPeriodData(forceFetch = false) {
+            await loadAllTransactions(forceFetch);
             const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
             const periodTxns = _allTxns.filter(t => { const d = t.date?.toDate ? t.date.toDate() : new Date(t.date); return d >= sd && d <= ed; });
             const totalExpense = periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER').reduce((s, t) => s + Math.abs(Number(t.amount)), 0);
@@ -7984,7 +7986,7 @@
                 document.getElementById('split-rows-container').innerHTML = '';
                 document.getElementById('split-tools').style.display = 'none';
                 _splitRows = 0;
-                await loadPeriodData(); toast('Expense saved');
+                await loadPeriodData(true); toast('Expense saved');
             } catch (e) {
                 document.getElementById('e-err').textContent = 'Error: ' + e.message;
             }
@@ -7997,7 +7999,7 @@
             await ensureCategory(gv('i-cat'), 'INCOME');
             await addDoc(uRef('transactions'), { date: serverTimestamp(), account: gv('i-acc'), category: gv('i-cat'), item: gv('i-item'), amount: Math.abs(Number(gv('i-amt'))), toFrom: gv('i-from') });
             btnDone('i-btn'); clearForm(['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], 'i-err');
-            await loadPeriodData(); toast('Income saved');
+            await loadPeriodData(true); toast('Income saved');
         };
         window.submitTr = async function () {
             clrInv(['t-from', 't-to', 't-amt', 't-item']); document.getElementById('t-err').textContent = '';
@@ -8008,7 +8010,7 @@
             await addDoc(uRef('transactions'), { date: now, account: gv('t-from'), category: 'TRANSFER', item: gv('t-item'), amount: -amt, toFrom: gv('t-to') });
             await addDoc(uRef('transactions'), { date: now, account: gv('t-to'), category: 'TRANSFER', item: gv('t-item'), amount: amt, toFrom: gv('t-from') });
             btnDone('t-btn'); clearForm(['t-from', 't-to', 't-amt', 't-item'], 't-err');
-            await loadPeriodData(); toast('Transfer done');
+            await loadPeriodData(true); toast('Transfer done');
         };
         window.toggleImportSection = function () {
             const sec = document.getElementById('import-section');
@@ -8976,7 +8978,7 @@
                 }
                 toast(`Successfully deleted ${ids.length} transaction(s)`);
                 toggleTxnSelectMode(false);
-                await loadPeriodData();
+                await loadPeriodData(true);
                 loadTransactionsPage();
             } catch (e) {
                 toast('Error deleting: ' + e.message);
@@ -8987,8 +8989,8 @@
         };
 
         window.openTxnEdit = function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); if (!r) return; const d = r.date?.toDate ? r.date.toDate() : new Date(r.date); document.getElementById('txn-edit-id').value = id; document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10); document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || ''); document.getElementById('txn-edit-acc').value = r.account || ''; document.getElementById('txn-edit-cat').value = r.category || ''; document.getElementById('txn-edit-item').value = r.item || ''; document.getElementById('txn-edit-amt').value = r.amount || ''; document.getElementById('txn-edit-tofrom').value = r.toFrom || ''; openM('txnEditModal'); };
-        window.saveTxnEdit = async function () { const id = document.getElementById('txn-edit-id').value, dateStr = document.getElementById('txn-edit-date').value, acc = document.getElementById('txn-edit-acc').value.trim(), cat = document.getElementById('txn-edit-cat').value.trim(), item = document.getElementById('txn-edit-item').value.trim(), amt = document.getElementById('txn-edit-amt').value, tofrom = document.getElementById('txn-edit-tofrom').value.trim(); if (!acc || !cat || !item || !amt || !dateStr) return; const newDate = new Date(dateStr + "T12:00:00"); const btn = document.querySelector('#txnEditModal .add-btn'); btn.textContent = 'Saving…'; btn.disabled = true; try { await updateDoc(uDoc('transactions', id), { date: Timestamp.fromDate(newDate), account: acc, category: cat, item, amount: Number(amt), toFrom: tofrom }); closeM('txnEditModal'); await loadPeriodData(); loadTransactionsPage(); toast('Transaction updated'); } catch (e) { alert('Error saving.'); } btn.textContent = 'Save Changes'; btn.disabled = false; };
-        window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(); loadTransactionsPage(); toast('Transaction deleted'); closeM('txnEditModal'); };
+        window.saveTxnEdit = async function () { const id = document.getElementById('txn-edit-id').value, dateStr = document.getElementById('txn-edit-date').value, acc = document.getElementById('txn-edit-acc').value.trim(), cat = document.getElementById('txn-edit-cat').value.trim(), item = document.getElementById('txn-edit-item').value.trim(), amt = document.getElementById('txn-edit-amt').value, tofrom = document.getElementById('txn-edit-tofrom').value.trim(); if (!acc || !cat || !item || !amt || !dateStr) return; const newDate = new Date(dateStr + "T12:00:00"); const btn = document.querySelector('#txnEditModal .add-btn'); btn.textContent = 'Saving…'; btn.disabled = true; try { await updateDoc(uDoc('transactions', id), { date: Timestamp.fromDate(newDate), account: acc, category: cat, item, amount: Number(amt), toFrom: tofrom }); closeM('txnEditModal'); await loadPeriodData(true); loadTransactionsPage(); toast('Transaction updated'); } catch (e) { alert('Error saving.'); } btn.textContent = 'Save Changes'; btn.disabled = false; };
+        window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(true); loadTransactionsPage(); toast('Transaction deleted'); closeM('txnEditModal'); };
         window.deleteTxnFromModal = function () { const id = document.getElementById('txn-edit-id').value; if (id) confirmDeleteTxn(null, id); };
 
         /* ═══════════════════════════════════════════════════════
@@ -9238,7 +9240,7 @@
                 await loadCategories();
                 await loadItems();
                 await loadPeople();
-                await loadPeriodData();
+                await loadPeriodData(true);
                 if (impType === 'TPL') await loadTemplates();
                 setupAddFormDropdowns();
                 toast('✓ Imported ' + imported + (impType === 'TXN' ? ' transactions!' : ' templates!'));
@@ -9686,7 +9688,4 @@ Instructions:
         <div class="modal-box f-modal-box">
             <div class="modal-hd">
                 <div>
-                    <div class="mhd-name">Ledger Filters</div>
-                    <div class="mhd-sub">Filter entries for the selected account</div>
-                </div>
-           
+                    <div class="mhd-name">Ledger
