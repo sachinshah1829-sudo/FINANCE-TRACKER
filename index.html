@@ -7660,16 +7660,11 @@
         let _selectedSplitPeople = new Set();
 
         window.openSplitPeopleModal = function () {
-            const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
-            const peopleColl = _people.map(p => p.value);
-            const recentPeople = [...new Set([...peopleColl, ..._allTxns.map(t => t.toFrom)])].filter(Boolean);
-            _splitModalPeople = [...new Set([...personAccNames, ...recentPeople])].filter(Boolean).sort();
+            _splitModalPeople = _accounts.filter(a => a.type === 'PERSON').map(a => a.name).filter(Boolean).sort();
             
             _selectedSplitPeople = new Set();
             const searchInp = document.getElementById('split-person-search');
             if (searchInp) searchInp.value = '';
-            const newInp = document.getElementById('split-person-new');
-            if (newInp) newInp.value = '';
             
             renderSplitPeopleList();
             openM('splitSelModal');
@@ -7683,7 +7678,7 @@
             const filtered = _splitModalPeople.filter(p => p.toLowerCase().includes(q));
             
             if (filtered.length === 0) {
-                listEl.innerHTML = '<div style="color:var(--t3); font-size:12px; padding:8px 0; text-align:center;">No people found. Add one above.</div>';
+                listEl.innerHTML = '<div style="color:var(--t3); font-size:12px; padding:8px 0; text-align:center;">No person accounts found.</div>';
                 updateSplitSelCount();
                 return;
             }
@@ -7718,21 +7713,6 @@
         };
 
         window.filterSplitPeopleList = function () {
-            renderSplitPeopleList();
-        };
-
-        window.addNewPersonToSplitList = function () {
-            const inp = document.getElementById('split-person-new');
-            const val = inp ? inp.value.trim() : '';
-            if (!val) return;
-            if (_splitModalPeople.includes(val)) {
-                toast('Person already exists in the list');
-                if (inp) inp.value = '';
-                return;
-            }
-            _splitModalPeople.unshift(val);
-            if (inp) inp.value = '';
-            _selectedSplitPeople.add(val);
             renderSplitPeopleList();
         };
 
@@ -9464,12 +9444,8 @@ Instructions:
                 </div>
                 <button class="m-close" onclick="closeM('splitSelModal')">✕</button>
             </div>
-            <div style="padding: 16px 20px 0; display: flex; gap: 8px;">
-                <input class="form-input" id="split-person-search" placeholder="Search people..." oninput="filterSplitPeopleList()" style="margin:0;">
-            </div>
-            <div style="padding: 12px 20px; display: flex; gap: 8px; align-items: center;">
-                <input class="form-input" id="split-person-new" placeholder="Add custom/new person..." style="margin:0; flex:1;">
-                <button class="txn-clr-btn" onclick="addNewPersonToSplitList()" style="padding: 10px 14px; margin:0; width:auto; font-size:12px;">Add</button>
+            <div style="padding: 16px 20px 8px; display: flex; gap: 8px;">
+                <input class="form-input" id="split-person-search" placeholder="Search person accounts..." oninput="filterSplitPeopleList()" style="margin:0;">
             </div>
             <div class="modal-bd" id="split-people-list" style="padding: 6px 20px 16px; overflow-y: auto; flex: 1; min-height: 120px; max-height: 250px;">
                 <!-- List of checkboxes -->
