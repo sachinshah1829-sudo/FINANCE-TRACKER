@@ -6724,6 +6724,22 @@
             const acc = _accounts.find(a => a.id === id);
             if (!acc) return;
             if (acc.isDefault === true) return;
+
+            // Instantly update UI stars in the DOM
+            document.querySelectorAll('#bankList .bk-star').forEach(star => {
+                star.classList.remove('active');
+                const svg = star.querySelector('svg');
+                if (svg) svg.setAttribute('fill', 'none');
+            });
+            const clickedCard = document.querySelector(`.acc-item[data-id="${id}"]`);
+            if (clickedCard) {
+                const clickedStar = clickedCard.querySelector('.bk-star');
+                if (clickedStar) {
+                    clickedStar.classList.add('active');
+                    const svg = clickedStar.querySelector('svg');
+                    if (svg) svg.setAttribute('fill', 'currentColor');
+                }
+            }
             
             try {
                 const batch = writeBatch(db);
@@ -6741,6 +6757,7 @@
                 
                 await loadAccounts();
                 setupAddFormDropdowns();
+                await loadPeriodData();
             } catch (e) {
                 console.error("Error setting default account:", e);
                 toast("Error setting default account");
