@@ -9802,4 +9802,246 @@
                 await ensureAccount(d.account);
                 await ensureItem(d.item);
                 batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
-                    date: now, account: d.account, category: d.category, item: 
+                    date: now, account: d.account, category: d.category, item: d.item,
+                    amount: -Math.abs(Number(d.amount)), toFrom: d.toFrom || ''
+                });
+            } else if (cmd.action === 'ADD_INCOME') {
+                await ensureCategory(d.category, 'INCOME');
+                await ensureAccount(d.account);
+                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    date: now, account: d.account, category: d.category, item: d.item,
+                    amount: Math.abs(Number(d.amount)), toFrom: d.toFrom || ''
+                });
+            } else if (cmd.action === 'ADD_TRANSFER') {
+                await ensureAccount(d.fromAccount);
+                await ensureAccount(d.toAccount);
+                const amt = Math.abs(Number(d.amount));
+                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    date: now, account: d.fromAccount, category: 'TRANSFER', item: d.item || 'Transfer',
+                    amount: -amt, toFrom: d.toAccount
+                });
+                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    date: now, account: d.toAccount, category: 'TRANSFER', item: d.item || 'Transfer',
+                    amount: amt, toFrom: d.fromAccount
+                });
+            } else if (cmd.action === 'ADD_ACCOUNT') {
+                batch.set(doc(collection(db, 'users', uid(), 'accounts')), {
+                    name: d.name, type: d.type || 'BANK', openingBalance: Number(d.openingBalance) || 0
+                });
+            } else if (cmd.action === 'ADD_CATEGORY') {
+                batch.set(doc(collection(db, 'users', uid(), 'categories')), {
+                    name: d.name, type: d.type || 'EXPENSE'
+                });
+            } else if (cmd.action === 'ADD_TEMPLATE') {
+                batch.set(doc(collection(db, 'users', uid(), 'templates')), {
+                    type: d.type || 'EXPENSE', name: d.name, account: d.account || '',
+                    category: d.category || '', item: d.item || d.name, amount: d.amount || '', tofrom: d.toFrom || ''
+                });
+            }
+
+            await batch.commit();
+            await loadAllData();
+            toast('AI Command Executed');
+        }
+
+        window.sendChat = async function () {
+            const inp = document.getElementById('chatInput');
+            const btn = document.getElementById('chatSendBtn');
+            const text = inp.value.trim();
+            if (!text) return;
+
+            appendMsg(text, 'user');
+            _chatThread.push({ role: 'user', content: text });
+            inp.value = '';
+            btn.disabled = true;
+            document.getElementById('chatTyping').style.display = 'block';
+
+            try {
+                const response = await callGroq();
+                const aiMsg = response.choices[0].message.content;
+                _chatThread.push({ role: 'assistant', content: aiMsg });
+
+                let cleanMsg = aiMsg;
+                let data = null;
+
+                function extractActionJSON(str) {
+                    const fence = str.match(/```json\n([\s\S]*?)\n```/);
+                    if (fence) return { json: fence[1], full: fence[0] };
+                    let depth = 0, start = -1;
+                    for (let i = 0; i < str.length; i++) {
+                        if (str[i] === '{') {
+                            if (depth === 0) start = i;
+                            depth++;
+                        } else if (str[i] === '}') {
+                            depth--;
+                            if (depth === 0 && start !== -1) {
+                                const candidate = str.substring(start, i + 1);
+                                if (candidate.includes('"action"') || candidate.includes('"actions"')) return { json: candidate, full: candidate };
+                                start = -1;
+                            }
+                        }
+                    }
+                    return null;
+                }
+
+                const extracted = extractActionJSON(aiMsg);
+                if (extracted) {
+                    try {
+                        let rawData = JSON.parse(extracted.json);
+                        if (rawData.actions && Array.isArray(rawData.actions)) {
+                            data = rawData;
+                        } else if (rawData.action) {
+                            data = { actions: [rawData] };
+                        }
+                        cleanMsg = aiMsg.replace(extracted.full, '').trim();
+                    } catch (e) { console.error("JSON parse error", e); }
+                }
+
+                appendMsg(cleanMsg, 'ai', data);
+            } catch (e) {
+                appendMsg("Sorry, I'm having trouble connecting to the brain. Check your API key.", 'ai');
+            } finally {
+                btn.disabled = false;
+                document.getElementById('chatTyping').style.display = 'none';
+            }
+        };
+
+        async function callGroq() {
+            const key = getGroqKey();
+            if (!key) throw new Error('API Key not set');
+            const accountsList = _accounts.map(a => a.name).join(', ');
+            const categoriesList = _categories.map(c => c.name).join(', ');
+            const recent = _allTxns.slice(-20).map(t => `${fmtDate(t.date)}: ${t.account} -> ${t.item} (${rs(t.amount)})`).join('\n');
+
+            const systemPrompt = `You are a financial assistant for 'Finance Tracker'. 
+Current Date: ${new Date().toDateString()}
+User Accounts: ${accountsList}
+User Categories: ${categoriesList}
+Recent Transactions:
+${recent}
+
+Instructions:
+1. Help users track finances. Extract details from messages or descriptions.
+2. IMPORTANT: ONLY include JSON actions if the user explicitly asks to "add", "create", "record", "log", "track", or similar proactive commands to modify their data.
+3. If the user is just "reviewing", "analyzing", "finding", or "checking" expenses, DO NOT include any JSON actions. Just provide a natural language response.
+4. If an action or multiple actions are identified as per instruction #2, respond naturally and append a JSON block with an "actions" array. Supported actions:
+
+{"actions": [
+  {"action":"ADD_EXPENSE","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}},
+  {"action":"ADD_INCOME","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}},
+  {"action":"ADD_TRANSFER","data":{"fromAccount":"...","toAccount":"...","amount":100,"item":"..."}},
+  {"action":"ADD_ACCOUNT","data":{"name":"...","type":"BANK|CREDIT_CARD|PERSON","openingBalance":0}},
+  {"action":"ADD_CATEGORY","data":{"name":"...","type":"EXPENSE|INCOME"}},
+  {"action":"ADD_TEMPLATE","data":{"name":"...","type":"EXPENSE|INCOME","account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
+]}
+
+5. Use existing accounts/categories if they match.
+6. Answer financial questions based on the provided recent transactions.
+7. Be concise and friendly.`;
+
+            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + key,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        ..._chatThread
+                    ],
+                    temperature: 0.3
+                })
+            });
+
+            if (!resp.ok) throw new Error('API Error');
+            return await resp.json();
+        }
+
+        document.getElementById('chatInput')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') sendChat();
+        });
+    </script>
+    <div class="modal-ov" id="splitSelModal" onclick="if(event.target===this)closeM('splitSelModal')">
+        <div class="modal-box" style="width: 400px; max-width: 96vw; height: auto; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-hd">
+                <div>
+                    <div class="mhd-name">Select People for Split</div>
+                    <div class="mhd-sub">Select multiple persons to add split rows</div>
+                </div>
+                <button class="m-close" onclick="closeM('splitSelModal')">✕</button>
+            </div>
+            <div style="padding: 16px 20px 8px; display: flex; gap: 8px;">
+                <input class="form-input" id="split-person-search" placeholder="Search person accounts..." oninput="filterSplitPeopleList()" style="margin:0;">
+            </div>
+            <div class="modal-bd" id="split-people-list" style="padding: 6px 20px 16px; overflow-y: auto; flex: 1; min-height: 120px; max-height: 250px;">
+                <!-- List of checkboxes -->
+            </div>
+            <div style="padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface);">
+                <button class="txn-clr-btn" style="width:auto; margin:0; font-size:12px; padding:8px 16px;" onclick="closeM('splitSelModal')">Cancel</button>
+                <button class="add-btn" style="width:auto; margin:0; padding:10px 20px; font-size:12px;" onclick="confirmSplitPeopleSelection()">Add Selected (<span id="split-sel-count">0</span>)</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-ov" id="txnFilterModal" onclick="if(event.target===this)closeM('txnFilterModal')">
+        <div class="modal-box f-modal-box">
+            <div class="modal-hd">
+                <div>
+                    <div class="mhd-name">Filters</div>
+                    <div class="mhd-sub">Narrow down transactions</div>
+                </div>
+                <div class="f-clear-all" onclick="clearAllFilters(); applyFilters()">Clear All</div>
+            </div>
+            <div class="f-layout">
+                <div class="f-sidebar" id="f-sidebar">
+                    <div class="f-side-item active" onclick="switchFilterTab('type',this)">Type<span
+                            class="f-side-badge" id="f-badge-type" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('account',this)">Account<span class="f-side-badge"
+                            id="f-badge-account" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('cat',this)">Category<span class="f-side-badge"
+                            id="f-badge-cat" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('item',this)">Item<span class="f-side-badge"
+                            id="f-badge-item" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('tofrom',this)">To/From<span class="f-side-badge"
+                            id="f-badge-tofrom" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchFilterTab('date',this)">Date Range</div>
+                </div>
+                <div class="f-content" id="f-content"></div>
+            </div>
+            <div class="f-footer">
+                <button class="txn-clr-btn" style="width:auto" onclick="closeM('txnFilterModal')">Close</button>
+                <button class="add-btn" id="txn-apply-btn" style="width:auto; margin:0; padding:10px 24px;"
+                    onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-ov" id="ldrFilterModal" onclick="if(event.target===this)closeM('ldrFilterModal')">
+        <div class="modal-box f-modal-box">
+            <div class="modal-hd">
+                <div>
+                    <div class="mhd-name">Ledger Filters</div>
+                    <div class="mhd-sub">Filter entries for the selected account</div>
+                </div>
+                <div class="f-clear-all" onclick="clearLdrFilters(); applyLdrFilters()">Clear All</div>
+            </div>
+            <div class="f-layout">
+                <div class="f-sidebar">
+                    <div class="f-side-item active" onclick="switchLdrFilterTab('account',this)">Account</div>
+                    <div class="f-side-item" onclick="switchLdrFilterTab('type',this)">Type<span class="f-side-badge"
+                            id="lf-badge-type" style="display:none">0</span></div>
+                    <div class="f-side-item" onclick="switchLdrFilterTab('cat',this)">Category<span class="f-side-badge"
+                            id="lf-badge-cat" style="display:none">0</span></div>
+                </div>
+                <div class="f-content" id="lf-content"></div>
+            </div>
+            <div class="f-footer">
+                <button class="txn-clr-btn" style="width:auto" onclick="closeM('ldrFilterModal')">Close</button>
+                <button class="add-btn" id="ldr-apply-btn" style="width:auto; margin:0; padding:10px 24px;"
+                    onclick="applyLdrFilters()">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
