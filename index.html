@@ -6030,16 +6030,24 @@
                 <input type="hidden" id="txn-edit-id">
                 <div class="form-row"><label class="form-label">Date</label><input class="form-input" id="txn-edit-date"
                         type="date"></div>
-                <div class="form-row"><label class="form-label">Account</label><input class="form-input"
-                        id="txn-edit-acc"></div>
-                <div class="form-row"><label class="form-label">Category</label><input class="form-input"
-                        id="txn-edit-cat"></div>
-                <div class="form-row"><label class="form-label">Item</label><input class="form-input"
-                        id="txn-edit-item"></div>
+                <div class="form-row" style="position:relative;"><label class="form-label">Account</label>
+                    <input class="form-input" id="txn-edit-acc" autocomplete="off">
+                    <div id="txn-edit-acc-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
+                </div>
+                <div class="form-row" style="position:relative;"><label class="form-label">Category</label>
+                    <input class="form-input" id="txn-edit-cat" autocomplete="off">
+                    <div id="txn-edit-cat-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
+                </div>
+                <div class="form-row" style="position:relative;"><label class="form-label">Item</label>
+                    <input class="form-input" id="txn-edit-item" autocomplete="off">
+                    <div id="txn-edit-item-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
+                </div>
                 <div class="form-row"><label class="form-label">Amount (negative = expense)</label><input
                         class="form-input" id="txn-edit-amt" type="number"></div>
-                <div class="form-row"><label class="form-label">To / From</label><input class="form-input"
-                        id="txn-edit-tofrom"></div>
+                <div class="form-row" style="position:relative;"><label class="form-label">To / From</label>
+                    <input class="form-input" id="txn-edit-tofrom" autocomplete="off">
+                    <div id="txn-edit-tofrom-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
+                </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
                     <button class="add-btn" style="margin:0; flex:1;" onclick="saveTxnEdit()">Save Changes</button>
                     <button class="txn-clr-btn" style="flex:1; border-color:var(--red); color:var(--red);"
@@ -6078,7 +6086,7 @@
         // Greyscale pie colors
         const PC = ['#C97B4B', '#9E5E33', '#E8956A', '#7C5233', '#D4845A', '#B5693A', '#F0A87D', '#6E4228', '#8B5A3C', '#D98C5F'];
         const PAGE_ORDER = ['aichat', 'add', 'accounts', 'analytics', 'transactions', 'ledger', 'manage'];
-        const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'] };
+        const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'], txnEdit: ['txn-edit-date', 'txn-edit-acc', 'txn-edit-cat', 'txn-edit-item', 'txn-edit-amt', 'txn-edit-tofrom'] };
 
         let curM, curY;
         let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [], _aiSettings = {};
@@ -9266,7 +9274,32 @@
             }
         };
 
-        window.openTxnEdit = function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); if (!r) return; const d = r.date?.toDate ? r.date.toDate() : new Date(r.date); document.getElementById('txn-edit-id').value = id; document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10); document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || ''); document.getElementById('txn-edit-acc').value = r.account || ''; document.getElementById('txn-edit-cat').value = r.category || ''; document.getElementById('txn-edit-item').value = r.item || ''; document.getElementById('txn-edit-amt').value = r.amount || ''; document.getElementById('txn-edit-tofrom').value = r.toFrom || ''; openM('txnEditModal'); };
+        window.openTxnEdit = function (e, id) {
+            if (e) e.stopPropagation();
+            const r = _allTxns.find(x => x.id === id);
+            if (!r) return;
+            const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
+            document.getElementById('txn-edit-id').value = id;
+            document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10);
+            document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || '');
+            document.getElementById('txn-edit-acc').value = r.account || '';
+            document.getElementById('txn-edit-cat').value = r.category || '';
+            document.getElementById('txn-edit-item').value = r.item || '';
+            document.getElementById('txn-edit-amt').value = r.amount || '';
+            document.getElementById('txn-edit-tofrom').value = r.toFrom || '';
+            
+            const accNames = _accounts.map(a => a.name);
+            const catNames = _categories.map(c => c.name);
+            const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse();
+            const toFromNames = [...new Set([..._people, ..._allTxns.map(t => t.toFrom)])].filter(Boolean).reverse();
+            
+            initDD('txn-edit-acc', 'txn-edit-acc-dd', accNames);
+            initDD('txn-edit-cat', 'txn-edit-cat-dd', catNames);
+            initDD('txn-edit-item', 'txn-edit-item-dd', itemNames);
+            initDD('txn-edit-tofrom', 'txn-edit-tofrom-dd', toFromNames);
+            
+            openM('txnEditModal');
+        };
         
         window.saveTxnEdit = async function () {
             const id = document.getElementById('txn-edit-id').value,
