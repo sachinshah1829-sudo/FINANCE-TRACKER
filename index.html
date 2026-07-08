@@ -7552,9 +7552,16 @@
             document.getElementById('pm-settle-row').style.display = (bal === 0) ? 'none' : 'flex';
             document.getElementById('pm-body').innerHTML = '<div class="m-empty"><div class="sp" style="margin:0 auto 10px"></div></div>';
             openM('personModal');
-            let lastSettleIdx = -1; for (let i = 0; i < _allTxns.length; i++) { const t = _allTxns[i]; if (t.account === name && (t.item || '').toUpperCase() === 'SETTLEMENT') lastSettleIdx = i; }
-            const rows = _allTxns.filter((t, i) => i > lastSettleIdx && t.account === name);
-            if (!rows.length) { document.getElementById('pm-body').innerHTML = '<div class="m-empty">No entries after last settlement.</div>'; return; }
+            
+            const allPersonRows = _allTxns.filter(t => t.account === name);
+            let lastZeroIdx = -1;
+            for (let i = 0; i < allPersonRows.length; i++) {
+                if (Math.abs(allPersonRows[i].closingBalance || 0) < 0.01) {
+                    lastZeroIdx = i;
+                }
+            }
+            const rows = allPersonRows.slice(lastZeroIdx + 1);
+            if (!rows.length) { document.getElementById('pm-body').innerHTML = '<div class="m-empty">All transactions are settled.</div>'; return; }
             document.getElementById('pm-body').innerHTML = rows.map((r, i) => { const amt = Number(r.amount), pos = amt >= 0, col = pos ? 'var(--amt-pos)' : 'var(--amt-neg)'; return '<div class="m-txn" style="animation-delay:' + (i * 0.04) + 's"><div class="m-dot" style="background:' + col + '"></div><div class="m-info"><div class="m-item">' + escH(r.item || '—') + '</div><div class="m-sub">' + fmtDate(r.date) + (r.toFrom ? ' · ' + escH(r.toFrom) : '') + '</div></div><div><div class="m-amt" style="color:' + col + '">' + (pos ? '+' : '') + rs(amt) + '</div><div class="m-xtra">' + rs(r.closingBalance || 0) + ' bal</div></div></div>'; }).join('');
         }
 
