@@ -6086,7 +6086,7 @@
         // Greyscale pie colors
         const PC = ['#C97B4B', '#9E5E33', '#E8956A', '#7C5233', '#D4845A', '#B5693A', '#F0A87D', '#6E4228', '#8B5A3C', '#D98C5F'];
         const PAGE_ORDER = ['aichat', 'add', 'accounts', 'analytics', 'transactions', 'ledger', 'manage'];
-        const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'], txnEdit: ['txn-edit-date', 'txn-edit-acc', 'txn-edit-cat', 'txn-edit-item', 'txn-edit-amt', 'txn-edit-tofrom'] };
+        const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'], txnEdit: ['txn-edit-date', 'txn-edit-acc', 'txn-edit-cat', 'txn-edit-item', 'txn-edit-amt', 'txn-edit-tofrom'], tplAdd: ['tpl-m-name', 'tpl-m-acc', 'tpl-m-cat', 'tpl-m-amt', 'tpl-m-to'], tplEdit: ['et-name', 'et-acc', 'et-cat', 'et-amt', 'et-to'] };
 
         let curM, curY;
         let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [], _aiSettings = {};
@@ -8767,24 +8767,36 @@
                     <label class="form-label">Template Name (e.g. Netflix)</label>
                     <input class="form-input" id="tpl-m-name" autocomplete="off">
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="position:relative;">
                     <label class="form-label">Account</label>
-                    <input class="form-input" id="tpl-m-acc" placeholder="Default account">
+                    <input class="form-input" id="tpl-m-acc" placeholder="Default account" autocomplete="off">
+                    <div id="tpl-m-acc-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="position:relative;">
                     <label class="form-label">Category</label>
-                    <input class="form-input" id="tpl-m-cat" placeholder="Default category">
+                    <input class="form-input" id="tpl-m-cat" placeholder="Default category" autocomplete="off">
+                    <div id="tpl-m-cat-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
                 </div>
                 <div class="form-row">
                     <label class="form-label">Amount</label>
                     <input class="form-input" id="tpl-m-amt" type="number" placeholder="0.00">
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="position:relative;">
                     <label class="form-label">To/From</label>
-                    <input class="form-input" id="tpl-m-to" placeholder="Recipient/Sender">
+                    <input class="form-input" id="tpl-m-to" placeholder="Recipient/Sender" autocomplete="off">
+                    <div id="tpl-m-to-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
                 </div>
                 <button class="add-btn" style="margin-top:10px" onclick="doAddTemplate()">Create Template</button>
             `;
+            
+            const accNames = _accounts.map(a => a.name);
+            const catNames = _categories.map(c => c.name);
+            const toFromNames = [...new Set([..._people, ..._allTxns.map(t => t.toFrom)])].filter(Boolean).reverse();
+            
+            initDD('tpl-m-acc', 'tpl-m-acc-dd', accNames);
+            initDD('tpl-m-cat', 'tpl-m-cat-dd', catNames);
+            initDD('tpl-m-to', 'tpl-m-to-dd', toFromNames);
+
             openM('editModal');
         };
         window.doAddTemplate = async function () {
@@ -8820,27 +8832,38 @@
                     <label class="form-label">Template Name (e.g. Netflix)</label>
                     <input class="form-input" id="et-name" value="${escH(r.name || '')}" autocomplete="off">
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="position:relative;">
                     <label class="form-label">Account</label>
-                    <input class="form-input" id="et-acc" value="${escH(r.account || '')}" placeholder="Default account">
+                    <input class="form-input" id="et-acc" value="${escH(r.account || '')}" placeholder="Default account" autocomplete="off">
+                    <div id="et-acc-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="position:relative;">
                     <label class="form-label">Category</label>
-                    <input class="form-input" id="et-cat" value="${escH(r.category || '')}" placeholder="Default category">
+                    <input class="form-input" id="et-cat" value="${escH(r.category || '')}" placeholder="Default category" autocomplete="off">
+                    <div id="et-cat-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
                 </div>
                 <div class="form-row">
                     <label class="form-label">Amount</label>
                     <input class="form-input" id="et-amt" type="number" value="${r.amount || ''}" placeholder="0.00">
                 </div>
-                <div class="form-row">
+                <div class="form-row" style="position:relative;">
                     <label class="form-label">To/From</label>
-                    <input class="form-input" id="et-to" value="${escH(r.tofrom || '')}" placeholder="Recipient/Sender">
+                    <input class="form-input" id="et-to" value="${escH(r.tofrom || '')}" placeholder="Recipient/Sender" autocomplete="off">
+                    <div id="et-to-dd" class="form-dropdown" style="top:100%; left:0; right:0; z-index:1005;"></div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
                     <button class="add-btn" style="margin:0; flex:1;" onclick="saveTplEdit('${id}')">Save Changes</button>
                     <button class="txn-clr-btn" style="flex:1; border-color:var(--red); color:var(--red);" onclick="deleteTpl('${id}','${escH(r.name || '')}')">Delete Template</button>
                 </div>
             `;
+            const accNames = _accounts.map(a => a.name);
+            const catNames = _categories.map(c => c.name);
+            const toFromNames = [...new Set([..._people, ..._allTxns.map(t => t.toFrom)])].filter(Boolean).reverse();
+            
+            initDD('et-acc', 'et-acc-dd', accNames);
+            initDD('et-cat', 'et-cat-dd', catNames);
+            initDD('et-to', 'et-to-dd', toFromNames);
+
             openM('editModal');
         };
         window.saveTplEdit = async function (id) {
