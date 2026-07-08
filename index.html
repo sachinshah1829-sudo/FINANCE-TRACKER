@@ -4437,6 +4437,32 @@
             color: var(--t1);
         }
 
+        #page-accounts #bankList .bk-star {
+            position: absolute;
+            top: 24px;
+            right: 50px;
+            color: var(--t3);
+            opacity: 0.55;
+            cursor: pointer;
+            transition: opacity .2s ease, color .2s ease;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+        }
+
+        #page-accounts #bankList .bk-star.active {
+            color: var(--accent);
+            opacity: 1;
+        }
+
+        #page-accounts #bankList .bk-star:hover {
+            opacity: 1;
+            color: var(--accent);
+        }
+
         /* Body row: balance label, value, trend pill on left; sparkline on right */
         #page-accounts #bankList .bk-body {
             display: grid;
@@ -5911,6 +5937,11 @@
                     </div><button class="m-close" onclick="closeM('personModal')">✕</button>
                 </div>
             </div>
+            <!-- Settlement Buttons -->
+            <div id="pm-settle-row" style="padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; background: var(--surface);">
+                <button class="txn-clr-btn" style="flex:1; padding: 8px 12px; font-size:12px; width:auto; margin:0;" onclick="settlePerson('ALL')">Settle All</button>
+                <button class="txn-clr-btn" style="flex:1; padding: 8px 12px; font-size:12px; width:auto; margin:0;" onclick="settlePerson('PARTIAL')">Partial Settle</button>
+            </div>
             <div class="modal-bd" id="pm-body"></div>
         </div>
     </div>
@@ -6051,7 +6082,41 @@
         let _importRows = [];
 
         /* ── TOAST ── */
-        window.toast = function (msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
+        /* ── TOAST ── */
+        let _lastUndoAction = null;
+        let _toastTimeout = null;
+        
+        window.setUndoAction = function (action) {
+            _lastUndoAction = action;
+        };
+        
+        window.triggerUndo = async function (e) {
+            if (e) e.stopPropagation();
+            if (typeof _lastUndoAction === 'function') {
+                const action = _lastUndoAction;
+                _lastUndoAction = null;
+                const t = document.getElementById('toast');
+                if (t) t.classList.remove('show');
+                await action();
+            }
+        };
+
+        window.toast = function (msg, showUndo = false) {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            
+            let html = escH(msg);
+            if (showUndo && _lastUndoAction) {
+                html += ` <span onclick="triggerUndo(event)" style="text-decoration:underline; cursor:pointer; margin-left:12px; color:var(--accent); font-weight:700;">Undo</span>`;
+                t.innerHTML = html;
+            } else {
+                t.textContent = msg;
+            }
+            
+            t.classList.add('show');
+            if (_toastTimeout) clearTimeout(_toastTimeout);
+            _toastTimeout = setTimeout(() => t.classList.remove('show'), showUndo ? 6000 : 2800);
+        };
 
         /* ── FORMAT ── */
         function fmt(n) { if (n >= 100000) return (n / 100000).toFixed(2) + 'L'; if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return Math.round(n).toString(); }
@@ -6585,9 +6650,15 @@
             const balVal = isHidden ? '••••••' : rs(a.currentBalance || 0);
             const dataReal = isHidden ? `data-real="${rs(a.currentBalance || 0)}"` : '';
 
+            const isDefault = a.isDefault === true;
             return `
                 <div class="acc-item" data-id="${a.id}" data-name="${escH(a.name)}" data-opening="${a.openingBalance || 0}" data-type="${a.type}" data-bal="${a.currentBalance || 0}" data-kind="${accKind}" data-bal-hidden="${isHidden ? '1' : '0'}" style="animation-delay:${i * 0.05}s" onclick="accItemClick(this)">
                     <div class="bk-water" aria-hidden="true">${watermark}</div>
+                    <div class="bk-star${isDefault ? ' active' : ''}" title="${isDefault ? 'Default account' : 'Set as default'}" onclick="event.stopPropagation(); setDefaultAccount('${a.id}')">
+                        <svg viewBox="0 0 24 24" fill="${isDefault ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
                     <div class="bk-eye" title="Hide balance" onclick="event.stopPropagation(); toggleBankBal(this)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
                     </div>
@@ -6640,6 +6711,34 @@
                 return { pct: ((cur - balAtCutoff) / Math.abs(balAtCutoff)) * 100 };
             } catch (e) { return { pct: 0 }; }
         }
+
+        // Set default account and persist in Firestore
+        window.setDefaultAccount = async function (id) {
+            const acc = _accounts.find(a => a.id === id);
+            if (!acc) return;
+            if (acc.isDefault === true) return;
+            
+            try {
+                const batch = writeBatch(db);
+                _accounts.forEach(a => {
+                    if (a.isDefault === true) {
+                        batch.update(uDoc('accounts', a.id), { isDefault: false });
+                        a.isDefault = false;
+                    }
+                });
+                batch.update(uDoc('accounts', id), { isDefault: true });
+                acc.isDefault = true;
+                
+                await batch.commit();
+                toast(`"${acc.name}" set as default account`);
+                
+                await loadAccounts();
+                setupAddFormDropdowns();
+            } catch (e) {
+                console.error("Error setting default account:", e);
+                toast("Error setting default account");
+            }
+        };
 
         // Toggle the visibility of a bank balance number (eye-off icon) and persist in Firestore
         window.toggleBankBal = async function (el) {
@@ -7320,6 +7419,9 @@
         };
 
         /* ═══ PERSON MODAL ═══ */
+        let _currentPersonName = '';
+        let _currentPersonBal = 0;
+
         window.editPersonFromM = function () {
             const name = document.getElementById('pm-name').textContent;
             const acc = _accounts.find(a => a.name === name && a.type === 'PERSON');
@@ -7329,8 +7431,94 @@
             }
         };
 
+        window.settlePerson = async function (type) {
+            if (!_currentPersonName) return;
+            const bal = _currentPersonBal;
+            if (bal === 0) return;
+            
+            const bankAcc = _accounts.find(a => a.type !== 'PERSON' && a.isDefault === true) || _accounts.find(a => a.type !== 'PERSON');
+            if (!bankAcc) {
+                toast('Please set a default bank account first');
+                return;
+            }
+            
+            let settleAmt = Math.abs(bal);
+            if (type === 'PARTIAL') {
+                const val = prompt(`Enter amount to settle (Current: ₹${rs(Math.abs(bal))}):`);
+                if (val === null) return;
+                const amt = parseFloat(val);
+                if (isNaN(amt) || amt <= 0) {
+                    toast('Invalid amount');
+                    return;
+                }
+                if (amt > Math.abs(bal)) {
+                    toast('Settlement amount cannot exceed balance');
+                    return;
+                }
+                settleAmt = amt;
+            }
+            
+            const isOwed = bal > 0;
+            const personAmt = isOwed ? -settleAmt : settleAmt;
+            const bankAmt = isOwed ? settleAmt : -settleAmt;
+            
+            const now = new Date();
+            
+            const batch = writeBatch(db);
+            const pTxRef = doc(collection(db, 'users', uid(), 'transactions'));
+            const bTxRef = doc(collection(db, 'users', uid(), 'transactions'));
+            
+            const pTxData = {
+                date: Timestamp.fromDate(now),
+                account: _currentPersonName,
+                category: 'TRANSFER',
+                item: 'Settlement',
+                amount: personAmt,
+                toFrom: bankAcc.name
+            };
+            
+            const bTxData = {
+                date: Timestamp.fromDate(now),
+                account: bankAcc.name,
+                category: 'TRANSFER',
+                item: 'Settlement',
+                amount: bankAmt,
+                toFrom: _currentPersonName
+            };
+            
+            batch.set(pTxRef, pTxData);
+            batch.set(bTxRef, bTxData);
+            
+            window.setUndoAction(async () => {
+                const undoBatch = writeBatch(db);
+                undoBatch.delete(pTxRef);
+                undoBatch.delete(bTxRef);
+                await undoBatch.commit();
+                toast('Settlement undone');
+                await loadPeriodData();
+                loadAccounts();
+            });
+            
+            try {
+                await batch.commit();
+                toast(`Settled ₹${rs(settleAmt)} with ${_currentPersonName}`, true);
+                closeM('personModal');
+                await loadPeriodData();
+                loadAccounts();
+            } catch (e) {
+                console.error("Error executing settlement:", e);
+                toast("Error executing settlement");
+            }
+        };
+
         function openPersonM(name, bal) {
-            document.getElementById('pm-name').textContent = name; document.getElementById('pm-bal').textContent = rs(bal); document.getElementById('pm-body').innerHTML = '<div class="m-empty"><div class="sp" style="margin:0 auto 10px"></div></div>'; openM('personModal');
+            _currentPersonName = name;
+            _currentPersonBal = bal;
+            document.getElementById('pm-name').textContent = name;
+            document.getElementById('pm-bal').textContent = rs(bal);
+            document.getElementById('pm-settle-row').style.display = (bal === 0) ? 'none' : 'flex';
+            document.getElementById('pm-body').innerHTML = '<div class="m-empty"><div class="sp" style="margin:0 auto 10px"></div></div>';
+            openM('personModal');
             let lastSettleIdx = -1; for (let i = 0; i < _allTxns.length; i++) { const t = _allTxns[i]; if (t.account === name && (t.item || '').toUpperCase() === 'SETTLEMENT') lastSettleIdx = i; }
             const rows = _allTxns.filter((t, i) => i > lastSettleIdx && t.account === name);
             if (!rows.length) { document.getElementById('pm-body').innerHTML = '<div class="m-empty">No entries after last settlement.</div>'; return; }
@@ -7470,10 +7658,21 @@
             });
             container.innerHTML = html;
 
-            // Auto-select first if none selected
-            if (!hidden.value && _accounts.length > 0) {
-                const firstCard = container.querySelector('.ae-acc-card');
-                if (firstCard) selectAccCard(firstCard, containerId, hiddenInputId);
+            // Auto-select default if set, else select first card if none selected
+            if (!hidden.value && list.length > 0) {
+                const defaultAcc = list.find(a => a.isDefault === true);
+                if (defaultAcc) {
+                    const card = container.querySelector(`.ae-acc-card[data-name="${escH(defaultAcc.name)}"]`);
+                    if (card) {
+                        selectAccCard(card, containerId, hiddenInputId);
+                    } else {
+                        const firstCard = container.querySelector('.ae-acc-card');
+                        if (firstCard) selectAccCard(firstCard, containerId, hiddenInputId);
+                    }
+                } else {
+                    const firstCard = container.querySelector('.ae-acc-card');
+                    if (firstCard) selectAccCard(firstCard, containerId, hiddenInputId);
+                }
             }
         }
 
@@ -7936,27 +8135,36 @@
 
             const batch = writeBatch(db);
             const now = serverTimestamp();
+            const addedRefs = [];
 
             for (const ex of extraEntries) {
                 await ensureCategory(ex.cat, 'EXPENSE');
                 await ensureItem(ex.item);
                 if (ex.person) {
                     await ensurePerson(ex.person);
-                    batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    const ref1 = doc(collection(db, 'users', uid(), 'transactions'));
+                    addedRefs.push(ref1);
+                    batch.set(ref1, {
                         date: now, account: fromAcc, category: 'TRANSFER', item: ex.item, amount: -ex.amt, toFrom: ex.person
                     });
-                    batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    const ref2 = doc(collection(db, 'users', uid(), 'transactions'));
+                    addedRefs.push(ref2);
+                    batch.set(ref2, {
                         date: now, account: ex.person, category: ex.cat, item: ex.item, amount: ex.amt, toFrom: fromAcc
                     });
                 } else {
-                    batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                    const ref1 = doc(collection(db, 'users', uid(), 'transactions'));
+                    addedRefs.push(ref1);
+                    batch.set(ref1, {
                         date: now, account: fromAcc, category: ex.cat, item: ex.item, amount: -ex.amt, toFrom: mainTo
                     });
                 }
             }
 
             if (remainingAmt > 0 || extraEntries.length === 0) {
-                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
+                const ref = doc(collection(db, 'users', uid(), 'transactions'));
+                addedRefs.push(ref);
+                batch.set(ref, {
                     date: now, account: fromAcc, category: gv('e-cat'), item: gv('e-item'), amount: -remainingAmt, toFrom: mainTo
                 });
             }
@@ -7967,13 +8175,11 @@
                 btnDone('e-btn');
 
                 if (keepOpen) {
-                    // Only clear specific fields
                     document.getElementById('e-amt').value = '';
                     document.getElementById('e-item').value = '';
                     document.getElementById('e-item').focus();
                 } else {
                     clearForm(['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], 'e-err');
-                    // Deselect cards
                     document.querySelectorAll('.ae-acc-card').forEach(c => {
                         c.classList.remove('active');
                         const svg = c.querySelector('.ae-icon-sm');
@@ -7984,31 +8190,62 @@
                 document.getElementById('split-rows-container').innerHTML = '';
                 document.getElementById('split-tools').style.display = 'none';
                 _splitRows = 0;
-                await loadPeriodData(); toast('Expense saved');
+                
+                window.setUndoAction(async () => {
+                    const undoBatch = writeBatch(db);
+                    addedRefs.forEach(ref => undoBatch.delete(ref));
+                    await undoBatch.commit();
+                    toast('Expense undone');
+                    await loadPeriodData();
+                    loadAccounts();
+                });
+                
+                await loadPeriodData(); toast('Expense saved', true);
             } catch (e) {
                 document.getElementById('e-err').textContent = 'Error: ' + e.message;
             }
             document.getElementById('e-btn').disabled = false;
             if (!keepOpen) { document.getElementById('e-btn').textContent = 'Save Expense →'; }
         };
+        
         window.submitInc = async function () {
             clrInv(['i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from']); document.getElementById('i-err').textContent = '';
             let ok = true;['i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } }); if (!ok) return;
             await ensureCategory(gv('i-cat'), 'INCOME');
-            await addDoc(uRef('transactions'), { date: serverTimestamp(), account: gv('i-acc'), category: gv('i-cat'), item: gv('i-item'), amount: Math.abs(Number(gv('i-amt'))), toFrom: gv('i-from') });
+            const docRef = await addDoc(uRef('transactions'), { date: serverTimestamp(), account: gv('i-acc'), category: gv('i-cat'), item: gv('i-item'), amount: Math.abs(Number(gv('i-amt'))), toFrom: gv('i-from') });
+            
+            window.setUndoAction(async () => {
+                await deleteDoc(docRef);
+                toast('Income undone');
+                await loadPeriodData();
+                loadAccounts();
+            });
+            
             btnDone('i-btn'); clearForm(['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], 'i-err');
-            await loadPeriodData(); toast('Income saved');
+            await loadPeriodData(); toast('Income saved', true);
         };
+        
         window.submitTr = async function () {
             clrInv(['t-from', 't-to', 't-amt', 't-item']); document.getElementById('t-err').textContent = '';
             let ok = true;['t-from', 't-to', 't-amt', 't-item'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } });
             if (ok && gv('t-from') === gv('t-to')) { setInv('t-to'); document.getElementById('t-err').textContent = 'Accounts cannot match'; ok = false; }
             if (!ok) return;
             const amt = Math.abs(Number(gv('t-amt'))), now = serverTimestamp();
-            await addDoc(uRef('transactions'), { date: now, account: gv('t-from'), category: 'TRANSFER', item: gv('t-item'), amount: -amt, toFrom: gv('t-to') });
-            await addDoc(uRef('transactions'), { date: now, account: gv('t-to'), category: 'TRANSFER', item: gv('t-item'), amount: amt, toFrom: gv('t-from') });
+            const docRef1 = await addDoc(uRef('transactions'), { date: now, account: gv('t-from'), category: 'TRANSFER', item: gv('t-item'), amount: -amt, toFrom: gv('t-to') });
+            const docRef2 = await addDoc(uRef('transactions'), { date: now, account: gv('t-to'), category: 'TRANSFER', item: gv('t-item'), amount: amt, toFrom: gv('t-from') });
+            
+            window.setUndoAction(async () => {
+                const batch = writeBatch(db);
+                batch.delete(docRef1);
+                batch.delete(docRef2);
+                await batch.commit();
+                toast('Transfer undone');
+                await loadPeriodData();
+                loadAccounts();
+            });
+            
             btnDone('t-btn'); clearForm(['t-from', 't-to', 't-amt', 't-item'], 't-err');
-            await loadPeriodData(); toast('Transfer done');
+            await loadPeriodData(); toast('Transfer done', true);
         };
         window.toggleImportSection = function () {
             const sec = document.getElementById('import-section');
@@ -8957,9 +9194,11 @@
                 toast('No transactions selected');
                 return;
             }
-            if (!confirm(`Are you sure you want to delete ${ids.length} selected transaction(s)?\n\nThis cannot be undone.`)) {
+            if (!confirm(`Are you sure you want to delete ${ids.length} selected transaction(s)?`)) {
                 return;
             }
+            
+            const deletedTxns = _allTxns.filter(t => ids.includes(t.id));
             const delBtn = document.getElementById('txn-bulk-delete-btn');
             const origHtml = delBtn.innerHTML;
             delBtn.disabled = true;
@@ -8974,9 +9213,25 @@
                     });
                     await batch.commit();
                 }
-                toast(`Successfully deleted ${ids.length} transaction(s)`);
+                
+                window.setUndoAction(async () => {
+                    const undoBatch = writeBatch(db);
+                    deletedTxns.forEach(t => {
+                        const ref = uDoc('transactions', t.id);
+                        const { id, ...data } = t;
+                        undoBatch.set(ref, data);
+                    });
+                    await undoBatch.commit();
+                    toast('Delete undone');
+                    await loadPeriodData();
+                    loadAccounts();
+                    loadTransactionsPage();
+                });
+                
+                toast(`Successfully deleted ${ids.length} transaction(s)`, true);
                 toggleTxnSelectMode(false);
                 await loadPeriodData();
+                loadAccounts();
                 loadTransactionsPage();
             } catch (e) {
                 toast('Error deleting: ' + e.message);
@@ -8987,8 +9242,87 @@
         };
 
         window.openTxnEdit = function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); if (!r) return; const d = r.date?.toDate ? r.date.toDate() : new Date(r.date); document.getElementById('txn-edit-id').value = id; document.getElementById('txn-edit-date').value = d.toISOString().substring(0, 10); document.getElementById('txn-edit-sub').textContent = fmtDate(r.date) + ' — ' + (r.item || ''); document.getElementById('txn-edit-acc').value = r.account || ''; document.getElementById('txn-edit-cat').value = r.category || ''; document.getElementById('txn-edit-item').value = r.item || ''; document.getElementById('txn-edit-amt').value = r.amount || ''; document.getElementById('txn-edit-tofrom').value = r.toFrom || ''; openM('txnEditModal'); };
-        window.saveTxnEdit = async function () { const id = document.getElementById('txn-edit-id').value, dateStr = document.getElementById('txn-edit-date').value, acc = document.getElementById('txn-edit-acc').value.trim(), cat = document.getElementById('txn-edit-cat').value.trim(), item = document.getElementById('txn-edit-item').value.trim(), amt = document.getElementById('txn-edit-amt').value, tofrom = document.getElementById('txn-edit-tofrom').value.trim(); if (!acc || !cat || !item || !amt || !dateStr) return; const newDate = new Date(dateStr + "T12:00:00"); const btn = document.querySelector('#txnEditModal .add-btn'); btn.textContent = 'Saving…'; btn.disabled = true; try { await updateDoc(uDoc('transactions', id), { date: Timestamp.fromDate(newDate), account: acc, category: cat, item, amount: Number(amt), toFrom: tofrom }); closeM('txnEditModal'); await loadPeriodData(); loadTransactionsPage(); toast('Transaction updated'); } catch (e) { alert('Error saving.'); } btn.textContent = 'Save Changes'; btn.disabled = false; };
-        window.confirmDeleteTxn = async function (e, id) { if (e) e.stopPropagation(); const r = _allTxns.find(x => x.id === id); const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry'; if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return; await deleteDoc(uDoc('transactions', id)); await loadPeriodData(); loadTransactionsPage(); toast('Transaction deleted'); closeM('txnEditModal'); };
+        
+        window.saveTxnEdit = async function () {
+            const id = document.getElementById('txn-edit-id').value,
+                dateStr = document.getElementById('txn-edit-date').value,
+                acc = document.getElementById('txn-edit-acc').value.trim(),
+                cat = document.getElementById('txn-edit-cat').value.trim(),
+                item = document.getElementById('txn-edit-item').value.trim(),
+                amt = document.getElementById('txn-edit-amt').value,
+                tofrom = document.getElementById('txn-edit-tofrom').value.trim();
+            if (!acc || !cat || !item || !amt || !dateStr) return;
+            
+            const r = _allTxns.find(x => x.id === id);
+            if (!r) return;
+            const oldTxn = { ...r };
+            
+            const newDate = new Date(dateStr + "T12:00:00");
+            const btn = document.querySelector('#txnEditModal .add-btn');
+            btn.textContent = 'Saving…';
+            btn.disabled = true;
+            try {
+                await updateDoc(uDoc('transactions', id), {
+                    date: Timestamp.fromDate(newDate),
+                    account: acc,
+                    category: cat,
+                    item,
+                    amount: Number(amt),
+                    toFrom: tofrom
+                });
+                
+                window.setUndoAction(async () => {
+                    const undoBatch = writeBatch(db);
+                    const ref = uDoc('transactions', oldTxn.id);
+                    const { id: _, ...data } = oldTxn;
+                    undoBatch.set(ref, data);
+                    await undoBatch.commit();
+                    toast('Edit undone');
+                    await loadPeriodData();
+                    loadAccounts();
+                    loadTransactionsPage();
+                });
+                
+                closeM('txnEditModal');
+                await loadPeriodData();
+                loadAccounts();
+                loadTransactionsPage();
+                toast('Transaction updated', true);
+            } catch (e) {
+                alert('Error saving.');
+            }
+            btn.textContent = 'Save Changes';
+            btn.disabled = false;
+        };
+
+        window.confirmDeleteTxn = async function (e, id) {
+            if (e) e.stopPropagation();
+            const r = _allTxns.find(x => x.id === id);
+            const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry';
+            if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return;
+            
+            const deletedTxn = { ...r };
+            await deleteDoc(uDoc('transactions', id));
+            
+            window.setUndoAction(async () => {
+                const undoBatch = writeBatch(db);
+                const ref = uDoc('transactions', deletedTxn.id);
+                const { id: _, ...data } = deletedTxn;
+                undoBatch.set(ref, data);
+                await undoBatch.commit();
+                toast('Transaction restored');
+                await loadPeriodData();
+                loadAccounts();
+                loadTransactionsPage();
+            });
+            
+            await loadPeriodData();
+            loadAccounts();
+            loadTransactionsPage();
+            toast('Transaction deleted', true);
+            closeM('txnEditModal');
+        };
+
         window.deleteTxnFromModal = function () { const id = document.getElementById('txn-edit-id').value; if (id) confirmDeleteTxn(null, id); };
 
         /* ═══════════════════════════════════════════════════════
@@ -9468,225 +9802,4 @@
                 await ensureAccount(d.account);
                 await ensureItem(d.item);
                 batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
-                    date: now, account: d.account, category: d.category, item: d.item,
-                    amount: -Math.abs(Number(d.amount)), toFrom: d.toFrom || ''
-                });
-            } else if (cmd.action === 'ADD_INCOME') {
-                await ensureCategory(d.category, 'INCOME');
-                await ensureAccount(d.account);
-                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
-                    date: now, account: d.account, category: d.category, item: d.item,
-                    amount: Math.abs(Number(d.amount)), toFrom: d.toFrom || ''
-                });
-            } else if (cmd.action === 'ADD_TRANSFER') {
-                await ensureAccount(d.fromAccount);
-                await ensureAccount(d.toAccount);
-                const amt = Math.abs(Number(d.amount));
-                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
-                    date: now, account: d.fromAccount, category: 'TRANSFER', item: d.item || 'Transfer',
-                    amount: -amt, toFrom: d.toAccount
-                });
-                batch.set(doc(collection(db, 'users', uid(), 'transactions')), {
-                    date: now, account: d.toAccount, category: 'TRANSFER', item: d.item || 'Transfer',
-                    amount: amt, toFrom: d.fromAccount
-                });
-            } else if (cmd.action === 'ADD_ACCOUNT') {
-                batch.set(doc(collection(db, 'users', uid(), 'accounts')), {
-                    name: d.name, type: d.type || 'BANK', openingBalance: Number(d.openingBalance) || 0
-                });
-            } else if (cmd.action === 'ADD_CATEGORY') {
-                batch.set(doc(collection(db, 'users', uid(), 'categories')), {
-                    name: d.name, type: d.type || 'EXPENSE'
-                });
-            } else if (cmd.action === 'ADD_TEMPLATE') {
-                batch.set(doc(collection(db, 'users', uid(), 'templates')), {
-                    type: d.type || 'EXPENSE', name: d.name, account: d.account || '',
-                    category: d.category || '', item: d.item || d.name, amount: d.amount || '', tofrom: d.toFrom || ''
-                });
-            }
-
-            await batch.commit();
-            await loadAllData();
-            toast('AI Command Executed');
-        }
-
-        window.sendChat = async function () {
-            const inp = document.getElementById('chatInput');
-            const btn = document.getElementById('chatSendBtn');
-            const text = inp.value.trim();
-            if (!text) return;
-
-            appendMsg(text, 'user');
-            _chatThread.push({ role: 'user', content: text });
-            inp.value = '';
-            btn.disabled = true;
-            document.getElementById('chatTyping').style.display = 'block';
-
-            try {
-                const response = await callGroq();
-                const aiMsg = response.choices[0].message.content;
-                _chatThread.push({ role: 'assistant', content: aiMsg });
-
-                let cleanMsg = aiMsg;
-                let data = null;
-
-                function extractActionJSON(str) {
-                    const fence = str.match(/```json\n([\s\S]*?)\n```/);
-                    if (fence) return { json: fence[1], full: fence[0] };
-                    let depth = 0, start = -1;
-                    for (let i = 0; i < str.length; i++) {
-                        if (str[i] === '{') {
-                            if (depth === 0) start = i;
-                            depth++;
-                        } else if (str[i] === '}') {
-                            depth--;
-                            if (depth === 0 && start !== -1) {
-                                const candidate = str.substring(start, i + 1);
-                                if (candidate.includes('"action"') || candidate.includes('"actions"')) return { json: candidate, full: candidate };
-                                start = -1;
-                            }
-                        }
-                    }
-                    return null;
-                }
-
-                const extracted = extractActionJSON(aiMsg);
-                if (extracted) {
-                    try {
-                        let rawData = JSON.parse(extracted.json);
-                        if (rawData.actions && Array.isArray(rawData.actions)) {
-                            data = rawData;
-                        } else if (rawData.action) {
-                            data = { actions: [rawData] };
-                        }
-                        cleanMsg = aiMsg.replace(extracted.full, '').trim();
-                    } catch (e) { console.error("JSON parse error", e); }
-                }
-
-                appendMsg(cleanMsg, 'ai', data);
-            } catch (e) {
-                appendMsg("Sorry, I'm having trouble connecting to the brain. Check your API key.", 'ai');
-            } finally {
-                btn.disabled = false;
-                document.getElementById('chatTyping').style.display = 'none';
-            }
-        };
-
-        async function callGroq() {
-            const key = getGroqKey();
-            if (!key) throw new Error('API Key not set');
-            const accountsList = _accounts.map(a => a.name).join(', ');
-            const categoriesList = _categories.map(c => c.name).join(', ');
-            const recent = _allTxns.slice(-20).map(t => `${fmtDate(t.date)}: ${t.account} -> ${t.item} (${rs(t.amount)})`).join('\n');
-
-            const systemPrompt = `You are a financial assistant for 'Finance Tracker'. 
-Current Date: ${new Date().toDateString()}
-User Accounts: ${accountsList}
-User Categories: ${categoriesList}
-Recent Transactions:
-${recent}
-
-Instructions:
-1. Help users track finances. Extract details from messages or descriptions.
-2. IMPORTANT: ONLY include JSON actions if the user explicitly asks to "add", "create", "record", "log", "track", or similar proactive commands to modify their data.
-3. If the user is just "reviewing", "analyzing", "finding", or "checking" expenses, DO NOT include any JSON actions. Just provide a natural language response.
-4. If an action or multiple actions are identified as per instruction #2, respond naturally and append a JSON block with an "actions" array. Supported actions:
-
-{"actions": [
-  {"action":"ADD_EXPENSE","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}},
-  {"action":"ADD_INCOME","data":{"account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}},
-  {"action":"ADD_TRANSFER","data":{"fromAccount":"...","toAccount":"...","amount":100,"item":"..."}},
-  {"action":"ADD_ACCOUNT","data":{"name":"...","type":"BANK|CREDIT_CARD|PERSON","openingBalance":0}},
-  {"action":"ADD_CATEGORY","data":{"name":"...","type":"EXPENSE|INCOME"}},
-  {"action":"ADD_TEMPLATE","data":{"name":"...","type":"EXPENSE|INCOME","account":"...","category":"...","item":"...","amount":100,"toFrom":"..."}}
-]}
-
-5. Use existing accounts/categories if they match.
-6. Answer financial questions based on the provided recent transactions.
-7. Be concise and friendly.`;
-
-            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + key,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
-                    messages: [
-                        { role: 'system', content: systemPrompt },
-                        ..._chatThread
-                    ],
-                    temperature: 0.3
-                })
-            });
-
-            if (!resp.ok) throw new Error('API Error');
-            return await resp.json();
-        }
-
-        document.getElementById('chatInput')?.addEventListener('keydown', e => {
-            if (e.key === 'Enter') sendChat();
-        });
-    </script>
-    <div class="modal-ov" id="splitSelModal" onclick="if(event.target===this)closeM('splitSelModal')">
-        <div class="modal-box" style="width: 400px; max-width: 96vw; height: auto; max-height: 85vh; display: flex; flex-direction: column;">
-            <div class="modal-hd">
-                <div>
-                    <div class="mhd-name">Select People for Split</div>
-                    <div class="mhd-sub">Select multiple persons to add split rows</div>
-                </div>
-                <button class="m-close" onclick="closeM('splitSelModal')">✕</button>
-            </div>
-            <div style="padding: 16px 20px 8px; display: flex; gap: 8px;">
-                <input class="form-input" id="split-person-search" placeholder="Search person accounts..." oninput="filterSplitPeopleList()" style="margin:0;">
-            </div>
-            <div class="modal-bd" id="split-people-list" style="padding: 6px 20px 16px; overflow-y: auto; flex: 1; min-height: 120px; max-height: 250px;">
-                <!-- List of checkboxes -->
-            </div>
-            <div style="padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface);">
-                <button class="txn-clr-btn" style="width:auto; margin:0; font-size:12px; padding:8px 16px;" onclick="closeM('splitSelModal')">Cancel</button>
-                <button class="add-btn" style="width:auto; margin:0; padding:10px 20px; font-size:12px;" onclick="confirmSplitPeopleSelection()">Add Selected (<span id="split-sel-count">0</span>)</button>
-            </div>
-        </div>
-    </div>
-    <div class="modal-ov" id="txnFilterModal" onclick="if(event.target===this)closeM('txnFilterModal')">
-        <div class="modal-box f-modal-box">
-            <div class="modal-hd">
-                <div>
-                    <div class="mhd-name">Filters</div>
-                    <div class="mhd-sub">Narrow down transactions</div>
-                </div>
-                <div class="f-clear-all" onclick="clearAllFilters(); applyFilters()">Clear All</div>
-            </div>
-            <div class="f-layout">
-                <div class="f-sidebar" id="f-sidebar">
-                    <div class="f-side-item active" onclick="switchFilterTab('type',this)">Type<span
-                            class="f-side-badge" id="f-badge-type" style="display:none">0</span></div>
-                    <div class="f-side-item" onclick="switchFilterTab('account',this)">Account<span class="f-side-badge"
-                            id="f-badge-account" style="display:none">0</span></div>
-                    <div class="f-side-item" onclick="switchFilterTab('cat',this)">Category<span class="f-side-badge"
-                            id="f-badge-cat" style="display:none">0</span></div>
-                    <div class="f-side-item" onclick="switchFilterTab('item',this)">Item<span class="f-side-badge"
-                            id="f-badge-item" style="display:none">0</span></div>
-                    <div class="f-side-item" onclick="switchFilterTab('tofrom',this)">To/From<span class="f-side-badge"
-                            id="f-badge-tofrom" style="display:none">0</span></div>
-                    <div class="f-side-item" onclick="switchFilterTab('date',this)">Date Range</div>
-                </div>
-                <div class="f-content" id="f-content"></div>
-            </div>
-            <div class="f-footer">
-                <button class="txn-clr-btn" style="width:auto" onclick="closeM('txnFilterModal')">Close</button>
-                <button class="add-btn" id="txn-apply-btn" style="width:auto; margin:0; padding:10px 24px;"
-                    onclick="applyFilters()">Apply Filters</button>
-            </div>
-        </div>
-    </div>
-    <div class="modal-ov" id="ldrFilterModal" onclick="if(event.target===this)closeM('ldrFilterModal')">
-        <div class="modal-box f-modal-box">
-            <div class="modal-hd">
-                <div>
-                    <div class="mhd-name">Ledger Filters</div>
-                    <div class="mhd-sub">Filter entries for the selected account</div>
-                </div>
-           
+                    date: now, account: d.account, category: d.category, item: 
