@@ -9193,7 +9193,7 @@
             const fromDate = fromVal ? new Date(fromVal) : null, toValFull = toVal ? toVal + 'T23:59:59' : null;
             const toDate = toValFull ? new Date(toValFull) : null;
 
-            _filteredTxns = _allTxns.filter(r => {
+            const matchesFilter = _allTxns.map(r => {
                 const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
                 if (fromDate && d < fromDate) return false; if (toDate && d > toDate) return false;
                 if (_mselState.type.size > 0) {
@@ -9207,6 +9207,18 @@
                 if (_mselState.tofrom.size > 0 && !_mselState.tofrom.has(r.toFrom)) return false;
                 if (q) { const hay = ((r.item || '') + ' ' + (r.category || '') + ' ' + (r.account || '') + ' ' + (r.toFrom || '')).toLowerCase(); if (!hay.includes(q)) return false; }
                 return true;
+            });
+
+            _filteredTxns = _allTxns.filter((r, idx) => {
+                if (matchesFilter[idx]) return true;
+                const match = findMatchingTransfer(r);
+                if (match) {
+                    const matchIdx = _allTxns.findIndex(x => x.id === match.id);
+                    if (matchIdx !== -1 && matchesFilter[matchIdx]) {
+                        return true;
+                    }
+                }
+                return false;
             }).reverse();
 
             const groupedTxns = groupTransfers(_filteredTxns);
