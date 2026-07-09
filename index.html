@@ -9106,16 +9106,14 @@
         function findMatchingTransfer(txn) {
             if (!txn) return null;
             const txnCat = (txn.category || '').toUpperCase();
-            if (txnCat !== 'TRANSFER') return null;
-            
             const txnDateStr = fmtDate(txn.date);
             return _allTxns.find(candidate => 
                 candidate.id !== txn.id &&
-                (candidate.category || '').toUpperCase() === 'TRANSFER' &&
                 Math.abs(Number(candidate.amount) + Number(txn.amount)) < 0.01 &&
                 candidate.account === txn.toFrom &&
                 candidate.toFrom === txn.account &&
-                fmtDate(candidate.date) === txnDateStr
+                fmtDate(candidate.date) === txnDateStr &&
+                (txnCat === 'TRANSFER' || (candidate.category || '').toUpperCase() === 'TRANSFER')
             );
         }
 
@@ -9126,48 +9124,51 @@
                 const r = rows[i];
                 if (visited.has(r.id)) continue;
                 const rCat = (r.category || '').toUpperCase();
-                if (rCat === 'TRANSFER') {
-                    let matchIdx = -1;
-                    const rDateStr = fmtDate(r.date);
-                    const rAmt = Number(r.amount);
-                    for (let j = i + 1; j < rows.length; j++) {
-                        const candidate = rows[j];
-                        if (visited.has(candidate.id)) continue;
-                        const cCat = (candidate.category || '').toUpperCase();
-                        if (cCat === 'TRANSFER' && 
-                            Math.abs(Number(candidate.amount) + rAmt) < 0.01 && 
-                            candidate.account === r.toFrom && 
-                            candidate.toFrom === r.account &&
-                            fmtDate(candidate.date) === rDateStr) {
-                            matchIdx = j;
-                            break;
-                        }
-                    }
-                    if (matchIdx !== -1) {
-                        const match = rows[matchIdx];
-                        visited.add(r.id);
-                        visited.add(match.id);
-                        const source = rAmt < 0 ? r : match;
-                        const dest = rAmt < 0 ? match : r;
-                        grouped.push({
-                            id: source.id,
-                            isGroupedTransfer: true,
-                            sourceId: source.id,
-                            destId: dest.id,
-                            date: source.date,
-                            account: `${source.account} → ${dest.account}`,
-                            category: 'TRANSFER',
-                            item: source.item,
-                            toFrom: '—',
-                            amount: Math.abs(rAmt),
-                            closingBalance: '—',
-                            rawSource: source,
-                            rawDest: dest
-                        });
-                        continue;
+                
+                // We initiate grouping if either this transaction or its counterpart is TRANSFER
+                let matched = false;
+                let matchIdx = -1;
+                const rDateStr = fmtDate(r.date);
+                const rAmt = Number(r.amount);
+                
+                for (let j = i + 1; j < rows.length; j++) {
+                    const candidate = rows[j];
+                    if (visited.has(candidate.id)) continue;
+                    const cCat = (candidate.category || '').toUpperCase();
+                    if ((rCat === 'TRANSFER' || cCat === 'TRANSFER') && 
+                        Math.abs(Number(candidate.amount) + rAmt) < 0.01 && 
+                        candidate.account === r.toFrom && 
+                        candidate.toFrom === r.account &&
+                        fmtDate(candidate.date) === rDateStr) {
+                        matchIdx = j;
+                        break;
                     }
                 }
-                grouped.push(r);
+                
+                if (matchIdx !== -1) {
+                    const match = rows[matchIdx];
+                    visited.add(r.id);
+                    visited.add(match.id);
+                    const source = rAmt < 0 ? r : match;
+                    const dest = rAmt < 0 ? match : r;
+                    grouped.push({
+                        id: source.id,
+                        isGroupedTransfer: true,
+                        sourceId: source.id,
+                        destId: dest.id,
+                        date: source.date,
+                        account: `${source.account} → ${dest.account}`,
+                        category: 'TRANSFER',
+                        item: source.item,
+                        toFrom: '—',
+                        amount: Math.abs(rAmt),
+                        closingBalance: '—',
+                        rawSource: source,
+                        rawDest: dest
+                    });
+                } else {
+                    grouped.push(r);
+                }
             }
             return grouped;
         }
