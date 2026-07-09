@@ -9104,18 +9104,17 @@
         let _visibleTxnLimit = 200;
 
         function findMatchingTransfer(txn) {
-            if (!txn || txn.category !== 'TRANSFER') return null;
+            if (!txn) return null;
+            const isTxnTransfer = txn.category === 'TRANSFER';
             const txnDate = txn.date?.toDate ? txn.date.toDate().getTime() : new Date(txn.date).getTime();
-            const tDateStr = new Date(txnDate).toDateString();
-            return _allTxns.find(candidate => {
-                if (candidate.id === txn.id || candidate.category !== 'TRANSFER') return false;
-                if (Math.abs(Number(candidate.amount) + Number(txn.amount)) > 0.01) return false;
-                if (candidate.account !== txn.toFrom || candidate.toFrom !== txn.account) return false;
-                
-                const cDate = candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime();
-                const cDateStr = new Date(cDate).toDateString();
-                return tDateStr === cDateStr || Math.abs(txnDate - cDate) < 7200000;
-            });
+            return _allTxns.find(candidate => 
+                candidate.id !== txn.id &&
+                (isTxnTransfer || candidate.category === 'TRANSFER') &&
+                Math.abs(Number(candidate.amount) + Number(txn.amount)) < 0.01 &&
+                candidate.account === txn.toFrom &&
+                candidate.toFrom === txn.account &&
+                Math.abs(txnDate - (candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime())) < 5000
+            );
         }
 
         function groupTransfers(rows) {
@@ -9124,51 +9123,52 @@
             for (let i = 0; i < rows.length; i++) {
                 const r = rows[i];
                 if (visited.has(r.id)) continue;
-                if (r.category === 'TRANSFER') {
-                    let matchIdx = -1;
-                    const rDate = r.date?.toDate ? r.date.toDate().getTime() : new Date(r.date).getTime();
-                    const rDateStr = new Date(rDate).toDateString();
-                    const rAmt = Number(r.amount);
-                    for (let j = i + 1; j < rows.length; j++) {
-                        const candidate = rows[j];
-                        if (visited.has(candidate.id)) continue;
-                        if (candidate.category === 'TRANSFER' && 
-                            Math.abs(Number(candidate.amount) + rAmt) < 0.01 && 
-                            candidate.account === r.toFrom && 
-                            candidate.toFrom === r.account) {
-                            const cDate = candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime();
-                            const cDateStr = new Date(cDate).toDateString();
-                            if (rDateStr === cDateStr || Math.abs(rDate - cDate) < 7200000) {
-                                matchIdx = j;
-                                break;
-                            }
+                
+                let match = null;
+                const rDate = r.date?.toDate ? r.date.toDate().getTime() : new Date(r.date).getTime();
+                const rAmt = Number(r.amount);
+                const canBeTransfer = r.category === 'TRANSFER';
+                
+                for (let j = 0; j < rows.length; j++) {
+                    if (i === j || visited.has(rows[j].id)) continue;
+                    const candidate = rows[j];
+                    
+                    if ((canBeTransfer || candidate.category === 'TRANSFER') &&
+                        candidate.account === r.toFrom &&
+                        candidate.toFrom === r.account &&
+                        Math.abs(Number(candidate.amount) + rAmt) < 0.01) {
+                        
+                        const cDate = candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime();
+                        if (Math.abs(rDate - cDate) < 5000) {
+                            match = candidate;
+                            break;
                         }
                     }
-                    if (matchIdx !== -1) {
-                        const match = rows[matchIdx];
-                        visited.add(r.id);
-                        visited.add(match.id);
-                        const source = rAmt < 0 ? r : match;
-                        const dest = rAmt < 0 ? match : r;
-                        grouped.push({
-                            id: source.id,
-                            isGroupedTransfer: true,
-                            sourceId: source.id,
-                            destId: dest.id,
-                            date: source.date,
-                            account: `${source.account} → ${dest.account}`,
-                            category: 'TRANSFER',
-                            item: source.item,
-                            toFrom: '—',
-                            amount: Math.abs(rAmt),
-                            closingBalance: '—',
-                            rawSource: source,
-                            rawDest: dest
-                        });
-                        continue;
-                    }
                 }
-                grouped.push(r);
+                
+                if (match) {
+                    visited.add(r.id);
+                    visited.add(match.id);
+                    const source = rAmt < 0 ? r : match;
+                    const dest = rAmt < 0 ? match : r;
+                    grouped.push({
+                        id: source.id,
+                        isGroupedTransfer: true,
+                        sourceId: source.id,
+                        destId: dest.id,
+                        date: source.date,
+                        account: `${source.account} → ${dest.account}`,
+                        category: 'TRANSFER',
+                        item: source.item,
+                        toFrom: '—',
+                        amount: Math.abs(rAmt),
+                        closingBalance: '—',
+                        rawSource: source,
+                        rawDest: dest
+                    });
+                } else {
+                    grouped.push(r);
+                }
             }
             return grouped;
         }
