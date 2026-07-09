@@ -6091,7 +6091,7 @@
         let curM, curY;
         let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [], _aiSettings = {};
         let _ldrFilteredRows = [];
-        const _ldrMselState = { type: new Set(), cat: new Set(), account: new Set() };
+        const _ldrMselState = { type: new Set(['Expense']), cat: new Set(), account: new Set() };
         let _ldrActiveAccount = '';
         let expTpls = [], incTpls = [];
         const _mselState = { type: new Set(), account: new Set(), cat: new Set(), item: new Set(), tofrom: new Set() };
@@ -7080,23 +7080,28 @@
         /* ═══ LEDGER ═══ */
         function populateLdrSel(accs) {
             if (_ldrMselState.account.size === 0 && accs.length) {
-                // Find account with most transactions
-                const counts = {};
-                _allTxns.forEach(t => {
-                    if (t.account) counts[t.account] = (counts[t.account] || 0) + 1;
-                });
+                const defAcc = accs.find(a => a.isDefault === true);
+                if (defAcc) {
+                    _ldrMselState.account.add(defAcc.name);
+                } else {
+                    // Find account with most transactions as fallback
+                    const counts = {};
+                    _allTxns.forEach(t => {
+                        if (t.account) counts[t.account] = (counts[t.account] || 0) + 1;
+                    });
 
-                let maxAcc = null, maxCount = -1;
-                accs.forEach(a => {
-                    const c = counts[a.name] || 0;
-                    if (c > maxCount) {
-                        maxCount = c;
-                        maxAcc = a.name;
-                    }
-                });
+                    let maxAcc = null, maxCount = -1;
+                    accs.forEach(a => {
+                        const c = counts[a.name] || 0;
+                        if (c > maxCount) {
+                            maxCount = c;
+                            maxAcc = a.name;
+                        }
+                    });
 
-                if (maxAcc) _ldrMselState.account.add(maxAcc);
-                else if (accs.length) _ldrMselState.account.add(accs[0].name);
+                    if (maxAcc) _ldrMselState.account.add(maxAcc);
+                    else if (accs.length) _ldrMselState.account.add(accs[0].name);
+                }
             }
             loadLedger();
         }
@@ -8100,13 +8105,9 @@
             div.id = 'sp-row-' + rowId;
             div.innerHTML = `
     <div class="mini-form-row" style="margin-bottom:5px;align-items:flex-start;">
-      <div style="position:relative;flex:1;min-width:80px;">
+      <div style="position:relative;flex:1;">
         <input class="mini-input sp-person" id="sp-person-${rowId}" placeholder="Person / To (Optional)" autocomplete="off" style="width:100%" value="${escH(name || '')}">
         <div id="sp-dd-person-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
-      </div>
-      <div style="position:relative;flex:1;min-width:80px;">
-        <input class="mini-input sp-cat" id="sp-cat-${rowId}" placeholder="Category" autocomplete="off" style="width:100%" value="${escH(cat || document.getElementById('e-cat').value)}">
-        <div id="sp-dd-cat-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
       </div>
     </div>
     <div class="mini-form-row" style="flex-wrap:nowrap;align-items:flex-start;">
@@ -8122,11 +8123,9 @@
             document.getElementById('split-tools').style.display = 'block';
             
             const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
-            const catNames = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
             const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse();
 
             setupSplitDD('sp-person-' + rowId, 'sp-dd-person-' + rowId, personAccNames);
-            setupSplitDD('sp-cat-' + rowId, 'sp-dd-cat-' + rowId, catNames);
             setupSplitDD('sp-item-' + rowId, 'sp-dd-item-' + rowId, itemNames);
         };
 
@@ -8175,7 +8174,7 @@
 
             for (const r of splitRows) {
                 const p = r.querySelector('.sp-person').value.trim();
-                const c = r.querySelector('.sp-cat').value.trim() || gv('e-cat');
+                const c = p ? 'TRANSFER' : gv('e-cat');
                 const i = r.querySelector('.sp-item').value.trim() || gv('e-item');
                 const a = Math.abs(Number(r.querySelector('.sp-amt').value));
                 if (a > 0) {
