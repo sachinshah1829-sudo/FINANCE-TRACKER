@@ -7255,6 +7255,90 @@
             if (btn) btn.textContent = total > 0 ? `Apply (${total})` : 'Apply Filters';
         };
 
+        window.isLdrFilterDefault = function () {
+            if (_ldrMselState.cat.size > 0) return false;
+            if (_ldrMselState.type.size !== 1 || !_ldrMselState.type.has('Expense')) return false;
+            if (_ldrMselState.account.size !== 1) return false;
+
+            if (_accounts && _accounts.length) {
+                const defAcc = _accounts.find(a => a.isDefault === true);
+                let defAccName = '';
+                if (defAcc) {
+                    defAccName = defAcc.name;
+                } else {
+                    const counts = {};
+                    _allTxns.forEach(t => {
+                        if (t.account) counts[t.account] = (counts[t.account] || 0) + 1;
+                    });
+                    let maxAcc = null, maxCount = -1;
+                    _accounts.forEach(a => {
+                        const c = counts[a.name] || 0;
+                        if (c > maxCount) {
+                            maxCount = c;
+                            maxAcc = a.name;
+                        }
+                    });
+                    if (maxAcc) defAccName = maxAcc;
+                    else defAccName = _accounts[0].name;
+                }
+                if (defAccName && !_ldrMselState.account.has(defAccName)) return false;
+            }
+            return true;
+        };
+
+        window.resetLdrFiltersToDefault = function () {
+            ['type', 'cat', 'account'].forEach(k => {
+                _ldrMselState[k].clear();
+                if (_tempLdrMselState[k]) _tempLdrMselState[k].clear();
+            });
+            _lfSearchQuery = '';
+
+            _ldrMselState.type.add('Expense');
+            if (_tempLdrMselState.type) _tempLdrMselState.type.add('Expense');
+
+            if (_accounts && _accounts.length) {
+                const defAcc = _accounts.find(a => a.isDefault === true);
+                let accName = '';
+                if (defAcc) {
+                    accName = defAcc.name;
+                } else {
+                    const counts = {};
+                    _allTxns.forEach(t => {
+                        if (t.account) counts[t.account] = (counts[t.account] || 0) + 1;
+                    });
+                    let maxAcc = null, maxCount = -1;
+                    _accounts.forEach(a => {
+                        const c = counts[a.name] || 0;
+                        if (c > maxCount) {
+                            maxCount = c;
+                            maxAcc = a.name;
+                        }
+                    });
+                    if (maxAcc) accName = maxAcc;
+                    else accName = _accounts[0].name;
+                }
+                if (accName) {
+                    _ldrMselState.account.add(accName);
+                    if (_tempLdrMselState.account) _tempLdrMselState.account.add(accName);
+                }
+            }
+
+            const resetBtn = document.getElementById('ldr-reset-btn');
+            if (resetBtn) {
+                resetBtn.style.display = 'none';
+            }
+
+            const badge = document.getElementById('lf-count-badge');
+            if (badge) {
+                badge.style.display = 'none';
+                badge.textContent = '0';
+            }
+
+            updateLdrFilterBadges();
+            renderLdrFilterOptions();
+            loadLedger();
+        };
+
         window.applyLdrFilters = function () {
             ['type', 'cat', 'account'].forEach(k => {
                 _ldrMselState[k] = new Set(_tempLdrMselState[k]);
@@ -7266,10 +7350,6 @@
                 badge.textContent = totalActive;
                 badge.style.display = totalActive > 0 ? 'block' : 'none';
             }
-            const resetBtn = document.getElementById('ldr-reset-btn');
-            if (resetBtn) {
-                resetBtn.style.display = totalActive > 0 ? 'flex' : 'none';
-            }
             closeM('ldrFilterModal');
             loadLedger();
         };
@@ -7280,10 +7360,6 @@
                 if (_tempLdrMselState[k]) _tempLdrMselState[k].clear();
             });
             _lfSearchQuery = '';
-            const resetBtn = document.getElementById('ldr-reset-btn');
-            if (resetBtn) {
-                resetBtn.style.display = 'none';
-            }
             updateLdrFilterBadges();
             renderLdrFilterOptions();
         };
@@ -7297,6 +7373,11 @@
         };
 
         function loadLedger() {
+            const resetBtn = document.getElementById('ldr-reset-btn');
+            if (resetBtn) {
+                resetBtn.style.display = isLdrFilterDefault() ? 'none' : 'flex';
+            }
+
             const accs = _ldrMselState.account;
 
             if (accs.size === 0) {
@@ -9131,6 +9212,23 @@
             }
         };
 
+        window.isTxnFilterDefault = function () {
+            if (_mselState.type.size > 0) return false;
+            if (_mselState.account.size > 0) return false;
+            if (_mselState.cat.size > 0) return false;
+            if (_mselState.item.size > 0) return false;
+            if (_mselState.tofrom.size > 0) return false;
+
+            const df = document.getElementById('txn-date-from'), dt = document.getElementById('txn-date-to');
+            if (df && df.value) return false;
+            if (dt && dt.value) return false;
+
+            const search = document.getElementById('txn-search');
+            if (search && search.value.trim()) return false;
+
+            return true;
+        };
+
         window.applyFilters = function () {
             ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => {
                 _mselState[k] = new Set(_tempMselState[k]);
@@ -9149,10 +9247,6 @@
                 badge.textContent = totalActive;
                 badge.style.display = totalActive > 0 ? 'block' : 'none';
             }
-            const resetBtn = document.getElementById('txn-reset-btn');
-            if (resetBtn) {
-                resetBtn.style.display = totalActive > 0 ? 'flex' : 'none';
-            }
 
             closeM('txnFilterModal');
             filterTxns();
@@ -9168,11 +9262,6 @@
             const df = document.getElementById('txn-date-from'), dt = document.getElementById('txn-date-to');
             if (df) df.value = ''; if (dt) dt.value = '';
             _tempMselState.dateFrom = ''; _tempMselState.dateTo = '';
-
-            const resetBtn = document.getElementById('txn-reset-btn');
-            if (resetBtn) {
-                resetBtn.style.display = 'none';
-            }
 
             updateFilterBadges();
             renderFilterOptions();
@@ -9280,6 +9369,11 @@
             }
             if (bulkDelBtn) {
                 bulkDelBtn.style.display = 'none';
+            }
+
+            const resetBtn = document.getElementById('txn-reset-btn');
+            if (resetBtn) {
+                resetBtn.style.display = isTxnFilterDefault() ? 'none' : 'flex';
             }
 
             const searchEl = document.getElementById('txn-search');
