@@ -7257,43 +7257,50 @@
 
             const sd = new Date(curY, curM - 1, 1), ed = new Date(curY, curM, 0, 23, 59, 59);
 
-            // Initial filter by accounts and date
-            let rows = _allTxns.filter(t => {
+            const matchesLdrFilter = _allTxns.map(t => {
                 const d = t.date?.toDate ? t.date.toDate() : new Date(t.date);
-                return accs.has(t.account) && d >= sd && d <= ed;
+                if (!(accs.has(t.account) && d >= sd && d <= ed)) return false;
+                
+                if (_ldrMselState.type.size > 0) {
+                    let typeStr = 'Transfer';
+                    if (t.category?.toUpperCase() !== 'TRANSFER') {
+                        typeStr = Number(t.amount) < 0 ? 'Expense' : 'Income';
+                    }
+                    if (!_ldrMselState.type.has(typeStr)) return false;
+                }
+                
+                if (_ldrMselState.cat.size > 0 && !_ldrMselState.cat.has(t.category)) return false;
+                
+                return true;
             });
 
-            // Filter by Type (Multi-select)
-            if (_ldrMselState.type.size > 0) {
-                rows = rows.filter(r => {
-                    let t = 'Transfer';
-                    if (r.category?.toUpperCase() !== 'TRANSFER') {
-                        t = Number(r.amount) < 0 ? 'Expense' : 'Income';
+            let rows = _allTxns.filter((t, idx) => {
+                if (matchesLdrFilter[idx]) return true;
+                const match = findMatchingTransfer(t);
+                if (match) {
+                    const matchIdx = _allTxns.findIndex(x => x.id === match.id);
+                    if (matchIdx !== -1 && matchesLdrFilter[matchIdx]) {
+                        return true;
                     }
-                    return _ldrMselState.type.has(t);
-                });
-            }
+                }
+                return false;
+            });
 
-            // Filter by Category (Multi-select)
-            if (_ldrMselState.cat.size > 0) {
-                rows = rows.filter(r => _ldrMselState.cat.has(r.category));
-            }
-
-            _ldrFilteredRows = rows;
+            const groupedRows = groupTransfers(rows);
+            _ldrFilteredRows = groupedRows;
 
             const totalSpent = rows.filter(r => (r.category || '').toUpperCase() !== 'TRANSFER' && Number(r.amount) < 0).reduce((s, r) => s + Math.abs(Number(r.amount)), 0);
 
-            // Total balance is sum of current balances of all selected accounts
             const totalBal = [...accs].reduce((sum, accName) => {
                 const acc = _accounts.find(a => a.name === accName);
                 return sum + (acc ? (acc.currentBalance || 0) : 0);
             }, 0);
 
             document.getElementById('ls-spent').textContent = rs(totalSpent);
-            document.getElementById('ls-count').textContent = rows.length;
+            document.getElementById('ls-count').textContent = groupedRows.length;
             document.getElementById('ls-bal').textContent = rs(totalBal);
 
-            renderLedger(rows);
+            renderLedger(groupedRows);
         }
         window.loadLedger = loadLedger;
 
@@ -7323,15 +7330,22 @@
             `;
 
             document.getElementById('ldrTblWrap').innerHTML = tableHdr + rows.map((r, i) => {
-                const amt = Number(r.amount), cls = amt >= 0 ? 'td-pos' : 'td-neg';
+                const amt = Number(r.amount), pos = amt >= 0;
+                const isGrouped = r.isGroupedTransfer === true;
+                const amtSpan = isGrouped 
+                    ? `<span style="color:var(--t2); font-weight:600;">${rs(amt)}</span>`
+                    : `<span class="${pos ? 'td-pos' : 'td-neg'}">${pos ? '+' : ''}${rs(amt)}</span>`;
+                const balVal = isGrouped ? '—' : rs(r.closingBalance || 0);
+                const acctVal = isMulti ? `<td style="font-size:10px; color:var(--t3);">${escH(r.account)}</td>` : '';
+
                 return `<tr class="txn-tr" style="animation-delay:${Math.min(i, 25) * 0.022}s">
                     <td class="td-date">${fmtDate(r.date)}</td>
-                    ${isMulti ? `<td style="font-size:10px; color:var(--t3);">${escH(r.account)}</td>` : ''}
+                    ${acctVal}
                     <td class="td-item">${escH(r.item || '—')}</td>
                     <td><span class="td-cat">${escH(r.category || '')}</span></td>
                     <td class="td-tof">${escH(r.toFrom || '—')}</td>
-                    <td class="ra"><span class="${cls}">${amt >= 0 ? '+' : ''}${rs(amt)}</span></td>
-                    <td class="ra td-bal">${rs(r.closingBalance || 0)}</td>
+                    <td class="ra">${amtSpan}</td>
+                    <td class="ra td-bal">${balVal}</td>
                 </tr>`;
             }).join('') + '</tbody></table></div>';
         }
@@ -7396,14 +7410,19 @@
             // Table
             const rsPdf = n => 'Rs.' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-            const tableData = _ldrFilteredRows.map(r => [
-                fmtDate(r.date),
-                r.item || '—',
-                r.category || '',
-                r.toFrom || '—',
-                (Number(r.amount) >= 0 ? '+' : '') + rsPdf(r.amount),
-                rsPdf(r.closingBalance || 0)
-            ]);
+            const tableData = _ldrFilteredRows.map(r => {
+                const isGrouped = r.isGroupedTransfer === true;
+                const amtStr = isGrouped ? rsPdf(r.amount) : ((Number(r.amount) >= 0 ? '+' : '') + rsPdf(r.amount));
+                const balStr = isGrouped ? '—' : rsPdf(r.closingBalance || 0);
+                return [
+                    fmtDate(r.date),
+                    r.item || '—',
+                    r.category || '',
+                    r.toFrom || '—',
+                    amtStr,
+                    balStr
+                ];
+            });
 
             doc.autoTable({
                 head: [['Date', 'Item', 'Category', 'To/From', 'Amount', 'Balance']],
