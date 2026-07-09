@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
         *,
         *::before,
@@ -1694,285 +1694,333 @@
         }
 
         /* ─── ADD ENTRY REDESIGN ─── */
+        #page-add {
+            --cream: #F4F1EA;
+            --panel: #FFFFFF;
+            --ink: #241F19;
+            --ink-soft: #6B6255;
+            --line: #E2DACB;
+            --terracotta: #C15F3C;
+            --terracotta-deep: #A44E30;
+            --sage: #6E7F5C;
+            --sage-deep: #56624A;
+            --slate: #4B5563;
+            --gold: #C99A3B;
+            --radius: 3px;
+            background: var(--cream);
+            font-family: 'JetBrains Mono', monospace !important;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
         #page-add * {
-            font-family: 'Courier Prime', Courier, monospace !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            box-sizing: border-box;
         }
 
-        .add-entry-wrap {
-            background: #fbfaf8;
-            /* Slightly darker cream */
-            padding: 24px;
-            border-radius: 8px;
+        #page-add .add-entry-container {
             max-width: 600px;
-            border: 1px dashed var(--border-strong);
-            margin-bottom: 2rem;
+            background: var(--cream);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            padding: 16px 0;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        .ae-tabs {
+        /* ===== Header toggle ===== */
+        #page-add .detail-toggle {
+            font-size: 11px;
+            color: var(--ink-soft);
+            border: 1px solid var(--line);
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            background: var(--panel);
+            transition: all var(--t-fast);
+        }
+        #page-add .detail-toggle:hover {
+            background: #EDE7D9;
+        }
+
+        /* ===== Type segmented control ===== */
+        #page-add .type-row {
+            display: flex;
+            gap: 6px;
+            padding: 8px 20px 14px;
+        }
+        #page-add .type-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 4px;
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--panel);
+            color: var(--ink-soft);
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+        #page-add .type-btn.active.expense { background: var(--terracotta); border-color: var(--terracotta-deep); color: #fff; }
+        #page-add .type-btn.active.income { background: var(--sage); border-color: var(--sage-deep); color: #fff; }
+        #page-add .type-btn.active.transfer { background: var(--slate); border-color: #374151; color: #fff; }
+
+        /* ===== Account / Category chip rails ===== */
+        #page-add .rail-label {
+            font-size: 9px;
+            letter-spacing: 0.12em;
+            color: var(--ink-soft);
+            padding: 6px 20px 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        #page-add .chip-rail {
             display: flex;
             gap: 8px;
-            margin-bottom: 24px;
-            max-width: 600px;
+            overflow-x: auto;
+            padding: 0 20px 10px;
+            scrollbar-width: none;
         }
-
-        .ae-tab {
-            flex: 1;
-            background: transparent;
-            border: 1px dashed var(--border-strong);
-            color: var(--t2);
-            padding: 10px 0;
-            text-align: center;
-            font-weight: 700;
+        #page-add .chip-rail::-webkit-scrollbar { display: none; }
+        #page-add .chip {
+            flex: 0 0 auto;
+            padding: 8px 12px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            border-radius: var(--radius);
             font-size: 11px;
+            color: var(--ink);
             cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            transition: all var(--t-fast);
         }
-
-        .ae-tab.active {
-            background: #c36c4b;
-            /* Rust orange */
-            color: #fff;
-            border-style: solid;
-            border-color: #c36c4b;
+        #page-add .chip small { color: var(--ink-soft); font-size: 9px; }
+        #page-add .chip.selected {
+            border-color: var(--terracotta);
+            background: #FBF0EA;
+            box-shadow: inset 0 0 0 1px var(--terracotta);
         }
+        #page-add .chip.selected small { color: var(--terracotta-deep); }
+        #page-add .chip.add-new { color: var(--ink-soft); border-style: dashed; font-weight: 700; }
 
-        .ae-group {
-            margin-bottom: 24px;
+        /* ===== Calculator display ===== */
+        #page-add .display-wrap {
+            margin: 6px 20px 10px;
+            background: var(--ink);
+            border-radius: var(--radius);
+            padding: 18px 18px 14px;
+            position: relative;
+            overflow: hidden;
         }
-
-        .ae-group-hdr {
+        #page-add .display-wrap::before {
+            content: "";
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+        #page-add .display-label {
+            font-size: 9px;
+            letter-spacing: 0.14em;
+            color: #8B8172;
+            text-transform: uppercase;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
         }
-
-        .ae-lbl {
-            font-size: 10px;
+        #page-add .display-label .item-tag {
+            color: #C7BDA8;
+            font-size: 9px;
+            letter-spacing: 0.04em;
+            text-transform: none;
+        }
+        #page-add .expr-line {
+            font-size: 15px;
+            color: #B7AE9C;
+            min-height: 20px;
+            margin-top: 8px;
+            letter-spacing: 0.02em;
+            word-break: break-all;
+        }
+        #page-add .expr-line .op { color: var(--gold); }
+        #page-add .amount-line {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        #page-add .amount-line .rupee { font-size: 24px; color: #EDE7D9; font-weight: 700; }
+        #page-add .amount-line .amount {
             font-weight: 700;
-            color: var(--t3);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-size: 42px;
+            color: #FFFFFF;
+            letter-spacing: 0.01em;
+            line-height: 1;
         }
+        #page-add .amount-line .cursor {
+            display: inline-block; width: 2px; height: 34px; background: var(--terracotta);
+            animation: blink 1s step-end infinite; margin-left: 2px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        .ae-hint {
+        #page-add .live-sum {
+            margin-top: 10px; padding-top: 10px; border-top: 1px dashed #4A4438;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; color: #8B8172; letter-spacing: 0.03em;
+        }
+        #page-add .live-sum .val { color: var(--gold); font-weight: 700; font-size: 13px; }
+
+        /* ===== Split preview pills ===== */
+        #page-add .split-pills {
+            display: flex;
+            gap: 6px;
+            padding: 0 20px 8px;
+            flex-wrap: wrap;
+        }
+        #page-add .split-pill {
             font-size: 10px;
-            color: var(--t3);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            padding: 4px 8px;
+            border-radius: var(--radius);
+            color: var(--ink-soft);
         }
+        #page-add .split-pill b { color: var(--ink); }
 
-        .ae-input-wrap {
+        /* ===== Keypad ===== */
+        #page-add .keypad {
+            margin: 4px 20px 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        #page-add .key {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 0;
+            cursor: pointer;
+            user-select: none;
+            transition: transform .06s ease, background .12s ease;
+        }
+        #page-add .key:active { transform: scale(0.94); background: #EDE7D9; }
+        #page-add .key.op { color: var(--terracotta-deep); font-size: 20px; background: #FBF0EA; border-color: #EAD3C4; }
+        #page-add .key.func { color: var(--ink-soft); font-size: 13px; font-weight: 700; letter-spacing: 0.03em; background: #EFEAE0; }
+        #page-add .key.zero { grid-column: span 2; }
+        #page-add .key.equals {
+            grid-row: span 2;
+            background: var(--ink); color: #fff; font-size: 22px;
+        }
+        #page-add .key.equals:active { background: #000; }
+
+        /* ===== Details drawer ===== */
+        #page-add .details-drawer {
+            margin: 12px 20px 0;
+            border-top: 1px solid var(--line);
+            padding-top: 10px;
+            display: none;
+            gap: 10px;
+        }
+        #page-add .details-drawer.open { display: grid; grid-template-columns: 1fr 1fr; }
+        #page-add .field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
             position: relative;
         }
-
-        .ae-input {
-            width: 100%;
-            background: transparent;
-            border: 1px solid var(--border-strong);
-            padding: 10px 12px;
+        #page-add .field label { font-size: 9px; letter-spacing: 0.10em; color: var(--ink-soft); text-transform: uppercase; font-weight: 700; }
+        
+        #page-add .details-drawer .ae-input {
+            font-family: 'JetBrains Mono', monospace !important;
             font-size: 12px;
-            color: var(--t1);
-            border-radius: 4px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 8px 9px;
+            background: var(--panel);
+            color: var(--ink);
             outline: none;
-            transition: all 0.2s;
+            width: 100%;
+        }
+        #page-add .details-drawer .ae-input:focus {
+            border-color: var(--terracotta);
+            box-shadow: 0 0 0 1px var(--terracotta);
         }
 
-        .ae-input:focus {
-            border-color: var(--accent);
-            background: #fff;
-        }
-
-        .ae-input::placeholder {
-            color: #a0a0a0;
-        }
-
-        .ae-chips {
+        /* ===== Footer actions ===== */
+        #page-add .footer {
+            padding: 14px 20px 10px;
             display: flex;
-            flex-wrap: wrap;
             gap: 8px;
-            margin-top: 8px;
-        }
-
-        .ae-chip {
-            padding: 4px 10px;
-            border: 1px solid var(--border-strong);
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--t2);
-            cursor: pointer;
-            background: transparent;
-            transition: all 0.2s;
-            display: flex;
             align-items: center;
-            gap: 4px;
         }
-
-        .ae-chip:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .ae-chip.active {
-            background: #fcece5;
-            border-color: #c36c4b;
-            color: #c36c4b;
-        }
-
-        .ae-acc-row {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
-        }
-
-        .ae-acc-row::-webkit-scrollbar {
-            display: none;
-        }
-
-        .ae-acc-card {
-            flex: 0 0 auto;
-            width: 140px;
-            background: #e9ebd5;
-            /* Olive tint for unchecked */
-            border: 1px solid var(--border-strong);
-            border-radius: 4px;
-            padding: 10px 12px;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: all 0.2s;
-        }
-
-        .ae-acc-card.active {
-            background: #fcece5;
-            /* Orange tint */
-            border-color: #c36c4b;
-            opacity: 1;
-        }
-
-        .ae-acc-name {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--t1);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .ae-acc-bal {
-            font-size: 10px;
-            color: var(--t3);
-        }
-
-        .ae-amt-wrap {
-            display: flex;
-            align-items: center;
-            background: transparent;
-            border: 1px solid var(--border-strong);
-            border-radius: 4px;
-            padding: 12px 16px;
-        }
-
-        .ae-amt-wrap:focus-within {
-            border-color: var(--accent);
-            background: #fff;
-        }
-
-        .ae-amt-sym {
-            font-size: 18px;
-            color: var(--t2);
-            margin-right: 8px;
-            font-weight: 700;
-        }
-
-        .ae-amt-input {
+        #page-add .save-btn {
             flex: 1;
-            border: none;
-            background: transparent;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--t1);
-            outline: none;
-        }
-
-        .ae-amt-input::placeholder {
-            color: #ccc;
-        }
-
-        .ae-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .ae-split-box {
-            background: #e9ebd5;
-            /* Olive tint */
-            border: 1px dashed var(--border-strong);
-            border-radius: 4px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        .ae-btn-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .ae-btn {
-            flex: 1;
-            padding: 14px 0;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            border-radius: 4px;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .ae-btn-primary {
-            background: #c36c4b;
+            background: var(--terracotta);
             color: #fff;
-            border: 1px solid #c36c4b;
+            border: none;
+            padding: 15px 0;
+            font-family: 'Courier Prime', Courier, monospace !important;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.04em;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all var(--t-fast);
         }
-
-        .ae-btn-primary:hover {
-            background: #b05c3d;
+        #page-add .save-btn:hover {
+            background: var(--terracotta-deep);
         }
-
-        .ae-btn-sec {
-            background: transparent;
-            color: var(--t1);
-            border: 1px solid var(--border-strong);
-        }
-
-        .ae-btn-sec:hover {
-            background: #fff;
-            border-color: var(--accent);
-        }
-
-        .ae-shortcuts {
-            text-align: center;
+        #page-add .save-btn .kbd {
             font-size: 9px;
-            color: var(--t3);
-            margin-top: 12px;
+            background: rgba(255,255,255,0.22);
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-family: inherit !important;
+        }
+        #page-add .quick-repeat {
+            width: 46px;
+            height: 46px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--ink-soft);
+            cursor: pointer;
+            transition: all var(--t-fast);
+        }
+        #page-add .quick-repeat:hover {
+            background: #EDE7D9;
         }
 
-        .ae-icon {
-            display: inline-block;
-            vertical-align: middle;
-            width: 12px;
-            height: 12px;
-            opacity: 0.8;
+        #page-add .hint {
+            padding: 8px 20px 2px;
+            font-size: 10px;
+            color: var(--ink-soft);
+            letter-spacing: 0.02em;
         }
-
-        .ae-icon-sm {
-            width: 10px;
-            height: 10px;
-        }
+        #page-add .hint b { color: var(--ink); }
 
         /* ─── ADD ENTRY FORM ─── */
         .add-tabs {
@@ -5262,289 +5310,184 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
-                <div class="pg-header">
-                    <div class="pg-title">Add Entry</div>
-                    <div class="pg-sub">Log your transactions and track your spending</div>
+                <!-- Hidden fields for backend compatibility -->
+                <input type="hidden" id="e-acc">
+                <input type="hidden" id="e-cat">
+                <input type="hidden" id="e-amt">
+
+                <input type="hidden" id="i-acc">
+                <input type="hidden" id="i-cat">
+                <input type="hidden" id="i-amt">
+
+                <input type="hidden" id="t-from">
+                <input type="hidden" id="t-to">
+                <input type="hidden" id="t-amt">
+                <!-- End of hidden fields -->
+
+                <div class="pg-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <div class="pg-title">Add Entry</div>
+                        <div class="pg-sub">Log your transactions and track your spending</div>
+                    </div>
+                    <button class="detail-toggle" id="detailsToggleBtn">+ Details</button>
                 </div>
-                <div class="add-entry-wrap">
-                    <div class="ae-tabs" id="add-entry-tabs">
-                        <div class="ae-tab active" onclick="switchAddTab('expense',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M12 5v14M5 12l7 7 7-7" />
-                            </svg>
-                            Expense
+
+                <div class="add-entry-container">
+                    <div class="type-row">
+                        <button class="type-btn active expense" data-type="expense" onclick="switchAddType('expense')">↓ Expense</button>
+                        <button class="type-btn income" data-type="income" onclick="switchAddType('income')">↑ Income</button>
+                        <button class="type-btn transfer" data-type="transfer" onclick="switchAddType('transfer')">⇄ Transfer</button>
+                    </div>
+
+                    <!-- Account Rail -->
+                    <div class="rail-label" id="accRailLabel">Account</div>
+                    <div class="chip-rail" id="accountRail"></div>
+
+                    <!-- To Account Rail (only for transfers) -->
+                    <div class="rail-label" id="toAccRailLabel" style="display:none;">To Account</div>
+                    <div class="chip-rail" id="toAccountRail" style="display:none;"></div>
+
+                    <!-- Category Rail (hidden for transfers) -->
+                    <div class="rail-label" id="catRailLabel">Category</div>
+                    <div class="chip-rail" id="categoryRail"></div>
+
+                    <!-- Calculator Display -->
+                    <div class="display-wrap">
+                        <div class="display-label">
+                            <span id="displayLabelText">AMOUNT (₹)</span>
+                            <span class="item-tag" id="itemTag">Select options</span>
                         </div>
-                        <div class="ae-tab" onclick="switchAddTab('income',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M12 19V5M5 12l7-7 7 7" />
-                            </svg>
-                            Income
+                        <div class="expr-line" id="exprLine">&nbsp;</div>
+                        <div class="amount-line">
+                            <span class="rupee">₹</span>
+                            <span class="amount" id="amountDisplay">0</span>
+                            <span class="cursor"></span>
                         </div>
-                        <div class="ae-tab" onclick="switchAddTab('transfer',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M17 3v14M7 21V7M3 11l4-4 4 4M21 13l-4 4-4-4" />
-                            </svg>
-                            Transfer
-                        </div>
-                        <div class="ae-tab" onclick="toggleImportSection()" style="border-style: dotted;">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="12" y1="18" x2="12" y2="12" />
-                                <line x1="9" y1="15" x2="15" y2="15" />
-                            </svg>
-                            Bulk Import
+                        <div class="live-sum" id="liveSum" style="display:none;">
+                            <span>0 items entered</span>
+                            <span class="val" id="liveSumVal">= ₹0</span>
                         </div>
                     </div>
 
-                    <div id="import-section" style="display:none; margin-bottom:24px;">
-                        <div class="card card-p">
-                            <div
-                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                                <div class="card-h" style="margin:0">CSV Import</div>
-                                <button class="txn-clr-btn" onclick="toggleImportSection()">✕ Close</button>
-                            </div>
-                            <div class="import-hint">
-                                Paste CSV content below. Columns:
-                                <code>DATE · ACCOUNT · CATEGORY · ITEM · AMOUNT · TO/FROM</code><br>
-                                Date: DD/MM/YYYY, Amount: negative = expense.
-                            </div>
-                            <div class="form-row" style="margin-top:12px;">
-                                <select id="import-type-sel" class="form-input" style="cursor:pointer"
-                                    onchange="clearImport()">
-                                    <option value="TXN">Transactions</option>
-                                    <option value="TPL">Templates</option>
-                                </select>
-                            </div>
-                            <div class="form-row">
-                                <textarea id="import-csv" class="form-input" rows="6" placeholder="Paste your CSV here…"
-                                    style="font-family:monospace;font-size:12px;"></textarea>
-                            </div>
-                            <div style="display:flex; gap:10px;">
-                                <button class="add-btn" onclick="previewImport()" style="flex:1">Preview</button>
-                                <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
-                                    style="flex:1; display:none">Import to Firebase</button>
-                                <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
-                            </div>
-                            <div id="import-preview" style="margin-top:12px"></div>
-                        </div>
-                    </div>
+                    <div class="split-pills" id="splitPills"></div>
 
-                    <!-- EXPENSE -->
-                    <div class="add-form active" id="form-expense">
-                        <!-- Template -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TEMPLATE</div>
-                                <div class="ae-hint">reuse a saved entry</div>
-                            </div>
-                            <div class="ae-input-wrap">
-                                <input class="ae-input" id="e-tpl" placeholder="☆ Choose template (optional)"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-tpl"></div>
-                            </div>
-                        </div>
+                    <div class="hint"><b>Tip —</b> type <b>120+45+80</b> to auto-total a split bill, or <b>*2</b> to multiply.</div>
 
-                        <!-- Account -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">ACCOUNT</div>
-                            </div>
-                            <input type="hidden" id="e-acc">
-                            <div class="ae-acc-row" id="e-acc-cards">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Category -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">CATEGORY</div>
-                                <div class="ae-hint">type to create new</div>
-                            </div>
-                            <div class="ae-input-wrap">
-                                <input class="ae-input" id="e-cat" placeholder="⚲ Select or type new category"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-cat"></div>
-                            </div>
-                        </div>
-
-                        <!-- Amount -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div>
-                                <input class="ae-amt-input" id="e-amt" type="number" placeholder="0.00" step="0.01">
-                            </div>
-                        </div>
-
-                        <!-- Grids -->
-                        <div class="ae-grid-2">
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">ITEM</div>
-                                </div>
+                    <!-- Details drawer -->
+                    <div class="details-drawer" id="detailsDrawer">
+                        <!-- EXPENSE DETAILS FIELDS -->
+                        <div id="details-expense-fields" style="grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+                            <div class="field" style="grid-column: span 2;">
+                                <label>Template</label>
                                 <div class="ae-input-wrap">
-                                    <input class="ae-input" id="e-item" placeholder="Type or select item"
-                                        autocomplete="off">
+                                    <input type="text" id="e-tpl" class="ae-input" placeholder="☆ Choose template (optional)" autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-tpl"></div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Item</label>
+                                <div class="ae-input-wrap">
+                                    <input type="text" id="e-item" class="ae-input" placeholder="e.g. Lunch" autocomplete="off">
                                     <div class="form-dropdown" id="dd-e-item"></div>
                                 </div>
                             </div>
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">PAID TO</div>
-                                </div>
+                            <div class="field">
+                                <label>Paid to</label>
                                 <div class="ae-input-wrap">
-                                    <input class="ae-input" id="e-to" placeholder="Type or select person"
-                                        autocomplete="off">
+                                    <input type="text" id="e-to" class="ae-input" placeholder="e.g. Swiggy" autocomplete="off">
                                     <div class="form-dropdown" id="dd-e-to"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Split Payments -->
-                        <div class="ae-split-box">
-                            <div class="ae-group-hdr" style="margin-bottom:0;">
-                                <div class="ae-lbl">SPLIT PAYMENTS</div>
-                                <button class="ae-chip"
-                                    style="background:#fff; border-color:var(--border-strong); border-radius:0; padding:8px 16px; font-size:12px; font-weight:700; cursor:pointer;"
-                                    onclick="addSplitRow(event)">+ Add Split</button>
-                            </div>
-                            <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or
-                                accounts</div>
-
-                            <div id="split-rows-container"></div>
-                            <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
-                                <button class="txn-clr-btn" onclick="splitEqually(event)"
-                                    style="padding:6px 12px;font-size:11px;">Split Equally</button>
-                            </div>
-                        </div>
-
-                        <div class="form-err" id="e-err" style="margin-bottom:12px;"></div>
-
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="e-btn" onclick="submitExp()">Save Expense
-                                →</button>
-                            <button class="ae-btn ae-btn-sec" id="e-tpl-btn" onclick="saveExpTpl(event)">+ Save as Template</button>
-                            <button class="ae-btn ae-btn-sec" onclick="clearAddEntryForm()"
-                                style="border:none; background:transparent; color:var(--t3); text-decoration:underline;">Clear
-                                Form</button>
-                        </div>
-                    </div>
-
-                    <!-- INCOME (Simplified for now to match style, but functionally same) -->
-                    <div class="add-form" id="form-income">
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TEMPLATE</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="i-tpl" placeholder="Choose template"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-tpl"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">ACCOUNT</div>
-                            </div>
-                            <input type="hidden" id="i-acc">
-                            <div class="ae-acc-row" id="i-acc-cards"></div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">CATEGORY</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="i-cat" placeholder="Select category"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-cat"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="i-amt" type="number"
-                                    placeholder="0.00">
-                            </div>
-                        </div>
-                        <div class="ae-grid-2">
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">ITEM</div>
+                        <!-- INCOME DETAILS FIELDS -->
+                        <div id="details-income-fields" style="grid-column: span 2; display: none; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+                            <div class="field" style="grid-column: span 2;">
+                                <label>Template</label>
+                                <div class="ae-input-wrap">
+                                    <input type="text" id="i-tpl" class="ae-input" placeholder="☆ Choose template (optional)" autocomplete="off">
+                                    <div class="form-dropdown" id="dd-i-tpl"></div>
                                 </div>
-                                <div class="ae-input-wrap"><input class="ae-input" id="i-item" placeholder="Item"
-                                        autocomplete="off">
+                            </div>
+                            <div class="field">
+                                <label>Item</label>
+                                <div class="ae-input-wrap">
+                                    <input type="text" id="i-item" class="ae-input" placeholder="e.g. Salary" autocomplete="off">
                                     <div class="form-dropdown" id="dd-i-item"></div>
                                 </div>
                             </div>
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">RECEIVED FROM</div>
-                                </div>
-                                <div class="ae-input-wrap"><input class="ae-input" id="i-from" placeholder="Person"
-                                        autocomplete="off">
+                            <div class="field">
+                                <label>Received from</label>
+                                <div class="ae-input-wrap">
+                                    <input type="text" id="i-from" class="ae-input" placeholder="e.g. Employer" autocomplete="off">
                                     <div class="form-dropdown" id="dd-i-from"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-err" id="i-err"></div>
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="i-btn" onclick="submitInc()">Save Income
-                                →</button>
-                            <button class="ae-btn ae-btn-sec" id="i-tpl-btn" onclick="saveIncTpl(event)">+ Save as Template</button>
+
+                        <!-- TRANSFER DETAILS FIELDS -->
+                        <div id="details-transfer-fields" style="grid-column: span 2; display: none; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+                            <div class="field" style="grid-column: span 2;">
+                                <label>Note / Item</label>
+                                <div class="ae-input-wrap">
+                                    <input type="text" id="t-item" class="ae-input" placeholder="Transfer purpose" autocomplete="off">
+                                    <div class="form-dropdown" id="dd-t-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Original Split payments UI inside the details drawer -->
+                        <div class="field" id="field-split" style="grid-column: span 2;">
+                            <div class="ae-split-box">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <span class="ae-lbl">SPLIT PAYMENTS</span>
+                                    <button class="txn-clr-btn" style="width:auto; margin:0; padding:6px 12px; font-size:11px;" onclick="addSplitRow(event)">+ Add Split</button>
+                                </div>
+                                <div class="ae-hint" style="margin-bottom: 12px;">divide this entry across people or accounts</div>
+                                <div id="split-rows-container"></div>
+                                <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
+                                    <button class="txn-clr-btn" onclick="splitEqually(event)" style="width:auto; margin:0; padding:6px 12px; font-size:11px;">Split Equally</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- TRANSFER -->
-                    <div class="add-form" id="form-transfer">
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">FROM ACCOUNT</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-from" placeholder="Debit from"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-from"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TO ACCOUNT</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-to" placeholder="Credit to"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-to"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="t-amt" type="number"
-                                    placeholder="0.00">
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">NOTE / ITEM</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-item"
-                                    placeholder="Transfer purpose" autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-item"></div>
-                            </div>
-                        </div>
-                        <div class="form-err" id="t-err"></div>
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="t-btn" onclick="submitTr()">Execute Transfer
-                                →</button>
-                        </div>
+                    <!-- Error displays for compat -->
+                    <div class="form-err" id="e-err" style="margin: 8px 20px; display:none;"></div>
+                    <div class="form-err" id="i-err" style="margin: 8px 20px; display:none;"></div>
+                    <div class="form-err" id="t-err" style="margin: 8px 20px; display:none;"></div>
+                    <div class="form-err" id="ae-err" style="margin: 8px 20px; display:none;"></div>
+
+                    <!-- Keypad -->
+                    <div class="keypad">
+                        <div class="key func" data-key="clear">AC</div>
+                        <div class="key func" data-key="back">⌫</div>
+                        <div class="key func" data-key="split">split</div>
+                        <div class="key op" data-key="/">÷</div>
+
+                        <div class="key" data-key="7">7</div>
+                        <div class="key" data-key="8">8</div>
+                        <div class="key" data-key="9">9</div>
+                        <div class="key op" data-key="*">×</div>
+
+                        <div class="key" data-key="4">4</div>
+                        <div class="key" data-key="5">5</div>
+                        <div class="key" data-key="6">6</div>
+                        <div class="key op" data-key="-">−</div>
+
+                        <div class="key" data-key="1">1</div>
+                        <div class="key" data-key="2">2</div>
+                        <div class="key" data-key="3">3</div>
+                        <div class="key op" data-key="+">+</div>
+
+                        <div class="key zero" data-key="0">0</div>
+                        <div class="key" data-key=".">.</div>
+                        <div class="key equals" data-key="equals">=</div>
+                    </div>
+
+                    <div class="footer">
+                        <div class="quick-repeat" onclick="quickRepeatLastEntry()" title="Repeat last entry">↻</div>
+                        <button class="save-btn" id="saveBtn" onclick="submitCalculatorForm()">Save Expense <span class="kbd">↵</span></button>
                     </div>
                 </div>
             </div>
@@ -6261,6 +6204,7 @@
             for (let y = curY + 1; y >= 2020; y--) { const o = document.createElement('option'); o.value = y; o.textContent = y; if (y === curY) o.selected = true; ys.appendChild(o); }
             setupSidebarSwipe();
             await loadAllData();
+            if (window.initRedesignedCalculator) window.initRedesignedCalculator();
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { ['personModal', 'dayModal', 'accModal', 'editModal', 'txnEditModal'].forEach(closeM); } });
             document.addEventListener('click', e => { if (!e.target.closest('.txn-msel-wrap')) ['type', 'account', 'cat', 'item', 'tofrom'].forEach(k => { const dd = document.getElementById('msel-' + k + '-dd'); if (dd) dd.style.display = 'none'; }); });
         }
@@ -7783,6 +7727,452 @@
             }
         }
 
+        /* --- Calculator Add Entry Redesign Script --- */
+        window.currentAddType = 'expense';
+        window.calculatorExpr = "";
+
+        window.switchAddType = function(type) {
+            window.currentAddType = type;
+            
+            // Update segmented active styling
+            document.querySelectorAll('#page-add .type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.type === type) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update footer save button text and style
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                const label = type === 'expense' ? 'Save Expense' : type === 'income' ? 'Save Income' : 'Execute Transfer';
+                saveBtn.innerHTML = `${label} <span class="kbd">↵</span>`;
+            }
+
+            // Update form fields visibility inside the Details drawer
+            const showHide = (id, show) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = show ? 'grid' : 'none';
+            };
+            const showHideBlock = (id, show) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = show ? 'block' : 'none';
+            };
+
+            showHide('details-expense-fields', type === 'expense');
+            showHide('details-income-fields', type === 'income');
+            showHide('details-transfer-fields', type === 'transfer');
+            showHideBlock('field-split', type === 'expense');
+
+            // Render dynamic chips rails
+            renderRedesignedRails();
+        };
+
+        window.switchAddTab = function (name, el) {
+            window.switchAddType(name);
+        };
+
+        window.renderRedesignedRails = function() {
+            const currentType = window.currentAddType || 'expense';
+
+            const accountRail = document.getElementById('accountRail');
+            const toAccountRail = document.getElementById('toAccountRail');
+            const toAccRailLabel = document.getElementById('toAccRailLabel');
+            const accRailLabel = document.getElementById('accRailLabel');
+
+            if (currentType === 'transfer') {
+                accRailLabel.textContent = 'From Account';
+                toAccRailLabel.style.display = 'block';
+                toAccountRail.style.display = 'flex';
+                renderAccountChips('accountRail', 't-from');
+                renderAccountChips('toAccountRail', 't-to');
+            } else {
+                accRailLabel.textContent = 'Account';
+                toAccRailLabel.style.display = 'none';
+                toAccountRail.style.display = 'none';
+                
+                const hiddenInputId = currentType === 'expense' ? 'e-acc' : 'i-acc';
+                renderAccountChips('accountRail', hiddenInputId);
+            }
+
+            const categoryRail = document.getElementById('categoryRail');
+            const catRailLabel = document.getElementById('catRailLabel');
+            if (currentType === 'transfer') {
+                catRailLabel.style.display = 'none';
+                categoryRail.style.display = 'none';
+            } else {
+                catRailLabel.style.display = 'block';
+                categoryRail.style.display = 'flex';
+                
+                const hiddenInputId = currentType === 'expense' ? 'e-cat' : 'i-cat';
+                renderCategoryChips('categoryRail', hiddenInputId);
+            }
+
+            updateCalculatorTag();
+        };
+
+        function renderAccountChips(containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if (!container || !hidden) return;
+
+            const list = _accounts.filter(a => a.type !== 'PERSON');
+            
+            if (!hidden.value && list.length > 0) {
+                const defaultAcc = list.find(a => a.isDefault === true);
+                if (defaultAcc) {
+                    hidden.value = defaultAcc.name;
+                } else {
+                    hidden.value = list[0].name;
+                }
+            }
+
+            container.innerHTML = list.map(a => {
+                const bal = a.currentBalance || 0;
+                const isSelected = hidden.value === a.name;
+                return `
+                    <div class="chip${isSelected ? ' selected' : ''}" data-name="${escH(a.name)}" onclick="selectAccountChip(this, '${containerId}', '${hiddenInputId}')">
+                        ${escH(a.name.toUpperCase())}
+                        <small>bal ₹${fmt(bal)}</small>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.selectAccountChip = function(el, containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if (!container || !hidden) return;
+
+            container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            hidden.value = el.dataset.name;
+            
+            const event = new Event('change');
+            hidden.dispatchEvent(event);
+
+            updateCalculatorTag();
+        };
+
+        function renderCategoryChips(containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if (!container || !hidden) return;
+
+            const currentType = window.currentAddType || 'expense';
+            const catType = currentType === 'expense' ? 'EXPENSE' : 'INCOME';
+            const list = _categories.filter(c => c.type === catType).map(c => c.name);
+
+            if (!hidden.value && list.length > 0) {
+                hidden.value = list[0];
+            }
+
+            const emojis = {
+                'FOOD': '🍔', 'TRAVEL': '✈️', 'GROCERIES': '🛒', 'FUEL': '⛽', 'RENT': '🏠',
+                'SALARY': '💰', 'INVESTMENT': '📈', 'ENTERTAINMENT': '🎬', 'SHOPPING': '🛍️',
+                'UTILITIES': '⚡', 'HEALTH': '🏥', 'OTHERS': '🏷️'
+            };
+
+            let html = list.map(cat => {
+                const isSelected = hidden.value.toUpperCase() === cat.toUpperCase();
+                const emoji = emojis[cat.toUpperCase()] || '🏷️';
+                return `
+                    <div class="chip${isSelected ? ' selected' : ''}" data-name="${escH(cat)}" onclick="selectCategoryChip(this, '${containerId}', '${hiddenInputId}')">
+                        ${emoji} ${escH(cat.toUpperCase())}
+                    </div>
+                `;
+            }).join('');
+
+            html += `<div class="chip add-new" onclick="addNewCategoryPrompt('${hiddenInputId}')">+ NEW</div>`;
+            container.innerHTML = html;
+        }
+
+        window.selectCategoryChip = function(el, containerId, hiddenInputId) {
+            const container = document.getElementById(containerId);
+            const hidden = document.getElementById(hiddenInputId);
+            if (!container || !hidden) return;
+
+            container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            hidden.value = el.dataset.name;
+
+            updateCalculatorTag();
+        };
+
+        window.addNewCategoryPrompt = async function(hiddenInputId) {
+            const name = prompt("Enter new category name:");
+            if (!name) return;
+            const cleanName = name.trim().toUpperCase();
+            if (!cleanName) return;
+
+            const hidden = document.getElementById(hiddenInputId);
+            if (hidden) hidden.value = cleanName;
+
+            const currentType = window.currentAddType || 'expense';
+            const catType = currentType === 'expense' ? 'EXPENSE' : 'INCOME';
+            await ensureCategory(cleanName, catType);
+            
+            await loadCategories();
+            renderRedesignedRails();
+        };
+
+        function updateCalculatorTag() {
+            const itemTag = document.getElementById('itemTag');
+            if (!itemTag) return;
+
+            const currentType = window.currentAddType || 'expense';
+            if (currentType === 'transfer') {
+                const fromAcc = document.getElementById('t-from')?.value || 'Select';
+                const toAcc = document.getElementById('t-to')?.value || 'Select';
+                itemTag.textContent = `${fromAcc} → ${toAcc}`;
+            } else {
+                const hiddenAccId = currentType === 'expense' ? 'e-acc' : 'i-acc';
+                const hiddenCatId = currentType === 'expense' ? 'e-cat' : 'i-cat';
+                const acc = document.getElementById(hiddenAccId)?.value || 'Select Account';
+                const cat = document.getElementById(hiddenCatId)?.value || 'Select Category';
+                itemTag.textContent = `${cat} · ${acc}`;
+            }
+        }
+
+        window.renderCalculator = function() {
+            const expr = window.calculatorExpr;
+            const exprLine = document.getElementById('exprLine');
+            const amountDisplay = document.getElementById('amountDisplay');
+            const liveSum = document.getElementById('liveSum');
+            const liveSumVal = document.getElementById('liveSumVal');
+            const splitPills = document.getElementById('splitPills');
+
+            if (expr === "") {
+                if (exprLine) exprLine.innerHTML = "&nbsp;";
+                if (amountDisplay) amountDisplay.textContent = "0";
+                if (liveSum) liveSum.style.display = "none";
+                if (splitPills) splitPills.innerHTML = "";
+                return;
+            }
+
+            if (exprLine) {
+                exprLine.innerHTML = expr
+                    .replace(/\*/g, '×')
+                    .replace(/\//g, '÷')
+                    .replace(/([+\-×÷])/g, '<span class="op">$1</span>');
+            }
+
+            const result = safeEval(expr);
+            if (result !== null && amountDisplay) {
+                amountDisplay.textContent = Number.isFinite(result) ? formatNum(result) : "0";
+            }
+
+            const parts = expr.split(/[+\-*/]/).filter(p => p !== "");
+            if (parts.length > 1 && /[+]/.test(expr)) {
+                if (liveSum) {
+                    liveSum.style.display = "flex";
+                    liveSum.querySelector('span').textContent = parts.length + " items entered";
+                }
+                if (liveSumVal) {
+                    liveSumVal.textContent = "= ₹" + formatNum(result || 0);
+                }
+                if (splitPills) {
+                    splitPills.innerHTML = parts.map((p, idx) => `<div class="split-pill">Item ${idx + 1} <b>₹${p}</b></div>`).join('');
+                }
+            } else {
+                if (liveSum) liveSum.style.display = "none";
+                if (splitPills) splitPills.innerHTML = "";
+            }
+        };
+
+        function safeEval(str) {
+            if (!/^[0-9+\-*/. ]*$/.test(str)) return null;
+            if (str.trim() === "") return 0;
+            try {
+                const nums = [];
+                const opsList = [];
+                let current = "";
+                for (let ch of str) {
+                    if ("+-*/".includes(ch) && current !== "") {
+                        nums.push(parseFloat(current));
+                        opsList.push(ch);
+                        current = "";
+                    } else {
+                        current += ch;
+                    }
+                }
+                if (current !== "") nums.push(parseFloat(current));
+                if (nums.some(isNaN)) return null;
+                
+                let stack = [nums[0]];
+                for (let j = 0; j < opsList.length; j++) {
+                    const op = opsList[j];
+                    const next = nums[j + 1];
+                    if (op === '*') stack[stack.length - 1] *= next;
+                    else if (op === '/') stack[stack.length - 1] /= next;
+                    else stack.push(op === '-' ? -next : next);
+                }
+                return stack.reduce((a, b) => a + b, 0);
+            } catch (e) { return null; }
+        }
+
+        function formatNum(n) {
+            if (!Number.isFinite(n)) return "0";
+            return n % 1 === 0 ? n.toString() : n.toFixed(2);
+        }
+
+        window.submitCalculatorForm = function() {
+            const currentType = window.currentAddType || 'expense';
+            const expr = window.calculatorExpr || '';
+            const result = safeEval(expr);
+
+            const errEl = document.getElementById('ae-err');
+
+            if (result === null || isNaN(result) || !Number.isFinite(result)) {
+                if (errEl) {
+                    errEl.textContent = 'Please enter a valid amount expression';
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
+            if (result <= 0) {
+                if (errEl) {
+                    errEl.textContent = 'Amount must be greater than zero';
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
+            if (errEl) errEl.style.display = 'none';
+
+            // Sync amount to original fields
+            if (currentType === 'expense') {
+                document.getElementById('e-amt').value = result;
+                submitExp();
+            } else if (currentType === 'income') {
+                document.getElementById('i-amt').value = result;
+                submitInc();
+            } else if (currentType === 'transfer') {
+                document.getElementById('t-amt').value = result;
+                submitTr();
+            }
+        };
+
+        window.quickRepeatLastEntry = function() {
+            const currentType = window.currentAddType || 'expense';
+            const txns = _allTxns || [];
+            let last = null;
+            for (let i = txns.length - 1; i >= 0; i--) {
+                const t = txns[i];
+                if (currentType === 'expense' && Number(t.amount) < 0 && t.category !== 'TRANSFER') {
+                    last = t;
+                    break;
+                } else if (currentType === 'income' && Number(t.amount) > 0 && t.category !== 'TRANSFER') {
+                    last = t;
+                    break;
+                } else if (currentType === 'transfer' && t.category === 'TRANSFER') {
+                    last = t;
+                    break;
+                }
+            }
+
+            if (!last) {
+                toast('No recent transaction found to repeat');
+                return;
+            }
+
+            if (currentType === 'expense') {
+                document.getElementById('e-acc').value = last.account || '';
+                document.getElementById('e-cat').value = last.category || '';
+                document.getElementById('e-item').value = last.item || '';
+                document.getElementById('e-to').value = last.toFrom || '';
+                window.calculatorExpr = String(Math.abs(Number(last.amount || 0)));
+            } else if (currentType === 'income') {
+                document.getElementById('i-acc').value = last.account || '';
+                document.getElementById('i-cat').value = last.category || '';
+                document.getElementById('i-item').value = last.item || '';
+                document.getElementById('i-from').value = last.toFrom || '';
+                window.calculatorExpr = String(Math.abs(Number(last.amount || 0)));
+            } else if (currentType === 'transfer') {
+                if (Number(last.amount) < 0) {
+                    document.getElementById('t-from').value = last.account || '';
+                    document.getElementById('t-to').value = last.toFrom || '';
+                } else {
+                    document.getElementById('t-from').value = last.toFrom || '';
+                    document.getElementById('t-to').value = last.account || '';
+                }
+                document.getElementById('t-item').value = last.item || '';
+                window.calculatorExpr = String(Math.abs(Number(last.amount || 0)));
+            }
+
+            window.renderCalculator();
+            renderRedesignedRails();
+            
+            if (currentType === 'expense') {
+                document.getElementById('e-item').value = last.item || '';
+                document.getElementById('e-to').value = last.toFrom || '';
+            } else if (currentType === 'income') {
+                document.getElementById('i-item').value = last.item || '';
+                document.getElementById('i-from').value = last.toFrom || '';
+            } else if (currentType === 'transfer') {
+                document.getElementById('t-item').value = last.item || '';
+            }
+            
+            toast('Repeated last entry');
+        };
+
+        window.initRedesignedCalculator = function() {
+            // Setup keypad event listeners
+            document.querySelectorAll('#page-add .keypad .key').forEach(key => {
+                key.addEventListener('click', () => {
+                    const k = key.dataset.key;
+                    if (k === 'clear') {
+                        window.calculatorExpr = "";
+                    } else if (k === 'back') {
+                        window.calculatorExpr = window.calculatorExpr.slice(0, -1);
+                    } else if (k === 'split') {
+                        if (window.calculatorExpr !== "" && !/[+\-*/]$/.test(window.calculatorExpr)) {
+                            window.calculatorExpr += "+";
+                        }
+                    } else if (k === 'equals') {
+                        const result = safeEval(window.calculatorExpr);
+                        if (result !== null) window.calculatorExpr = formatNum(result);
+                    } else {
+                        if ("+-*/".includes(k) && window.calculatorExpr === "") return;
+                        if ("+-*/".includes(k) && /[+\-*/]$/.test(window.calculatorExpr)) {
+                            window.calculatorExpr = window.calculatorExpr.slice(0, -1) + k;
+                            window.renderCalculator();
+                            return;
+                        }
+                        window.calculatorExpr += k;
+                    }
+                    window.renderCalculator();
+                });
+            });
+
+            // keyboard support for desktop testing
+            window.addEventListener('keydown', (e) => {
+                if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                    return;
+                }
+                if (/[0-9.+\-*/]/.test(e.key)) {
+                    e.preventDefault();
+                    window.calculatorExpr += e.key;
+                    window.renderCalculator();
+                } else if (e.key === 'Backspace') {
+                    e.preventDefault();
+                    window.calculatorExpr = window.calculatorExpr.slice(0, -1);
+                    window.renderCalculator();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const r = safeEval(window.calculatorExpr);
+                    if (r !== null) {
+                        window.calculatorExpr = formatNum(r);
+                        window.renderCalculator();
+                    }
+                }
+            });
+
+            // Set initial state
+            window.switchAddType('expense');
+        };
+
         function setupAddFormDropdowns() {
             const txns = _allTxns || [];
             const accNames = _accounts.map(a => a.name);
@@ -7817,21 +8207,34 @@
             renderAccountCards('e-acc-cards', 'e-acc', true);
             renderAccountCards('i-acc-cards', 'i-acc', true);
 
+            if (window.renderRedesignedRails) {
+                window.renderRedesignedRails();
+            }
         }
 
         window.clearAddEntryForm = function () {
             clearForm(['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], 'e-err');
-            document.querySelectorAll('.ae-acc-card').forEach(c => {
-                c.classList.remove('active');
-                const svg = c.querySelector('.ae-icon-sm');
-                if (svg) svg.style.display = 'none';
-            });
-            // Re-select first card for expense and income
-            renderAccountCards('e-acc-cards', 'e-acc', true);
-            renderAccountCards('i-acc-cards', 'i-acc', true);
+            clearForm(['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], 'i-err');
+            clearForm(['t-from', 't-to', 't-amt', 't-item'], 't-err');
+
             document.getElementById('split-rows-container').innerHTML = '';
             document.getElementById('split-tools').style.display = 'none';
             _splitRows = 0;
+
+            window.calculatorExpr = "";
+            window.renderCalculator();
+            
+            renderRedesignedRails();
+
+            document.querySelectorAll('#detailsDrawer input').forEach(input => {
+                input.value = '';
+                input.classList.remove('invalid');
+            });
+            const aeErr = document.getElementById('ae-err');
+            if (aeErr) {
+                aeErr.style.display = 'none';
+                aeErr.textContent = '';
+            }
         };
 
         function renderAccountCards(containerId, hiddenInputId, excludePeople = false) {
@@ -7953,6 +8356,7 @@
                         if (guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1, -1);
                         if (_categories.some(c => c.name.toUpperCase() === guess.toUpperCase())) {
                             catInput.value = guess;
+                            if (window.renderRedesignedRails) window.renderRedesignedRails();
                         }
                     }
                 } catch (e) { console.error('AI Auto-Cat failed', e); }
@@ -8060,6 +8464,20 @@
             else if (inputId === 'i-tpl') { applyIncTpl(value); }
             if (inputId === 'e-item') { autoCategorizeItem(true); }
             focusNext(inputId);
+
+            // Sync to redesigned rails and details UI!
+            const currentType = window.currentAddType || 'expense';
+            if (inputId === 'e-tpl' || inputId === 'i-tpl') {
+                const amtVal = currentType === 'expense' ? document.getElementById('e-amt').value : document.getElementById('i-amt').value;
+                if (amtVal) {
+                    window.calculatorExpr = amtVal;
+                    window.renderCalculator();
+                }
+                renderRedesignedRails();
+            }
+            if (inputId === 'e-item' || inputId === 'i-item') {
+                renderRedesignedRails();
+            }
         };
         function applyExpTpl(n) {
             const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase());
