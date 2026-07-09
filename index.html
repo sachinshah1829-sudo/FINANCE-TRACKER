@@ -9103,6 +9103,72 @@
         let _txnSelectMode = false;
         let _visibleTxnLimit = 200;
 
+        function findMatchingTransfer(txn) {
+            if (!txn || txn.category !== 'TRANSFER') return null;
+            const txnDate = txn.date?.toDate ? txn.date.toDate().getTime() : new Date(txn.date).getTime();
+            return _allTxns.find(candidate => 
+                candidate.id !== txn.id &&
+                candidate.category === 'TRANSFER' &&
+                Math.abs(Number(candidate.amount) + Number(txn.amount)) < 0.01 &&
+                candidate.account === txn.toFrom &&
+                candidate.toFrom === txn.account &&
+                Math.abs(txnDate - (candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime())) < 5000
+            );
+        }
+
+        function groupTransfers(rows) {
+            const grouped = [];
+            const visited = new Set();
+            for (let i = 0; i < rows.length; i++) {
+                const r = rows[i];
+                if (visited.has(r.id)) continue;
+                if (r.category === 'TRANSFER') {
+                    let matchIdx = -1;
+                    const rDate = r.date?.toDate ? r.date.toDate().getTime() : new Date(r.date).getTime();
+                    const rAmt = Number(r.amount);
+                    for (let j = i + 1; j < rows.length; j++) {
+                        const candidate = rows[j];
+                        if (visited.has(candidate.id)) continue;
+                        if (candidate.category === 'TRANSFER' && 
+                            Math.abs(Number(candidate.amount) + rAmt) < 0.01 && 
+                            candidate.account === r.toFrom && 
+                            candidate.toFrom === r.account) {
+                            const cDate = candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime();
+                            if (Math.abs(rDate - cDate) < 5000) {
+                                matchIdx = j;
+                                break;
+                            }
+                        }
+                    }
+                    if (matchIdx !== -1) {
+                        const match = rows[matchIdx];
+                        visited.add(r.id);
+                        visited.add(match.id);
+                        const source = rAmt < 0 ? r : match;
+                        const dest = rAmt < 0 ? match : r;
+                        grouped.push({
+                            id: source.id,
+                            isGroupedTransfer: true,
+                            sourceId: source.id,
+                            destId: dest.id,
+                            date: source.date,
+                            account: `${source.account} → ${dest.account}`,
+                            category: 'TRANSFER',
+                            item: source.item,
+                            toFrom: '—',
+                            amount: Math.abs(rAmt),
+                            closingBalance: '—',
+                            rawSource: source,
+                            rawDest: dest
+                        });
+                        continue;
+                    }
+                }
+                grouped.push(r);
+            }
+            return grouped;
+        }
+
         function filterTxns() {
             _visibleTxnLimit = 200;
             _txnSelectMode = false;
@@ -9139,14 +9205,16 @@
                 return true;
             }).reverse();
 
+            const groupedTxns = groupTransfers(_filteredTxns);
+
             const spent = _filteredTxns.filter(r => Number(r.amount) < 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Math.abs(Number(r.amount)), 0);
             const income = _filteredTxns.filter(r => Number(r.amount) > 0 && (r.category || '').toUpperCase() !== 'TRANSFER').reduce((s, r) => s + Number(r.amount), 0);
 
-            const sTotal = document.getElementById('txn-stat-total'); if (sTotal) sTotal.textContent = _filteredTxns.length;
+            const sTotal = document.getElementById('txn-stat-total'); if (sTotal) sTotal.textContent = groupedTxns.length;
             const sSpent = document.getElementById('txn-stat-spent'); if (sSpent) sSpent.textContent = rs(spent);
             const sInc = document.getElementById('txn-stat-income'); if (sInc) sInc.textContent = rs(income);
 
-            renderTxnTable(_filteredTxns);
+            renderTxnTable(groupedTxns);
         }
         window.filterTxns = filterTxns;
 
@@ -9176,7 +9244,13 @@
                     h += '<td style="text-align:center" onclick="event.stopPropagation()"><input type="checkbox" class="txn-row-checkbox" data-id="' + r.id + '" onclick="event.stopPropagation(); updateSelectedTxnsCount()"></td>';
                 }
                 
-                h += '<td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra"><span class="' + (pos ? 'td-pos' : 'td-neg') + '">' + (pos ? '+' : '') + rs(amt) + '</span></td><td class="ra td-bal">' + rs(r.closingBalance || 0) + '</td></tr>';
+                const isGrouped = r.isGroupedTransfer === true;
+                const amtSpan = isGrouped 
+                    ? `<span style="color:var(--t2); font-weight:600;">${rs(amt)}</span>`
+                    : `<span class="${pos ? 'td-pos' : 'td-neg'}">${pos ? '+' : ''}${rs(amt)}</span>`;
+                const balVal = isGrouped ? '—' : rs(r.closingBalance || 0);
+
+                h += '<td class="td-date">' + fmtDate(r.date) + '</td><td class="td-acc">' + escH(r.account || '—') + '</td><td><span class="td-cat">' + escH(r.category || '') + '</span></td><td class="td-item">' + escH(r.item || '—') + '</td><td class="td-tof">' + escH(r.toFrom || '—') + '</td><td class="ra">' + amtSpan + '</td><td class="ra td-bal">' + balVal + '</td></tr>';
             });
             
             const totalCols = _txnSelectMode ? 8 : 7;
@@ -9261,15 +9335,25 @@
                 return;
             }
             
-            const deletedTxns = _allTxns.filter(t => ids.includes(t.id));
+            const idsToDelete = new Set(ids);
+            ids.forEach(id => {
+                const r = _allTxns.find(x => x.id === id);
+                if (r) {
+                    const match = findMatchingTransfer(r);
+                    if (match) idsToDelete.add(match.id);
+                }
+            });
+            const finalIds = Array.from(idsToDelete);
+            
+            const deletedTxns = _allTxns.filter(t => finalIds.includes(t.id));
             const delBtn = document.getElementById('txn-bulk-delete-btn');
             const origHtml = delBtn.innerHTML;
             delBtn.disabled = true;
             delBtn.innerHTML = 'Deleting...';
             try {
                 const BATCH_SIZE = 450;
-                for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-                    const chunk = ids.slice(i, i + BATCH_SIZE);
+                for (let i = 0; i < finalIds.length; i += BATCH_SIZE) {
+                    const chunk = finalIds.slice(i, i + BATCH_SIZE);
                     const batch = writeBatch(db);
                     chunk.forEach(id => {
                         batch.delete(uDoc('transactions', id));
@@ -9337,33 +9421,61 @@
                 acc = document.getElementById('txn-edit-acc').value.trim(),
                 cat = document.getElementById('txn-edit-cat').value.trim(),
                 item = document.getElementById('txn-edit-item').value.trim(),
-                amt = document.getElementById('txn-edit-amt').value,
+                amtVal = Number(document.getElementById('txn-edit-amt').value),
                 tofrom = document.getElementById('txn-edit-tofrom').value.trim();
-            if (!acc || !cat || !item || !amt || !dateStr) return;
+            if (!acc || !cat || !item || isNaN(amtVal) || !dateStr) return;
             
             const r = _allTxns.find(x => x.id === id);
             if (!r) return;
-            const oldTxn = { ...r };
             
             const newDate = new Date(dateStr + "T12:00:00");
             const btn = document.querySelector('#txnEditModal .add-btn');
             btn.textContent = 'Saving…';
             btn.disabled = true;
             try {
-                await updateDoc(uDoc('transactions', id), {
-                    date: Timestamp.fromDate(newDate),
-                    account: acc,
-                    category: cat,
-                    item,
-                    amount: Number(amt),
-                    toFrom: tofrom
-                });
+                const match = findMatchingTransfer(r);
+                const batch = writeBatch(db);
+                
+                const oldTxns = [ { ...r } ];
+                if (match) oldTxns.push({ ...match });
+                
+                if (cat === 'TRANSFER' && tofrom) {
+                    batch.update(uDoc('transactions', r.id), {
+                        date: Timestamp.fromDate(newDate),
+                        account: acc,
+                        category: 'TRANSFER',
+                        item,
+                        amount: amtVal,
+                        toFrom: tofrom
+                    });
+                    if (match) {
+                        batch.update(uDoc('transactions', match.id), {
+                            date: Timestamp.fromDate(newDate),
+                            account: tofrom,
+                            category: 'TRANSFER',
+                            item,
+                            amount: -amtVal,
+                            toFrom: acc
+                        });
+                    }
+                } else {
+                    batch.update(uDoc('transactions', r.id), {
+                        date: Timestamp.fromDate(newDate),
+                        account: acc,
+                        category: cat,
+                        item,
+                        amount: amtVal,
+                        toFrom: tofrom
+                    });
+                }
                 
                 window.setUndoAction(async () => {
                     const undoBatch = writeBatch(db);
-                    const ref = uDoc('transactions', oldTxn.id);
-                    const { id: _, ...data } = oldTxn;
-                    undoBatch.set(ref, data);
+                    oldTxns.forEach(t => {
+                        const ref = uDoc('transactions', t.id);
+                        const { id: _, ...data } = t;
+                        undoBatch.set(ref, data);
+                    });
                     await undoBatch.commit();
                     toast('Edit undone');
                     await loadPeriodData();
@@ -9371,6 +9483,7 @@
                     loadTransactionsPage();
                 });
                 
+                await batch.commit();
                 closeM('txnEditModal');
                 await loadPeriodData();
                 loadAccounts();
@@ -9386,17 +9499,27 @@
         window.confirmDeleteTxn = async function (e, id) {
             if (e) e.stopPropagation();
             const r = _allTxns.find(x => x.id === id);
-            const lbl = r ? (fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount)) : 'entry';
+            if (!r) return;
+            const lbl = fmtDate(r.date) + ' ' + r.item + ' ' + rs(r.amount);
             if (!confirm('Delete transaction:\n' + lbl + '\n\nThis cannot be undone.')) return;
             
-            const deletedTxn = { ...r };
-            await deleteDoc(uDoc('transactions', id));
+            const match = findMatchingTransfer(r);
+            const batch = writeBatch(db);
+            batch.delete(uDoc('transactions', r.id));
+            if (match) {
+                batch.delete(uDoc('transactions', match.id));
+            }
+            
+            const deletedTxns = [ { ...r } ];
+            if (match) deletedTxns.push({ ...match });
             
             window.setUndoAction(async () => {
                 const undoBatch = writeBatch(db);
-                const ref = uDoc('transactions', deletedTxn.id);
-                const { id: _, ...data } = deletedTxn;
-                undoBatch.set(ref, data);
+                deletedTxns.forEach(t => {
+                    const ref = uDoc('transactions', t.id);
+                    const { id: _, ...data } = t;
+                    undoBatch.set(ref, data);
+                });
                 await undoBatch.commit();
                 toast('Transaction restored');
                 await loadPeriodData();
@@ -9404,6 +9527,7 @@
                 loadTransactionsPage();
             });
             
+            await batch.commit();
             await loadPeriodData();
             loadAccounts();
             loadTransactionsPage();
