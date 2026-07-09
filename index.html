@@ -9106,14 +9106,16 @@
         function findMatchingTransfer(txn) {
             if (!txn || txn.category !== 'TRANSFER') return null;
             const txnDate = txn.date?.toDate ? txn.date.toDate().getTime() : new Date(txn.date).getTime();
-            return _allTxns.find(candidate => 
-                candidate.id !== txn.id &&
-                candidate.category === 'TRANSFER' &&
-                Math.abs(Number(candidate.amount) + Number(txn.amount)) < 0.01 &&
-                candidate.account === txn.toFrom &&
-                candidate.toFrom === txn.account &&
-                Math.abs(txnDate - (candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime())) < 5000
-            );
+            const tDateStr = new Date(txnDate).toDateString();
+            return _allTxns.find(candidate => {
+                if (candidate.id === txn.id || candidate.category !== 'TRANSFER') return false;
+                if (Math.abs(Number(candidate.amount) + Number(txn.amount)) > 0.01) return false;
+                if (candidate.account !== txn.toFrom || candidate.toFrom !== txn.account) return false;
+                
+                const cDate = candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime();
+                const cDateStr = new Date(cDate).toDateString();
+                return tDateStr === cDateStr || Math.abs(txnDate - cDate) < 7200000;
+            });
         }
 
         function groupTransfers(rows) {
@@ -9125,6 +9127,7 @@
                 if (r.category === 'TRANSFER') {
                     let matchIdx = -1;
                     const rDate = r.date?.toDate ? r.date.toDate().getTime() : new Date(r.date).getTime();
+                    const rDateStr = new Date(rDate).toDateString();
                     const rAmt = Number(r.amount);
                     for (let j = i + 1; j < rows.length; j++) {
                         const candidate = rows[j];
@@ -9134,7 +9137,8 @@
                             candidate.account === r.toFrom && 
                             candidate.toFrom === r.account) {
                             const cDate = candidate.date?.toDate ? candidate.date.toDate().getTime() : new Date(candidate.date).getTime();
-                            if (Math.abs(rDate - cDate) < 5000) {
+                            const cDateStr = new Date(cDate).toDateString();
+                            if (rDateStr === cDateStr || Math.abs(rDate - cDate) < 7200000) {
                                 matchIdx = j;
                                 break;
                             }
