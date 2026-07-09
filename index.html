@@ -5018,298 +5018,6 @@
             opacity: 0.7;
             flex-shrink: 0;
         }
-
-        /* ─── ADD ENTRY CALCULATOR DESIGN ─── */
-        #page-add * {
-            font-family: 'Courier Prime', Courier, monospace !important;
-        }
-        .add-entry-wrap {
-            background: #f4f0ea; /* cream background */
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 480px;
-            border: 1px dashed var(--border-strong);
-            margin: 0 auto 2rem;
-        }
-        .ae-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        .ae-tab {
-            flex: 1;
-            background: #fff;
-            border: 1px dashed var(--border-strong);
-            color: var(--t2);
-            padding: 10px 0;
-            text-align: center;
-            font-weight: 700;
-            font-size: 11px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        .ae-tab.active {
-            background: #c36c4b; /* Rust orange */
-            color: #fff;
-            border-style: solid;
-            border-color: #c36c4b;
-        }
-        .ae-group {
-            margin-bottom: 16px;
-        }
-        .ae-group-hdr {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-        .ae-lbl {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--t3);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .ae-hint {
-            font-size: 9px;
-            color: var(--t3);
-        }
-        .ae-acc-row {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 8px 4px;
-            scrollbar-width: none;
-        }
-        .ae-acc-row::-webkit-scrollbar {
-            display: none;
-        }
-        .ae-acc-card {
-            flex: 0 0 auto;
-            width: 140px;
-            background: var(--surface);
-            border: 1.5px solid var(--border);
-            border-radius: 6px;
-            padding: 10px 12px;
-            cursor: pointer;
-            transition: all var(--t-fast);
-            user-select: none;
-        }
-        .ae-acc-card.active {
-            border-color: var(--accent);
-            background: #fcece5; /* rust tint */
-            box-shadow: 0 2px 8px rgba(195, 108, 75, 0.15);
-        }
-        .ae-acc-name {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--t1);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .ae-acc-bal {
-            font-size: 10px;
-            color: var(--t3);
-        }
-        .ae-cat-emoji {
-            font-size: 13px;
-        }
-        .ae-display-box {
-            background: #1d1b18;
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            border: 1px solid var(--border-strong);
-            user-select: none;
-        }
-        .ae-display-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .ae-display-lbl {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--t3);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-        .ae-display-context {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--t3);
-        }
-        .ae-display-main {
-            display: flex;
-            align-items: center;
-        }
-        .ae-display-sym {
-            font-size: 28px;
-            font-weight: 700;
-            color: #c36c4b; /* Rust color */
-            margin-right: 6px;
-        }
-        .ae-display-val {
-            font-size: 38px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1;
-        }
-        .ae-display-cursor {
-            font-size: 36px;
-            color: #c36c4b;
-            font-weight: 300;
-            margin-left: 2px;
-            animation: ae-blink 1s step-end infinite;
-        }
-        @keyframes ae-blink {
-            50% { opacity: 0; }
-        }
-        .ae-inputs-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .ae-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .ae-input-field {
-            width: 100%;
-            background: var(--bg);
-            border: 1.5px solid var(--border);
-            border-radius: var(--r-sm);
-            padding: 8px 12px;
-            font-family: 'Courier Prime', Courier, monospace;
-            font-size: 13px;
-            color: var(--t1);
-            outline: none;
-            transition: all var(--t-fast);
-        }
-        .ae-input-field:focus {
-            border-color: var(--accent);
-            background: var(--surface);
-        }
-        .ae-keypad {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-        .ae-key-btn {
-            background: #f3f1ed;
-            border: 1px solid #e2e0db;
-            border-radius: 6px;
-            padding: 14px 0;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--t1);
-            cursor: pointer;
-            outline: none;
-            transition: all var(--t-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-        }
-        .ae-key-btn:active {
-            background: #e2e0db;
-        }
-        .ae-key-op {
-            background: #faf3ee;
-            border-color: #f2e2d9;
-            color: var(--t2);
-            opacity: 0.4; /* disabled/greyed out */
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .ae-key-zero {
-            grid-column: span 2;
-        }
-        .ae-key-eq {
-            background: #222;
-            border-color: #222;
-            color: #fff;
-            opacity: 0.4; /* disabled/greyed out */
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .ae-footer-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-top: 12px;
-        }
-        .ae-footer-reset-btn {
-            background: transparent;
-            border: 1.5px solid var(--border);
-            border-radius: 6px;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--t3);
-            transition: all var(--t-fast);
-        }
-        .ae-footer-reset-btn:hover {
-            color: var(--red);
-            border-color: var(--red);
-            background: var(--red-bg);
-        }
-        .ae-footer-temp-btn {
-            background: transparent;
-            border: 1.5px solid var(--border);
-            border-radius: 6px;
-            padding: 0 16px;
-            height: 48px;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--t2);
-            cursor: pointer;
-            transition: all var(--t-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .ae-footer-temp-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--surface);
-        }
-        .ae-footer-save-btn {
-            flex: 1;
-            background: #c36c4b;
-            border: 1.5px solid #c36c4b;
-            border-radius: 6px;
-            height: 48px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #fff;
-            cursor: pointer;
-            transition: all var(--t-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .ae-footer-save-btn:hover {
-            background: #b05c3d;
-            border-color: #b05c3d;
-        }
     </style>
 </head>
 
@@ -5554,22 +5262,41 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
-                <div class="pg-header" style="position: relative; display: flex; justify-content: center; align-items: center;">
-                    <button class="txn-clr-btn" onclick="nav('transactions')" style="position: absolute; left: 0; padding: 6px 12px; font-size: 14px; border:none; background:transparent;">←</button>
-                    <div class="pg-title" style="margin: 0; text-align: center;">ADD ENTRY</div>
+                <div class="pg-header">
+                    <div class="pg-title">Add Entry</div>
+                    <div class="pg-sub">Log your transactions and track your spending</div>
                 </div>
                 <div class="add-entry-wrap">
                     <div class="ae-tabs" id="add-entry-tabs">
                         <div class="ae-tab active" onclick="switchAddTab('expense',this)">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M12 5v14M5 12l7 7 7-7" />
+                            </svg>
                             Expense
                         </div>
                         <div class="ae-tab" onclick="switchAddTab('income',this)">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M12 19V5M5 12l7-7 7 7" />
+                            </svg>
                             Income
                         </div>
                         <div class="ae-tab" onclick="switchAddTab('transfer',this)">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M17 3v14M7 21V7M3 11l4-4 4 4M21 13l-4 4-4-4" />
+                            </svg>
                             Transfer
                         </div>
                         <div class="ae-tab" onclick="toggleImportSection()" style="border-style: dotted;">
+                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="12" y1="18" x2="12" y2="12" />
+                                <line x1="9" y1="15" x2="15" y2="15" />
+                            </svg>
                             Bulk Import
                         </div>
                     </div>
@@ -5637,66 +5364,48 @@
                         <div class="ae-group">
                             <div class="ae-group-hdr">
                                 <div class="ae-lbl">CATEGORY</div>
+                                <div class="ae-hint">type to create new</div>
                             </div>
-                            <input type="hidden" id="e-cat">
-                            <div class="ae-acc-row" id="e-cat-cards">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Amount Display -->
-                        <div class="ae-display-box">
-                            <div class="ae-display-top">
-                                <span class="ae-display-lbl">AMOUNT (₹)</span>
-                                <span class="ae-display-context" id="e-display-context">Food · HDFC Bank</span>
-                            </div>
-                            <div class="ae-display-main">
-                                <span class="ae-display-sym">₹</span>
-                                <span class="ae-display-val" id="e-display-val">0</span>
-                                <span class="ae-display-cursor">|</span>
-                            </div>
-                            <input type="hidden" id="e-amt" value="0">
-                        </div>
-
-                        <!-- Inputs row -->
-                        <div class="ae-inputs-row">
-                            <div class="ae-input-group" style="position:relative;">
-                                <div class="ae-lbl">ITEM</div>
-                                <input class="ae-input-field" id="e-item" placeholder="e.g. Lunch" autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-item"></div>
-                            </div>
-                            <div class="ae-input-group" style="position:relative;">
-                                <div class="ae-lbl">PAID TO</div>
-                                <input class="ae-input-field" id="e-to" placeholder="e.g. Swiggy" autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-to"></div>
+                            <div class="ae-input-wrap">
+                                <input class="ae-input" id="e-cat" placeholder="⚲ Select or type new category"
+                                    autocomplete="off">
+                                <div class="form-dropdown" id="dd-e-cat"></div>
                             </div>
                         </div>
 
-                        <!-- Keypad Grid -->
-                        <div class="ae-keypad">
-                            <button class="ae-key-btn" onclick="pressKey('AC', 'e')">AC</button>
-                            <button class="ae-key-btn" onclick="pressKey('back', 'e')">⌫</button>
-                            <button class="ae-key-btn" id="e-split-btn" onclick="pressKey('split', 'e')">split</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('div', 'e')" disabled>÷</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('7', 'e')">7</button>
-                            <button class="ae-key-btn" onclick="pressKey('8', 'e')">8</button>
-                            <button class="ae-key-btn" onclick="pressKey('9', 'e')">9</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('mul', 'e')" disabled>×</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('4', 'e')">4</button>
-                            <button class="ae-key-btn" onclick="pressKey('5', 'e')">5</button>
-                            <button class="ae-key-btn" onclick="pressKey('6', 'e')">6</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('sub', 'e')" disabled>-</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('1', 'e')">1</button>
-                            <button class="ae-key-btn" onclick="pressKey('2', 'e')">2</button>
-                            <button class="ae-key-btn" onclick="pressKey('3', 'e')">3</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('add', 'e')" disabled>+</button>
-                            
-                            <button class="ae-key-btn ae-key-zero" onclick="pressKey('0', 'e')">0</button>
-                            <button class="ae-key-btn" onclick="pressKey('.', 'e')">.</button>
-                            <button class="ae-key-btn ae-key-eq" onclick="pressKey('eq', 'e')" disabled>=</button>
+                        <!-- Amount -->
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
+                                <div class="ae-lbl">AMOUNT (₹)</div>
+                            </div>
+                            <div class="ae-amt-wrap">
+                                <div class="ae-amt-sym">₹</div>
+                                <input class="ae-amt-input" id="e-amt" type="number" placeholder="0.00" step="0.01">
+                            </div>
+                        </div>
+
+                        <!-- Grids -->
+                        <div class="ae-grid-2">
+                            <div>
+                                <div class="ae-group-hdr">
+                                    <div class="ae-lbl">ITEM</div>
+                                </div>
+                                <div class="ae-input-wrap">
+                                    <input class="ae-input" id="e-item" placeholder="Type or select item"
+                                        autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-item"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="ae-group-hdr">
+                                    <div class="ae-lbl">PAID TO</div>
+                                </div>
+                                <div class="ae-input-wrap">
+                                    <input class="ae-input" id="e-to" placeholder="Type or select person"
+                                        autocomplete="off">
+                                    <div class="form-dropdown" id="dd-e-to"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Split Payments -->
@@ -5707,7 +5416,8 @@
                                     style="background:#fff; border-color:var(--border-strong); border-radius:0; padding:8px 16px; font-size:12px; font-weight:700; cursor:pointer;"
                                     onclick="addSplitRow(event)">+ Add Split</button>
                             </div>
-                            <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or accounts</div>
+                            <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or
+                                accounts</div>
 
                             <div id="split-rows-container"></div>
                             <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
@@ -5718,215 +5428,124 @@
 
                         <div class="form-err" id="e-err" style="margin-bottom:12px;"></div>
 
-                        <!-- Footer Actions -->
-                        <div class="ae-footer-row">
-                            <button class="ae-footer-reset-btn" onclick="clearAddEntryForm()" title="Clear Form">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
-                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                                    <polyline points="3 3 3 8 8 8"/>
-                                </svg>
-                            </button>
-                            <button class="ae-footer-temp-btn" id="e-tpl-btn" onclick="saveExpTpl(event)">★ Save Temp</button>
-                            <button class="ae-footer-save-btn" id="e-btn" onclick="submitExp()">Save Expense ↵</button>
+                        <div class="ae-btn-row">
+                            <button class="ae-btn ae-btn-primary" id="e-btn" onclick="submitExp()">Save Expense
+                                →</button>
+                            <button class="ae-btn ae-btn-sec" id="e-tpl-btn" onclick="saveExpTpl(event)">+ Save as Template</button>
+                            <button class="ae-btn ae-btn-sec" onclick="clearAddEntryForm()"
+                                style="border:none; background:transparent; color:var(--t3); text-decoration:underline;">Clear
+                                Form</button>
                         </div>
                     </div>
 
-                    <!-- INCOME -->
+                    <!-- INCOME (Simplified for now to match style, but functionally same) -->
                     <div class="add-form" id="form-income">
-                        <!-- Template -->
                         <div class="ae-group">
                             <div class="ae-group-hdr">
                                 <div class="ae-lbl">TEMPLATE</div>
-                                <div class="ae-hint">reuse a saved entry</div>
                             </div>
-                            <div class="ae-input-wrap">
-                                <input class="ae-input" id="i-tpl" placeholder="☆ Choose template (optional)"
+                            <div class="ae-input-wrap"><input class="ae-input" id="i-tpl" placeholder="Choose template"
                                     autocomplete="off">
                                 <div class="form-dropdown" id="dd-i-tpl"></div>
                             </div>
                         </div>
-
-                        <!-- Account -->
                         <div class="ae-group">
                             <div class="ae-group-hdr">
                                 <div class="ae-lbl">ACCOUNT</div>
                             </div>
                             <input type="hidden" id="i-acc">
-                            <div class="ae-acc-row" id="i-acc-cards">
-                                <!-- Populated by JS -->
-                            </div>
+                            <div class="ae-acc-row" id="i-acc-cards"></div>
                         </div>
-
-                        <!-- Category -->
                         <div class="ae-group">
                             <div class="ae-group-hdr">
                                 <div class="ae-lbl">CATEGORY</div>
                             </div>
-                            <input type="hidden" id="i-cat">
-                            <div class="ae-acc-row" id="i-cat-cards">
-                                <!-- Populated by JS -->
+                            <div class="ae-input-wrap"><input class="ae-input" id="i-cat" placeholder="Select category"
+                                    autocomplete="off">
+                                <div class="form-dropdown" id="dd-i-cat"></div>
                             </div>
                         </div>
-
-                        <!-- Amount Display -->
-                        <div class="ae-display-box">
-                            <div class="ae-display-top">
-                                <span class="ae-display-lbl">AMOUNT (₹)</span>
-                                <span class="ae-display-context" id="i-display-context">Salary · HDFC Bank</span>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
+                                <div class="ae-lbl">AMOUNT (₹)</div>
                             </div>
-                            <div class="ae-display-main">
-                                <span class="ae-display-sym">₹</span>
-                                <span class="ae-display-val" id="i-display-val">0</span>
-                                <span class="ae-display-cursor">|</span>
-                            </div>
-                            <input type="hidden" id="i-amt" value="0">
-                        </div>
-
-                        <!-- Inputs row -->
-                        <div class="ae-inputs-row">
-                            <div class="ae-input-group" style="position:relative;">
-                                <div class="ae-lbl">ITEM</div>
-                                <input class="ae-input-field" id="i-item" placeholder="e.g. Salary" autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-item"></div>
-                            </div>
-                            <div class="ae-input-group" style="position:relative;">
-                                <div class="ae-lbl">RECEIVED FROM</div>
-                                <input class="ae-input-field" id="i-from" placeholder="e.g. Google" autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-from"></div>
+                            <div class="ae-amt-wrap">
+                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="i-amt" type="number"
+                                    placeholder="0.00">
                             </div>
                         </div>
-
-                        <!-- Keypad Grid -->
-                        <div class="ae-keypad">
-                            <button class="ae-key-btn" onclick="pressKey('AC', 'i')">AC</button>
-                            <button class="ae-key-btn" onclick="pressKey('back', 'i')">⌫</button>
-                            <button class="ae-key-btn" style="visibility:hidden;" disabled>split</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('div', 'i')" disabled>÷</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('7', 'i')">7</button>
-                            <button class="ae-key-btn" onclick="pressKey('8', 'i')">8</button>
-                            <button class="ae-key-btn" onclick="pressKey('9', 'i')">9</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('mul', 'i')" disabled>×</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('4', 'i')">4</button>
-                            <button class="ae-key-btn" onclick="pressKey('5', 'i')">5</button>
-                            <button class="ae-key-btn" onclick="pressKey('6', 'i')">6</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('sub', 'i')" disabled>-</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('1', 'i')">1</button>
-                            <button class="ae-key-btn" onclick="pressKey('2', 'i')">2</button>
-                            <button class="ae-key-btn" onclick="pressKey('3', 'i')">3</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('add', 'i')" disabled>+</button>
-                            
-                            <button class="ae-key-btn ae-key-zero" onclick="pressKey('0', 'i')">0</button>
-                            <button class="ae-key-btn" onclick="pressKey('.', 'i')">.</button>
-                            <button class="ae-key-btn ae-key-eq" onclick="pressKey('eq', 'i')" disabled>=</button>
+                        <div class="ae-grid-2">
+                            <div>
+                                <div class="ae-group-hdr">
+                                    <div class="ae-lbl">ITEM</div>
+                                </div>
+                                <div class="ae-input-wrap"><input class="ae-input" id="i-item" placeholder="Item"
+                                        autocomplete="off">
+                                    <div class="form-dropdown" id="dd-i-item"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="ae-group-hdr">
+                                    <div class="ae-lbl">RECEIVED FROM</div>
+                                </div>
+                                <div class="ae-input-wrap"><input class="ae-input" id="i-from" placeholder="Person"
+                                        autocomplete="off">
+                                    <div class="form-dropdown" id="dd-i-from"></div>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-err" id="i-err" style="margin-bottom:12px;"></div>
-
-                        <!-- Footer Actions -->
-                        <div class="ae-footer-row">
-                            <button class="ae-footer-reset-btn" onclick="clearAddEntryForm()" title="Clear Form">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
-                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                                    <polyline points="3 3 3 8 8 8"/>
-                                </svg>
-                            </button>
-                            <button class="ae-footer-temp-btn" id="i-tpl-btn" onclick="saveIncTpl(event)">★ Save Temp</button>
-                            <button class="ae-footer-save-btn" id="i-btn" onclick="submitInc()">Save Income ↵</button>
+                        <div class="form-err" id="i-err"></div>
+                        <div class="ae-btn-row">
+                            <button class="ae-btn ae-btn-primary" id="i-btn" onclick="submitInc()">Save Income
+                                →</button>
+                            <button class="ae-btn ae-btn-sec" id="i-tpl-btn" onclick="saveIncTpl(event)">+ Save as Template</button>
                         </div>
                     </div>
 
                     <!-- TRANSFER -->
                     <div class="add-form" id="form-transfer">
-                        <!-- From Account -->
                         <div class="ae-group">
                             <div class="ae-group-hdr">
                                 <div class="ae-lbl">FROM ACCOUNT</div>
                             </div>
-                            <input type="hidden" id="t-from">
-                            <div class="ae-acc-row" id="t-from-cards">
-                                <!-- Populated by JS -->
+                            <div class="ae-input-wrap"><input class="ae-input" id="t-from" placeholder="Debit from"
+                                    autocomplete="off">
+                                <div class="form-dropdown" id="dd-t-from"></div>
                             </div>
                         </div>
-
-                        <!-- To Account -->
                         <div class="ae-group">
                             <div class="ae-group-hdr">
                                 <div class="ae-lbl">TO ACCOUNT</div>
                             </div>
-                            <input type="hidden" id="t-to">
-                            <div class="ae-acc-row" id="t-to-cards">
-                                <!-- Populated by JS -->
+                            <div class="ae-input-wrap"><input class="ae-input" id="t-to" placeholder="Credit to"
+                                    autocomplete="off">
+                                <div class="form-dropdown" id="dd-t-to"></div>
                             </div>
                         </div>
-
-                        <!-- Amount Display -->
-                        <div class="ae-display-box">
-                            <div class="ae-display-top">
-                                <span class="ae-display-lbl">AMOUNT (₹)</span>
-                                <span class="ae-display-context" id="t-display-context">From Account ➔ To Account</span>
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
+                                <div class="ae-lbl">AMOUNT (₹)</div>
                             </div>
-                            <div class="ae-display-main">
-                                <span class="ae-display-sym">₹</span>
-                                <span class="ae-display-val" id="t-display-val">0</span>
-                                <span class="ae-display-cursor">|</span>
+                            <div class="ae-amt-wrap">
+                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="t-amt" type="number"
+                                    placeholder="0.00">
                             </div>
-                            <input type="hidden" id="t-amt" value="0">
                         </div>
-
-                        <!-- Inputs row -->
-                        <div class="ae-inputs-row">
-                            <div class="ae-input-group" style="position:relative; grid-column: span 2;">
+                        <div class="ae-group">
+                            <div class="ae-group-hdr">
                                 <div class="ae-lbl">NOTE / ITEM</div>
-                                <input class="ae-input-field" id="t-item" placeholder="Transfer purpose" autocomplete="off" style="width:100%">
+                            </div>
+                            <div class="ae-input-wrap"><input class="ae-input" id="t-item"
+                                    placeholder="Transfer purpose" autocomplete="off">
                                 <div class="form-dropdown" id="dd-t-item"></div>
                             </div>
                         </div>
-
-                        <!-- Keypad Grid -->
-                        <div class="ae-keypad">
-                            <button class="ae-key-btn" onclick="pressKey('AC', 't')">AC</button>
-                            <button class="ae-key-btn" onclick="pressKey('back', 't')">⌫</button>
-                            <button class="ae-key-btn" style="visibility:hidden;" disabled>split</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('div', 't')" disabled>÷</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('7', 't')">7</button>
-                            <button class="ae-key-btn" onclick="pressKey('8', 't')">8</button>
-                            <button class="ae-key-btn" onclick="pressKey('9', 't')">9</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('mul', 't')" disabled>×</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('4', 't')">4</button>
-                            <button class="ae-key-btn" onclick="pressKey('5', 't')">5</button>
-                            <button class="ae-key-btn" onclick="pressKey('6', 't')">6</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('sub', 't')" disabled>-</button>
-                            
-                            <button class="ae-key-btn" onclick="pressKey('1', 't')">1</button>
-                            <button class="ae-key-btn" onclick="pressKey('2', 't')">2</button>
-                            <button class="ae-key-btn" onclick="pressKey('3', 't')">3</button>
-                            <button class="ae-key-btn ae-key-op" onclick="pressKey('add', 't')" disabled>+</button>
-                            
-                            <button class="ae-key-btn ae-key-zero" onclick="pressKey('0', 't')">0</button>
-                            <button class="ae-key-btn" onclick="pressKey('.', 't')">.</button>
-                            <button class="ae-key-btn ae-key-eq" onclick="pressKey('eq', 't')" disabled>=</button>
-                        </div>
-
-                        <div class="form-err" id="t-err" style="margin-bottom:12px;"></div>
-
-                        <!-- Footer Actions -->
-                        <div class="ae-footer-row">
-                            <button class="ae-footer-reset-btn" onclick="clearAddEntryForm()" title="Clear Form">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
-                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                                    <polyline points="3 3 3 8 8 8"/>
-                                </svg>
-                            </button>
-                            <button class="ae-footer-save-btn" id="t-btn" onclick="submitTr()">Execute Transfer ↵</button>
+                        <div class="form-err" id="t-err"></div>
+                        <div class="ae-btn-row">
+                            <button class="ae-btn ae-btn-primary" id="t-btn" onclick="submitTr()">Execute Transfer
+                                →</button>
                         </div>
                     </div>
-                </div>
-            </div>
                 </div>
             </div>
 
@@ -8170,6 +7789,7 @@
             const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
             const incCats = _categories.filter(c => c.type === 'INCOME').map(c => c.name);
 
+            // Smart Suggestions: Merge collections with recent transaction history
             const itemColl = _items.map(i => i.value);
             const recentItems = [...new Set([...itemColl, ...txns.map(t => t.item)])].filter(Boolean).reverse();
 
@@ -8191,68 +7811,27 @@
 
             const expTplNames = sortedExpTpls.map(t => t.name);
             const incTplNames = sortedIncTpls.map(t => t.name);
-            const pairs = [
-                ['e-tpl', 'dd-e-tpl', expTplNames],
-                ['e-item', 'dd-e-item', recentItems],
-                ['e-to', 'dd-e-to', recentPeople],
-                ['i-tpl', 'dd-i-tpl', incTplNames],
-                ['i-item', 'dd-i-item', recentItems],
-                ['i-from', 'dd-i-from', recentPeople],
-                ['t-item', 'dd-t-item', recentItems]
-            ];
+            const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', recentItems], ['e-to', 'dd-e-to', recentPeople], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', recentItems], ['i-from', 'dd-i-from', recentPeople], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', recentItems]];
             pairs.forEach(([inp, dd, data]) => initDD(inp, dd, data));
 
             renderAccountCards('e-acc-cards', 'e-acc', true);
             renderAccountCards('i-acc-cards', 'i-acc', true);
-            renderAccountCards('t-from-cards', 't-from', true);
-            renderAccountCards('t-to-cards', 't-to', true);
 
-            renderCategoryCards('e-cat-cards', 'e-cat', 'EXPENSE');
-            renderCategoryCards('i-cat-cards', 'i-cat', 'INCOME');
-
-            updateDisplayContext('e');
-            updateDisplayContext('i');
-            updateDisplayContext('t');
-
-            if (!window._aiSuggestionsAttached) {
-                setupAICategorySuggestions();
-                window._aiSuggestionsAttached = true;
-            }
         }
 
         window.clearAddEntryForm = function () {
             clearForm(['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], 'e-err');
-            clearForm(['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], 'i-err');
-            clearForm(['t-from', 't-to', 't-amt', 't-item'], 't-err');
-            
             document.querySelectorAll('.ae-acc-card').forEach(c => {
                 c.classList.remove('active');
                 const svg = c.querySelector('.ae-icon-sm');
                 if (svg) svg.style.display = 'none';
             });
-
+            // Re-select first card for expense and income
             renderAccountCards('e-acc-cards', 'e-acc', true);
             renderAccountCards('i-acc-cards', 'i-acc', true);
-            renderAccountCards('t-from-cards', 't-from', true);
-            renderAccountCards('t-to-cards', 't-to', true);
-
-            renderCategoryCards('e-cat-cards', 'e-cat', 'EXPENSE');
-            renderCategoryCards('i-cat-cards', 'i-cat', 'INCOME');
-
-            document.getElementById('e-display-val').textContent = '0';
-            document.getElementById('e-amt').value = '0';
-            document.getElementById('i-display-val').textContent = '0';
-            document.getElementById('i-amt').value = '0';
-            document.getElementById('t-display-val').textContent = '0';
-            document.getElementById('t-amt').value = '0';
-
             document.getElementById('split-rows-container').innerHTML = '';
             document.getElementById('split-tools').style.display = 'none';
             _splitRows = 0;
-
-            updateDisplayContext('e');
-            updateDisplayContext('i');
-            updateDisplayContext('t');
         };
 
         function renderAccountCards(containerId, hiddenInputId, excludePeople = false) {
@@ -8264,6 +7843,7 @@
             const list = excludePeople ? _accounts.filter(a => a.type !== 'PERSON') : _accounts;
             list.forEach(a => {
                 const bal = a.currentBalance || 0;
+                // mock last 4 digits for UI matching
                 const last4 = String(Math.abs(Math.floor(Math.random() * 9000) + 1000));
                 html += `<div class="ae-acc-card" data-name="${escH(a.name)}" onclick="selectAccCard(this, '${containerId}', '${hiddenInputId}')">
                     <div class="ae-acc-name">
@@ -8275,6 +7855,7 @@
             });
             container.innerHTML = html;
 
+            // Auto-select default if set, else select first card if none selected
             if (!hidden.value && list.length > 0) {
                 const defaultAcc = list.find(a => a.isDefault === true);
                 if (defaultAcc) {
@@ -8288,11 +7869,6 @@
                 } else {
                     const firstCard = container.querySelector('.ae-acc-card');
                     if (firstCard) selectAccCard(firstCard, containerId, hiddenInputId);
-                }
-            } else if (hidden.value) {
-                const card = container.querySelector(`.ae-acc-card[data-name="${escH(hidden.value)}"]`);
-                if (card) {
-                    selectAccCard(card, containerId, hiddenInputId);
                 }
             }
         }
@@ -8313,219 +7889,178 @@
             if (svg) svg.style.display = 'inline-block';
 
             hidden.value = el.dataset.name;
-
-            updateDisplayContext(hiddenInputId.split('-')[0]);
         };
 
-        window.renderCategoryCards = function (containerId, hiddenInputId, type) {
+        function renderQuickChips(containerId, items, targetInputId, isHash = false) {
             const container = document.getElementById(containerId);
-            const hidden = document.getElementById(hiddenInputId);
-            if (!container || !hidden) return;
+            const input = document.getElementById(targetInputId);
+            if (!container || !input) return;
 
-            const cats = _categories.filter(c => c.type === type);
             let html = '';
-            
-            const getEmoji = (name) => {
-                const n = name.toUpperCase();
-                if (n.includes('FOOD') || n.includes('REST') || n.includes('CAFE') || n.includes('DINE') || n.includes('EAT') || n.includes('DRINK') || n.includes('TEA') || n.includes('COFFEE')) return '🍔';
-                if (n.includes('TRAVEL') || n.includes('CAB') || n.includes('TRANSPORT') || n.includes('METRO') || n.includes('AUTO') || n.includes('BUS') || n.includes('FLIGHT') || n.includes('TRAIN')) return '✈️';
-                if (n.includes('GROCER')) return '🛒';
-                if (n.includes('FUEL') || n.includes('PETROL') || n.includes('GAS') || n.includes('DIESEL') || n.includes('CNG')) return '⛽';
-                if (n.includes('BILL') || n.includes('ELEC') || n.includes('WATER') || n.includes('WIFI') || n.includes('PHONE') || n.includes('INTERNET') || n.includes('MOBILE') || n.includes('UTILITIES') || n.includes('GAS')) return '💵';
-                if (n.includes('ENT') || n.includes('MOVIE') || n.includes('SHOW') || n.includes('MUSIC') || n.includes('GAME') || n.includes('NETFLIX') || n.includes('SPOTIFY') || n.includes('PLAYSTATION')) return '🎬';
-                if (n.includes('MED') || n.includes('HEALTH') || n.includes('DOCTOR') || n.includes('DRUG') || n.includes('CLINIC') || n.includes('HOSPITAL')) return '💊';
-                if (n.includes('SHOP') || n.includes('CLOTH') || n.includes('FASHION') || n.includes('MYNTRA') || n.includes('AMAZON') || n.includes('FLIPKART')) return '🛍️';
-                if (n.includes('RENT') || n.includes('HOUSE') || n.includes('HOME')) return '🏠';
-                if (n.includes('SALARY') || n.includes('INC') || n.includes('WAGE') || n.includes('PAYOUT')) return '💰';
-                if (n.includes('INVEST') || n.includes('STOCK') || n.includes('MUTUAL') || n.includes('DIVIDEND') || n.includes('INTEREST')) return '📈';
-                return '📦';
-            };
-
-            cats.forEach(c => {
-                const emoji = getEmoji(c.name);
-                html += `<div class="ae-acc-card ae-cat-card" data-name="${escH(c.name)}" onclick="selectCatCard(this, '${containerId}', '${hiddenInputId}')">
-                    <div class="ae-acc-name">
-                        <span class="ae-cat-emoji">${emoji}</span> ${escH(c.name)}
-                    </div>
+            items.forEach(item => {
+                const prefix = isHash ? '#' : '•';
+                html += `<div class="ae-chip" onclick="selectQuickChip(this, '${targetInputId}', '${escH(item)}')">
+                    <span style="color:#c36c4b">${prefix}</span> ${escH(item)}
                 </div>`;
             });
-
-            html += `<div class="ae-acc-card ae-cat-card ae-custom-cat-card" onclick="promptCustomCategory('${containerId}', '${hiddenInputId}', '${type}')">
-                <div class="ae-acc-name" style="color:var(--accent); font-weight:bold;">
-                    ➕ CUSTOM
-                </div>
-            </div>`;
-
             container.innerHTML = html;
-
-            if (!hidden.value && cats.length > 0) {
-                const firstCard = container.querySelector('.ae-cat-card');
-                if (firstCard) selectCatCard(firstCard, containerId, hiddenInputId);
-            } else if (hidden.value) {
-                const existingCard = container.querySelector(`.ae-cat-card[data-name="${escH(hidden.value)}"]`);
-                if (existingCard) selectCatCard(existingCard, containerId, hiddenInputId);
-            }
-        };
-
-        window.selectCatCard = function (el, containerId, hiddenInputId) {
-            const container = document.getElementById(containerId);
-            const hidden = document.getElementById(hiddenInputId);
-            if (!container || !hidden) return;
-
-            container.querySelectorAll('.ae-cat-card').forEach(c => {
-                c.classList.remove('active');
-            });
-
-            el.classList.add('active');
-            hidden.value = el.dataset.name;
-
-            updateDisplayContext(hiddenInputId.split('-')[0]);
-        };
-
-        window.promptCustomCategory = async function (containerId, hiddenInputId, type) {
-            const name = prompt('Enter new category name:');
-            if (!name) return;
-            const cleaned = name.trim().toUpperCase();
-            if (!cleaned) return;
-
-            await ensureCategory(cleaned, type);
-            renderCategoryCards(containerId, hiddenInputId, type);
-            const container = document.getElementById(containerId);
-            const card = container.querySelector(`.ae-cat-card[data-name="${escH(cleaned)}"]`);
-            if (card) {
-                selectCatCard(card, containerId, hiddenInputId);
-            }
-        };
-
-        window.updateDisplayContext = function (prefix) {
-            const contextEl = document.getElementById(prefix + '-display-context');
-            if (!contextEl) return;
-
-            if (prefix === 'e') {
-                const cat = document.getElementById('e-cat')?.value || 'Category';
-                const acc = document.getElementById('e-acc')?.value || 'Account';
-                contextEl.textContent = `${cat} · ${acc}`;
-            } else if (prefix === 'i') {
-                const cat = document.getElementById('i-cat')?.value || 'Category';
-                const acc = document.getElementById('i-acc')?.value || 'Account';
-                contextEl.textContent = `${cat} · ${acc}`;
-            } else if (prefix === 't') {
-                const from = document.getElementById('t-from')?.value || 'From Account';
-                const to = document.getElementById('t-to')?.value || 'To Account';
-                contextEl.textContent = `${from} ➔ ${to}`;
-            }
-        };
-
-        window.pressKey = function (key, prefix) {
-            const valEl = document.getElementById(prefix + '-display-val');
-            const amtInp = document.getElementById(prefix + '-amt');
-            if (!valEl || !amtInp) return;
-
-            let cur = valEl.textContent;
-            if (cur === '0' || cur === '0.00') cur = '';
-
-            if (key === 'AC') {
-                cur = '0';
-            } else if (key === 'back') {
-                cur = cur.slice(0, -1);
-                if (!cur) cur = '0';
-            } else if (key === 'split') {
-                if (prefix === 'e') {
-                    window.openSplitPeopleModal();
-                }
-            } else if (key === '.') {
-                if (!cur.includes('.')) {
-                    cur = cur ? cur + '.' : '0.';
-                }
-            } else {
-                if (cur === '0' && key === '0') {
-                    cur = '0';
-                } else {
-                    cur = cur + key;
-                }
-            }
-
-            valEl.textContent = cur;
-            amtInp.value = cur;
-
-            if (prefix === 'e') {
-                const rows = document.querySelectorAll('#split-rows-container .mini-form');
-                if (rows.length > 0) {
-                    window.splitEqually();
-                }
-            }
-        };
-
-        function setupAICategorySuggestions() {
-            const map = {
-                'lunch': 'FOOD', 'dinner': 'FOOD', 'breakfast': 'FOOD', 'swiggy': 'FOOD', 'zomato': 'FOOD',
-                'food': 'FOOD', 'restaurant': 'FOOD', 'cafe': 'FOOD', 'coffee': 'FOOD', 'tea': 'FOOD',
-                'burger': 'FOOD', 'pizza': 'FOOD', 'starbucks': 'FOOD', 'domino': 'FOOD', 'mcdonald': 'FOOD',
-                'groceries': 'GROCERIES', 'grocer': 'GROCERIES', 'milk': 'GROCERIES', 'veg': 'GROCERIES',
-                'fruit': 'GROCERIES', 'supermarket': 'GROCERIES', 'mart': 'GROCERIES', 'blinkit': 'GROCERIES',
-                'instamart': 'GROCERIES', 'zepto': 'GROCERIES', 'uber': 'TRAVEL', 'ola': 'TRAVEL',
-                'auto': 'TRAVEL', 'metro': 'TRAVEL', 'flight': 'TRAVEL', 'train': 'TRAVEL', 'bus': 'TRAVEL',
-                'cab': 'TRAVEL', 'taxi': 'TRAVEL', 'travel': 'TRAVEL', 'ticket': 'TRAVEL', 'petrol': 'FUEL',
-                'diesel': 'FUEL', 'fuel': 'FUEL', 'cng': 'FUEL', 'electricity': 'BILLS', 'power': 'BILLS',
-                'water': 'BILLS', 'wifi': 'BILLS', 'internet': 'BILLS', 'broadband': 'BILLS', 'recharge': 'BILLS',
-                'mobile': 'BILLS', 'phone': 'BILLS', 'gas': 'BILLS', 'rent': 'RENT', 'house': 'RENT',
-                'room': 'RENT', 'movie': 'ENTERTAINMENT', 'cinema': 'ENTERTAINMENT', 'netflix': 'ENTERTAINMENT',
-                'spotify': 'ENTERTAINMENT', 'youtube': 'ENTERTAINMENT', 'game': 'ENTERTAINMENT', 'steam': 'ENTERTAINMENT',
-                'playstation': 'ENTERTAINMENT', 'xbox': 'ENTERTAINMENT', 'medicine': 'MEDICAL', 'hospital': 'MEDICAL',
-                'doctor': 'MEDICAL', 'clinic': 'MEDICAL', 'pharmacy': 'MEDICAL', 'health': 'MEDICAL',
-                'shopping': 'SHOPPING', 'shirt': 'SHOPPING', 'clothes': 'SHOPPING', 'shoes': 'SHOPPING',
-                'amazon': 'SHOPPING', 'flipkart': 'SHOPPING', 'myntra': 'SHOPPING', 'salary': 'SALARY',
-                'income': 'SALARY', 'payout': 'SALARY', 'wage': 'SALARY', 'interest': 'INVESTMENT',
-                'dividend': 'INVESTMENT', 'mutual': 'INVESTMENT', 'stock': 'INVESTMENT'
-            };
-
-            const autoSelect = (inputVal, containerId, hiddenInputId, type) => {
-                const text = inputVal.toLowerCase().trim();
-                if (!text) return;
-
-                let matchedCat = null;
-                for (const [key, catName] of Object.entries(map)) {
-                    if (text.includes(key)) {
-                        matchedCat = catName;
-                        break;
-                    }
-                }
-
-                if (!matchedCat) {
-                    const cats = _categories.filter(c => c.type === type);
-                    for (const c of cats) {
-                        if (text.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(text)) {
-                            matchedCat = c.name;
-                            break;
-                        }
-                    }
-                }
-
-                if (matchedCat) {
-                    const container = document.getElementById(containerId);
-                    if (container) {
-                        const card = container.querySelector(`.ae-cat-card[data-name="${escH(matchedCat.toUpperCase())}"]`);
-                        if (card) {
-                            selectCatCard(card, containerId, hiddenInputId);
-                        } else {
-                            ensureCategory(matchedCat.toUpperCase(), type).then(() => {
-                                renderCategoryCards(containerId, hiddenInputId, type);
-                                const newCard = container.querySelector(`.ae-cat-card[data-name="${escH(matchedCat.toUpperCase())}"]`);
-                                if (newCard) selectCatCard(newCard, containerId, hiddenInputId);
-                            });
-                        }
-                    }
-                }
-            };
-
-            document.getElementById('e-item')?.addEventListener('input', (e) => {
-                autoSelect(e.target.value, 'e-cat-cards', 'e-cat', 'EXPENSE');
-            });
-            document.getElementById('i-item')?.addEventListener('input', (e) => {
-                autoSelect(e.target.value, 'i-cat-cards', 'i-cat', 'INCOME');
-            });
         }
 
+        window.selectQuickChip = function (el, targetInputId, val) {
+            const input = document.getElementById(targetInputId);
+            if (input) {
+                input.value = val;
+                if (targetInputId === 'e-tpl') applyExpTpl(val);
+                if (targetInputId === 'i-tpl') applyIncTpl(val);
+
+                // Highlight chip visually briefly or toggle active class
+                const chips = el.parentElement.querySelectorAll('.ae-chip');
+                chips.forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+            }
+        };
+
+        let _autoCatTimer;
+        window.autoCategorizeItem = async function (isImmediate = false) {
+            const itemInput = document.getElementById('e-item');
+            const catInput = document.getElementById('e-cat');
+            if (!itemInput || !catInput) return;
+
+            const itemText = itemInput.value.trim();
+            if (itemText.length < 2) return;
+
+            const run = async () => {
+                const currentVal = itemInput.value.trim();
+                if (!currentVal) return;
+
+                const key = getGroqKey();
+                if (!key) return;
+
+                catInput.placeholder = "AI predicting...";
+                const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
+
+                const prompt = `Given the expense item/merchant: "${currentVal}", which of these categories is the best fit? ${expCats.join(', ')}. Reply ONLY with the exact category name. If none fit perfectly, reply with the closest one.`;
+
+                try {
+                    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.1 })
+                    });
+                    if (resp.ok) {
+                        const json = await resp.json();
+                        let guess = json.choices[0].message.content.trim();
+                        if (guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1, -1);
+                        if (_categories.some(c => c.name.toUpperCase() === guess.toUpperCase())) {
+                            catInput.value = guess;
+                        }
+                    }
+                } catch (e) { console.error('AI Auto-Cat failed', e); }
+                finally {
+                    catInput.placeholder = "⚲ Select or type new category";
+                }
+            };
+
+            clearTimeout(_autoCatTimer);
+            if (isImmediate) {
+                run();
+            } else {
+                _autoCatTimer = setTimeout(run, 1500);
+            }
+        };
+
+        function getFieldOrder(inputId) { for (const [, fields] of Object.entries(FIELD_ORDER)) { const i = fields.indexOf(inputId); if (i >= 0) return fields; } return null; }
+        function focusNext(inputId) {
+            const fields = getFieldOrder(inputId);
+            if (!fields) return;
+            const idx = fields.indexOf(inputId);
+            if (idx < 0 || idx >= fields.length - 1) return;
+            const next = document.getElementById(fields[idx + 1]);
+            if (next) {
+                next.focus();
+                setTimeout(() => next.focus(), 10);
+            }
+        }
+        function renderDD(inputId, ddId, data) {
+            const inp = document.getElementById(inputId), dd = document.getElementById(ddId);
+            if (!inp || !dd) return;
+            const q = inp.value.toLowerCase();
+            const filtered = data.filter(x => String(x).toLowerCase().includes(q));
+            // Show all if empty, otherwise show filtered
+            const results = (q === '') ? data.slice(0, 40) : filtered;
+            dd.innerHTML = results.map(v => `<div class="fd-item" tabindex="-1" data-val="${escH(v)}" onmousedown="event.preventDefault();W_selectDD('${inputId}','${ddId}',this.dataset.val)">${escH(v)}</div>`).join('');
+            dd.style.display = results.length ? 'block' : 'none';
+        }
+        function initDD(inputId, ddId, data) {
+            const inp = document.getElementById(inputId), dd = document.getElementById(ddId);
+            if (!inp || !dd) return;
+            inp._ddData = data;
+            inp.oninput = () => {
+                renderDD(inputId, ddId, data);
+                inp.classList.remove('invalid');
+                if (inputId === 'e-tpl' && inp.value === '') applyExpTpl('');
+                if (inputId === 'i-tpl' && inp.value === '') applyIncTpl('');
+                if (inputId === 'e-item') autoCategorizeItem();
+            };
+            inp.onfocus = () => renderDD(inputId, ddId, data);
+            inp.onblur = () => {
+                setTimeout(() => { dd.style.display = 'none'; }, 180);
+                if (inputId === 'e-item') autoCategorizeItem(true);
+            };
+            inp.onkeydown = e => {
+                const items = [...dd.querySelectorAll('.fd-item')];
+                const ddOpen = dd.style.display === 'block' && items.length > 0;
+                const key = e.key;
+                const code = e.keyCode;
+                if (key === 'Enter' || code === 13 || key === 'Tab' || code === 9) {
+                    if (ddOpen) {
+                        e.preventDefault();
+                        W_selectDD(inputId, ddId, items[0].dataset.val);
+                    } else if (key === 'Enter' || code === 13) {
+                        e.preventDefault();
+                        dd.style.display = 'none';
+                        focusNext(inputId);
+                    }
+                } else if (key === 'ArrowDown' || code === 40) {
+                    if (ddOpen) {
+                        e.preventDefault();
+                        items[0].focus();
+                    }
+                } else if (key === 'Escape' || code === 27) {
+                    dd.style.display = 'none';
+                }
+            };
+            dd.onkeydown = e => {
+                const items = [...dd.querySelectorAll('.fd-item')];
+                const idx = items.indexOf(document.activeElement);
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (idx < items.length - 1) items[idx + 1].focus();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (idx > 0) items[idx - 1].focus(); else inp.focus();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (document.activeElement && document.activeElement.dataset.val !== undefined) {
+                        W_selectDD(inputId, ddId, document.activeElement.dataset.val);
+                    }
+                } else if (e.key === 'Escape') {
+                    inp.focus();
+                    dd.style.display = 'none';
+                }
+            };
+        }
+        window.W_selectDD = function (inputId, ddId, value) {
+            const inp = document.getElementById(inputId), dd = document.getElementById(ddId);
+            if (!inp || !dd) return;
+            inp.value = value;
+            inp.classList.remove('invalid');
+            dd.style.display = 'none';
+            if (inputId === 'e-tpl') { applyExpTpl(value); }
+            else if (inputId === 'i-tpl') { applyIncTpl(value); }
+            if (inputId === 'e-item') { autoCategorizeItem(true); }
+            focusNext(inputId);
+        };
         function applyExpTpl(n) {
             const t = expTpls.find(x => x.name.toLowerCase() === n.toLowerCase());
             if (!t) return;
@@ -8546,27 +8081,10 @@
                     });
                 }
             }
-            if (t.category) {
-                document.getElementById('e-cat').value = t.category;
-                const container = document.getElementById('e-cat-cards');
-                if (container) {
-                    container.querySelectorAll('.ae-cat-card').forEach(c => {
-                        if (c.getAttribute('data-name') === t.category.toUpperCase()) {
-                            c.classList.add('active');
-                        } else {
-                            c.classList.remove('active');
-                        }
-                    });
-                }
-            }
+            if (t.category) document.getElementById('e-cat').value = t.category;
             if (t.item) document.getElementById('e-item').value = t.item;
             if (t.tofrom) document.getElementById('e-to').value = t.tofrom;
-            if (t.amount) {
-                document.getElementById('e-amt').value = t.amount;
-                document.getElementById('e-display-val').textContent = String(t.amount);
-            } else {
-                document.getElementById('e-display-val').textContent = '0';
-            }
+            if (t.amount) document.getElementById('e-amt').value = t.amount;
             
             document.getElementById('split-rows-container').innerHTML = '';
             document.getElementById('split-tools').style.display = 'none';
