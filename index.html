@@ -8190,7 +8190,7 @@
                     const ref2 = doc(collection(db, 'users', uid(), 'transactions'));
                     addedRefs.push(ref2);
                     batch.set(ref2, {
-                        date: now, account: ex.person, category: ex.cat, item: ex.item, amount: ex.amt, toFrom: fromAcc
+                        date: now, account: ex.person, category: 'TRANSFER', item: ex.item, amount: ex.amt, toFrom: fromAcc
                     });
                 } else {
                     const ref1 = doc(collection(db, 'users', uid(), 'transactions'));
