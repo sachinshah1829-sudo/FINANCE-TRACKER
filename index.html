@@ -5104,9 +5104,23 @@
             background: #F5F1EA;
         }
 
-        .calc-tab.active {
-            background: #BE5A30; /* Rust orange active */
+        .calc-tab.active.expense {
+            background: #BE5A30;
             border-color: #BE5A30;
+            color: #fff;
+            box-shadow: none;
+        }
+
+        .calc-tab.active.income {
+            background: #6B7F5B; /* Sage Green */
+            border-color: #6B7F5B;
+            color: #fff;
+            box-shadow: none;
+        }
+
+        .calc-tab.active.transfer {
+            background: #485460; /* Slate Gray */
+            border-color: #485460;
             color: #fff;
             box-shadow: none;
         }
@@ -5407,6 +5421,42 @@
         #calc-details-panel .form-input {
             border-radius: 0;
         }
+
+        /* Mode Specific Save Button & Active Card Colors */
+        .calc-container.mode-expense .calc-save-btn {
+            background: #BE5A30; /* Rust Orange */
+        }
+        .calc-container.mode-expense .calc-save-btn:hover {
+            background: #A64B25;
+        }
+
+        .calc-container.mode-income .calc-save-btn {
+            background: #6B7F5B; /* Sage Green */
+        }
+        .calc-container.mode-income .calc-save-btn:hover {
+            background: #5A6B4C;
+        }
+
+        .calc-container.mode-transfer .calc-save-btn {
+            background: #485460; /* Slate Gray */
+        }
+        .calc-container.mode-transfer .calc-save-btn:hover {
+            background: #3B4650;
+        }
+
+        /* Active selector card borders dynamic update */
+        .calc-container.mode-expense .calc-card.active {
+            border: 2px solid #BE5A30;
+            background: #FAF1E8;
+        }
+        .calc-container.mode-income .calc-card.active {
+            border: 2px solid #6B7F5B;
+            background: #F4F7F2;
+        }
+        .calc-container.mode-transfer .calc-card.active {
+            border: 2px solid #485460;
+            background: #F1F3F5;
+        }
     </style>
 </head>
 
@@ -5651,7 +5701,7 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
-                <div class="calc-container">
+                <div class="calc-container mode-expense">
                     <!-- Header -->
                     <div class="calc-header">
                         <button class="calc-back-btn" onclick="nav('transactions')">←</button>
@@ -5691,9 +5741,9 @@
 
                     <!-- Segmented Tabs -->
                     <div class="calc-tabs">
-                        <div class="calc-tab active" id="tab-add-expense" onclick="switchCalcType('expense')">↓ EXPENSE</div>
-                        <div class="calc-tab" id="tab-add-income" onclick="switchCalcType('income')">↑ INCOME</div>
-                        <div class="calc-tab" id="tab-add-transfer" onclick="switchCalcType('transfer')">⇄ TRANSFER</div>
+                        <div class="calc-tab active expense" id="tab-add-expense" onclick="switchCalcType('expense')">↓ EXPENSE</div>
+                        <div class="calc-tab income" id="tab-add-income" onclick="switchCalcType('income')">↑ INCOME</div>
+                        <div class="calc-tab transfer" id="tab-add-transfer" onclick="switchCalcType('transfer')">⇄ TRANSFER</div>
                     </div>
 
                     <!-- Choose Template Section (only visible for Expense and Income) -->
@@ -8383,6 +8433,12 @@
             window._activeAddType = type;
             document.querySelectorAll('.calc-tabs .calc-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-add-${type}`).classList.add('active');
+
+            const container = document.querySelector('.calc-container');
+            if (container) {
+                container.classList.remove('mode-expense', 'mode-income', 'mode-transfer');
+                container.classList.add('mode-' + type);
+            }
 
             const catSec = document.getElementById('calc-cat-sec');
             const toAccSec = document.getElementById('calc-to-acc-sec');
