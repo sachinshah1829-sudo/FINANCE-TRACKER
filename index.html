@@ -5018,6 +5018,360 @@
             opacity: 0.7;
             flex-shrink: 0;
         }
+
+        /* Unified Calculator Interface Styling */
+        .calc-container {
+            max-width: 450px;
+            margin: 0 auto;
+            background: #EAE5DB; /* Warm cream page background */
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(43, 35, 29, 0.08);
+            color: #2B231D; /* Dark brown text */
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-back-btn {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #2B231D;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .calc-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .calc-details-btn {
+            background: #fff;
+            border: 1px solid #DFD7CC;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2B231D;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.15s;
+        }
+
+        .calc-details-btn:hover {
+            background: #F5F1EA;
+        }
+
+        .calc-tabs {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .calc-tab {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #DFD7CC;
+            border-radius: 8px;
+            padding: 10px 0;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            color: #2B231D;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .calc-tab:hover {
+            background: #F5F1EA;
+        }
+
+        .calc-tab.active {
+            background: #BE5A30; /* Rust orange active */
+            border-color: #BE5A30;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(190, 90, 48, 0.2);
+        }
+
+        .calc-sec-lbl {
+            font-size: 9px;
+            font-weight: 700;
+            color: #7A7066;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .calc-scroll-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+        }
+
+        .calc-scroll-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .calc-card {
+            flex: 0 0 auto;
+            background: #fff;
+            border: 1px solid #DFD7CC;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.15s;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .calc-card:hover {
+            border-color: #BE5A30;
+        }
+
+        .calc-card.active {
+            border: 2px solid #BE5A30;
+            background: #FAF1E8;
+            box-shadow: 0 2px 8px rgba(190, 90, 48, 0.1);
+        }
+
+        .calc-card-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: #2B231D;
+        }
+
+        .calc-card-sub {
+            font-size: 9px;
+            color: #7A7066;
+            margin-top: 4px;
+        }
+
+        .calc-card.new-btn {
+            background: #ECE6DA;
+            border-style: dashed;
+        }
+
+        .calc-amount-box {
+            background: #1B1613; /* Dark brown/black display */
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: #fff;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .calc-amount-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-amount-lbl {
+            font-size: 9px;
+            color: #9C948C;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .calc-amount-info {
+            font-size: 10px;
+            color: #C3B8AC;
+        }
+
+        .calc-amount-expr {
+            font-size: 16px;
+            color: #BE5A30; /* Orange equation text */
+            font-family: 'Courier Prime', monospace;
+            min-height: 20px;
+            word-wrap: break-word;
+            margin-top: 4px;
+        }
+
+        .calc-amount-val {
+            font-size: 38px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1;
+            margin-top: 6px;
+        }
+
+        .calc-tip {
+            font-size: 9px;
+            color: #7A7066;
+            line-height: 1.4;
+            padding: 0 4px;
+        }
+
+        .calc-fields-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .calc-input {
+            width: 100%;
+            background: #fff;
+            border: 1px solid #DFD7CC;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2B231D;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            transition: all 0.15s;
+        }
+
+        .calc-input:focus {
+            border-color: #BE5A30;
+            box-shadow: 0 0 0 2px rgba(190, 90, 48, 0.15);
+        }
+
+        .calc-keyboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .calc-key {
+            border: 1px solid #DFD7CC;
+            border-radius: 8px;
+            padding: 14px 0;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .calc-key:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        .calc-key.num {
+            background: #fff;
+            color: #2B231D;
+        }
+
+        .calc-key.num:hover {
+            background: #FAF9F6;
+        }
+
+        .calc-key.num.span-2 {
+            grid-column: span 2;
+        }
+
+        .calc-key.op {
+            background: #FAF1E8;
+            border-color: #F3E5DB;
+            color: #BE5A30;
+        }
+
+        .calc-key.op:hover {
+            background: #F3E4D5;
+        }
+
+        .calc-key.fn {
+            background: #ECE6DA;
+            border-color: #DFD7CC;
+            color: #2B231D;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .calc-key.fn:hover {
+            background: #DFD7CC;
+        }
+
+        .calc-key.eq {
+            background: #1B1613;
+            border-color: #1B1613;
+            color: #fff;
+        }
+
+        .calc-key.eq:hover {
+            background: #2D241F;
+        }
+
+        .calc-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            align-items: center;
+        }
+
+        .calc-reset-btn {
+            background: #fff;
+            border: 1px solid #DFD7CC;
+            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #7A7066;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .calc-reset-btn:hover {
+            background: #FAF9F6;
+            color: #BE5A30;
+        }
+
+        .calc-save-btn {
+            flex: 1;
+            background: #BE5A30;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(190, 90, 48, 0.2);
+            transition: all 0.15s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calc-save-btn:hover {
+            background: #A64B25;
+        }
     </style>
 </head>
 
@@ -5262,49 +5616,41 @@
 
             <!-- ADD ENTRY -->
             <div class="page" id="page-add">
-                <div class="pg-header">
-                    <div class="pg-title">Add Entry</div>
-                    <div class="pg-sub">Log your transactions and track your spending</div>
-                </div>
-                <div class="add-entry-wrap">
-                    <div class="ae-tabs" id="add-entry-tabs">
-                        <div class="ae-tab active" onclick="switchAddTab('expense',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M12 5v14M5 12l7 7 7-7" />
-                            </svg>
-                            Expense
-                        </div>
-                        <div class="ae-tab" onclick="switchAddTab('income',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M12 19V5M5 12l7-7 7 7" />
-                            </svg>
-                            Income
-                        </div>
-                        <div class="ae-tab" onclick="switchAddTab('transfer',this)">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M17 3v14M7 21V7M3 11l4-4 4 4M21 13l-4 4-4-4" />
-                            </svg>
-                            Transfer
-                        </div>
-                        <div class="ae-tab" onclick="toggleImportSection()" style="border-style: dotted;">
-                            <svg class="ae-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="12" y1="18" x2="12" y2="12" />
-                                <line x1="9" y1="15" x2="15" y2="15" />
-                            </svg>
-                            Bulk Import
+                <div class="calc-container">
+                    <!-- Header -->
+                    <div class="calc-header">
+                        <button class="calc-back-btn" onclick="nav('transactions')">←</button>
+                        <div class="calc-title">ADD ENTRY</div>
+                        <button class="calc-details-btn" id="calc-details-toggle" onclick="toggleCalcDetails()">+ Details</button>
+                    </div>
+
+                    <!-- Details Panel (hidden by default) -->
+                    <div id="calc-details-panel" style="display:none; margin-bottom:16px;">
+                        <div class="card card-p">
+                            <div class="ae-grid-2" style="margin-bottom:12px;">
+                                <div>
+                                    <div class="ae-lbl" style="margin-bottom:6px;">DATE</div>
+                                    <input type="date" id="calc-date-input" class="form-input" style="margin:0;">
+                                </div>
+                                <div>
+                                    <div class="ae-lbl" style="margin-bottom:6px;">TEMPLATE</div>
+                                    <div class="ae-input-wrap">
+                                        <input class="ae-input" id="calc-tpl-input" placeholder="Choose template" autocomplete="off" style="padding: 10px;">
+                                        <div class="form-dropdown" id="dd-calc-tpl"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; border-top:1px dashed var(--border); padding-top:12px;">
+                                <div class="ae-lbl">ADVANCED TOOLS</div>
+                                <button class="calc-details-btn" onclick="toggleImportSection()">Bulk Import</button>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Import section (moved here to remain functional) -->
                     <div id="import-section" style="display:none; margin-bottom:24px;">
                         <div class="card card-p">
-                            <div
-                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                                 <div class="card-h" style="margin:0">CSV Import</div>
                                 <button class="txn-clr-btn" onclick="toggleImportSection()">✕ Close</button>
                             </div>
@@ -5314,240 +5660,194 @@
                                 Date: DD/MM/YYYY, Amount: negative = expense.
                             </div>
                             <div class="form-row" style="margin-top:12px;">
-                                <select id="import-type-sel" class="form-input" style="cursor:pointer"
-                                    onchange="clearImport()">
+                                <select id="import-type-sel" class="form-input" style="cursor:pointer" onchange="clearImport()">
                                     <option value="TXN">Transactions</option>
                                     <option value="TPL">Templates</option>
                                 </select>
                             </div>
                             <div class="form-row">
-                                <textarea id="import-csv" class="form-input" rows="6" placeholder="Paste your CSV here…"
-                                    style="font-family:monospace;font-size:12px;"></textarea>
+                                <textarea id="import-csv" class="form-input" rows="6" placeholder="Paste your CSV here…" style="font-family:monospace;font-size:12px;"></textarea>
                             </div>
                             <div style="display:flex; gap:10px;">
                                 <button class="add-btn" onclick="previewImport()" style="flex:1">Preview</button>
-                                <button class="add-btn" id="import-execute-btn" onclick="executeImport()"
-                                    style="flex:1; display:none">Import to Firebase</button>
+                                <button class="add-btn" id="import-execute-btn" onclick="executeImport()" style="flex:1; display:none">Import to Firebase</button>
                                 <button class="txn-clr-btn" onclick="clearImport()">Clear</button>
                             </div>
                             <div id="import-preview" style="margin-top:12px"></div>
                         </div>
                     </div>
 
-                    <!-- EXPENSE -->
-                    <div class="add-form active" id="form-expense">
-                        <!-- Template -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TEMPLATE</div>
-                                <div class="ae-hint">reuse a saved entry</div>
-                            </div>
+                    <!-- Segmented Tabs -->
+                    <div class="calc-tabs">
+                        <div class="calc-tab active" id="tab-add-expense" onclick="switchCalcType('expense')">↓ EXPENSE</div>
+                        <div class="calc-tab" id="tab-add-income" onclick="switchCalcType('income')">↑ INCOME</div>
+                        <div class="calc-tab" id="tab-add-transfer" onclick="switchCalcType('transfer')">⇄ TRANSFER</div>
+                    </div>
+
+                    <!-- Account Section -->
+                    <div class="calc-sec">
+                        <div class="calc-sec-lbl" id="calc-acc-lbl">ACCOUNT</div>
+                        <div class="calc-scroll-row" id="calc-acc-cards">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Category Section -->
+                    <div class="calc-sec" id="calc-cat-sec">
+                        <div class="calc-sec-lbl">CATEGORY</div>
+                        <div class="calc-scroll-row" id="calc-cat-cards">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Transfer To Account Section (Visible only in Transfer mode) -->
+                    <div class="calc-sec" id="calc-to-acc-sec" style="display:none;">
+                        <div class="calc-sec-lbl">TO ACCOUNT</div>
+                        <div class="calc-scroll-row" id="calc-to-acc-cards">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Amount Box -->
+                    <div class="calc-amount-box">
+                        <div class="calc-amount-top">
+                            <span class="calc-amount-lbl">AMOUNT (₹)</span>
+                            <span class="calc-amount-info" id="calc-amount-summary">Select Account & Category</span>
+                        </div>
+                        <div class="calc-amount-expr" id="calc-amount-expr">----</div>
+                        <div class="calc-amount-val">
+                            <span>₹</span>
+                            <span id="calc-amount-val-num">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Tip -->
+                    <div class="calc-tip">
+                        Tip – type 120+45+80 to auto-total a split bill, or x2 to multiply.
+                    </div>
+
+                    <!-- Description Fields -->
+                    <div class="calc-fields-row">
+                        <div>
+                            <div class="calc-sec-lbl">ITEM</div>
                             <div class="ae-input-wrap">
-                                <input class="ae-input" id="e-tpl" placeholder="☆ Choose template (optional)"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-tpl"></div>
+                                <input class="calc-input" id="calc-item-input" placeholder="e.g. Lunch" oninput="syncToOriginalForm()" autocomplete="off">
+                                <div class="form-dropdown" id="dd-calc-item"></div>
                             </div>
                         </div>
-
-                        <!-- Account -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">ACCOUNT</div>
+                        <div>
+                            <div class="calc-sec-lbl" id="calc-to-lbl">PAID TO</div>
+                            <div class="ae-input-wrap">
+                                <input class="calc-input" id="calc-to-input" placeholder="e.g. Swiggy" oninput="syncToOriginalForm()" autocomplete="off">
+                                <div class="form-dropdown" id="dd-calc-to"></div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Split Section (hidden by default) -->
+                    <div id="calc-split-box" class="ae-split-box" style="display:none; margin-bottom:16px;">
+                        <div class="ae-group-hdr" style="margin-bottom:0;">
+                            <div class="ae-lbl">SPLIT PAYMENTS</div>
+                            <button class="ae-chip" style="background:#fff; border-color:var(--border-strong); border-radius:0; padding:8px 16px; font-size:12px; font-weight:700; cursor:pointer;" onclick="addSplitRow(event)">+ Add Split</button>
+                        </div>
+                        <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or accounts</div>
+                        <div id="split-rows-container"></div>
+                        <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
+                            <button class="txn-clr-btn" onclick="splitEqually(event)" style="padding:6px 12px;font-size:11px;">Split Equally</button>
+                        </div>
+                    </div>
+
+                    <!-- Calculator Keyboard Grid -->
+                    <div class="calc-keyboard">
+                        <button class="calc-key fn" onclick="pressCalcKey('AC')">AC</button>
+                        <button class="calc-key fn" onclick="pressCalcKey('BACK')">⌫</button>
+                        <button class="calc-key fn" onclick="pressCalcKey('SPLIT')">split</button>
+                        <button class="calc-key op" onclick="pressCalcKey('/')">÷</button>
+
+                        <button class="calc-key num" onclick="pressCalcKey('7')">7</button>
+                        <button class="calc-key num" onclick="pressCalcKey('8')">8</button>
+                        <button class="calc-key num" onclick="pressCalcKey('9')">9</button>
+                        <button class="calc-key op" onclick="pressCalcKey('*')">×</button>
+
+                        <button class="calc-key num" onclick="pressCalcKey('4')">4</button>
+                        <button class="calc-key num" onclick="pressCalcKey('5')">5</button>
+                        <button class="calc-key num" onclick="pressCalcKey('6')">6</button>
+                        <button class="calc-key op" onclick="pressCalcKey('-')">-</button>
+
+                        <button class="calc-key num" onclick="pressCalcKey('1')">1</button>
+                        <button class="calc-key num" onclick="pressCalcKey('2')">2</button>
+                        <button class="calc-key num" onclick="pressCalcKey('3')">3</button>
+                        <button class="calc-key op" onclick="pressCalcKey('+')">+</button>
+
+                        <button class="calc-key num span-2" onclick="pressCalcKey('0')">0</button>
+                        <button class="calc-key num" onclick="pressCalcKey('.')">.</button>
+                        <button class="calc-key eq" onclick="pressCalcKey('=')">=</button>
+                    </div>
+
+                    <!-- Error Row -->
+                    <div class="form-err" id="calc-err-msg" style="margin-top:12px; margin-bottom:12px;"></div>
+
+                    <!-- Footer Save Row -->
+                    <div class="calc-footer">
+                        <button class="calc-reset-btn" onclick="clearAddEntryForm()" title="Clear form">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                        </button>
+                        <button class="calc-save-btn" id="calc-save-btn" onclick="submitCalcEntry()">Save Expense ↗</button>
+                    </div>
+                </div>
+
+                <!-- Hidden Original Forms for DOM access -->
+                <div style="display:none !important;" id="orig-add-entry-wrap">
+                    <div class="add-entry-wrap">
+                        <div class="ae-tabs" id="add-entry-tabs">
+                            <div class="ae-tab active" onclick="switchAddTab('expense',this)">Expense</div>
+                            <div class="ae-tab" onclick="switchAddTab('income',this)">Income</div>
+                            <div class="ae-tab" onclick="switchAddTab('transfer',this)">Transfer</div>
+                        </div>
+
+                        <!-- EXPENSE -->
+                        <div class="add-form active" id="form-expense">
+                            <input class="ae-input" id="e-tpl">
                             <input type="hidden" id="e-acc">
-                            <div class="ae-acc-row" id="e-acc-cards">
-                                <!-- Populated by JS -->
-                            </div>
+                            <div id="e-acc-cards"></div>
+                            <input class="ae-input" id="e-cat">
+                            <input class="ae-amt-input" id="e-amt" type="number">
+                            <input class="ae-input" id="e-item">
+                            <input class="ae-input" id="e-to">
+                            <div id="orig-split-rows-container"></div>
+                            <div id="orig-split-tools"></div>
+                            <div class="form-err" id="e-err"></div>
+                            <button id="e-btn" onclick="submitExp()"></button>
+                            <button id="e-tpl-btn" onclick="saveExpTpl(event)"></button>
                         </div>
 
-                        <!-- Category -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">CATEGORY</div>
-                                <div class="ae-hint">type to create new</div>
-                            </div>
-                            <div class="ae-input-wrap">
-                                <input class="ae-input" id="e-cat" placeholder="⚲ Select or type new category"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-e-cat"></div>
-                            </div>
-                        </div>
-
-                        <!-- Amount -->
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div>
-                                <input class="ae-amt-input" id="e-amt" type="number" placeholder="0.00" step="0.01">
-                            </div>
-                        </div>
-
-                        <!-- Grids -->
-                        <div class="ae-grid-2">
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">ITEM</div>
-                                </div>
-                                <div class="ae-input-wrap">
-                                    <input class="ae-input" id="e-item" placeholder="Type or select item"
-                                        autocomplete="off">
-                                    <div class="form-dropdown" id="dd-e-item"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">PAID TO</div>
-                                </div>
-                                <div class="ae-input-wrap">
-                                    <input class="ae-input" id="e-to" placeholder="Type or select person"
-                                        autocomplete="off">
-                                    <div class="form-dropdown" id="dd-e-to"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Split Payments -->
-                        <div class="ae-split-box">
-                            <div class="ae-group-hdr" style="margin-bottom:0;">
-                                <div class="ae-lbl">SPLIT PAYMENTS</div>
-                                <button class="ae-chip"
-                                    style="background:#fff; border-color:var(--border-strong); border-radius:0; padding:8px 16px; font-size:12px; font-weight:700; cursor:pointer;"
-                                    onclick="addSplitRow(event)">+ Add Split</button>
-                            </div>
-                            <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or
-                                accounts</div>
-
-                            <div id="split-rows-container"></div>
-                            <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
-                                <button class="txn-clr-btn" onclick="splitEqually(event)"
-                                    style="padding:6px 12px;font-size:11px;">Split Equally</button>
-                            </div>
-                        </div>
-
-                        <div class="form-err" id="e-err" style="margin-bottom:12px;"></div>
-
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="e-btn" onclick="submitExp()">Save Expense
-                                →</button>
-                            <button class="ae-btn ae-btn-sec" id="e-tpl-btn" onclick="saveExpTpl(event)">+ Save as Template</button>
-                            <button class="ae-btn ae-btn-sec" onclick="clearAddEntryForm()"
-                                style="border:none; background:transparent; color:var(--t3); text-decoration:underline;">Clear
-                                Form</button>
-                        </div>
-                    </div>
-
-                    <!-- INCOME (Simplified for now to match style, but functionally same) -->
-                    <div class="add-form" id="form-income">
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TEMPLATE</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="i-tpl" placeholder="Choose template"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-tpl"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">ACCOUNT</div>
-                            </div>
+                        <!-- INCOME -->
+                        <div class="add-form" id="form-income">
+                            <input class="ae-input" id="i-tpl">
                             <input type="hidden" id="i-acc">
-                            <div class="ae-acc-row" id="i-acc-cards"></div>
+                            <div id="i-acc-cards"></div>
+                            <input class="ae-input" id="i-cat">
+                            <input class="ae-amt-input" id="i-amt" type="number">
+                            <input class="ae-input" id="i-item">
+                            <input class="ae-input" id="i-from">
+                            <div class="form-err" id="i-err"></div>
+                            <button id="i-btn" onclick="submitInc()"></button>
+                            <button id="i-tpl-btn" onclick="saveIncTpl(event)"></button>
                         </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">CATEGORY</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="i-cat" placeholder="Select category"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-i-cat"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="i-amt" type="number"
-                                    placeholder="0.00">
-                            </div>
-                        </div>
-                        <div class="ae-grid-2">
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">ITEM</div>
-                                </div>
-                                <div class="ae-input-wrap"><input class="ae-input" id="i-item" placeholder="Item"
-                                        autocomplete="off">
-                                    <div class="form-dropdown" id="dd-i-item"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="ae-group-hdr">
-                                    <div class="ae-lbl">RECEIVED FROM</div>
-                                </div>
-                                <div class="ae-input-wrap"><input class="ae-input" id="i-from" placeholder="Person"
-                                        autocomplete="off">
-                                    <div class="form-dropdown" id="dd-i-from"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-err" id="i-err"></div>
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="i-btn" onclick="submitInc()">Save Income
-                                →</button>
-                            <button class="ae-btn ae-btn-sec" id="i-tpl-btn" onclick="saveIncTpl(event)">+ Save as Template</button>
-                        </div>
-                    </div>
 
-                    <!-- TRANSFER -->
-                    <div class="add-form" id="form-transfer">
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">FROM ACCOUNT</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-from" placeholder="Debit from"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-from"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">TO ACCOUNT</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-to" placeholder="Credit to"
-                                    autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-to"></div>
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">AMOUNT (₹)</div>
-                            </div>
-                            <div class="ae-amt-wrap">
-                                <div class="ae-amt-sym">₹</div><input class="ae-amt-input" id="t-amt" type="number"
-                                    placeholder="0.00">
-                            </div>
-                        </div>
-                        <div class="ae-group">
-                            <div class="ae-group-hdr">
-                                <div class="ae-lbl">NOTE / ITEM</div>
-                            </div>
-                            <div class="ae-input-wrap"><input class="ae-input" id="t-item"
-                                    placeholder="Transfer purpose" autocomplete="off">
-                                <div class="form-dropdown" id="dd-t-item"></div>
-                            </div>
-                        </div>
-                        <div class="form-err" id="t-err"></div>
-                        <div class="ae-btn-row">
-                            <button class="ae-btn ae-btn-primary" id="t-btn" onclick="submitTr()">Execute Transfer
-                                →</button>
+                        <!-- TRANSFER -->
+                        <div class="add-form" id="form-transfer">
+                            <input class="ae-input" id="t-from">
+                            <input class="ae-input" id="t-to">
+                            <input class="ae-amt-input" id="t-amt" type="number">
+                            <input class="ae-input" id="t-item">
+                            <div class="form-err" id="t-err"></div>
+                            <button id="t-btn" onclick="submitTr()"></button>
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- ACCOUNTS -->
             <div class="page" id="page-accounts">
@@ -6446,6 +6746,9 @@
             if (name === 'aichat') {
                 updateApiKeyStatus();
                 document.getElementById('chatInput').focus();
+            }
+            if (name === 'add') {
+                if (window.clearAddEntryForm) window.clearAddEntryForm();
             }
         };
         window.toggleSidebar = () => {
@@ -7811,27 +8114,542 @@
 
             const expTplNames = sortedExpTpls.map(t => t.name);
             const incTplNames = sortedIncTpls.map(t => t.name);
-            const pairs = [['e-tpl', 'dd-e-tpl', expTplNames], ['e-cat', 'dd-e-cat', expCats], ['e-item', 'dd-e-item', recentItems], ['e-to', 'dd-e-to', recentPeople], ['i-tpl', 'dd-i-tpl', incTplNames], ['i-cat', 'dd-i-cat', incCats], ['i-item', 'dd-i-item', recentItems], ['i-from', 'dd-i-from', recentPeople], ['t-from', 'dd-t-from', accNames], ['t-to', 'dd-t-to', accNames], ['t-item', 'dd-t-item', recentItems]];
+
+            const currentType = window._activeAddType || 'expense';
+            const calcTplNames = currentType === 'expense' ? expTplNames : (currentType === 'income' ? incTplNames : []);
+
+            const pairs = [
+                ['e-tpl', 'dd-e-tpl', expTplNames],
+                ['e-cat', 'dd-e-cat', expCats],
+                ['e-item', 'dd-e-item', recentItems],
+                ['e-to', 'dd-e-to', recentPeople],
+                ['i-tpl', 'dd-i-tpl', incTplNames],
+                ['i-cat', 'dd-i-cat', incCats],
+                ['i-item', 'dd-i-item', recentItems],
+                ['i-from', 'dd-i-from', recentPeople],
+                ['t-from', 'dd-t-from', accNames],
+                ['t-to', 'dd-t-to', accNames],
+                ['t-item', 'dd-t-item', recentItems],
+                // Custom calculator pairs
+                ['calc-item-input', 'dd-calc-item', recentItems],
+                ['calc-to-input', 'dd-calc-to', recentPeople],
+                ['calc-tpl-input', 'dd-calc-tpl', calcTplNames]
+            ];
             pairs.forEach(([inp, dd, data]) => initDD(inp, dd, data));
 
             renderAccountCards('e-acc-cards', 'e-acc', true);
             renderAccountCards('i-acc-cards', 'i-acc', true);
 
+            if (window.renderCalcAccounts) window.renderCalcAccounts();
+            if (window.renderCalcCategories) window.renderCalcCategories();
+            if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
         }
 
         window.clearAddEntryForm = function () {
             clearForm(['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], 'e-err');
+            clearForm(['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], 'i-err');
+            clearForm(['t-from', 't-to', 't-amt', 't-item'], 't-err');
             document.querySelectorAll('.ae-acc-card').forEach(c => {
                 c.classList.remove('active');
                 const svg = c.querySelector('.ae-icon-sm');
                 if (svg) svg.style.display = 'none';
             });
-            // Re-select first card for expense and income
             renderAccountCards('e-acc-cards', 'e-acc', true);
             renderAccountCards('i-acc-cards', 'i-acc', true);
             document.getElementById('split-rows-container').innerHTML = '';
             document.getElementById('split-tools').style.display = 'none';
             _splitRows = 0;
+
+            // Clear calculator states
+            window._calcExpr = '';
+            const itemInput = document.getElementById('calc-item-input');
+            if (itemInput) itemInput.value = '';
+            const toInput = document.getElementById('calc-to-input');
+            if (toInput) toInput.value = '';
+            const dateInput = document.getElementById('calc-date-input');
+            if (dateInput) dateInput.value = '';
+            const tplInput = document.getElementById('calc-tpl-input');
+            if (tplInput) tplInput.value = '';
+            const calcSplitBox = document.getElementById('calc-split-box');
+            if (calcSplitBox) calcSplitBox.style.display = 'none';
+            const calcDetailsPanel = document.getElementById('calc-details-panel');
+            if (calcDetailsPanel) calcDetailsPanel.style.display = 'none';
+            const detailsBtn = document.getElementById('calc-details-toggle');
+            if (detailsBtn) detailsBtn.textContent = '+ Details';
+
+            if (window.renderCalcAccounts) window.renderCalcAccounts();
+            if (window.renderCalcCategories) window.renderCalcCategories();
+            if (window.updateCalcDisplay) window.updateCalcDisplay();
+            if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
+        };
+
+        // Initialize Calculator Global States
+        window._activeAddType = 'expense';
+        window._calcExpr = '';
+
+        window.getCategoryEmoji = function (name) {
+            const n = name.toUpperCase();
+            if (n.includes('FOOD') || n.includes('REST') || n.includes('DINE') || n.includes('CAF')) return '🍔';
+            if (n.includes('TRAVEL') || n.includes('TRIP') || n.includes('CAB') || n.includes('TAXI') || n.includes('METRO')) return '✈';
+            if (n.includes('GROCER') || n.includes('SUPER')) return '🛒';
+            if (n.includes('FUEL') || n.includes('GAS') || n.includes('PETROL')) return '⛽';
+            if (n.includes('ENT') || n.includes('MOV') || n.includes('SHOW') || n.includes('PLAY')) return '🎬';
+            if (n.includes('SHOP') || n.includes('CLOTH') || n.includes('BUY')) return '🛍';
+            if (n.includes('MED') || n.includes('HEALTH') || n.includes('DOCT') || n.includes('HOSP')) return '💊';
+            if (n.includes('SALARY') || n.includes('INCOME') || n.includes('EARN')) return '💰';
+            if (n.includes('RENT') || n.includes('HOME') || n.includes('HOUSE') || n.includes('STAY')) return '🏠';
+            if (n.includes('BILL') || n.includes('UTIL') || n.includes('ELEC') || n.includes('PHONE') || n.includes('WIFI')) return '⚡';
+            if (n.includes('INVEST') || n.includes('STOCK') || n.includes('MUTUAL') || n.includes('SIP')) return '📈';
+            if (n.includes('INSUR') || n.includes('POLI')) return '🛡️';
+            if (n.includes('GIFT') || n.includes('PRES')) return '🎁';
+            if (n.includes('EDU') || n.includes('SCHO') || n.includes('BOOK')) return '🎓';
+            return '📦';
+        };
+
+        window.renderCalcAccounts = function () {
+            const accContainer = document.getElementById('calc-acc-cards');
+            const toAccContainer = document.getElementById('calc-to-acc-cards');
+            if (!accContainer) return;
+
+            let accHtml = '';
+            let toAccHtml = '';
+            const list = _accounts.filter(a => a.type !== 'PERSON');
+
+            list.forEach(a => {
+                const bal = a.currentBalance || 0;
+                let activeClass = '';
+
+                if (window._activeAddType === 'transfer') {
+                    const fromVal = document.getElementById('t-from').value;
+                    if (fromVal === a.name) activeClass = ' active';
+                } else {
+                    const accVal = window._activeAddType === 'expense' ? document.getElementById('e-acc').value : document.getElementById('i-acc').value;
+                    if (accVal === a.name) activeClass = ' active';
+                }
+
+                accHtml += `
+                    <div class="calc-card${activeClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'acc', '${escH(a.name)}')">
+                        <div class="calc-card-name">${escH(a.name)}</div>
+                        <div class="calc-card-sub">bal ₹${fmt(bal)}</div>
+                    </div>
+                `;
+
+                if (window._activeAddType === 'transfer') {
+                    const toVal = document.getElementById('t-to').value;
+                    let toActiveClass = (toVal === a.name) ? ' active' : '';
+                    toAccHtml += `
+                        <div class="calc-card${toActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'to-acc', '${escH(a.name)}')">
+                            <div class="calc-card-name">${escH(a.name)}</div>
+                            <div class="calc-card-sub">bal ₹${fmt(bal)}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            accContainer.innerHTML = accHtml;
+            if (toAccContainer) toAccContainer.innerHTML = toAccHtml;
+        };
+
+        window.renderCalcCategories = function () {
+            const catContainer = document.getElementById('calc-cat-cards');
+            if (!catContainer) return;
+
+            let html = '';
+            const currentType = window._activeAddType || 'expense';
+
+            if (currentType === 'transfer') {
+                catContainer.innerHTML = '';
+                return;
+            }
+
+            const cats = _categories.filter(c => c.type === (currentType === 'expense' ? 'EXPENSE' : 'INCOME')).map(c => c.name);
+
+            cats.forEach(c => {
+                const emoji = getCategoryEmoji(c);
+                let activeClass = '';
+                const catVal = currentType === 'expense' ? document.getElementById('e-cat').value : document.getElementById('i-cat').value;
+                if (catVal === c) activeClass = ' active';
+
+                html += `
+                    <div class="calc-card${activeClass}" data-name="${escH(c)}" onclick="selectCalcCard(this, 'cat', '${escH(c)}')">
+                        <div class="calc-card-name">${emoji} ${escH(c)}</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="calc-card new-btn" onclick="addNewCategoryFromCalc()">
+                    <div class="calc-card-name">➕ NEW</div>
+                </div>
+            `;
+
+            catContainer.innerHTML = html;
+        };
+
+        window.addNewCategoryFromCalc = async function () {
+            const name = prompt("Enter new category name:");
+            if (!name) return;
+            const cleanName = name.trim().toUpperCase();
+            if (!cleanName) return;
+
+            const currentType = window._activeAddType || 'expense';
+            const type = currentType === 'expense' ? 'EXPENSE' : 'INCOME';
+
+            await ensureCategory(cleanName, type);
+
+            if (currentType === 'expense') {
+                document.getElementById('e-cat').value = cleanName;
+            } else {
+                document.getElementById('i-cat').value = cleanName;
+            }
+
+            setupAddFormDropdowns();
+            syncFromOriginalForm();
+        };
+
+        window.selectCalcCard = function (el, type, name) {
+            if (el) {
+                const row = el.parentElement;
+                row.querySelectorAll('.calc-card').forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+            }
+
+            const currentType = window._activeAddType || 'expense';
+            if (type === 'acc') {
+                if (currentType === 'expense') {
+                    document.getElementById('e-acc').value = name;
+                } else if (currentType === 'income') {
+                    document.getElementById('i-acc').value = name;
+                } else if (currentType === 'transfer') {
+                    document.getElementById('t-from').value = name;
+                }
+            } else if (type === 'to-acc') {
+                if (currentType === 'transfer') {
+                    document.getElementById('t-to').value = name;
+                }
+            } else if (type === 'cat') {
+                if (currentType === 'expense') {
+                    document.getElementById('e-cat').value = name;
+                } else if (currentType === 'income') {
+                    document.getElementById('i-cat').value = name;
+                }
+            }
+
+            updateCalcAmountSummary();
+        };
+
+        window.updateCalcAmountSummary = function () {
+            const summaryEl = document.getElementById('calc-amount-summary');
+            if (!summaryEl) return;
+
+            const currentType = window._activeAddType || 'expense';
+            if (currentType === 'expense') {
+                const acc = document.getElementById('e-acc').value || 'Select Account';
+                const cat = document.getElementById('e-cat').value || 'Select Category';
+                summaryEl.textContent = `${cat} · ${acc}`;
+            } else if (currentType === 'income') {
+                const acc = document.getElementById('i-acc').value || 'Select Account';
+                const cat = document.getElementById('i-cat').value || 'Select Category';
+                summaryEl.textContent = `${cat} · ${acc}`;
+            } else if (currentType === 'transfer') {
+                const from = document.getElementById('t-from').value || 'Select From';
+                const to = document.getElementById('t-to').value || 'Select To';
+                summaryEl.textContent = `${from} ➔ ${to}`;
+            }
+        };
+
+        window.switchCalcType = function (type) {
+            window._activeAddType = type;
+            document.querySelectorAll('.calc-tabs .calc-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-add-${type}`).classList.add('active');
+
+            const catSec = document.getElementById('calc-cat-sec');
+            const toAccSec = document.getElementById('calc-to-acc-sec');
+            const saveBtn = document.getElementById('calc-save-btn');
+            const toLbl = document.getElementById('calc-to-lbl');
+            const toInput = document.getElementById('calc-to-input');
+
+            if (type === 'expense') {
+                if (catSec) catSec.style.display = 'block';
+                if (toAccSec) toAccSec.style.display = 'none';
+                if (saveBtn) saveBtn.textContent = 'Save Expense ↗';
+                if (toLbl) toLbl.textContent = 'PAID TO';
+                if (toInput) {
+                    toInput.placeholder = 'e.g. Swiggy';
+                    toInput.parentElement.parentElement.style.display = 'block';
+                }
+            } else if (type === 'income') {
+                if (catSec) catSec.style.display = 'block';
+                if (toAccSec) toAccSec.style.display = 'none';
+                if (saveBtn) saveBtn.textContent = 'Save Income ↗';
+                if (toLbl) toLbl.textContent = 'RECEIVED FROM';
+                if (toInput) {
+                    toInput.placeholder = 'Person name';
+                    toInput.parentElement.parentElement.style.display = 'block';
+                }
+            } else if (type === 'transfer') {
+                if (catSec) catSec.style.display = 'none';
+                if (toAccSec) toAccSec.style.display = 'block';
+                if (saveBtn) saveBtn.textContent = 'Save Transfer ↗';
+                if (toInput) {
+                    toInput.parentElement.parentElement.style.display = 'none';
+                }
+            }
+
+            renderCalcAccounts();
+            renderCalcCategories();
+            updateCalcAmountSummary();
+
+            setupAddFormDropdowns();
+            syncFromOriginalForm();
+        };
+
+        window.pressCalcKey = function (key) {
+            const err = document.getElementById('calc-err-msg');
+            if (err) err.textContent = '';
+
+            if (key === 'AC') {
+                window._calcExpr = '';
+            } else if (key === 'BACK') {
+                if (window._calcExpr.length > 0) {
+                    window._calcExpr = window._calcExpr.slice(0, -1);
+                }
+            } else if (key === 'SPLIT') {
+                toggleCalcSplit();
+            } else if (key === '=') {
+                const val = evaluateExpression(window._calcExpr);
+                if (val !== null) {
+                    window._calcExpr = String(val);
+                }
+            } else {
+                const lastChar = window._calcExpr.slice(-1);
+                const operators = ['+', '-', '*', '/'];
+                if (operators.includes(key) && (operators.includes(lastChar) || window._calcExpr === '')) {
+                    if (operators.includes(lastChar)) {
+                        window._calcExpr = window._calcExpr.slice(0, -1) + key;
+                    }
+                    return;
+                }
+                window._calcExpr += key;
+            }
+
+            updateCalcDisplay();
+            syncToOriginalForm();
+        };
+
+        window.evaluateExpression = function (expr) {
+            if (!expr) return 0;
+            let sanitized = expr.replace(/×/g, '*').replace(/÷/g, '/');
+            sanitized = sanitized.replace(/[^0-9+\-*/.]/g, '');
+            try {
+                const res = new Function(`return ${sanitized}`)();
+                if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+                    return Number(res.toFixed(2));
+                }
+            } catch (e) {}
+            return null;
+        };
+
+        window.updateCalcDisplay = function () {
+            const exprEl = document.getElementById('calc-amount-expr');
+            const valEl = document.getElementById('calc-amount-val-num');
+            if (!exprEl || !valEl) return;
+
+            let visualExpr = window._calcExpr.replace(/\*/g, '×').replace(/\//g, '÷');
+            exprEl.textContent = visualExpr || '----';
+
+            const evaluated = evaluateExpression(window._calcExpr);
+            valEl.textContent = fmt(evaluated || 0);
+        };
+
+        window.syncToOriginalForm = function () {
+            const currentType = window._activeAddType || 'expense';
+            const evaluated = evaluateExpression(window._calcExpr) || 0;
+            const itemVal = document.getElementById('calc-item-input').value;
+            const toVal = document.getElementById('calc-to-input').value;
+
+            if (currentType === 'expense') {
+                document.getElementById('e-amt').value = evaluated > 0 ? evaluated : '';
+                document.getElementById('e-item').value = itemVal;
+                document.getElementById('e-to').value = toVal;
+            } else if (currentType === 'income') {
+                document.getElementById('i-amt').value = evaluated > 0 ? evaluated : '';
+                document.getElementById('i-item').value = itemVal;
+                document.getElementById('i-from').value = toVal;
+            } else if (currentType === 'transfer') {
+                document.getElementById('t-amt').value = evaluated > 0 ? evaluated : '';
+                document.getElementById('t-item').value = itemVal;
+            }
+        };
+
+        window.syncFromOriginalForm = function () {
+            const type = window._activeAddType || 'expense';
+            if (type === 'expense') {
+                const acc = document.getElementById('e-acc').value;
+                const cat = document.getElementById('e-cat').value;
+                const amt = document.getElementById('e-amt').value;
+                const item = document.getElementById('e-item').value;
+                const to = document.getElementById('e-to').value;
+
+                if (acc) {
+                    const card = document.querySelector(`#calc-acc-cards .calc-card[data-name="${acc}"]`);
+                    if (card) selectCalcCard(card, 'acc', acc);
+                }
+                if (cat) {
+                    const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${cat}"]`);
+                    if (card) selectCalcCard(card, 'cat', cat);
+                    else selectCalcCard(null, 'cat', cat);
+                }
+                if (amt && amt !== '0') window._calcExpr = String(amt);
+                else window._calcExpr = '';
+
+                document.getElementById('calc-item-input').value = item;
+                document.getElementById('calc-to-input').value = to;
+            } else if (type === 'income') {
+                const acc = document.getElementById('i-acc').value;
+                const cat = document.getElementById('i-cat').value;
+                const amt = document.getElementById('i-amt').value;
+                const item = document.getElementById('i-item').value;
+                const from = document.getElementById('i-from').value;
+
+                if (acc) {
+                    const card = document.querySelector(`#calc-acc-cards .calc-card[data-name="${acc}"]`);
+                    if (card) selectCalcCard(card, 'acc', acc);
+                }
+                if (cat) {
+                    const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${cat}"]`);
+                    if (card) selectCalcCard(card, 'cat', cat);
+                    else selectCalcCard(null, 'cat', cat);
+                }
+                if (amt && amt !== '0') window._calcExpr = String(amt);
+                else window._calcExpr = '';
+
+                document.getElementById('calc-item-input').value = item;
+                document.getElementById('calc-to-input').value = from;
+            } else if (type === 'transfer') {
+                const from = document.getElementById('t-from').value;
+                const to = document.getElementById('t-to').value;
+                const amt = document.getElementById('t-amt').value;
+                const item = document.getElementById('t-item').value;
+
+                if (from) {
+                    const card = document.querySelector(`#calc-acc-cards .calc-card[data-name="${from}"]`);
+                    if (card) selectCalcCard(card, 'acc', from);
+                }
+                if (to) {
+                    const card = document.querySelector(`#calc-to-acc-cards .calc-card[data-name="${to}"]`);
+                    if (card) selectCalcCard(card, 'to-acc', to);
+                }
+                if (amt && amt !== '0') window._calcExpr = String(amt);
+                else window._calcExpr = '';
+
+                document.getElementById('calc-item-input').value = item;
+            }
+            updateCalcDisplay();
+            updateCalcAmountSummary();
+        };
+
+        window.toggleCalcDetails = function () {
+            const panel = document.getElementById('calc-details-panel');
+            const btn = document.getElementById('calc-details-toggle');
+            if (!panel || !btn) return;
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                btn.textContent = '- Details';
+            } else {
+                panel.style.display = 'none';
+                btn.textContent = '+ Details';
+            }
+        };
+
+        window.toggleCalcSplit = function () {
+            const box = document.getElementById('calc-split-box');
+            if (!box) return;
+
+            if (box.style.display === 'none') {
+                box.style.display = 'block';
+                const container = document.getElementById('split-rows-container');
+                if (container && container.children.length === 0) {
+                    addSplitRow({ preventDefault: () => {} });
+                }
+            } else {
+                box.style.display = 'none';
+                document.getElementById('split-rows-container').innerHTML = '';
+                document.getElementById('split-tools').style.display = 'none';
+                _splitRows = 0;
+            }
+        };
+
+        window.submitCalcEntry = async function () {
+            const type = window._activeAddType || 'expense';
+            const err = document.getElementById('calc-err-msg');
+            if (err) err.textContent = '';
+
+            syncToOriginalForm();
+
+            try {
+                if (type === 'expense') {
+                    await submitExp();
+                    const origErr = document.getElementById('e-err').textContent;
+                    if (origErr) {
+                        if (err) err.textContent = origErr;
+                    } else {
+                        window._calcExpr = '';
+                        updateCalcDisplay();
+                        clearAddEntryForm();
+                    }
+                } else if (type === 'income') {
+                    await submitInc();
+                    const origErr = document.getElementById('i-err').textContent;
+                    if (origErr) {
+                        if (err) err.textContent = origErr;
+                    } else {
+                        window._calcExpr = '';
+                        updateCalcDisplay();
+                        clearAddEntryForm();
+                    }
+                } else if (type === 'transfer') {
+                    await submitTr();
+                    const origErr = document.getElementById('t-err').textContent;
+                    if (origErr) {
+                        if (err) err.textContent = origErr;
+                    } else {
+                        window._calcExpr = '';
+                        updateCalcDisplay();
+                        clearAddEntryForm();
+                    }
+                }
+            } catch (e) {
+                if (err) err.textContent = e.message || 'Submission failed';
+            }
+        };
+
+        function getTransactionTimestamp() {
+            const dateInput = document.getElementById('calc-date-input');
+            if (dateInput && dateInput.value) {
+                const d = new Date(dateInput.value + 'T12:00:00');
+                if (!isNaN(d.getTime())) {
+                    return Timestamp.fromDate(d);
+                }
+            }
+            return serverTimestamp();
+        }
+
+        const _origWSelectDD = window.W_selectDD;
+        window.W_selectDD = function (inputId, ddId, value) {
+            _origWSelectDD(inputId, ddId, value);
+
+            if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
+                if (window.syncToOriginalForm) window.syncToOriginalForm();
+            } else if (inputId === 'calc-tpl-input') {
+                const currentType = window._activeAddType || 'expense';
+                if (currentType === 'expense') {
+                    applyExpTpl(value);
+                } else if (currentType === 'income') {
+                    applyIncTpl(value);
+                }
+                if (window.syncFromOriginalForm) window.syncFromOriginalForm();
+            }
         };
 
         function renderAccountCards(containerId, hiddenInputId, excludePeople = false) {
@@ -8325,7 +9143,7 @@
             const mainTo = gv('e-to');
 
             const batch = writeBatch(db);
-            const now = serverTimestamp();
+            const now = getTransactionTimestamp();
             const addedRefs = [];
 
             for (const ex of extraEntries) {
@@ -8403,7 +9221,7 @@
             clrInv(['i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from']); document.getElementById('i-err').textContent = '';
             let ok = true;['i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } }); if (!ok) return;
             await ensureCategory(gv('i-cat'), 'INCOME');
-            const docRef = await addDoc(uRef('transactions'), { date: serverTimestamp(), account: gv('i-acc'), category: gv('i-cat'), item: gv('i-item'), amount: Math.abs(Number(gv('i-amt'))), toFrom: gv('i-from') });
+            const docRef = await addDoc(uRef('transactions'), { date: getTransactionTimestamp(), account: gv('i-acc'), category: gv('i-cat'), item: gv('i-item'), amount: Math.abs(Number(gv('i-amt'))), toFrom: gv('i-from') });
             
             window.setUndoAction(async () => {
                 await deleteDoc(docRef);
@@ -8421,7 +9239,7 @@
             let ok = true;['t-from', 't-to', 't-amt', 't-item'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } });
             if (ok && gv('t-from') === gv('t-to')) { setInv('t-to'); document.getElementById('t-err').textContent = 'Accounts cannot match'; ok = false; }
             if (!ok) return;
-            const amt = Math.abs(Number(gv('t-amt'))), now = serverTimestamp();
+            const amt = Math.abs(Number(gv('t-amt'))), now = getTransactionTimestamp();
             const docRef1 = await addDoc(uRef('transactions'), { date: now, account: gv('t-from'), category: 'TRANSFER', item: gv('t-item'), amount: -amt, toFrom: gv('t-to') });
             const docRef2 = await addDoc(uRef('transactions'), { date: now, account: gv('t-to'), category: 'TRANSFER', item: gv('t-item'), amount: amt, toFrom: gv('t-from') });
             
