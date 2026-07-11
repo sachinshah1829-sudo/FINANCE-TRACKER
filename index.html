@@ -5634,30 +5634,7 @@
                     <div class="calc-header">
                         <button class="calc-back-btn" onclick="nav('transactions')">←</button>
                         <div class="calc-title">ADD ENTRY</div>
-                        <button class="calc-details-btn" id="calc-details-toggle" onclick="toggleCalcDetails()">+ Details</button>
-                    </div>
-
-                    <!-- Details Panel (hidden by default) -->
-                    <div id="calc-details-panel" style="display:none; margin-bottom:16px;">
-                        <div class="card card-p">
-                            <div class="ae-grid-2" style="margin-bottom:12px;">
-                                <div>
-                                    <div class="ae-lbl" style="margin-bottom:6px;">DATE</div>
-                                    <input type="date" id="calc-date-input" class="form-input" style="margin:0;">
-                                </div>
-                                <div>
-                                    <div class="ae-lbl" style="margin-bottom:6px;">TEMPLATE</div>
-                                    <div class="ae-input-wrap">
-                                        <input class="ae-input" id="calc-tpl-input" placeholder="Choose template" autocomplete="off" style="padding: 10px;">
-                                        <div class="form-dropdown" id="dd-calc-tpl"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; border-top:1px dashed var(--border); padding-top:12px;">
-                                <div class="ae-lbl">ADVANCED TOOLS</div>
-                                <button class="calc-details-btn" onclick="toggleImportSection()">Bulk Import</button>
-                            </div>
-                        </div>
+                        <button class="calc-details-btn" id="calc-import-toggle" onclick="toggleCalcImport()">Bulk Import</button>
                     </div>
 
                     <!-- Import section (moved here to remain functional) -->
@@ -5665,7 +5642,7 @@
                         <div class="card card-p">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                                 <div class="card-h" style="margin:0">CSV Import</div>
-                                <button class="txn-clr-btn" onclick="toggleImportSection()">✕ Close</button>
+                                <button class="txn-clr-btn" onclick="toggleCalcImport()">✕ Close</button>
                             </div>
                             <div class="import-hint">
                                 Paste CSV content below. Columns:
@@ -5695,6 +5672,15 @@
                         <div class="calc-tab active" id="tab-add-expense" onclick="switchCalcType('expense')">↓ EXPENSE</div>
                         <div class="calc-tab" id="tab-add-income" onclick="switchCalcType('income')">↑ INCOME</div>
                         <div class="calc-tab" id="tab-add-transfer" onclick="switchCalcType('transfer')">⇄ TRANSFER</div>
+                    </div>
+
+                    <!-- Choose Template Section (only visible for Expense and Income) -->
+                    <div class="calc-sec" id="calc-tpl-sec">
+                        <div class="calc-sec-lbl">CHOOSE TEMPLATE</div>
+                        <div class="ae-input-wrap">
+                            <input class="calc-input" id="calc-tpl-input" placeholder="Select a template..." autocomplete="off">
+                            <div class="form-dropdown" id="dd-calc-tpl"></div>
+                        </div>
                     </div>
 
                     <!-- Account Section -->
@@ -5755,6 +5741,12 @@
                                 <div class="form-dropdown" id="dd-calc-to"></div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Date Input -->
+                    <div class="calc-sec" style="margin-top: 8px;">
+                        <div class="calc-sec-lbl">DATE</div>
+                        <input class="calc-input" id="calc-date-input" type="date">
                     </div>
 
                     <!-- Split Section (hidden by default) -->
@@ -8181,15 +8173,25 @@
             const toInput = document.getElementById('calc-to-input');
             if (toInput) toInput.value = '';
             const dateInput = document.getElementById('calc-date-input');
-            if (dateInput) dateInput.value = '';
+            if (dateInput) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                dateInput.value = `${yyyy}-${mm}-${dd}`;
+            }
             const tplInput = document.getElementById('calc-tpl-input');
             if (tplInput) tplInput.value = '';
             const calcSplitBox = document.getElementById('calc-split-box');
             if (calcSplitBox) calcSplitBox.style.display = 'none';
-            const calcDetailsPanel = document.getElementById('calc-details-panel');
-            if (calcDetailsPanel) calcDetailsPanel.style.display = 'none';
-            const detailsBtn = document.getElementById('calc-details-toggle');
-            if (detailsBtn) detailsBtn.textContent = '+ Details';
+            const importSection = document.getElementById('import-section');
+            if (importSection) importSection.style.display = 'none';
+            const importBtn = document.getElementById('calc-import-toggle');
+            if (importBtn) {
+                importBtn.style.background = '#fff';
+                importBtn.style.color = '#2B231D';
+                importBtn.style.borderColor = '#DFD7CC';
+            }
 
             if (window.renderCalcAccounts) window.renderCalcAccounts();
             if (window.renderCalcCategories) window.renderCalcCategories();
@@ -8382,10 +8384,12 @@
             const saveBtn = document.getElementById('calc-save-btn');
             const toLbl = document.getElementById('calc-to-lbl');
             const toInput = document.getElementById('calc-to-input');
+            const tplSec = document.getElementById('calc-tpl-sec');
 
             if (type === 'expense') {
                 if (catSec) catSec.style.display = 'block';
                 if (toAccSec) toAccSec.style.display = 'none';
+                if (tplSec) tplSec.style.display = 'block';
                 if (saveBtn) saveBtn.textContent = 'Save Expense ↗';
                 if (toLbl) toLbl.textContent = 'PAID TO';
                 if (toInput) {
@@ -8395,6 +8399,7 @@
             } else if (type === 'income') {
                 if (catSec) catSec.style.display = 'block';
                 if (toAccSec) toAccSec.style.display = 'none';
+                if (tplSec) tplSec.style.display = 'block';
                 if (saveBtn) saveBtn.textContent = 'Save Income ↗';
                 if (toLbl) toLbl.textContent = 'RECEIVED FROM';
                 if (toInput) {
@@ -8404,6 +8409,7 @@
             } else if (type === 'transfer') {
                 if (catSec) catSec.style.display = 'none';
                 if (toAccSec) toAccSec.style.display = 'block';
+                if (tplSec) tplSec.style.display = 'none';
                 if (saveBtn) saveBtn.textContent = 'Save Transfer ↗';
                 if (toInput) {
                     toInput.parentElement.parentElement.style.display = 'none';
@@ -8563,16 +8569,20 @@
             updateCalcAmountSummary();
         };
 
-        window.toggleCalcDetails = function () {
-            const panel = document.getElementById('calc-details-panel');
-            const btn = document.getElementById('calc-details-toggle');
+        window.toggleCalcImport = function () {
+            const panel = document.getElementById('import-section');
+            const btn = document.getElementById('calc-import-toggle');
             if (!panel || !btn) return;
             if (panel.style.display === 'none') {
                 panel.style.display = 'block';
-                btn.textContent = '- Details';
+                btn.style.background = '#BE5A30';
+                btn.style.color = '#fff';
+                btn.style.borderColor = '#BE5A30';
             } else {
                 panel.style.display = 'none';
-                btn.textContent = '+ Details';
+                btn.style.background = '#fff';
+                btn.style.color = '#2B231D';
+                btn.style.borderColor = '#DFD7CC';
             }
         };
 
