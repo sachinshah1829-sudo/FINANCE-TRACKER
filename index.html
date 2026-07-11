@@ -6796,8 +6796,9 @@
         function updateSidebarStats(periodTxns) {
             const badge = document.getElementById('nav-txn-count');
             if (badge) {
-                badge.textContent = periodTxns.length;
-                badge.style.display = periodTxns.length > 0 ? 'flex' : 'none';
+                const expenseTxns = periodTxns.filter(t => Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER');
+                badge.textContent = expenseTxns.length;
+                badge.style.display = expenseTxns.length > 0 ? 'flex' : 'none';
             }
         }
 
