@@ -9361,7 +9361,7 @@
 
         window.splitEqually = function (e) {
             if (e) e.preventDefault();
-            const rows = document.querySelectorAll('#split-rows-container .mini-form');
+            const rows = document.querySelectorAll('#split-rows-container > div');
             if (!rows.length) return;
             const totalStr = document.getElementById('e-amt').value;
             const total = Number(totalStr);
@@ -9377,14 +9377,14 @@
             clrInv(['e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to']); document.getElementById('e-err').textContent = '';
             let ok = true;
             ['e-acc', 'e-cat', 'e-amt', 'e-item'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } });
-            if (ok && /^\\d+$/.test(gv('e-item'))) { setInv('e-item'); document.getElementById('e-err').textContent = 'Item cannot be a number'; ok = false; }
+            if (ok && /^\d+$/.test(gv('e-item'))) { setInv('e-item'); document.getElementById('e-err').textContent = 'Item cannot be a number'; ok = false; }
             if (!ok) return;
 
             const fromAcc = gv('e-acc');
             const mainAmt = Math.abs(Number(gv('e-amt')));
             let remainingAmt = mainAmt;
 
-            const splitRows = document.querySelectorAll('#split-rows-container .mini-form');
+            const splitRows = document.querySelectorAll('#split-rows-container > div');
             const extraEntries = [];
 
             for (const r of splitRows) {
@@ -9536,13 +9536,13 @@
                 return;
             }
             
-            const splitRows = document.querySelectorAll('#split-rows-container .mini-form');
+            const splitRows = document.querySelectorAll('#split-rows-container > div');
             const splits = [];
             for (const r of splitRows) {
-                const p = r.querySelector('.sp-person').value.trim();
-                const c = r.querySelector('.sp-cat').value.trim();
-                const i = r.querySelector('.sp-item').value.trim();
-                const a = r.querySelector('.sp-amt').value.trim();
+                const p = r.querySelector('.sp-person') ? r.querySelector('.sp-person').value.trim() : '';
+                const c = r.querySelector('.sp-cat') ? r.querySelector('.sp-cat').value.trim() : '';
+                const i = r.querySelector('.sp-item') ? r.querySelector('.sp-item').value.trim() : '';
+                const a = r.querySelector('.sp-amt') ? r.querySelector('.sp-amt').value.trim() : '';
                 splits.push({ person: p, cat: c, item: i, amt: a });
             }
             
