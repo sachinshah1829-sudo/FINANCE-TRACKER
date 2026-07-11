@@ -5891,9 +5891,8 @@
                             <div style="font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#BE5A30;">Split Payments</div>
                         </div>
                         <!-- Column Headers -->
-                        <div id="split-col-headers" style="display:grid; grid-template-columns:1fr 1fr 1fr 80px 28px; gap:6px; margin-bottom:6px; padding:0 2px;">
+                        <div id="split-col-headers" style="display:grid; grid-template-columns:1fr 1fr 80px 28px; gap:6px; margin-bottom:6px; padding:0 2px;">
                             <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#7A7066;">Person</div>
-                            <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#7A7066;">Category</div>
                             <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#7A7066;">Item</div>
                             <div style="font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;color:#7A7066;">Amt</div>
                             <div></div>
@@ -9292,20 +9291,16 @@
             const container = document.getElementById('split-rows-container');
             const div = document.createElement('div');
             div.id = 'sp-row-' + rowId;
-            div.style.cssText = 'display:grid; grid-template-columns:1fr 1fr 1fr 80px 28px; gap:6px; margin-bottom:6px; align-items:center;';
+            div.style.cssText = 'display:grid; grid-template-columns:1fr 1fr 80px 28px; gap:6px; margin-bottom:6px; align-items:center;';
 
             const personAccNames = _accounts.filter(a => a.type === 'PERSON').map(a => a.name);
-            const catNames = _categories.map(c => c.name);
             const itemNames = [...new Set([..._items.map(i => i.value), ..._allTxns.map(t => t.item)])].filter(Boolean).reverse();
             const peopleOpts = personAccNames.map(p => `<option value="${escH(p)}">`).join('');
-            const catOpts = catNames.map(c => `<option value="${escH(c)}">`).join('');
             const itemOpts = itemNames.map(i => `<option value="${escH(i)}">`).join('');
             const defaultItem = escH(item || (document.getElementById('e-item') ? document.getElementById('e-item').value : '') || '');
-            const defaultCat = escH(cat || (document.getElementById('e-cat') ? document.getElementById('e-cat').value : '') || '');
 
             div.innerHTML = `
                 <datalist id="sp-dl-person-${rowId}">${peopleOpts}</datalist>
-                <datalist id="sp-dl-cat-${rowId}">${catOpts}</datalist>
                 <datalist id="sp-dl-item-${rowId}">${itemOpts}</datalist>
                 <div style="position:relative;">
                     <input class="sp-person" id="sp-person-${rowId}"
@@ -9314,13 +9309,6 @@
                         style="width:100%;border:1.5px solid #DFD7CC;border-radius:0;padding:8px 10px;font-family:inherit;font-size:13px;font-weight:700;color:#2B231D;outline:none;background:#fff;box-sizing:border-box;"
                         onfocus="this.style.borderColor='#BE5A30'" onblur="this.style.borderColor='#DFD7CC'">
                     <div id="sp-dd-person-${rowId}" class="form-dropdown" style="top:calc(100% + 2px);z-index:300;"></div>
-                </div>
-                <div style="position:relative;">
-                    <input class="sp-cat" id="sp-cat-${rowId}"
-                        value="${defaultCat}" placeholder="Category"
-                        autocomplete="off" list="sp-dl-cat-${rowId}"
-                        style="width:100%;border:1.5px solid #DFD7CC;border-radius:0;padding:8px 10px;font-family:inherit;font-size:13px;font-weight:700;color:#2B231D;outline:none;background:#fff;box-sizing:border-box;"
-                        onfocus="this.style.borderColor='#BE5A30'" onblur="this.style.borderColor='#DFD7CC'">
                 </div>
                 <div style="position:relative;">
                     <input class="sp-item" id="sp-item-${rowId}"
@@ -9363,14 +9351,22 @@
             if (e) e.preventDefault();
             const rows = document.querySelectorAll('#split-rows-container > div');
             if (!rows.length) return;
-            const totalStr = document.getElementById('e-amt').value;
-            const total = Number(totalStr);
-            if (isNaN(total) || total <= 0) {
+            
+            // Evaluate current calculator expression directly
+            let expr = window._calcExpr || '';
+            // Strip any trailing operator for partial evaluation (e.g. "100+" -> "100")
+            expr = expr.replace(/[+\-*/]$/, '');
+            const total = evaluateExpression(expr) || 0;
+            
+            if (total <= 0) {
                 alert("Please enter a valid total amount first.");
                 return;
             }
             const perPerson = +(total / (rows.length + 1)).toFixed(2);
-            rows.forEach(r => { r.querySelector('.sp-amt').value = perPerson; });
+            rows.forEach(r => {
+                const amtInput = r.querySelector('.sp-amt');
+                if (amtInput) amtInput.value = perPerson;
+            });
         };
 
         window.submitExp = async function (keepOpen = false) {
@@ -10004,24 +10000,19 @@
             const idx = window._tplSplitRows.length;
             window._tplSplitRows.push(idx);
             const peopleOptions = _people.map(p => `<option value="${escH(p)}"></option>`).join('');
-            const catOptions = _categories.map(c => `<option value="${escH(c.name)}"></option>`).join('');
             const row = document.createElement('div');
             row.id = `tpl-sp-row-${idx}`;
-            row.style.cssText = 'display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:6px; margin-bottom:8px; align-items:center;';
+            row.style.cssText = 'display:grid; grid-template-columns:1fr 1fr auto; gap:6px; margin-bottom:8px; align-items:center;';
             row.innerHTML = `
                 <div style="position:relative">
                     <input class="form-input" id="tpl-sp-person-${idx}" value="${escH(person)}" placeholder="Person" autocomplete="off" list="tpl-sp-people-${idx}" style="font-size:12px;padding:6px 8px">
                     <datalist id="tpl-sp-people-${idx}">${peopleOptions}</datalist>
                 </div>
-                <div style="position:relative">
-                    <input class="form-input" id="tpl-sp-cat-${idx}" value="${escH(cat)}" placeholder="Category" autocomplete="off" list="tpl-sp-cat-${idx}-dl" style="font-size:12px;padding:6px 8px">
-                    <datalist id="tpl-sp-cat-${idx}-dl">${catOptions}</datalist>
-                </div>
                 <input class="form-input" id="tpl-sp-item-${idx}" value="${escH(item)}" placeholder="Item" autocomplete="off" style="font-size:12px;padding:6px 8px">
                 <input class="form-input" id="tpl-sp-amt-${idx}" value="${escH(String(amt))}" placeholder="₹" type="number" min="0" style="font-size:12px;padding:6px 8px; width:70px">
                 <button onclick="tplRemoveSplitRow(${idx})" style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;line-height:1;flex-shrink:0" title="Remove">×</button>
             `;
-            row.style.gridTemplateColumns = '1fr 1fr 1fr 70px 28px';
+            row.style.gridTemplateColumns = '1fr 1fr 70px 28px';
             container.appendChild(row);
         };
 
@@ -10037,7 +10028,7 @@
                 const idx = row.id.replace('tpl-sp-row-', '');
                 splits.push({
                     person: (document.getElementById(`tpl-sp-person-${idx}`) || {}).value?.trim() || '',
-                    cat: (document.getElementById(`tpl-sp-cat-${idx}`) || {}).value?.trim() || '',
+                    cat: 'TRANSFER',
                     item: (document.getElementById(`tpl-sp-item-${idx}`) || {}).value?.trim() || '',
                     amt: (document.getElementById(`tpl-sp-amt-${idx}`) || {}).value?.trim() || ''
                 });
@@ -10052,9 +10043,8 @@
                         <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#BE5A30">Split Payments</div>
                         <button onclick="tplAddSplitRow()" style="background:#fff;border:1.5px solid #DFD7CC;border-radius:0;padding:4px 12px;font-family:inherit;font-size:11px;font-weight:700;color:#2B231D;cursor:pointer" onmouseover="this.style.borderColor='#BE5A30'" onmouseout="this.style.borderColor='#DFD7CC'">+ Add Split</button>
                     </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 70px 28px;gap:6px;margin-bottom:4px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 70px 28px;gap:6px;margin-bottom:4px;">
                         <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">PERSON</div>
-                        <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">CATEGORY</div>
                         <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">ITEM</div>
                         <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">AMT</div>
                         <div></div>
