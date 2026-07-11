@@ -5887,17 +5887,10 @@
 
                     <!-- Split Section (hidden by default) -->
                     <div id="calc-split-box" class="ae-split-box" style="display:none; margin-bottom:16px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#BE5A30">Split Payments</div>
-                            <button onclick="addSplitRow({preventDefault:function(){}})" style="background:#fff;border:1.5px solid #DFD7CC;border-radius:0;padding:4px 12px;font-family:inherit;font-size:11px;font-weight:700;color:#2B231D;cursor:pointer" onmouseover="this.style.borderColor='#BE5A30'" onmouseout="this.style.borderColor='#DFD7CC'">+ Add Split</button>
+                        <div class="ae-group-hdr" style="margin-bottom:0;">
+                            <div class="ae-lbl">SPLIT PAYMENTS</div>
                         </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 70px 28px;gap:6px;margin-bottom:4px;">
-                            <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">PERSON</div>
-                            <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">CATEGORY</div>
-                            <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">ITEM</div>
-                            <div style="font-size:9px;font-weight:700;color:#7A7066;letter-spacing:0.1em;text-transform:uppercase">AMT</div>
-                            <div></div>
-                        </div>
+                        <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or accounts</div>
                         <div id="split-rows-container"></div>
                         <div id="split-tools" style="display:none;margin-top:8px;text-align:right;">
                             <button class="txn-clr-btn" onclick="splitEqually(event)" style="padding:6px 12px;font-size:11px;">Split Equally</button>
