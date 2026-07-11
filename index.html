@@ -5375,6 +5375,28 @@
             background: #A64B25;
         }
 
+        .calc-tpl-btn {
+            background: #fff;
+            border: 1px solid #DFD7CC;
+            border-radius: 0;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #2B231D;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.15s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .calc-tpl-btn:hover {
+            background: #F5F1EA;
+        }
+
         /* details panel squarish styling override */
         #calc-details-panel .card {
             background: var(--bg);
@@ -5720,10 +5742,6 @@
                         </div>
                     </div>
 
-                    <!-- Tip -->
-                    <div class="calc-tip">
-                        Tip – type 120+45+80 to auto-total a split bill, or x2 to multiply.
-                    </div>
 
                     <!-- Description Fields -->
                     <div class="calc-fields-row">
@@ -5743,11 +5761,6 @@
                         </div>
                     </div>
 
-                    <!-- Date Input -->
-                    <div class="calc-sec" style="margin-top: 8px;">
-                        <div class="calc-sec-lbl">DATE</div>
-                        <input class="calc-input" id="calc-date-input" type="date">
-                    </div>
 
                     <!-- Split Section (hidden by default) -->
                     <div id="calc-split-box" class="ae-split-box" style="display:none; margin-bottom:16px;">
@@ -5792,13 +5805,13 @@
                     <!-- Error Row -->
                     <div class="form-err" id="calc-err-msg" style="margin-top:12px; margin-bottom:12px;"></div>
 
-                    <!-- Footer Save Row -->
                     <div class="calc-footer">
                         <button class="calc-reset-btn" onclick="clearAddEntryForm()" title="Clear form">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
                             </svg>
                         </button>
+                        <button class="calc-tpl-btn" id="calc-save-tpl-btn" onclick="submitCalcTemplate()">Save as Template</button>
                         <button class="calc-save-btn" id="calc-save-btn" onclick="submitCalcEntry()">Save Expense ↗</button>
                     </div>
                 </div>
@@ -8172,14 +8185,6 @@
             if (itemInput) itemInput.value = '';
             const toInput = document.getElementById('calc-to-input');
             if (toInput) toInput.value = '';
-            const dateInput = document.getElementById('calc-date-input');
-            if (dateInput) {
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                dateInput.value = `${yyyy}-${mm}-${dd}`;
-            }
             const tplInput = document.getElementById('calc-tpl-input');
             if (tplInput) tplInput.value = '';
             const calcSplitBox = document.getElementById('calc-split-box');
@@ -8385,11 +8390,13 @@
             const toLbl = document.getElementById('calc-to-lbl');
             const toInput = document.getElementById('calc-to-input');
             const tplSec = document.getElementById('calc-tpl-sec');
+            const saveTplBtn = document.getElementById('calc-save-tpl-btn');
 
             if (type === 'expense') {
                 if (catSec) catSec.style.display = 'block';
                 if (toAccSec) toAccSec.style.display = 'none';
                 if (tplSec) tplSec.style.display = 'block';
+                if (saveTplBtn) saveTplBtn.style.display = 'flex';
                 if (saveBtn) saveBtn.textContent = 'Save Expense ↗';
                 if (toLbl) toLbl.textContent = 'PAID TO';
                 if (toInput) {
@@ -8400,6 +8407,7 @@
                 if (catSec) catSec.style.display = 'block';
                 if (toAccSec) toAccSec.style.display = 'none';
                 if (tplSec) tplSec.style.display = 'block';
+                if (saveTplBtn) saveTplBtn.style.display = 'flex';
                 if (saveBtn) saveBtn.textContent = 'Save Income ↗';
                 if (toLbl) toLbl.textContent = 'RECEIVED FROM';
                 if (toInput) {
@@ -8410,6 +8418,7 @@
                 if (catSec) catSec.style.display = 'none';
                 if (toAccSec) toAccSec.style.display = 'block';
                 if (tplSec) tplSec.style.display = 'none';
+                if (saveTplBtn) saveTplBtn.style.display = 'none';
                 if (saveBtn) saveBtn.textContent = 'Save Transfer ↗';
                 if (toInput) {
                     toInput.parentElement.parentElement.style.display = 'none';
@@ -8586,6 +8595,53 @@
             }
         };
 
+        window.submitCalcTemplate = async function () {
+            if (window.syncToOriginalForm) window.syncToOriginalForm();
+
+            const type = window._activeAddType || 'expense';
+            const btn = document.getElementById('calc-save-tpl-btn');
+            const errMsg = document.getElementById('calc-err-msg');
+            if (errMsg) errMsg.textContent = '';
+
+            const getVal = (id) => document.getElementById(id).value.trim();
+
+            if (type === 'expense') {
+                const cat = getVal('e-cat');
+                const item = getVal('e-item');
+                if (!cat || !item) {
+                    if (errMsg) errMsg.textContent = 'Please select Category and enter Item before saving template.';
+                    return;
+                }
+                const origGetId = document.getElementById;
+                document.getElementById = function (id) {
+                    if (id === 'e-tpl-btn') return btn;
+                    return origGetId.apply(this, arguments);
+                };
+                try {
+                    await saveExpTpl();
+                } finally {
+                    document.getElementById = origGetId;
+                }
+            } else if (type === 'income') {
+                const cat = getVal('i-cat');
+                const item = getVal('i-item');
+                if (!cat || !item) {
+                    if (errMsg) errMsg.textContent = 'Please select Category and enter Item before saving template.';
+                    return;
+                }
+                const origGetId = document.getElementById;
+                document.getElementById = function (id) {
+                    if (id === 'i-tpl-btn') return btn;
+                    return origGetId.apply(this, arguments);
+                };
+                try {
+                    await saveIncTpl();
+                } finally {
+                    document.getElementById = origGetId;
+                }
+            }
+        };
+
         window.toggleCalcSplit = function () {
             const box = document.getElementById('calc-split-box');
             if (!box) return;
@@ -8649,13 +8705,6 @@
         };
 
         function getTransactionTimestamp() {
-            const dateInput = document.getElementById('calc-date-input');
-            if (dateInput && dateInput.value) {
-                const d = new Date(dateInput.value + 'T12:00:00');
-                if (!isNaN(d.getTime())) {
-                    return Timestamp.fromDate(d);
-                }
-            }
             return serverTimestamp();
         }
 
