@@ -8649,22 +8649,6 @@
             return serverTimestamp();
         }
 
-        const _origWSelectDD = window.W_selectDD;
-        window.W_selectDD = function (inputId, ddId, value) {
-            _origWSelectDD(inputId, ddId, value);
-
-            if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
-                if (window.syncToOriginalForm) window.syncToOriginalForm();
-            } else if (inputId === 'calc-tpl-input') {
-                const currentType = window._activeAddType || 'expense';
-                if (currentType === 'expense') {
-                    applyExpTpl(value);
-                } else if (currentType === 'income') {
-                    applyIncTpl(value);
-                }
-                if (window.syncFromOriginalForm) window.syncFromOriginalForm();
-            }
-        };
 
         function renderAccountCards(containerId, hiddenInputId, excludePeople = false) {
             const container = document.getElementById(containerId);
@@ -8754,7 +8738,7 @@
 
         let _autoCatTimer;
         window.autoCategorizeItem = async function (isImmediate = false) {
-            const itemInput = document.getElementById('e-item');
+            const itemInput = document.getElementById('calc-item-input') || document.getElementById('e-item');
             const catInput = document.getElementById('e-cat');
             if (!itemInput || !catInput) return;
 
@@ -8768,7 +8752,13 @@
                 const key = getGroqKey();
                 if (!key) return;
 
-                catInput.placeholder = "AI predicting...";
+                const activeType = window._activeAddType || 'expense';
+                if (activeType !== 'expense') return; // auto-categorize is only for expenses
+
+                const exprEl = document.getElementById('calc-amount-expr');
+                const oldExprText = exprEl ? exprEl.textContent : '';
+                if (exprEl) exprEl.textContent = "AI predicting category...";
+
                 const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
 
                 const prompt = `Given the expense item/merchant: "${currentVal}", which of these categories is the best fit? ${expCats.join(', ')}. Reply ONLY with the exact category name. If none fit perfectly, reply with the closest one.`;
@@ -8783,13 +8773,24 @@
                         const json = await resp.json();
                         let guess = json.choices[0].message.content.trim();
                         if (guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1, -1);
-                        if (_categories.some(c => c.name.toUpperCase() === guess.toUpperCase())) {
-                            catInput.value = guess;
+                        
+                        const match = _categories.find(c => c.name.toUpperCase() === guess.toUpperCase() && c.type === 'EXPENSE');
+                        if (match) {
+                            catInput.value = match.name;
+                            const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${match.name}"]`);
+                            if (card) {
+                                selectCalcCard(card, 'cat', match.name);
+                            } else {
+                                selectCalcCard(null, 'cat', match.name);
+                            }
+                            if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
                         }
                     }
                 } catch (e) { console.error('AI Auto-Cat failed', e); }
                 finally {
-                    catInput.placeholder = "⚲ Select or type new category";
+                    if (exprEl && exprEl.textContent === "AI predicting category...") {
+                        exprEl.textContent = oldExprText || window._calcExpr || '----';
+                    }
                 }
             };
 
@@ -8833,11 +8834,18 @@
                 if (inputId === 'e-tpl' && inp.value === '') applyExpTpl('');
                 if (inputId === 'i-tpl' && inp.value === '') applyIncTpl('');
                 if (inputId === 'e-item') autoCategorizeItem();
+                
+                // Sync calculator inputs and trigger auto-categorization when typing
+                if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
+                    if (window.syncToOriginalForm) window.syncToOriginalForm();
+                    if (inputId === 'calc-item-input') autoCategorizeItem();
+                }
             };
             inp.onfocus = () => renderDD(inputId, ddId, data);
             inp.onblur = () => {
                 setTimeout(() => { dd.style.display = 'none'; }, 180);
                 if (inputId === 'e-item') autoCategorizeItem(true);
+                if (inputId === 'calc-item-input') autoCategorizeItem(true);
             };
             inp.onkeydown = e => {
                 const items = [...dd.querySelectorAll('.fd-item')];
@@ -8891,6 +8899,21 @@
             if (inputId === 'e-tpl') { applyExpTpl(value); }
             else if (inputId === 'i-tpl') { applyIncTpl(value); }
             if (inputId === 'e-item') { autoCategorizeItem(true); }
+            
+            // Sync calculator inputs and run auto-categorization immediately on selection
+            if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
+                if (window.syncToOriginalForm) window.syncToOriginalForm();
+                if (inputId === 'calc-item-input') autoCategorizeItem(true);
+            } else if (inputId === 'calc-tpl-input') {
+                const currentType = window._activeAddType || 'expense';
+                if (currentType === 'expense') {
+                    applyExpTpl(value);
+                } else if (currentType === 'income') {
+                    applyIncTpl(value);
+                }
+                if (window.syncFromOriginalForm) window.syncFromOriginalForm();
+            }
+            
             focusNext(inputId);
         };
         function applyExpTpl(n) {
