@@ -5023,10 +5023,11 @@
         .calc-container {
             max-width: 450px;
             margin: 0 auto;
-            background: #EAE5DB; /* Warm cream page background */
+            background: var(--bg); /* Same color as background! */
             padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(43, 35, 29, 0.08);
+            border-radius: 0; /* Squarish! */
+            border: 1px solid var(--border-strong);
+            box-shadow: none; /* No shadow for clean blend */
             color: #2B231D; /* Dark brown text */
             display: flex;
             flex-direction: column;
@@ -5060,13 +5061,13 @@
         .calc-details-btn {
             background: #fff;
             border: 1px solid #DFD7CC;
-            border-radius: 8px;
+            border-radius: 0; /* Squarish! */
             padding: 6px 12px;
             font-size: 11px;
             font-weight: 700;
             color: #2B231D;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: none;
             transition: all 0.15s;
         }
 
@@ -5084,14 +5085,14 @@
             flex: 1;
             background: #fff;
             border: 1px solid #DFD7CC;
-            border-radius: 8px;
+            border-radius: 0; /* Squarish! */
             padding: 10px 0;
             font-size: 11px;
             font-weight: 700;
             text-align: center;
             cursor: pointer;
             color: #2B231D;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: none;
             transition: all 0.15s;
             display: flex;
             align-items: center;
@@ -5107,7 +5108,7 @@
             background: #BE5A30; /* Rust orange active */
             border-color: #BE5A30;
             color: #fff;
-            box-shadow: 0 2px 6px rgba(190, 90, 48, 0.2);
+            box-shadow: none;
         }
 
         .calc-sec-lbl {
@@ -5135,10 +5136,10 @@
             flex: 0 0 auto;
             background: #fff;
             border: 1px solid #DFD7CC;
-            border-radius: 8px;
+            border-radius: 0; /* Squarish! */
             padding: 10px 14px;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            box-shadow: none;
             transition: all 0.15s;
             min-width: 80px;
             text-align: center;
@@ -5151,7 +5152,7 @@
         .calc-card.active {
             border: 2px solid #BE5A30;
             background: #FAF1E8;
-            box-shadow: 0 2px 8px rgba(190, 90, 48, 0.1);
+            box-shadow: none;
         }
 
         .calc-card-name {
@@ -5173,7 +5174,7 @@
 
         .calc-amount-box {
             background: #1B1613; /* Dark brown/black display */
-            border-radius: 12px;
+            border-radius: 0; /* Squarish! */
             padding: 16px 20px;
             color: #fff;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
@@ -5236,19 +5237,19 @@
             width: 100%;
             background: #fff;
             border: 1px solid #DFD7CC;
-            border-radius: 8px;
+            border-radius: 0; /* Squarish! */
             padding: 10px 12px;
             font-size: 11px;
             font-weight: 700;
             color: #2B231D;
             outline: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            box-shadow: none;
             transition: all 0.15s;
         }
 
         .calc-input:focus {
             border-color: #BE5A30;
-            box-shadow: 0 0 0 2px rgba(190, 90, 48, 0.15);
+            box-shadow: none;
         }
 
         .calc-keyboard {
@@ -5261,7 +5262,7 @@
 
         .calc-key {
             border: 1px solid #DFD7CC;
-            border-radius: 8px;
+            border-radius: 0; /* Squarish! */
             padding: 14px 0;
             font-size: 14px;
             font-weight: 700;
@@ -5270,12 +5271,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: none;
         }
 
         .calc-key:active {
             transform: translateY(1px);
-            box-shadow: none;
         }
 
         .calc-key.num {
@@ -5307,6 +5307,7 @@
             color: #2B231D;
             font-size: 12px;
             text-transform: uppercase;
+            border-radius: 0; /* Squarish! */
         }
 
         .calc-key.fn:hover {
@@ -5317,6 +5318,7 @@
             background: #1B1613;
             border-color: #1B1613;
             color: #fff;
+            border-radius: 0; /* Squarish! */
         }
 
         .calc-key.eq:hover {
@@ -5333,7 +5335,7 @@
         .calc-reset-btn {
             background: #fff;
             border: 1px solid #DFD7CC;
-            border-radius: 8px;
+            border-radius: 0; /* Squarish! */
             width: 44px;
             height: 44px;
             display: flex;
@@ -5341,7 +5343,7 @@
             justify-content: center;
             cursor: pointer;
             color: #7A7066;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: none;
             transition: all 0.15s;
             flex-shrink: 0;
         }
@@ -5355,13 +5357,13 @@
             flex: 1;
             background: #BE5A30;
             border: none;
-            border-radius: 8px;
+            border-radius: 0; /* Squarish! */
             padding: 12px 0;
             font-size: 13px;
             font-weight: 700;
             color: #fff;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(190, 90, 48, 0.2);
+            box-shadow: none;
             transition: all 0.15s;
             text-align: center;
             display: flex;
@@ -5371,6 +5373,17 @@
 
         .calc-save-btn:hover {
             background: #A64B25;
+        }
+
+        /* details panel squarish styling override */
+        #calc-details-panel .card {
+            background: var(--bg);
+            border: 1px solid var(--border-strong);
+            border-radius: 0;
+            box-shadow: none;
+        }
+        #calc-details-panel .form-input {
+            border-radius: 0;
         }
     </style>
 </head>
