@@ -5457,6 +5457,19 @@
             border: 2px solid #485460;
             background: #F1F3F5;
         }
+
+        /* Error message layout adjustments */
+        #calc-err-msg {
+            color: #DC2626;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #calc-err-msg:empty {
+            display: none;
+        }
     </style>
 </head>
 
@@ -5816,7 +5829,6 @@
                     <div id="calc-split-box" class="ae-split-box" style="display:none; margin-bottom:16px;">
                         <div class="ae-group-hdr" style="margin-bottom:0;">
                             <div class="ae-lbl">SPLIT PAYMENTS</div>
-                            <button class="ae-chip" style="background:#fff; border-color:var(--border-strong); border-radius:0; padding:8px 16px; font-size:12px; font-weight:700; cursor:pointer;" onclick="addSplitRow(event)">+ Add Split</button>
                         </div>
                         <div class="ae-hint" style="margin-bottom: 16px;">divide this entry across people or accounts</div>
                         <div id="split-rows-container"></div>
@@ -5853,7 +5865,7 @@
                     </div>
 
                     <!-- Error Row -->
-                    <div class="form-err" id="calc-err-msg" style="margin-top:12px; margin-bottom:12px;"></div>
+                    <div class="form-err" id="calc-err-msg"></div>
 
                     <div class="calc-footer">
                         <button class="calc-reset-btn" onclick="clearAddEntryForm()" title="Clear form">
@@ -8703,11 +8715,7 @@
             if (!box) return;
 
             if (box.style.display === 'none') {
-                box.style.display = 'block';
-                const container = document.getElementById('split-rows-container');
-                if (container && container.children.length === 0) {
-                    addSplitRow({ preventDefault: () => {} });
-                }
+                addSplitRow({ preventDefault: () => {} });
             } else {
                 box.style.display = 'none';
                 document.getElementById('split-rows-container').innerHTML = '';
@@ -9060,6 +9068,12 @@
             document.getElementById('split-tools').style.display = 'none';
             _splitRows = 0;
             
+            const hasSplits = t.splits && t.splits.length > 0;
+            const splitBox = document.getElementById('calc-split-box');
+            if (splitBox) {
+                splitBox.style.display = hasSplits ? 'block' : 'none';
+            }
+
             if (t.splits && Array.isArray(t.splits)) {
                 t.splits.forEach(s => {
                     window.addSplitRowWithValues(s.person || '', s.cat || '', s.item || '', s.amt || '');
@@ -9179,12 +9193,19 @@
 
         window.confirmSplitPeopleSelection = function () {
             const selected = Array.from(_selectedSplitPeople);
+            const box = document.getElementById('calc-split-box');
             if (selected.length === 0) {
-                window.addSplitRowWithName('');
+                if (box) box.style.display = 'none';
+                document.getElementById('split-rows-container').innerHTML = '';
+                document.getElementById('split-tools').style.display = 'none';
+                _splitRows = 0;
             } else {
+                document.getElementById('split-rows-container').innerHTML = '';
+                _splitRows = 0;
                 selected.forEach(name => {
                     window.addSplitRowWithName(name);
                 });
+                if (box) box.style.display = 'block';
             }
             closeM('splitSelModal');
         };
