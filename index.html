@@ -8394,6 +8394,7 @@
         function setupAddFormDropdowns() {
             const txns = _allTxns || [];
             const accNames = _accounts.map(a => a.name);
+            const bankAccNames = _accounts.filter(a => a.type !== 'PERSON').map(a => a.name);
             const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
             const incCats = _categories.filter(c => c.type === 'INCOME').map(c => c.name);
 
@@ -8432,7 +8433,7 @@
                 ['i-cat', 'dd-i-cat', incCats],
                 ['i-item', 'dd-i-item', recentItems],
                 ['i-from', 'dd-i-from', recentPeople],
-                ['t-from', 'dd-t-from', accNames],
+                ['t-from', 'dd-t-from', bankAccNames],
                 ['t-to', 'dd-t-to', accNames],
                 ['t-item', 'dd-t-item', recentItems],
                 // Custom calculator pairs
@@ -8552,6 +8553,22 @@
                     `;
                 }
             });
+
+            // For Transfer TO account: also show PERSON accounts
+            if (window._activeAddType === 'transfer') {
+                const toVal = document.getElementById('t-to').value;
+                const personList = _accounts.filter(a => a.type === 'PERSON');
+                personList.forEach(a => {
+                    const bal = a.currentBalance || 0;
+                    let toActiveClass = (toVal === a.name) ? ' active' : '';
+                    toAccHtml += `
+                        <div class="calc-card${toActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'to-acc', '${escH(a.name)}')">
+                            <div class="calc-card-name">${escH(a.name)}</div>
+                            <div class="calc-card-sub">👤 person</div>
+                        </div>
+                    `;
+                });
+            }
 
             accContainer.innerHTML = accHtml;
             if (toAccContainer) toAccContainer.innerHTML = toAccHtml;
