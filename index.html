@@ -6896,11 +6896,15 @@
         async function loadAiSettings() { try { const snap = await getDoc(uDoc('settings', 'ai')); if (snap.exists()) _aiSettings = snap.data(); else _aiSettings = {}; } catch (e) { console.error("AI settings load failed", e); } }
 
         async function loadAllTransactions() {
+            // orderBy date asc for balance running-total calculation
             const snap = await getDocs(query(uRef('transactions'), orderBy('date', 'asc')));
             _allTxns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             const bal = {};
             _accounts.forEach(a => bal[a.name] = (a.openingBalance || 0));
+            // Calculate running closing balance in chronological order
             _allTxns.forEach(t => { const a = t.account, v = Number(t.amount) || 0; if (!a) return; if (bal[a] === undefined) bal[a] = 0; bal[a] += v; t.closingBalance = bal[a]; });
+            // Reverse so newest is first — all consumers get newest-at-top order
+            _allTxns.reverse();
             return _allTxns;
         }
 
@@ -8269,14 +8273,14 @@
             const personAmt = isOwed ? -settleAmt : settleAmt;
             const bankAmt = isOwed ? settleAmt : -settleAmt;
             
-            const now = new Date();
+            const now = serverTimestamp();
             
             const batch = writeBatch(db);
             const pTxRef = doc(collection(db, 'users', uid(), 'transactions'));
             const bTxRef = doc(collection(db, 'users', uid(), 'transactions'));
             
             const pTxData = {
-                date: Timestamp.fromDate(now),
+                date: now,
                 account: _currentPersonName,
                 category: 'TRANSFER',
                 item: 'Settlement',
@@ -8285,7 +8289,7 @@
             };
             
             const bTxData = {
-                date: Timestamp.fromDate(now),
+                date: now,
                 account: bankAcc.name,
                 category: 'TRANSFER',
                 item: 'Settlement',
@@ -10744,7 +10748,13 @@
                     }
                 }
                 return false;
-            }).reverse();
+            });
+            // Sort newest-first by full timestamp (second-level accuracy)
+            _filteredTxns.sort((a, b) => {
+                const ta = a.date?.toDate ? a.date.toDate().getTime() : new Date(a.date || 0).getTime();
+                const tb = b.date?.toDate ? b.date.toDate().getTime() : new Date(b.date || 0).getTime();
+                return tb - ta;
+            });
 
             const groupedTxns = groupTransfers(_filteredTxns);
 
