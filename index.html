@@ -4079,16 +4079,25 @@
             .modal-box {
                 border-radius: var(--r-lg) var(--r-lg) 0 0;
                 position: fixed;
-                bottom: 0;
+                bottom: 68px; /* sit above the mob-nav bar */
+                bottom: calc(68px + env(safe-area-inset-bottom, 0px));
                 left: 0;
                 right: 0;
                 width: 100%;
                 max-width: 100%;
+                max-height: calc(92vh - 68px);
+                overflow-y: auto;
                 transform: translateY(20px);
             }
 
             .modal-ov.open .modal-box {
                 transform: translateY(0);
+            }
+
+            /* Ensure last action buttons inside modals are never clipped */
+            .modal-box > *:last-child,
+            .modal-body > *:last-child {
+                margin-bottom: env(safe-area-inset-bottom, 8px);
             }
 
             .mini-form-row {
@@ -8433,7 +8442,7 @@
                 ['i-cat', 'dd-i-cat', incCats],
                 ['i-item', 'dd-i-item', recentItems],
                 ['i-from', 'dd-i-from', recentPeople],
-                ['t-from', 'dd-t-from', bankAccNames],
+                ['t-from', 'dd-t-from', accNames],
                 ['t-to', 'dd-t-to', accNames],
                 ['t-item', 'dd-t-item', recentItems],
                 // Custom calculator pairs
@@ -8521,54 +8530,49 @@
 
             let accHtml = '';
             let toAccHtml = '';
-            const list = _accounts.filter(a => a.type !== 'PERSON');
+
+            // Transfer mode: show ALL accounts (bank + person) for both FROM and TO.
+            // Expense / Income: exclude person accounts.
+            const isTransfer = window._activeAddType === 'transfer';
+            const list = isTransfer ? _accounts : _accounts.filter(a => a.type !== 'PERSON');
+
+            const fromVal = isTransfer ? document.getElementById('t-from').value : null;
+            const toVal   = isTransfer ? document.getElementById('t-to').value   : null;
+            const expAccVal = !isTransfer && window._activeAddType === 'expense' ? document.getElementById('e-acc').value : null;
+            const incAccVal = !isTransfer && window._activeAddType === 'income'  ? document.getElementById('i-acc').value : null;
 
             list.forEach(a => {
                 const bal = a.currentBalance || 0;
-                let activeClass = '';
+                const isPerson = a.type === 'PERSON';
+                const subLabel = isPerson ? '👤 person' : `bal ₹${fmt(bal)}`;
 
-                if (window._activeAddType === 'transfer') {
-                    const fromVal = document.getElementById('t-from').value;
-                    if (fromVal === a.name) activeClass = ' active';
+                // ── FROM / main ACCOUNT card ──
+                let fromActiveClass = '';
+                if (isTransfer) {
+                    if (fromVal === a.name) fromActiveClass = ' active';
                 } else {
-                    const accVal = window._activeAddType === 'expense' ? document.getElementById('e-acc').value : document.getElementById('i-acc').value;
-                    if (accVal === a.name) activeClass = ' active';
+                    const cur = expAccVal !== null ? expAccVal : (incAccVal || '');
+                    if (cur === a.name) fromActiveClass = ' active';
                 }
 
                 accHtml += `
-                    <div class="calc-card${activeClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'acc', '${escH(a.name)}')">
+                    <div class="calc-card${fromActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'acc', '${escH(a.name)}')">
                         <div class="calc-card-name">${escH(a.name)}</div>
-                        <div class="calc-card-sub">bal ₹${fmt(bal)}</div>
+                        <div class="calc-card-sub">${subLabel}</div>
                     </div>
                 `;
 
-                if (window._activeAddType === 'transfer') {
-                    const toVal = document.getElementById('t-to').value;
-                    let toActiveClass = (toVal === a.name) ? ' active' : '';
+                // ── TO ACCOUNT card (Transfer only) ──
+                if (isTransfer) {
+                    const toActiveClass = (toVal === a.name) ? ' active' : '';
                     toAccHtml += `
                         <div class="calc-card${toActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'to-acc', '${escH(a.name)}')">
                             <div class="calc-card-name">${escH(a.name)}</div>
-                            <div class="calc-card-sub">bal ₹${fmt(bal)}</div>
+                            <div class="calc-card-sub">${subLabel}</div>
                         </div>
                     `;
                 }
             });
-
-            // For Transfer TO account: also show PERSON accounts
-            if (window._activeAddType === 'transfer') {
-                const toVal = document.getElementById('t-to').value;
-                const personList = _accounts.filter(a => a.type === 'PERSON');
-                personList.forEach(a => {
-                    const bal = a.currentBalance || 0;
-                    let toActiveClass = (toVal === a.name) ? ' active' : '';
-                    toAccHtml += `
-                        <div class="calc-card${toActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'to-acc', '${escH(a.name)}')">
-                            <div class="calc-card-name">${escH(a.name)}</div>
-                            <div class="calc-card-sub">👤 person</div>
-                        </div>
-                    `;
-                });
-            }
 
             accContainer.innerHTML = accHtml;
             if (toAccContainer) toAccContainer.innerHTML = toAccHtml;
