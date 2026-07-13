@@ -6587,6 +6587,7 @@
             <div id="pm-settle-row" style="padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; background: var(--surface);">
                 <button class="txn-clr-btn" style="flex:1; padding: 8px 12px; font-size:12px; width:auto; margin:0;" onclick="settlePerson('ALL')">Settle All</button>
                 <button class="txn-clr-btn" style="flex:1; padding: 8px 12px; font-size:12px; width:auto; margin:0;" onclick="settlePerson('PARTIAL')">Partial Settle</button>
+                <button id="pm-writeoff-btn" class="txn-clr-btn" style="flex:1; padding: 8px 12px; font-size:12px; width:auto; margin:0; border-color:var(--red); color:var(--red);" onclick="writeOffPerson()">Write Off</button>
             </div>
             <div class="modal-bd" id="pm-body"></div>
         </div>
@@ -8328,6 +8329,8 @@
             document.getElementById('pm-name').textContent = name;
             document.getElementById('pm-bal').textContent = rs(bal);
             document.getElementById('pm-settle-row').style.display = (bal === 0) ? 'none' : 'flex';
+            const woBtn = document.getElementById('pm-writeoff-btn');
+            if (woBtn) woBtn.style.display = (bal > 0) ? 'block' : 'none';
             document.getElementById('pm-body').innerHTML = '<div class="m-empty"><div class="sp" style="margin:0 auto 10px"></div></div>';
             openM('personModal');
             
@@ -8342,6 +8345,53 @@
             if (!rows.length) { document.getElementById('pm-body').innerHTML = '<div class="m-empty">All transactions are settled.</div>'; return; }
             document.getElementById('pm-body').innerHTML = rows.map((r, i) => { const amt = Number(r.amount), pos = amt >= 0, col = pos ? 'var(--amt-pos)' : 'var(--amt-neg)'; return '<div class="m-txn" style="animation-delay:' + (i * 0.04) + 's"><div class="m-dot" style="background:' + col + '"></div><div class="m-info"><div class="m-item">' + escH(r.item || '—') + '</div><div class="m-sub">' + fmtDate(r.date) + (r.toFrom ? ' · ' + escH(r.toFrom) : '') + '</div></div><div><div class="m-amt" style="color:' + col + '">' + (pos ? '+' : '') + rs(amt) + '</div><div class="m-xtra">' + rs(r.closingBalance || 0) + ' bal</div></div></div>'; }).join('');
         }
+
+        window.writeOffPerson = async function () {
+            if (!_currentPersonName) return;
+            const bal = _currentPersonBal;
+            if (bal <= 0) return;
+
+            const confirmMsg = `Are you sure you want to write off ₹${rs(bal)} owed by ${_currentPersonName}? This will reset their balance to 0 and create a ₹${rs(bal)} expense entry.`;
+            if (!confirm(confirmMsg)) return;
+
+            const writeOffAmt = bal;
+            const now = serverTimestamp();
+
+            const batch = writeBatch(db);
+            const txRef = doc(collection(db, 'users', uid(), 'transactions'));
+
+            const txData = {
+                date: now,
+                account: _currentPersonName,
+                category: 'WRITE OFF',
+                item: `Write Off - ${_currentPersonName}`,
+                amount: -writeOffAmt,
+                toFrom: ''
+            };
+
+            batch.set(txRef, txData);
+
+            window.setUndoAction(async () => {
+                const undoBatch = writeBatch(db);
+                undoBatch.delete(txRef);
+                await undoBatch.commit();
+                toast('Write-off undone');
+                await loadPeriodData();
+                loadAccounts();
+            });
+
+            try {
+                await ensureCategory('WRITE OFF', 'EXPENSE');
+                await batch.commit();
+                toast(`Wrote off ₹${rs(writeOffAmt)} for ${_currentPersonName}`, true);
+                closeM('personModal');
+                await loadPeriodData();
+                loadAccounts();
+            } catch (e) {
+                console.error("Error executing write-off:", e);
+                toast("Error executing write-off");
+            }
+        };
 
         /* ═══ DAY MODAL ═══ */
         window.openDayM = function (day) {
