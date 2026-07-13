@@ -8352,29 +8352,67 @@
             const bal = _currentPersonBal;
             if (bal <= 0) return;
 
-            const confirmMsg = `Are you sure you want to write off ₹${rs(bal)} owed by ${_currentPersonName}? This will reset their balance to 0 and create a ₹${rs(bal)} expense entry.`;
+            const allPersonRows = _allTxns.filter(t => t.account === _currentPersonName);
+            const defaultBank = _accounts.find(a => a.type !== 'PERSON' && a.isDefault === true) || _accounts.find(a => a.type !== 'PERSON');
+            let bankName = defaultBank ? defaultBank.name : '';
+
+            // Find the most recent transaction where the transfer happened with a non-person account
+            const lastTx = allPersonRows.find(t => t.toFrom && _accounts.some(a => a.name === t.toFrom && a.type !== 'PERSON'));
+            if (lastTx) {
+                bankName = lastTx.toFrom;
+            }
+
+            if (!bankName) {
+                toast('No bank account found to execute write-off');
+                return;
+            }
+
+            const confirmMsg = `Are you sure you want to write off ₹${rs(bal)} owed by ${_currentPersonName}?\n\nThis will:\n1. Transfer ₹${rs(bal)} from ${_currentPersonName} to ${bankName} (settles debt).\n2. Create a ₹${rs(bal)} expense entry on ${bankName} under category 'WRITE OFF'.`;
             if (!confirm(confirmMsg)) return;
 
             const writeOffAmt = bal;
             const now = serverTimestamp();
 
             const batch = writeBatch(db);
-            const txRef = doc(collection(db, 'users', uid(), 'transactions'));
+            const ref1 = doc(collection(db, 'users', uid(), 'transactions')); // Transfer side 1 (Arya -> Bank)
+            const ref2 = doc(collection(db, 'users', uid(), 'transactions')); // Transfer side 2 (Bank <- Arya)
+            const ref3 = doc(collection(db, 'users', uid(), 'transactions')); // Expense side (Bank expense)
 
-            const txData = {
+            // 1. Transfer from Arya
+            batch.set(ref1, {
                 date: now,
                 account: _currentPersonName,
+                category: 'TRANSFER',
+                item: `Write Off Settlement`,
+                amount: -writeOffAmt,
+                toFrom: bankName
+            });
+
+            // 2. Transfer to Bank
+            batch.set(ref2, {
+                date: now,
+                account: bankName,
+                category: 'TRANSFER',
+                item: `Write Off Settlement`,
+                amount: writeOffAmt,
+                toFrom: _currentPersonName
+            });
+
+            // 3. Expense in Bank
+            batch.set(ref3, {
+                date: now,
+                account: bankName,
                 category: 'WRITE OFF',
                 item: `Write Off - ${_currentPersonName}`,
                 amount: -writeOffAmt,
-                toFrom: ''
-            };
-
-            batch.set(txRef, txData);
+                toFrom: _currentPersonName
+            });
 
             window.setUndoAction(async () => {
                 const undoBatch = writeBatch(db);
-                undoBatch.delete(txRef);
+                undoBatch.delete(ref1);
+                undoBatch.delete(ref2);
+                undoBatch.delete(ref3);
                 await undoBatch.commit();
                 toast('Write-off undone');
                 await loadPeriodData();
