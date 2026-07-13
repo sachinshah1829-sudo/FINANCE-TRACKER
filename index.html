@@ -8335,13 +8335,14 @@
             openM('personModal');
             
             const allPersonRows = _allTxns.filter(t => t.account === name);
-            let lastZeroIdx = -1;
+            let firstZeroIdx = allPersonRows.length;
             for (let i = 0; i < allPersonRows.length; i++) {
                 if (Math.abs(allPersonRows[i].closingBalance || 0) < 0.01) {
-                    lastZeroIdx = i;
+                    firstZeroIdx = i;
+                    break;
                 }
             }
-            const rows = allPersonRows.slice(lastZeroIdx + 1);
+            const rows = allPersonRows.slice(0, firstZeroIdx);
             if (!rows.length) { document.getElementById('pm-body').innerHTML = '<div class="m-empty">All transactions are settled.</div>'; return; }
             document.getElementById('pm-body').innerHTML = rows.map((r, i) => { const amt = Number(r.amount), pos = amt >= 0, col = pos ? 'var(--amt-pos)' : 'var(--amt-neg)'; return '<div class="m-txn" style="animation-delay:' + (i * 0.04) + 's"><div class="m-dot" style="background:' + col + '"></div><div class="m-info"><div class="m-item">' + escH(r.item || '—') + '</div><div class="m-sub">' + fmtDate(r.date) + (r.toFrom ? ' · ' + escH(r.toFrom) : '') + '</div></div><div><div class="m-amt" style="color:' + col + '">' + (pos ? '+' : '') + rs(amt) + '</div><div class="m-xtra">' + rs(r.closingBalance || 0) + ' bal</div></div></div>'; }).join('');
         }
