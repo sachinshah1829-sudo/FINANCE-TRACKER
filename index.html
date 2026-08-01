@@ -7774,7 +7774,11 @@
         /* ═══ LEDGER FILTERS ═══ */
         window._activeLdrFilterTab = 'account';
         window._lfSearchQuery = '';
-        let _tempLdrMselState = {};
+        let _tempLdrMselState = {
+            type: new Set(),
+            cat: new Set(),
+            account: new Set()
+        };
 
         window.openLdrFilterModal = function () {
             window._lfSearchQuery = '';
@@ -10501,7 +10505,15 @@
         /* ═══ TRANSACTION FILTERS ═══ */
         window._activeFilterTab = 'type';
         window._fSearchQuery = '';
-        let _tempMselState = {};
+        let _tempMselState = {
+            type: new Set(),
+            account: new Set(),
+            cat: new Set(),
+            item: new Set(),
+            tofrom: new Set(),
+            dateFrom: '',
+            dateTo: ''
+        };
 
         window.openFilterModal = function () {
             window._fSearchQuery = '';
