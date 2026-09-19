@@ -9208,8 +9208,11 @@
 
         let _autoCatTimer;
         window.autoCategorizeItem = async function (isImmediate = false) {
-            const itemInput = document.getElementById('calc-item-input') || document.getElementById('e-item');
-            const catInput = document.getElementById('e-cat');
+            const activeType = window._activeAddType || 'expense';
+            if (activeType === 'transfer') return; // Transfers do not have category
+
+            const itemInput = document.getElementById('calc-item-input') || (activeType === 'expense' ? document.getElementById('e-item') : document.getElementById('i-item'));
+            const catInput = activeType === 'expense' ? document.getElementById('e-cat') : document.getElementById('i-cat');
             if (!itemInput || !catInput) return;
 
             const itemText = itemInput.value.trim();
@@ -9219,19 +9222,48 @@
                 const currentVal = itemInput.value.trim();
                 if (!currentVal) return;
 
-                const key = getGroqKey();
-                if (!key) return;
+                const targetType = activeType === 'expense' ? 'EXPENSE' : 'INCOME';
+                const availableCats = _categories.filter(c => c.type === targetType).map(c => c.name);
+                if (!availableCats.length) return;
 
-                const activeType = window._activeAddType || 'expense';
-                if (activeType !== 'expense') return; // auto-categorize is only for expenses
+                // 1. SMART LOCAL FALLBACK: Check past transactions for matching item -> category
+                const normVal = currentVal.toLowerCase();
+                let localMatchName = null;
+
+                const pastMatch = (_allTxns || []).find(t => {
+                    const typeMatch = targetType === 'EXPENSE' ? (Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER') : (Number(t.amount) > 0 && t.category?.toUpperCase() !== 'TRANSFER');
+                    return typeMatch && (t.item || '').toLowerCase().trim() === normVal && availableCats.some(ac => ac.toUpperCase() === (t.category || '').toUpperCase());
+                });
+
+                if (pastMatch && pastMatch.category) {
+                    localMatchName = pastMatch.category;
+                } else {
+                    const keywordMatch = availableCats.find(cName => {
+                        const cn = cName.toLowerCase();
+                        return normVal.includes(cn) || cn.includes(normVal);
+                    });
+                    if (keywordMatch) localMatchName = keywordMatch;
+                }
+
+                if (localMatchName) {
+                    const match = _categories.find(c => c.name.toUpperCase() === localMatchName.toUpperCase() && c.type === targetType);
+                    if (match) {
+                        catInput.value = match.name;
+                        const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${match.name}"]`);
+                        selectCalcCard(card, 'cat', match.name);
+                        if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
+                    }
+                }
+
+                // 2. GROQ AI PREDICTION: If API key is available, get AI prediction
+                const key = getGroqKey(true); // silent = true
+                if (!key) return;
 
                 const exprEl = document.getElementById('calc-amount-expr');
                 const oldExprText = exprEl ? exprEl.textContent : '';
                 if (exprEl) exprEl.textContent = "AI predicting category...";
 
-                const expCats = _categories.filter(c => c.type === 'EXPENSE').map(c => c.name);
-
-                const prompt = `Given the expense item/merchant: "${currentVal}", which of these categories is the best fit? ${expCats.join(', ')}. Reply ONLY with the exact category name. If none fit perfectly, reply with the closest one.`;
+                const prompt = `Given the ${activeType} item/source: "${currentVal}", which of these categories is the best fit? ${availableCats.join(', ')}. Reply ONLY with the exact category name from the list. If none fit perfectly, reply with the closest one.`;
 
                 try {
                     const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -9243,21 +9275,18 @@
                         const json = await resp.json();
                         let guess = json.choices[0].message.content.trim();
                         if (guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1, -1);
-                        
-                        const match = _categories.find(c => c.name.toUpperCase() === guess.toUpperCase() && c.type === 'EXPENSE');
+
+                        const match = _categories.find(c => c.name.toUpperCase() === guess.toUpperCase() && c.type === targetType);
                         if (match) {
                             catInput.value = match.name;
                             const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${match.name}"]`);
-                            if (card) {
-                                selectCalcCard(card, 'cat', match.name);
-                            } else {
-                                selectCalcCard(null, 'cat', match.name);
-                            }
+                            selectCalcCard(card, 'cat', match.name);
                             if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
                         }
                     }
-                } catch (e) { console.error('AI Auto-Cat failed', e); }
-                finally {
+                } catch (e) {
+                    console.error('AI Auto-Cat failed', e);
+                } finally {
                     if (exprEl && exprEl.textContent === "AI predicting category...") {
                         exprEl.textContent = oldExprText || window._calcExpr || '----';
                     }
@@ -9289,7 +9318,6 @@
             if (!inp || !dd) return;
             const q = inp.value.toLowerCase();
             const filtered = data.filter(x => String(x).toLowerCase().includes(q));
-            // Show all if empty, otherwise show filtered
             const results = (q === '') ? data.slice(0, 40) : filtered;
             dd.innerHTML = results.map(v => `<div class="fd-item" tabindex="-1" data-val="${escH(v)}" onmousedown="event.preventDefault();W_selectDD('${inputId}','${ddId}',this.dataset.val)">${escH(v)}</div>`).join('');
             dd.style.display = results.length ? 'block' : 'none';
@@ -9303,7 +9331,7 @@
                 inp.classList.remove('invalid');
                 if (inputId === 'e-tpl' && inp.value === '') applyExpTpl('');
                 if (inputId === 'i-tpl' && inp.value === '') applyIncTpl('');
-                if (inputId === 'e-item') autoCategorizeItem();
+                if (inputId === 'e-item' || inputId === 'i-item') autoCategorizeItem();
                 
                 // Sync calculator inputs and trigger auto-categorization when typing
                 if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
@@ -9314,7 +9342,7 @@
             inp.onfocus = () => renderDD(inputId, ddId, data);
             inp.onblur = () => {
                 setTimeout(() => { dd.style.display = 'none'; }, 180);
-                if (inputId === 'e-item') autoCategorizeItem(true);
+                if (inputId === 'e-item' || inputId === 'i-item') autoCategorizeItem(true);
                 if (inputId === 'calc-item-input') autoCategorizeItem(true);
             };
             inp.onkeydown = e => {
@@ -9368,7 +9396,7 @@
             dd.style.display = 'none';
             if (inputId === 'e-tpl') { applyExpTpl(value); }
             else if (inputId === 'i-tpl') { applyIncTpl(value); }
-            if (inputId === 'e-item') { autoCategorizeItem(true); }
+            if (inputId === 'e-item' || inputId === 'i-item') { autoCategorizeItem(true); }
             
             // Sync calculator inputs and run auto-categorization immediately on selection
             if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
@@ -9652,10 +9680,17 @@
 
         window.submitExp = async function (keepOpen = false) {
             clrInv(['e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to']); document.getElementById('e-err').textContent = '';
-            let ok = true;
-            ['e-acc', 'e-cat', 'e-amt', 'e-item'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } });
-            if (ok && /^\d+$/.test(gv('e-item'))) { setInv('e-item'); document.getElementById('e-err').textContent = 'Item cannot be a number'; ok = false; }
-            if (!ok) return;
+            let missing = [];
+            if (!gv('e-acc')) { setInv('e-acc'); missing.push('Account'); }
+            if (!gv('e-cat')) { setInv('e-cat'); missing.push('Category'); }
+            if (!gv('e-amt') || Number(gv('e-amt')) <= 0) { setInv('e-amt'); missing.push('Amount'); }
+            if (!gv('e-item')) { setInv('e-item'); missing.push('Item'); }
+
+            if (missing.length > 0) {
+                document.getElementById('e-err').textContent = 'Please fill in required fields: ' + missing.join(', ');
+                return;
+            }
+            if (/^\d+$/.test(gv('e-item'))) { setInv('e-item'); document.getElementById('e-err').textContent = 'Item cannot be a number'; return; }
 
             const fromAcc = gv('e-acc');
             const mainAmt = Math.abs(Number(gv('e-amt')));
@@ -9762,7 +9797,16 @@
         
         window.submitInc = async function () {
             clrInv(['i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from']); document.getElementById('i-err').textContent = '';
-            let ok = true;['i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } }); if (!ok) return;
+            let missing = [];
+            if (!gv('i-acc')) { setInv('i-acc'); missing.push('Account'); }
+            if (!gv('i-cat')) { setInv('i-cat'); missing.push('Category'); }
+            if (!gv('i-amt') || Number(gv('i-amt')) <= 0) { setInv('i-amt'); missing.push('Amount'); }
+            if (!gv('i-item')) { setInv('i-item'); missing.push('Item'); }
+
+            if (missing.length > 0) {
+                document.getElementById('i-err').textContent = 'Please fill in required fields: ' + missing.join(', ');
+                return;
+            }
             await ensureCategory(gv('i-cat'), 'INCOME');
             const docRef = await addDoc(uRef('transactions'), { date: getTransactionTimestamp(), account: gv('i-acc'), category: gv('i-cat'), item: gv('i-item'), amount: Math.abs(Number(gv('i-amt'))), toFrom: gv('i-from') });
             
@@ -9779,9 +9823,17 @@
         
         window.submitTr = async function () {
             clrInv(['t-from', 't-to', 't-amt', 't-item']); document.getElementById('t-err').textContent = '';
-            let ok = true;['t-from', 't-to', 't-amt', 't-item'].forEach(id => { if (!gv(id)) { setInv(id); ok = false; } });
-            if (ok && gv('t-from') === gv('t-to')) { setInv('t-to'); document.getElementById('t-err').textContent = 'Accounts cannot match'; ok = false; }
-            if (!ok) return;
+            let missing = [];
+            if (!gv('t-from')) { setInv('t-from'); missing.push('From Account'); }
+            if (!gv('t-to')) { setInv('t-to'); missing.push('To Account'); }
+            if (!gv('t-amt') || Number(gv('t-amt')) <= 0) { setInv('t-amt'); missing.push('Amount'); }
+            if (!gv('t-item')) { setInv('t-item'); missing.push('Item'); }
+
+            if (missing.length > 0) {
+                document.getElementById('t-err').textContent = 'Please fill in required fields: ' + missing.join(', ');
+                return;
+            }
+            if (gv('t-from') === gv('t-to')) { setInv('t-to'); document.getElementById('t-err').textContent = 'Accounts cannot match'; return; }
             const amt = Math.abs(Number(gv('t-amt'))), now = getTransactionTimestamp();
             const docRef1 = await addDoc(uRef('transactions'), { date: now, account: gv('t-from'), category: 'TRANSFER', item: gv('t-item'), amount: -amt, toFrom: gv('t-to') });
             const docRef2 = await addDoc(uRef('transactions'), { date: now, account: gv('t-to'), category: 'TRANSFER', item: gv('t-item'), amount: amt, toFrom: gv('t-from') });
@@ -11619,10 +11671,10 @@
             _chatThread.push({ role: 'assistant', content: introMsg });
         };
 
-        function getGroqKey() {
+        function getGroqKey(silent = false) {
             const key = _aiSettings.groq_api_key || DEFAULT_GROQ_KEY;
             if (!key) {
-                toast('Please set your Groq API Key in the AI Assistant tab');
+                if (!silent) toast('Please set your Groq API Key in the AI Assistant tab');
                 return null;
             }
             return key;
