@@ -5952,7 +5952,7 @@
                         <div>
                             <div class="calc-sec-lbl">ITEM</div>
                             <div class="ae-input-wrap">
-                                <input class="calc-input" id="calc-item-input" placeholder="e.g. Lunch" oninput="syncToOriginalForm()" autocomplete="off">
+                                <input class="calc-input" id="calc-item-input" placeholder="e.g. Lunch" oninput="syncToOriginalForm(); if(window.autoCategorizeItem)autoCategorizeItem();" autocomplete="off">
                                 <div class="form-dropdown" id="dd-calc-item"></div>
                             </div>
                         </div>
@@ -8924,6 +8924,7 @@
                 document.getElementById('t-amt').value = evaluated > 0 ? evaluated : '';
                 document.getElementById('t-item').value = itemVal;
             }
+            if (window.autoCategorizeItem) window.autoCategorizeItem();
         };
 
         window.syncFromOriginalForm = function () {
@@ -9215,53 +9216,150 @@
             const catInput = activeType === 'expense' ? document.getElementById('e-cat') : document.getElementById('i-cat');
             if (!itemInput || !catInput) return;
 
-            const itemText = itemInput.value.trim();
-            if (itemText.length < 2) return;
+            const currentVal = itemInput.value.trim();
+            if (currentVal.length < 2) return;
 
-            const run = async () => {
-                const currentVal = itemInput.value.trim();
-                if (!currentVal) return;
+            const targetType = activeType === 'expense' ? 'EXPENSE' : 'INCOME';
+            const availableCats = _categories.filter(c => c.type === targetType).map(c => c.name);
+            if (!availableCats.length) return;
 
-                const targetType = activeType === 'expense' ? 'EXPENSE' : 'INCOME';
-                const availableCats = _categories.filter(c => c.type === targetType).map(c => c.name);
-                if (!availableCats.length) return;
-
-                // 1. SMART LOCAL FALLBACK: Check past transactions for matching item -> category
-                const normVal = currentVal.toLowerCase();
-                let localMatchName = null;
-
-                const pastMatch = (_allTxns || []).find(t => {
-                    const typeMatch = targetType === 'EXPENSE' ? (Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER') : (Number(t.amount) > 0 && t.category?.toUpperCase() !== 'TRANSFER');
-                    return typeMatch && (t.item || '').toLowerCase().trim() === normVal && availableCats.some(ac => ac.toUpperCase() === (t.category || '').toUpperCase());
+            // Helper to apply matched category to input and UI card
+            const applyCategoryMatch = (catName) => {
+                const match = _categories.find(c => c.name.toUpperCase() === catName.toUpperCase() && c.type === targetType);
+                if (!match) return false;
+                
+                catInput.value = match.name;
+                const catCards = document.querySelectorAll('#calc-cat-cards .calc-card');
+                let targetCard = null;
+                catCards.forEach(c => {
+                    const cName = (c.dataset.name || c.getAttribute('data-name') || '').toUpperCase();
+                    if (cName === match.name.toUpperCase()) {
+                        targetCard = c;
+                    }
                 });
+                
+                selectCalcCard(targetCard, 'cat', match.name);
+                if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
+                return true;
+            };
 
-                if (pastMatch && pastMatch.category) {
-                    localMatchName = pastMatch.category;
-                } else {
-                    const keywordMatch = availableCats.find(cName => {
-                        const cn = cName.toLowerCase();
-                        return normVal.includes(cn) || cn.includes(normVal);
-                    });
-                    if (keywordMatch) localMatchName = keywordMatch;
-                }
+            // 1. SMART KEYWORD DICTIONARY & PAST HISTORY MATCHING
+            const normVal = currentVal.toLowerCase();
+            let localMatchName = null;
 
-                if (localMatchName) {
-                    const match = _categories.find(c => c.name.toUpperCase() === localMatchName.toUpperCase() && c.type === targetType);
-                    if (match) {
-                        catInput.value = match.name;
-                        const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${match.name}"]`);
-                        selectCalcCard(card, 'cat', match.name);
-                        if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
+            // A. Check past transactions history for matching item -> category
+            const pastMatch = (_allTxns || []).find(t => {
+                const typeMatch = targetType === 'EXPENSE' ? (Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER') : (Number(t.amount) > 0 && t.category?.toUpperCase() !== 'TRANSFER');
+                return typeMatch && (t.item || '').toLowerCase().trim() === normVal && availableCats.some(ac => ac.toUpperCase() === (t.category || '').toUpperCase());
+            });
+
+            if (pastMatch && pastMatch.category) {
+                localMatchName = pastMatch.category;
+            } else {
+                // B. Comprehensive Keyword Dictionary
+                const KEYWORD_MAP = {
+                    FOOD: [
+                        'food', 'pav', 'bhaji', 'pizza', 'burger', 'dosa', 'idli', 'thali', 'biryani', 'momos', 'momo', 'roll', 'rolls', 'samosa',
+                        'kachori', 'sweets', 'chaat', 'paneer', 'chicken', 'mutton', 'fish', 'egg', 'eggs', 'rice', 'roti', 'naan',
+                        'dal', 'curry', 'soup', 'salad', 'sandwich', 'pasta', 'noodles', 'shawarma', 'kebab', 'tikka',
+                        'waffle', 'pancake', 'sushi', 'ramen', 'tea', 'chai', 'coffee', 'espresso', 'cappuccino', 'latte', 'shake',
+                        'juice', 'smoothie', 'lassi', 'soda', 'drink', 'drinks', 'pub', 'bar', 'beer', 'wine', 'liquor', 'alcohol',
+                        'restaurant', 'cafe', 'bistro', 'dhaba', 'canteen', 'swiggy', 'zomato', 'eatclub', 'magicpin', 'dominos',
+                        'mcdonalds', 'kfc', 'subway', 'starbucks', 'haldiram', 'lunch', 'dinner', 'breakfast', 'snack', 'snacks', 'meal'
+                    ],
+                    GROCERIES: [
+                        'grocery', 'groceries', 'supermarket', 'mart', 'vegetable', 'vegetables', 'fruit', 'fruits', 'milk', 'curd',
+                        'butter', 'cheese', 'ghee', 'bread', 'atta', 'flour', 'spices', 'masala', 'salt', 'sugar',
+                        'biscuits', 'chips', 'dry fruits', 'soap', 'shampoo', 'detergent', 'cleaner', 'blinkit', 'zepto',
+                        'instamart', 'dunzo', 'bigbasket', 'jiomart', 'dmart', 'reliance fresh'
+                    ],
+                    TRAVEL: [
+                        'travel', 'transport', 'commute', 'cab', 'taxi', 'auto', 'rickshaw', 'bike', 'scooter', 'car', 'drive', 'ride',
+                        'uber', 'ola', 'rapido', 'namma yatri', 'indrive', 'blusmart', 'metro', 'train', 'railway', 'irctc', 'bus',
+                        'redbus', 'abhibus', 'flight', 'airline', 'indigo', 'air india', 'akasa', 'spicejet', 'vistara', 'airport',
+                        'toll', 'fastag', 'parking', 'fuel', 'petrol', 'diesel', 'cng', 'gas station', 'mechanic', 'service', 'repair'
+                    ],
+                    ENTERTAINMENT: [
+                        'entertainment', 'movie', 'cinema', 'film', 'theater', 'theatre', 'show', 'event', 'concert', 'play',
+                        'comedy', 'standup', 'bookmyshow', 'paytm insider', 'netflix', 'prime', 'disney', 'hotstar', 'sony liv',
+                        'zee5', 'jio cinema', 'spotify', 'apple music', 'youtube', 'gaana', 'game', 'gaming', 'steam', 'playstation',
+                        'xbox', 'park', 'resort', 'club'
+                    ],
+                    HEALTH: [
+                        'health', 'medical', 'medicine', 'medicines', 'pharmacy', 'chemist', 'drug', 'drugs', 'doctor', 'physician',
+                        'clinic', 'hospital', 'lab', 'test', 'blood test', 'scan', 'xray', 'mri', 'apollo', 'medplus', '1mg',
+                        'pharmeasy', 'netmeds', 'gym', 'fitness', 'workout', 'trainer', 'yoga', 'supplement', 'protein', 'vitamins'
+                    ],
+                    FASHION: [
+                        'fashion', 'shopping', 'clothes', 'clothing', 'shirt', 't-shirt', 'tshirt', 'pant', 'jeans', 'trousers',
+                        'dress', 'saree', 'kurti', 'suit', 'jacket', 'coat', 'sweater', 'hoodie', 'shoes', 'sneakers', 'footwear',
+                        'sandals', 'heels', 'bag', 'purse', 'wallet', 'belt', 'watch', 'sunglasses', 'jewelry', 'cosmetics', 'makeup',
+                        'beauty', 'salon', 'parlor', 'haircut', 'spa', 'amazon', 'flipkart', 'myntra', 'ajio', 'meesho', 'nykaa',
+                        'zara', 'h&m', 'uniqlo', 'max', 'pantaloons'
+                    ],
+                    TECH: [
+                        'tech', 'technology', 'electronic', 'electronics', 'mobile', 'phone', 'smartphone', 'iphone', 'samsung',
+                        'laptop', 'computer', 'pc', 'tablet', 'ipad', 'monitor', 'keyboard', 'mouse', 'headphones', 'earphones',
+                        'airpods', 'speaker', 'tv', 'camera', 'charger', 'cable', 'adapter', 'software', 'app', 'subscription',
+                        'cloud', 'icloud', 'chatgpt', 'openai', 'github'
+                    ],
+                    FINANCIAL: [
+                        'bill', 'bills', 'utility', 'utilities', 'electricity', 'power', 'light', 'water', 'gas', 'lpg', 'cylinder',
+                        'broadband', 'wifi', 'internet', 'airtel', 'jio', 'vi', 'recharge', 'dth', 'tata play', 'rent', 'house rent',
+                        'maintenance', 'tax', 'insurance', 'lic', 'emi', 'loan', 'fee', 'charges'
+                    ],
+                    EDUCATION: [
+                        'education', 'school', 'college', 'university', 'tuition', 'coaching', 'class', 'course', 'training',
+                        'exam', 'fees', 'books', 'textbook', 'notebook', 'stationery', 'udemy', 'coursera', 'unacademy'
+                    ],
+                    SALARY: [
+                        'salary', 'paycheck', 'wages', 'stipend', 'payroll', 'employer', 'company', 'monthly pay', 'bonus'
+                    ],
+                    FREELANCE: [
+                        'freelance', 'freelancing', 'client', 'project', 'gig', 'contract', 'consulting', 'upwork', 'fiverr', 'invoice'
+                    ],
+                    INVESTMENT: [
+                        'investment', 'dividend', 'interest', 'stock', 'stocks', 'equity', 'mutual fund', 'sip', 'crypto', 'bitcoin',
+                        'profit', 'capital gain', 'return', 'fd', 'fixed deposit', 'rd', 'bonds'
+                    ]
+                };
+
+                const tokens = normVal.split(/\s+/).filter(Boolean);
+                
+                // First check dictionary keywords
+                for (const catName of availableCats) {
+                    const cKey = catName.toUpperCase();
+                    const kwList = KEYWORD_MAP[cKey];
+                    if (kwList) {
+                        const hasKW = kwList.some(kw => tokens.includes(kw) || normVal.includes(kw) || kw.includes(normVal));
+                        if (hasKW) {
+                            localMatchName = catName;
+                            break;
+                        }
                     }
                 }
 
-                // 2. GROQ AI PREDICTION: If API key is available, get AI prediction
-                const key = getGroqKey(true); // silent = true
+                // If not found in dictionary, fallback to direct substring match on category name
+                if (!localMatchName) {
+                    const directMatch = availableCats.find(cName => {
+                        const cn = cName.toLowerCase();
+                        return normVal.includes(cn) || cn.includes(normVal);
+                    });
+                    if (directMatch) localMatchName = directMatch;
+                }
+            }
+
+            if (localMatchName) {
+                applyCategoryMatch(localMatchName);
+            }
+
+            // 2. GROQ AI PREDICTION: Async refinement if API key is present
+            const runAI = async () => {
+                const key = getGroqKey(true);
                 if (!key) return;
 
                 const exprEl = document.getElementById('calc-amount-expr');
                 const oldExprText = exprEl ? exprEl.textContent : '';
-                if (exprEl) exprEl.textContent = "AI predicting category...";
 
                 const prompt = `Given the ${activeType} item/source: "${currentVal}", which of these categories is the best fit? ${availableCats.join(', ')}. Reply ONLY with the exact category name from the list. If none fit perfectly, reply with the closest one.`;
 
@@ -9275,29 +9373,18 @@
                         const json = await resp.json();
                         let guess = json.choices[0].message.content.trim();
                         if (guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1, -1);
-
-                        const match = _categories.find(c => c.name.toUpperCase() === guess.toUpperCase() && c.type === targetType);
-                        if (match) {
-                            catInput.value = match.name;
-                            const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${match.name}"]`);
-                            selectCalcCard(card, 'cat', match.name);
-                            if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
-                        }
+                        applyCategoryMatch(guess);
                     }
                 } catch (e) {
                     console.error('AI Auto-Cat failed', e);
-                } finally {
-                    if (exprEl && exprEl.textContent === "AI predicting category...") {
-                        exprEl.textContent = oldExprText || window._calcExpr || '----';
-                    }
                 }
             };
 
             clearTimeout(_autoCatTimer);
             if (isImmediate) {
-                run();
+                runAI();
             } else {
-                _autoCatTimer = setTimeout(run, 1500);
+                _autoCatTimer = setTimeout(runAI, 600);
             }
         };
 
