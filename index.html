@@ -11789,7 +11789,7 @@
 
         window.setGroqKey = async function () {
             const current = _aiSettings.groq_api_key || '';
-            const key = prompt('Enter your Groq API Key (leave empty to use default):', current);
+            const key = prompt('Enter your Groq API Key (get a free key at https://console.groq.com):', current);
             if (key !== null) {
                 const trimmed = key.trim();
                 try {
@@ -11889,10 +11889,11 @@
             if (type === 'ai') {
                 const footer = document.createElement('div');
                 footer.className = 'msg-footer';
+                const modelStr = (data && data._modelUsed) ? `groq/${data._modelUsed}` : 'groq/llama-3.3-70b-versatile';
                 footer.innerHTML = `
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                    <span>2.1s - 413 tokens - groq/llama-3.1-70b</span>
+                    <span>${modelStr}</span>
                 `;
                 wrap.appendChild(footer);
             }
@@ -12007,9 +12008,14 @@
                     } catch (e) { console.error("JSON parse error", e); }
                 }
 
+                if (!data) data = {};
+                data._modelUsed = response._modelUsed;
+
                 appendMsg(cleanMsg, 'ai', data);
             } catch (e) {
-                appendMsg("Sorry, I'm having trouble connecting to the brain. Check your API key.", 'ai');
+                console.error("sendChat error:", e);
+                const errMsg = e.message || "Unknown error";
+                appendMsg(`Sorry, having trouble connecting to Groq AI.\n\nDetail: ${errMsg}`, 'ai');
             } finally {
                 btn.disabled = false;
                 document.getElementById('chatTyping').style.display = 'none';
@@ -12018,7 +12024,7 @@
 
         async function callGroq() {
             const key = getGroqKey();
-            if (!key) throw new Error('API Key not set');
+            if (!key) throw new Error('API Key not set. Click "Groq API: Linked/Set" at top right to enter your Groq key.');
             const accountsList = _accounts.map(a => a.name).join(', ');
             const categoriesList = _categories.map(c => c.name).join(', ');
 
@@ -12077,24 +12083,47 @@ Note: You can also generate ADD_ACCOUNT, ADD_CATEGORY, ADD_TEMPLATE if requested
 5. Financial Questions: When the user asks about their transactions or data (e.g. "how much did I spend on food?", "how much did I spend in April?", "what is my net balance?"), calculate the answer accurately using the provided Summaries and Last 100 Transactions list.
 6. Be direct, concise, and friendly. Output the JSON block at the very end of your response.`;
 
-            const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + key,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
-                    messages: [
-                        { role: 'system', content: systemPrompt },
-                        ..._chatThread
-                    ],
-                    temperature: 0.1
-                })
-            });
+            const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192'];
+            let lastErr = null;
 
-            if (!resp.ok) throw new Error('API Error');
-            return await resp.json();
+            for (const model of models) {
+                try {
+                    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + key,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: 'system', content: systemPrompt },
+                                ..._chatThread
+                            ],
+                            temperature: 0.1
+                        })
+                    });
+
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        data._modelUsed = model;
+                        return data;
+                    }
+
+                    const errData = await resp.json().catch(() => ({}));
+                    const msg = errData.error?.message || `HTTP ${resp.status} ${resp.statusText}`;
+                    console.warn(`Groq model ${model} failed (${resp.status}):`, msg);
+
+                    if (resp.status === 401 || resp.status === 403) {
+                        throw new Error(`Invalid or expired Groq API key (${msg}). Click 'Groq API: Linked' at top right to enter a valid key.`);
+                    }
+                    lastErr = new Error(`Groq API Error (${resp.status}): ${msg}`);
+                } catch (e) {
+                    if (e.message?.includes('Invalid or expired Groq API key')) throw e;
+                    lastErr = e;
+                }
+            }
+            throw lastErr || new Error('Failed to connect to Groq API');
         }
 
         document.getElementById('chatInput')?.addEventListener('keydown', e => {
