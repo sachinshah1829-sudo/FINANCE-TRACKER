@@ -7282,11 +7282,11 @@
                         <div class="cc-mid">
                             <div class="cc-col">
                                 <div class="cc-label">Used</div>
-                                <div class="cc-amt">₹${fmt(spent)}</div>
+                                <div class="cc-amt">${rs(spent)}</div>
                             </div>
                             <div class="cc-col right">
                                 <div class="cc-label">Limit</div>
-                                <div class="cc-amt cc-limit">₹${fmt(limit)}</div>
+                                <div class="cc-amt cc-limit">${rs(limit)}</div>
                             </div>
                         </div>
                         <div class="cc-bar-track"><div class="cc-bar-fill ${barCls}" style="width:${pct}%;"></div></div>
@@ -9137,7 +9137,7 @@
                         <svg class="ae-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="display:none"><path d="M20 6L9 17l-5-5"/></svg>
                         ${escH(a.name)} · ${last4}
                     </div>
-                    <div class="ae-acc-bal">bal ₹${fmt(bal)}</div>
+                    <div class="ae-acc-bal">bal ${rs(bal)}</div>
                 </div>`;
             });
             container.innerHTML = html;
@@ -10979,7 +10979,27 @@
                 if (_mselState.cat.size > 0 && !_mselState.cat.has(r.category)) return false;
                 if (_mselState.item.size > 0 && !_mselState.item.has(r.item)) return false;
                 if (_mselState.tofrom.size > 0 && !_mselState.tofrom.has(r.toFrom)) return false;
-                if (q) { const hay = ((r.item || '') + ' ' + (r.category || '') + ' ' + (r.account || '') + ' ' + (r.toFrom || '')).toLowerCase(); if (!hay.includes(q)) return false; }
+                if (q) {
+                    const amtVal = Number(r.amount) || 0;
+                    const absAmtVal = Math.abs(amtVal);
+                    const amtRaw = String(r.amount ?? '');
+                    const amtAbsRaw = String(absAmtVal);
+                    const amtFixed = amtVal.toFixed(2);
+                    const amtAbsFixed = absAmtVal.toFixed(2);
+                    const amtFormatted = typeof rs === 'function' ? rs(amtVal) : '';
+                    const amtAbsFormatted = typeof rs === 'function' ? rs(absAmtVal) : '';
+                    const amtClean = amtFormatted.replace(/[₹\s]/g, '');
+                    const amtAbsClean = amtAbsFormatted.replace(/[₹\s]/g, '');
+                    const amtNoComma = amtClean.replace(/,/g, '');
+                    const amtAbsNoComma = amtAbsClean.replace(/,/g, '');
+                    const amtPlus = amtVal >= 0 ? '+' + amtAbsRaw : '';
+                    const amtPlusFixed = amtVal >= 0 ? '+' + amtAbsFixed : '';
+                    const amtFmt = typeof fmt === 'function' ? fmt(amtVal) : '';
+                    const amtAbsFmt = typeof fmt === 'function' ? fmt(absAmtVal) : '';
+                    const amtHay = `${amtRaw} ${amtAbsRaw} ${amtFixed} ${amtAbsFixed} ${amtFormatted} ${amtAbsFormatted} ${amtClean} ${amtAbsClean} ${amtNoComma} ${amtAbsNoComma} ${amtPlus} ${amtPlusFixed} ${amtFmt} ${amtAbsFmt}`;
+                    const hay = ((r.item || '') + ' ' + (r.category || '') + ' ' + (r.account || '') + ' ' + (r.toFrom || '') + ' ' + amtHay).toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
                 return true;
             });
 
