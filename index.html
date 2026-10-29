@@ -5270,12 +5270,58 @@
             margin-bottom: 8px;
         }
 
+        .calc-sec-row-wrap {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .calc-search-btn {
+            flex: 0 0 38px;
+            width: 38px;
+            min-height: 42px;
+            background: #fff;
+            border: 1px solid #DFD7CC;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #7A7066;
+            transition: all 0.15s;
+            padding: 0;
+            box-shadow: none;
+            flex-shrink: 0;
+        }
+
+        .calc-search-btn:hover {
+            background: #FAF1E8;
+            border-color: #BE5A30;
+            color: #BE5A30;
+        }
+
+        .calc-search-btn.active {
+            background: #BE5A30;
+            border-color: #BE5A30;
+            color: #fff;
+        }
+
+        .calc-search-input-row {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            width: 100%;
+        }
+
         .calc-scroll-row {
             display: flex;
             gap: 8px;
             overflow-x: auto;
             padding-bottom: 6px;
             scrollbar-width: none;
+            flex: 1;
+            min-width: 0;
         }
 
         .calc-scroll-row::-webkit-scrollbar {
@@ -5912,27 +5958,90 @@
                     <!-- Account Section -->
                     <div class="calc-sec" id="calc-acc-sec" style="position:relative; z-index:40;">
                         <div class="calc-sec-lbl" id="calc-acc-lbl">ACCOUNT</div>
-                        <div class="ae-input-wrap">
-                            <input class="calc-input" id="calc-acc-input" placeholder="Select or search account..." autocomplete="off">
-                            <div class="form-dropdown" id="dd-calc-acc"></div>
+                        <div class="calc-sec-row-wrap" id="calc-acc-boxes-wrap">
+                            <button type="button" class="calc-search-btn" onclick="openCalcSearch('acc')" title="Search account">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                            <div class="calc-scroll-row" id="calc-acc-cards">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="calc-search-field-wrap" id="calc-acc-search-wrap" style="display:none; position:relative;">
+                            <div class="calc-search-input-row">
+                                <button type="button" class="calc-search-btn active" onclick="closeCalcSearch('acc')" title="Close search">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                                <div class="ae-input-wrap" style="flex:1;">
+                                    <input class="calc-input" id="calc-acc-input" placeholder="Search account..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-calc-acc"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Transfer To Account Section (Visible only in Transfer mode) -->
                     <div class="calc-sec" id="calc-to-acc-sec" style="display:none; position:relative; z-index:35;">
                         <div class="calc-sec-lbl">TO ACCOUNT</div>
-                        <div class="ae-input-wrap">
-                            <input class="calc-input" id="calc-to-acc-input" placeholder="Select destination account..." autocomplete="off">
-                            <div class="form-dropdown" id="dd-calc-to-acc"></div>
+                        <div class="calc-sec-row-wrap" id="calc-to-acc-boxes-wrap">
+                            <button type="button" class="calc-search-btn" onclick="openCalcSearch('to-acc')" title="Search destination account">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                            <div class="calc-scroll-row" id="calc-to-acc-cards">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="calc-search-field-wrap" id="calc-to-acc-search-wrap" style="display:none; position:relative;">
+                            <div class="calc-search-input-row">
+                                <button type="button" class="calc-search-btn active" onclick="closeCalcSearch('to-acc')" title="Close search">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                                <div class="ae-input-wrap" style="flex:1;">
+                                    <input class="calc-input" id="calc-to-acc-input" placeholder="Select destination account..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-calc-to-acc"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Category Section -->
                     <div class="calc-sec" id="calc-cat-sec" style="position:relative; z-index:30;">
                         <div class="calc-sec-lbl">CATEGORY</div>
-                        <div class="ae-input-wrap">
-                            <input class="calc-input" id="calc-cat-input" placeholder="Select or search category..." autocomplete="off">
-                            <div class="form-dropdown" id="dd-calc-cat"></div>
+                        <div class="calc-sec-row-wrap" id="calc-cat-boxes-wrap">
+                            <button type="button" class="calc-search-btn" onclick="openCalcSearch('cat')" title="Search category">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                            <div class="calc-scroll-row" id="calc-cat-cards">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="calc-search-field-wrap" id="calc-cat-search-wrap" style="display:none; position:relative;">
+                            <div class="calc-search-input-row">
+                                <button type="button" class="calc-search-btn active" onclick="closeCalcSearch('cat')" title="Close search">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                                <div class="ae-input-wrap" style="flex:1;">
+                                    <input class="calc-input" id="calc-cat-input" placeholder="Search category..." autocomplete="off">
+                                    <div class="form-dropdown" id="dd-calc-cat"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -8628,6 +8737,12 @@
                 if (document.getElementById('i-acc')) document.getElementById('i-acc').value = defaultAcc.name;
             }
 
+            if (window.closeCalcSearch) {
+                closeCalcSearch('acc');
+                closeCalcSearch('cat');
+                closeCalcSearch('to-acc');
+            }
+
             if (window.renderCalcAccounts) window.renderCalcAccounts();
             if (window.renderCalcCategories) window.renderCalcCategories();
             if (window.updateCalcDisplay) window.updateCalcDisplay();
@@ -8657,26 +8772,112 @@
             return '📦';
         };
 
+        function highlightCardByName(containerId, name) {
+            const container = document.getElementById(containerId);
+            if (!container || !name) return;
+            container.querySelectorAll('.calc-card').forEach(c => {
+                const cName = c.dataset.name || c.getAttribute('data-name');
+                if (cName && cName.toUpperCase() === String(name).toUpperCase()) {
+                    c.classList.add('active');
+                } else {
+                    c.classList.remove('active');
+                }
+            });
+        }
+
         window.renderCalcAccounts = function () {
-            const currentType = window._activeAddType || 'expense';
+            const accContainer = document.getElementById('calc-acc-cards');
+            const toAccContainer = document.getElementById('calc-to-acc-cards');
+            if (!accContainer) return;
+
+            let accHtml = '';
+            let toAccHtml = '';
+
+            const isTransfer = window._activeAddType === 'transfer';
+            const list = isTransfer ? _accounts : _accounts.filter(a => a.type !== 'PERSON');
+
+            const fromVal = isTransfer ? document.getElementById('t-from').value : null;
+            const toVal   = isTransfer ? document.getElementById('t-to').value   : null;
+            const expAccVal = !isTransfer && window._activeAddType === 'expense' ? document.getElementById('e-acc').value : null;
+            const incAccVal = !isTransfer && window._activeAddType === 'income'  ? document.getElementById('i-acc').value : null;
+
+            list.forEach(a => {
+                const bal = a.currentBalance || 0;
+                const isPerson = a.type === 'PERSON';
+                const subLabel = isPerson ? '👤 person' : `bal ₹${fmt(bal)}`;
+
+                let fromActiveClass = '';
+                if (isTransfer) {
+                    if (fromVal === a.name) fromActiveClass = ' active';
+                } else {
+                    const cur = expAccVal !== null ? expAccVal : (incAccVal || '');
+                    if (cur === a.name) fromActiveClass = ' active';
+                }
+
+                accHtml += `
+                    <div class="calc-card${fromActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'acc', '${escH(a.name)}')">
+                        <div class="calc-card-name">${escH(a.name)}</div>
+                        <div class="calc-card-sub">${subLabel}</div>
+                    </div>
+                `;
+
+                if (isTransfer && toAccContainer) {
+                    const toActiveClass = (toVal === a.name) ? ' active' : '';
+                    toAccHtml += `
+                        <div class="calc-card${toActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'to-acc', '${escH(a.name)}')">
+                            <div class="calc-card-name">${escH(a.name)}</div>
+                            <div class="calc-card-sub">${subLabel}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            accContainer.innerHTML = accHtml;
+            if (toAccContainer) toAccContainer.innerHTML = toAccHtml;
+
             const accInp = document.getElementById('calc-acc-input');
             const toAccInp = document.getElementById('calc-to-acc-input');
-            if (accInp && !accInp.value) {
-                const cur = currentType === 'expense' ? document.getElementById('e-acc').value : (currentType === 'income' ? document.getElementById('i-acc').value : document.getElementById('t-from').value);
-                if (cur) accInp.value = cur;
-            }
-            if (toAccInp && !toAccInp.value && currentType === 'transfer') {
-                toAccInp.value = document.getElementById('t-to').value || '';
-            }
+            const curFrom = isTransfer ? fromVal : (expAccVal !== null ? expAccVal : incAccVal);
+            if (accInp && curFrom) accInp.value = curFrom;
+            if (toAccInp && toVal) toAccInp.value = toVal;
         };
 
         window.renderCalcCategories = function () {
+            const catContainer = document.getElementById('calc-cat-cards');
+            if (!catContainer) return;
+
+            let html = '';
             const currentType = window._activeAddType || 'expense';
-            const catInp = document.getElementById('calc-cat-input');
-            if (catInp && !catInp.value) {
-                const cur = currentType === 'expense' ? document.getElementById('e-cat').value : document.getElementById('i-cat').value;
-                if (cur) catInp.value = cur;
+
+            if (currentType === 'transfer') {
+                catContainer.innerHTML = '';
+                return;
             }
+
+            const cats = _categories.filter(c => c.type === (currentType === 'expense' ? 'EXPENSE' : 'INCOME')).map(c => c.name);
+            const catVal = currentType === 'expense' ? document.getElementById('e-cat').value : document.getElementById('i-cat').value;
+
+            cats.forEach(c => {
+                const emoji = getCategoryEmoji(c);
+                let activeClass = (catVal && catVal.toUpperCase() === c.toUpperCase()) ? ' active' : '';
+
+                html += `
+                    <div class="calc-card${activeClass}" data-name="${escH(c)}" onclick="selectCalcCard(this, 'cat', '${escH(c)}')">
+                        <div class="calc-card-name">${emoji} ${escH(c)}</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="calc-card new-btn" onclick="addNewCategoryFromCalc()">
+                    <div class="calc-card-name">➕ NEW</div>
+                </div>
+            `;
+
+            catContainer.innerHTML = html;
+
+            const catInp = document.getElementById('calc-cat-input');
+            if (catInp && catVal) catInp.value = catVal;
         };
 
         window.addNewCategoryFromCalc = async function () {
@@ -8699,11 +8900,61 @@
             const catInp = document.getElementById('calc-cat-input');
             if (catInp) catInp.value = cleanName;
 
+            renderCalcCategories();
             setupAddFormDropdowns();
             syncFromOriginalForm();
         };
 
+        window.openCalcSearch = function (type) {
+            const boxesWrap = document.getElementById(`calc-${type}-boxes-wrap`);
+            const searchWrap = document.getElementById(`calc-${type}-search-wrap`);
+            const inp = document.getElementById(`calc-${type}-input`);
+            const dd = document.getElementById(`dd-calc-${type}`);
+            if (!boxesWrap || !searchWrap || !inp) return;
+
+            boxesWrap.style.display = 'none';
+            searchWrap.style.display = 'block';
+
+            inp.focus();
+            inp.select();
+            if (dd && inp._ddData) {
+                renderDD(`calc-${type}-input`, `dd-calc-${type}`, inp._ddData);
+            }
+        };
+
+        window.closeCalcSearch = function (type) {
+            const boxesWrap = document.getElementById(`calc-${type}-boxes-wrap`);
+            const searchWrap = document.getElementById(`calc-${type}-search-wrap`);
+            const dd = document.getElementById(`dd-calc-${type}`);
+            if (!boxesWrap || !searchWrap) return;
+
+            searchWrap.style.display = 'none';
+            if (dd) dd.style.display = 'none';
+            boxesWrap.style.display = 'flex';
+
+            const activeCard = boxesWrap.querySelector('.calc-card.active');
+            if (activeCard) {
+                activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        };
+
         window.selectCalcCard = function (el, type, name) {
+            if (el) {
+                const row = el.parentElement;
+                if (row) {
+                    row.querySelectorAll('.calc-card').forEach(c => c.classList.remove('active'));
+                    el.classList.add('active');
+                }
+            } else {
+                let containerId = type === 'acc' ? 'calc-acc-cards' : (type === 'to-acc' ? 'calc-to-acc-cards' : 'calc-cat-cards');
+                highlightCardByName(containerId, name);
+                const container = document.getElementById(containerId);
+                const activeCard = container?.querySelector('.calc-card.active');
+                if (activeCard) {
+                    activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            }
+
             const currentType = window._activeAddType || 'expense';
             if (type === 'acc') {
                 const accInp = document.getElementById('calc-acc-input');
@@ -8808,6 +9059,12 @@
                 if (toInput) {
                     toInput.parentElement.parentElement.style.display = 'none';
                 }
+            }
+
+            if (window.closeCalcSearch) {
+                closeCalcSearch('acc');
+                closeCalcSearch('cat');
+                closeCalcSearch('to-acc');
             }
 
             renderCalcAccounts();
@@ -8956,6 +9213,9 @@
 
                 document.getElementById('calc-item-input').value = item;
             }
+            if (accInp && accInp.value) highlightCardByName('calc-acc-cards', accInp.value);
+            if (catInp && catInp.value) highlightCardByName('calc-cat-cards', catInp.value);
+            if (toAccInp && toAccInp.value) highlightCardByName('calc-to-acc-cards', toAccInp.value);
             updateCalcDisplay();
             updateCalcAmountSummary();
         };
@@ -9183,7 +9443,18 @@
             if (!fields) return;
             const idx = fields.indexOf(inputId);
             if (idx < 0 || idx >= fields.length - 1) return;
-            const next = document.getElementById(fields[idx + 1]);
+            const nextId = fields[idx + 1];
+            if (nextId === 'calc-acc-input') {
+                openCalcSearch('acc');
+                return;
+            } else if (nextId === 'calc-cat-input') {
+                openCalcSearch('cat');
+                return;
+            } else if (nextId === 'calc-to-acc-input') {
+                openCalcSearch('to-acc');
+                return;
+            }
+            const next = document.getElementById(nextId);
             if (next) {
                 next.focus();
                 setTimeout(() => next.focus(), 10);
@@ -9232,6 +9503,10 @@
                     } else if (key === 'Enter' || code === 13) {
                         e.preventDefault();
                         dd.style.display = 'none';
+                        if (['calc-acc-input', 'calc-cat-input', 'calc-to-acc-input'].includes(inputId)) {
+                            const type = inputId === 'calc-acc-input' ? 'acc' : (inputId === 'calc-cat-input' ? 'cat' : 'to-acc');
+                            closeCalcSearch(type);
+                        }
                         focusNext(inputId);
                     }
                 } else if (key === 'ArrowDown' || code === 40) {
@@ -9241,6 +9516,10 @@
                     }
                 } else if (key === 'Escape' || code === 27) {
                     dd.style.display = 'none';
+                    if (['calc-acc-input', 'calc-cat-input', 'calc-to-acc-input'].includes(inputId)) {
+                        const type = inputId === 'calc-acc-input' ? 'acc' : (inputId === 'calc-cat-input' ? 'cat' : 'to-acc');
+                        closeCalcSearch(type);
+                    }
                 }
             };
             dd.onkeydown = e => {
@@ -9258,8 +9537,13 @@
                         W_selectDD(inputId, ddId, document.activeElement.dataset.val);
                     }
                 } else if (e.key === 'Escape') {
-                    inp.focus();
                     dd.style.display = 'none';
+                    if (['calc-acc-input', 'calc-cat-input', 'calc-to-acc-input'].includes(inputId)) {
+                        const type = inputId === 'calc-acc-input' ? 'acc' : (inputId === 'calc-cat-input' ? 'cat' : 'to-acc');
+                        closeCalcSearch(type);
+                    } else {
+                        inp.focus();
+                    }
                 }
             };
         }
@@ -9272,8 +9556,17 @@
             if (inputId === 'e-tpl') { applyExpTpl(value); }
             else if (inputId === 'i-tpl') { applyIncTpl(value); }
             
-            // Sync calculator inputs
-            if (['calc-item-input', 'calc-to-input', 'calc-acc-input', 'calc-cat-input', 'calc-to-acc-input'].includes(inputId)) {
+            // Sync calculator inputs and update corresponding card selection
+            if (inputId === 'calc-acc-input') {
+                selectCalcCard(null, 'acc', value);
+                closeCalcSearch('acc');
+            } else if (inputId === 'calc-to-acc-input') {
+                selectCalcCard(null, 'to-acc', value);
+                closeCalcSearch('to-acc');
+            } else if (inputId === 'calc-cat-input') {
+                selectCalcCard(null, 'cat', value);
+                closeCalcSearch('cat');
+            } else if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
                 if (window.syncToOriginalForm) window.syncToOriginalForm();
             } else if (inputId === 'calc-tpl-input') {
                 const currentType = window._activeAddType || 'expense';
