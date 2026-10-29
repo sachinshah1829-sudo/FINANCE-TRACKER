@@ -5901,7 +5901,7 @@
                     </div>
 
                     <!-- Choose Template Section (only visible for Expense and Income) -->
-                    <div class="calc-sec" id="calc-tpl-sec">
+                    <div class="calc-sec" id="calc-tpl-sec" style="position:relative; z-index:50;">
                         <div class="calc-sec-lbl">CHOOSE TEMPLATE</div>
                         <div class="ae-input-wrap">
                             <input class="calc-input" id="calc-tpl-input" placeholder="Select a template..." autocomplete="off">
@@ -5910,26 +5910,29 @@
                     </div>
 
                     <!-- Account Section -->
-                    <div class="calc-sec">
+                    <div class="calc-sec" id="calc-acc-sec" style="position:relative; z-index:40;">
                         <div class="calc-sec-lbl" id="calc-acc-lbl">ACCOUNT</div>
-                        <div class="calc-scroll-row" id="calc-acc-cards">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
-
-                    <!-- Category Section -->
-                    <div class="calc-sec" id="calc-cat-sec">
-                        <div class="calc-sec-lbl">CATEGORY</div>
-                        <div class="calc-scroll-row" id="calc-cat-cards">
-                            <!-- Populated by JS -->
+                        <div class="ae-input-wrap">
+                            <input class="calc-input" id="calc-acc-input" placeholder="Select or search account..." autocomplete="off">
+                            <div class="form-dropdown" id="dd-calc-acc"></div>
                         </div>
                     </div>
 
                     <!-- Transfer To Account Section (Visible only in Transfer mode) -->
-                    <div class="calc-sec" id="calc-to-acc-sec" style="display:none;">
+                    <div class="calc-sec" id="calc-to-acc-sec" style="display:none; position:relative; z-index:35;">
                         <div class="calc-sec-lbl">TO ACCOUNT</div>
-                        <div class="calc-scroll-row" id="calc-to-acc-cards">
-                            <!-- Populated by JS -->
+                        <div class="ae-input-wrap">
+                            <input class="calc-input" id="calc-to-acc-input" placeholder="Select destination account..." autocomplete="off">
+                            <div class="form-dropdown" id="dd-calc-to-acc"></div>
+                        </div>
+                    </div>
+
+                    <!-- Category Section -->
+                    <div class="calc-sec" id="calc-cat-sec" style="position:relative; z-index:30;">
+                        <div class="calc-sec-lbl">CATEGORY</div>
+                        <div class="ae-input-wrap">
+                            <input class="calc-input" id="calc-cat-input" placeholder="Select or search category..." autocomplete="off">
+                            <div class="form-dropdown" id="dd-calc-cat"></div>
                         </div>
                     </div>
 
@@ -5948,11 +5951,11 @@
 
 
                     <!-- Description Fields -->
-                    <div class="calc-fields-row">
+                    <div class="calc-fields-row" style="position:relative; z-index:20;">
                         <div>
                             <div class="calc-sec-lbl">ITEM</div>
                             <div class="ae-input-wrap">
-                                <input class="calc-input" id="calc-item-input" placeholder="e.g. Lunch" oninput="syncToOriginalForm(); if(window.autoCategorizeItem)autoCategorizeItem();" autocomplete="off">
+                                <input class="calc-input" id="calc-item-input" placeholder="e.g. Lunch" oninput="syncToOriginalForm()" autocomplete="off">
                                 <div class="form-dropdown" id="dd-calc-item"></div>
                             </div>
                         </div>
@@ -6737,7 +6740,7 @@
         // Greyscale pie colors
         const PC = ['#C97B4B', '#9E5E33', '#E8956A', '#7C5233', '#D4845A', '#B5693A', '#F0A87D', '#6E4228', '#8B5A3C', '#D98C5F'];
         const PAGE_ORDER = ['aichat', 'add', 'accounts', 'analytics', 'transactions', 'ledger', 'manage'];
-        const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'], txnEdit: ['txn-edit-date', 'txn-edit-acc', 'txn-edit-cat', 'txn-edit-item', 'txn-edit-amt', 'txn-edit-tofrom'], tplAdd: ['tpl-m-name', 'tpl-m-acc', 'tpl-m-cat', 'tpl-m-amt', 'tpl-m-to'], tplEdit: ['et-name', 'et-acc', 'et-cat', 'et-amt', 'et-to'] };
+        const FIELD_ORDER = { expense: ['e-tpl', 'e-acc', 'e-cat', 'e-amt', 'e-item', 'e-to'], income: ['i-tpl', 'i-acc', 'i-cat', 'i-amt', 'i-item', 'i-from'], transfer: ['t-from', 't-to', 't-amt', 't-item'], calcExpense: ['calc-tpl-input', 'calc-acc-input', 'calc-cat-input', 'calc-item-input', 'calc-to-input'], calcIncome: ['calc-tpl-input', 'calc-acc-input', 'calc-cat-input', 'calc-item-input', 'calc-to-input'], calcTransfer: ['calc-acc-input', 'calc-to-acc-input', 'calc-item-input'], txnEdit: ['txn-edit-date', 'txn-edit-acc', 'txn-edit-cat', 'txn-edit-item', 'txn-edit-amt', 'txn-edit-tofrom'], tplAdd: ['tpl-m-name', 'tpl-m-acc', 'tpl-m-cat', 'tpl-m-amt', 'tpl-m-to'], tplEdit: ['et-name', 'et-acc', 'et-cat', 'et-amt', 'et-to'] };
 
         let curM, curY;
         let _accounts = [], _categories = [], _items = [], _people = [], _templates = [], _allTxns = [], _filteredTxns = [], _aiSettings = {};
@@ -8534,6 +8537,11 @@
 
             const currentType = window._activeAddType || 'expense';
             const calcTplNames = currentType === 'expense' ? expTplNames : (currentType === 'income' ? incTplNames : []);
+            const isTransfer = currentType === 'transfer';
+            const listAccs = isTransfer ? _accounts : _accounts.filter(a => a.type !== 'PERSON');
+            const calcAccNames = listAccs.map(a => a.name);
+            const calcCatNames = currentType === 'expense' ? expCats : (currentType === 'income' ? incCats : []);
+            const toAccNames = _accounts.map(a => a.name);
 
             const pairs = [
                 ['e-tpl', 'dd-e-tpl', expTplNames],
@@ -8550,12 +8558,21 @@
                 // Custom calculator pairs
                 ['calc-item-input', 'dd-calc-item', recentItems],
                 ['calc-to-input', 'dd-calc-to', recentPeople],
-                ['calc-tpl-input', 'dd-calc-tpl', calcTplNames]
+                ['calc-tpl-input', 'dd-calc-tpl', calcTplNames],
+                ['calc-acc-input', 'dd-calc-acc', calcAccNames],
+                ['calc-cat-input', 'dd-calc-cat', calcCatNames],
+                ['calc-to-acc-input', 'dd-calc-to-acc', toAccNames]
             ];
             pairs.forEach(([inp, dd, data]) => initDD(inp, dd, data));
 
             renderAccountCards('e-acc-cards', 'e-acc', true);
             renderAccountCards('i-acc-cards', 'i-acc', true);
+
+            const accInput = document.getElementById('calc-acc-input');
+            if (accInput && !accInput.value) {
+                const curAcc = currentType === 'expense' ? document.getElementById('e-acc').value : (currentType === 'income' ? document.getElementById('i-acc').value : document.getElementById('t-from').value);
+                if (curAcc) accInput.value = curAcc;
+            }
 
             if (window.renderCalcAccounts) window.renderCalcAccounts();
             if (window.renderCalcCategories) window.renderCalcCategories();
@@ -8585,6 +8602,13 @@
             if (toInput) toInput.value = '';
             const tplInput = document.getElementById('calc-tpl-input');
             if (tplInput) tplInput.value = '';
+            const accInput = document.getElementById('calc-acc-input');
+            if (accInput) accInput.value = '';
+            const catInput = document.getElementById('calc-cat-input');
+            if (catInput) catInput.value = '';
+            const toAccInput = document.getElementById('calc-to-acc-input');
+            if (toAccInput) toAccInput.value = '';
+
             const calcSplitBox = document.getElementById('calc-split-box');
             if (calcSplitBox) calcSplitBox.style.display = 'none';
             const importSection = document.getElementById('import-section');
@@ -8594,6 +8618,14 @@
                 importBtn.style.background = '#fff';
                 importBtn.style.color = '#2B231D';
                 importBtn.style.borderColor = '#DFD7CC';
+            }
+
+            // Re-apply default account if available
+            const defaultAcc = _accounts.find(a => a.type !== 'PERSON' && a.isDefault === true) || _accounts.find(a => a.type !== 'PERSON');
+            if (defaultAcc && accInput) {
+                accInput.value = defaultAcc.name;
+                if (document.getElementById('e-acc')) document.getElementById('e-acc').value = defaultAcc.name;
+                if (document.getElementById('i-acc')) document.getElementById('i-acc').value = defaultAcc.name;
             }
 
             if (window.renderCalcAccounts) window.renderCalcAccounts();
@@ -8626,94 +8658,25 @@
         };
 
         window.renderCalcAccounts = function () {
-            const accContainer = document.getElementById('calc-acc-cards');
-            const toAccContainer = document.getElementById('calc-to-acc-cards');
-            if (!accContainer) return;
-
-            let accHtml = '';
-            let toAccHtml = '';
-
-            // Transfer mode: show ALL accounts (bank + person) for both FROM and TO.
-            // Expense / Income: exclude person accounts.
-            const isTransfer = window._activeAddType === 'transfer';
-            const list = isTransfer ? _accounts : _accounts.filter(a => a.type !== 'PERSON');
-
-            const fromVal = isTransfer ? document.getElementById('t-from').value : null;
-            const toVal   = isTransfer ? document.getElementById('t-to').value   : null;
-            const expAccVal = !isTransfer && window._activeAddType === 'expense' ? document.getElementById('e-acc').value : null;
-            const incAccVal = !isTransfer && window._activeAddType === 'income'  ? document.getElementById('i-acc').value : null;
-
-            list.forEach(a => {
-                const bal = a.currentBalance || 0;
-                const isPerson = a.type === 'PERSON';
-                const subLabel = isPerson ? '👤 person' : `bal ₹${fmt(bal)}`;
-
-                // ── FROM / main ACCOUNT card ──
-                let fromActiveClass = '';
-                if (isTransfer) {
-                    if (fromVal === a.name) fromActiveClass = ' active';
-                } else {
-                    const cur = expAccVal !== null ? expAccVal : (incAccVal || '');
-                    if (cur === a.name) fromActiveClass = ' active';
-                }
-
-                accHtml += `
-                    <div class="calc-card${fromActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'acc', '${escH(a.name)}')">
-                        <div class="calc-card-name">${escH(a.name)}</div>
-                        <div class="calc-card-sub">${subLabel}</div>
-                    </div>
-                `;
-
-                // ── TO ACCOUNT card (Transfer only) ──
-                if (isTransfer) {
-                    const toActiveClass = (toVal === a.name) ? ' active' : '';
-                    toAccHtml += `
-                        <div class="calc-card${toActiveClass}" data-name="${escH(a.name)}" onclick="selectCalcCard(this, 'to-acc', '${escH(a.name)}')">
-                            <div class="calc-card-name">${escH(a.name)}</div>
-                            <div class="calc-card-sub">${subLabel}</div>
-                        </div>
-                    `;
-                }
-            });
-
-            accContainer.innerHTML = accHtml;
-            if (toAccContainer) toAccContainer.innerHTML = toAccHtml;
+            const currentType = window._activeAddType || 'expense';
+            const accInp = document.getElementById('calc-acc-input');
+            const toAccInp = document.getElementById('calc-to-acc-input');
+            if (accInp && !accInp.value) {
+                const cur = currentType === 'expense' ? document.getElementById('e-acc').value : (currentType === 'income' ? document.getElementById('i-acc').value : document.getElementById('t-from').value);
+                if (cur) accInp.value = cur;
+            }
+            if (toAccInp && !toAccInp.value && currentType === 'transfer') {
+                toAccInp.value = document.getElementById('t-to').value || '';
+            }
         };
 
         window.renderCalcCategories = function () {
-            const catContainer = document.getElementById('calc-cat-cards');
-            if (!catContainer) return;
-
-            let html = '';
             const currentType = window._activeAddType || 'expense';
-
-            if (currentType === 'transfer') {
-                catContainer.innerHTML = '';
-                return;
+            const catInp = document.getElementById('calc-cat-input');
+            if (catInp && !catInp.value) {
+                const cur = currentType === 'expense' ? document.getElementById('e-cat').value : document.getElementById('i-cat').value;
+                if (cur) catInp.value = cur;
             }
-
-            const cats = _categories.filter(c => c.type === (currentType === 'expense' ? 'EXPENSE' : 'INCOME')).map(c => c.name);
-
-            cats.forEach(c => {
-                const emoji = getCategoryEmoji(c);
-                let activeClass = '';
-                const catVal = currentType === 'expense' ? document.getElementById('e-cat').value : document.getElementById('i-cat').value;
-                if (catVal === c) activeClass = ' active';
-
-                html += `
-                    <div class="calc-card${activeClass}" data-name="${escH(c)}" onclick="selectCalcCard(this, 'cat', '${escH(c)}')">
-                        <div class="calc-card-name">${emoji} ${escH(c)}</div>
-                    </div>
-                `;
-            });
-
-            html += `
-                <div class="calc-card new-btn" onclick="addNewCategoryFromCalc()">
-                    <div class="calc-card-name">➕ NEW</div>
-                </div>
-            `;
-
-            catContainer.innerHTML = html;
         };
 
         window.addNewCategoryFromCalc = async function () {
@@ -8733,19 +8696,18 @@
                 document.getElementById('i-cat').value = cleanName;
             }
 
+            const catInp = document.getElementById('calc-cat-input');
+            if (catInp) catInp.value = cleanName;
+
             setupAddFormDropdowns();
             syncFromOriginalForm();
         };
 
         window.selectCalcCard = function (el, type, name) {
-            if (el) {
-                const row = el.parentElement;
-                row.querySelectorAll('.calc-card').forEach(c => c.classList.remove('active'));
-                el.classList.add('active');
-            }
-
             const currentType = window._activeAddType || 'expense';
             if (type === 'acc') {
+                const accInp = document.getElementById('calc-acc-input');
+                if (accInp) accInp.value = name;
                 if (currentType === 'expense') {
                     document.getElementById('e-acc').value = name;
                 } else if (currentType === 'income') {
@@ -8754,10 +8716,14 @@
                     document.getElementById('t-from').value = name;
                 }
             } else if (type === 'to-acc') {
+                const toAccInp = document.getElementById('calc-to-acc-input');
+                if (toAccInp) toAccInp.value = name;
                 if (currentType === 'transfer') {
                     document.getElementById('t-to').value = name;
                 }
             } else if (type === 'cat') {
+                const catInp = document.getElementById('calc-cat-input');
+                if (catInp) catInp.value = name;
                 if (currentType === 'expense') {
                     document.getElementById('e-cat').value = name;
                 } else if (currentType === 'income') {
@@ -8774,16 +8740,16 @@
 
             const currentType = window._activeAddType || 'expense';
             if (currentType === 'expense') {
-                const acc = document.getElementById('e-acc').value || 'Select Account';
-                const cat = document.getElementById('e-cat').value || 'Select Category';
+                const acc = (document.getElementById('calc-acc-input')?.value || document.getElementById('e-acc').value).trim() || 'Select Account';
+                const cat = (document.getElementById('calc-cat-input')?.value || document.getElementById('e-cat').value).trim() || 'Select Category';
                 summaryEl.textContent = `${cat} · ${acc}`;
             } else if (currentType === 'income') {
-                const acc = document.getElementById('i-acc').value || 'Select Account';
-                const cat = document.getElementById('i-cat').value || 'Select Category';
+                const acc = (document.getElementById('calc-acc-input')?.value || document.getElementById('i-acc').value).trim() || 'Select Account';
+                const cat = (document.getElementById('calc-cat-input')?.value || document.getElementById('i-cat').value).trim() || 'Select Category';
                 summaryEl.textContent = `${cat} · ${acc}`;
             } else if (currentType === 'transfer') {
-                const from = document.getElementById('t-from').value || 'Select From';
-                const to = document.getElementById('t-to').value || 'Select To';
+                const from = (document.getElementById('calc-acc-input')?.value || document.getElementById('t-from').value).trim() || 'Select From';
+                const to = (document.getElementById('calc-to-acc-input')?.value || document.getElementById('t-to').value).trim() || 'Select To';
                 summaryEl.textContent = `${from} ➔ ${to}`;
             }
         };
@@ -8806,6 +8772,7 @@
             const toInput = document.getElementById('calc-to-input');
             const tplSec = document.getElementById('calc-tpl-sec');
             const saveTplBtn = document.getElementById('calc-save-tpl-btn');
+            const accLbl = document.getElementById('calc-acc-lbl');
 
             if (type === 'expense') {
                 if (catSec) catSec.style.display = 'block';
@@ -8813,6 +8780,7 @@
                 if (tplSec) tplSec.style.display = 'block';
                 if (saveTplBtn) saveTplBtn.style.display = 'flex';
                 if (saveBtn) saveBtn.textContent = 'Save Expense ↗';
+                if (accLbl) accLbl.textContent = 'ACCOUNT';
                 if (toLbl) toLbl.textContent = 'PAID TO';
                 if (toInput) {
                     toInput.placeholder = 'e.g. Swiggy';
@@ -8824,6 +8792,7 @@
                 if (tplSec) tplSec.style.display = 'block';
                 if (saveTplBtn) saveTplBtn.style.display = 'flex';
                 if (saveBtn) saveBtn.textContent = 'Save Income ↗';
+                if (accLbl) accLbl.textContent = 'ACCOUNT';
                 if (toLbl) toLbl.textContent = 'RECEIVED FROM';
                 if (toInput) {
                     toInput.placeholder = 'Person name';
@@ -8835,6 +8804,7 @@
                 if (tplSec) tplSec.style.display = 'none';
                 if (saveTplBtn) saveTplBtn.style.display = 'none';
                 if (saveBtn) saveBtn.textContent = 'Save Transfer ↗';
+                if (accLbl) accLbl.textContent = 'FROM ACCOUNT';
                 if (toInput) {
                     toInput.parentElement.parentElement.style.display = 'none';
                 }
@@ -8909,26 +8879,39 @@
         window.syncToOriginalForm = function () {
             const currentType = window._activeAddType || 'expense';
             const evaluated = evaluateExpression(window._calcExpr) || 0;
-            const itemVal = document.getElementById('calc-item-input').value;
-            const toVal = document.getElementById('calc-to-input').value;
+            const itemVal = document.getElementById('calc-item-input') ? document.getElementById('calc-item-input').value : '';
+            const toVal = document.getElementById('calc-to-input') ? document.getElementById('calc-to-input').value : '';
+            const accVal = document.getElementById('calc-acc-input') ? document.getElementById('calc-acc-input').value.trim() : '';
+            const catVal = document.getElementById('calc-cat-input') ? document.getElementById('calc-cat-input').value.trim() : '';
+            const toAccVal = document.getElementById('calc-to-acc-input') ? document.getElementById('calc-to-acc-input').value.trim() : '';
 
             if (currentType === 'expense') {
                 document.getElementById('e-amt').value = evaluated > 0 ? evaluated : '';
                 document.getElementById('e-item').value = itemVal;
                 document.getElementById('e-to').value = toVal;
+                document.getElementById('e-acc').value = accVal;
+                document.getElementById('e-cat').value = catVal;
             } else if (currentType === 'income') {
                 document.getElementById('i-amt').value = evaluated > 0 ? evaluated : '';
                 document.getElementById('i-item').value = itemVal;
                 document.getElementById('i-from').value = toVal;
+                document.getElementById('i-acc').value = accVal;
+                document.getElementById('i-cat').value = catVal;
             } else if (currentType === 'transfer') {
                 document.getElementById('t-amt').value = evaluated > 0 ? evaluated : '';
                 document.getElementById('t-item').value = itemVal;
+                document.getElementById('t-from').value = accVal;
+                document.getElementById('t-to').value = toAccVal;
             }
-            if (window.autoCategorizeItem) window.autoCategorizeItem();
+            if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
         };
 
         window.syncFromOriginalForm = function () {
             const type = window._activeAddType || 'expense';
+            const accInp = document.getElementById('calc-acc-input');
+            const catInp = document.getElementById('calc-cat-input');
+            const toAccInp = document.getElementById('calc-to-acc-input');
+
             if (type === 'expense') {
                 const acc = document.getElementById('e-acc').value;
                 const cat = document.getElementById('e-cat').value;
@@ -8936,15 +8919,9 @@
                 const item = document.getElementById('e-item').value;
                 const to = document.getElementById('e-to').value;
 
-                if (acc) {
-                    const card = document.querySelector(`#calc-acc-cards .calc-card[data-name="${acc}"]`);
-                    if (card) selectCalcCard(card, 'acc', acc);
-                }
-                if (cat) {
-                    const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${cat}"]`);
-                    if (card) selectCalcCard(card, 'cat', cat);
-                    else selectCalcCard(null, 'cat', cat);
-                }
+                if (accInp) accInp.value = acc || '';
+                if (catInp) catInp.value = cat || '';
+
                 if (amt && amt !== '0') window._calcExpr = String(amt);
                 else window._calcExpr = '';
 
@@ -8957,15 +8934,9 @@
                 const item = document.getElementById('i-item').value;
                 const from = document.getElementById('i-from').value;
 
-                if (acc) {
-                    const card = document.querySelector(`#calc-acc-cards .calc-card[data-name="${acc}"]`);
-                    if (card) selectCalcCard(card, 'acc', acc);
-                }
-                if (cat) {
-                    const card = document.querySelector(`#calc-cat-cards .calc-card[data-name="${cat}"]`);
-                    if (card) selectCalcCard(card, 'cat', cat);
-                    else selectCalcCard(null, 'cat', cat);
-                }
+                if (accInp) accInp.value = acc || '';
+                if (catInp) catInp.value = cat || '';
+
                 if (amt && amt !== '0') window._calcExpr = String(amt);
                 else window._calcExpr = '';
 
@@ -8977,14 +8948,9 @@
                 const amt = document.getElementById('t-amt').value;
                 const item = document.getElementById('t-item').value;
 
-                if (from) {
-                    const card = document.querySelector(`#calc-acc-cards .calc-card[data-name="${from}"]`);
-                    if (card) selectCalcCard(card, 'acc', from);
-                }
-                if (to) {
-                    const card = document.querySelector(`#calc-to-acc-cards .calc-card[data-name="${to}"]`);
-                    if (card) selectCalcCard(card, 'to-acc', to);
-                }
+                if (accInp) accInp.value = from || '';
+                if (toAccInp) toAccInp.value = to || '';
+
                 if (amt && amt !== '0') window._calcExpr = String(amt);
                 else window._calcExpr = '';
 
@@ -9207,185 +9173,8 @@
             }
         };
 
-        let _autoCatTimer;
-        window.autoCategorizeItem = async function (isImmediate = false) {
-            const activeType = window._activeAddType || 'expense';
-            if (activeType === 'transfer') return; // Transfers do not have category
-
-            const itemInput = document.getElementById('calc-item-input') || (activeType === 'expense' ? document.getElementById('e-item') : document.getElementById('i-item'));
-            const catInput = activeType === 'expense' ? document.getElementById('e-cat') : document.getElementById('i-cat');
-            if (!itemInput || !catInput) return;
-
-            const currentVal = itemInput.value.trim();
-            if (currentVal.length < 2) return;
-
-            const targetType = activeType === 'expense' ? 'EXPENSE' : 'INCOME';
-            const availableCats = _categories.filter(c => c.type === targetType).map(c => c.name);
-            if (!availableCats.length) return;
-
-            // Helper to apply matched category to input and UI card
-            const applyCategoryMatch = (catName) => {
-                const match = _categories.find(c => c.name.toUpperCase() === catName.toUpperCase() && c.type === targetType);
-                if (!match) return false;
-                
-                catInput.value = match.name;
-                const catCards = document.querySelectorAll('#calc-cat-cards .calc-card');
-                let targetCard = null;
-                catCards.forEach(c => {
-                    const cName = (c.dataset.name || c.getAttribute('data-name') || '').toUpperCase();
-                    if (cName === match.name.toUpperCase()) {
-                        targetCard = c;
-                    }
-                });
-                
-                selectCalcCard(targetCard, 'cat', match.name);
-                if (window.updateCalcAmountSummary) window.updateCalcAmountSummary();
-                return true;
-            };
-
-            // 1. SMART KEYWORD DICTIONARY & PAST HISTORY MATCHING
-            const normVal = currentVal.toLowerCase();
-            let localMatchName = null;
-
-            // A. Check past transactions history for matching item -> category
-            const pastMatch = (_allTxns || []).find(t => {
-                const typeMatch = targetType === 'EXPENSE' ? (Number(t.amount) < 0 && t.category?.toUpperCase() !== 'TRANSFER') : (Number(t.amount) > 0 && t.category?.toUpperCase() !== 'TRANSFER');
-                return typeMatch && (t.item || '').toLowerCase().trim() === normVal && availableCats.some(ac => ac.toUpperCase() === (t.category || '').toUpperCase());
-            });
-
-            if (pastMatch && pastMatch.category) {
-                localMatchName = pastMatch.category;
-            } else {
-                // B. Comprehensive Keyword Dictionary
-                const KEYWORD_MAP = {
-                    FOOD: [
-                        'food', 'pav', 'bhaji', 'pizza', 'burger', 'dosa', 'idli', 'thali', 'biryani', 'momos', 'momo', 'roll', 'rolls', 'samosa',
-                        'kachori', 'sweets', 'chaat', 'paneer', 'chicken', 'mutton', 'fish', 'egg', 'eggs', 'rice', 'roti', 'naan',
-                        'dal', 'curry', 'soup', 'salad', 'sandwich', 'pasta', 'noodles', 'shawarma', 'kebab', 'tikka',
-                        'waffle', 'pancake', 'sushi', 'ramen', 'tea', 'chai', 'coffee', 'espresso', 'cappuccino', 'latte', 'shake',
-                        'juice', 'smoothie', 'lassi', 'soda', 'drink', 'drinks', 'pub', 'bar', 'beer', 'wine', 'liquor', 'alcohol',
-                        'restaurant', 'cafe', 'bistro', 'dhaba', 'canteen', 'swiggy', 'zomato', 'eatclub', 'magicpin', 'dominos',
-                        'mcdonalds', 'kfc', 'subway', 'starbucks', 'haldiram', 'lunch', 'dinner', 'breakfast', 'snack', 'snacks', 'meal'
-                    ],
-                    GROCERIES: [
-                        'grocery', 'groceries', 'supermarket', 'mart', 'vegetable', 'vegetables', 'fruit', 'fruits', 'milk', 'curd',
-                        'butter', 'cheese', 'ghee', 'bread', 'atta', 'flour', 'spices', 'masala', 'salt', 'sugar',
-                        'biscuits', 'chips', 'dry fruits', 'soap', 'shampoo', 'detergent', 'cleaner', 'blinkit', 'zepto',
-                        'instamart', 'dunzo', 'bigbasket', 'jiomart', 'dmart', 'reliance fresh'
-                    ],
-                    TRAVEL: [
-                        'travel', 'transport', 'commute', 'cab', 'taxi', 'auto', 'rickshaw', 'bike', 'scooter', 'car', 'drive', 'ride',
-                        'uber', 'ola', 'rapido', 'namma yatri', 'indrive', 'blusmart', 'metro', 'train', 'railway', 'irctc', 'bus',
-                        'redbus', 'abhibus', 'flight', 'airline', 'indigo', 'air india', 'akasa', 'spicejet', 'vistara', 'airport',
-                        'toll', 'fastag', 'parking', 'fuel', 'petrol', 'diesel', 'cng', 'gas station', 'mechanic', 'service', 'repair'
-                    ],
-                    ENTERTAINMENT: [
-                        'entertainment', 'movie', 'cinema', 'film', 'theater', 'theatre', 'show', 'event', 'concert', 'play',
-                        'comedy', 'standup', 'bookmyshow', 'paytm insider', 'netflix', 'prime', 'disney', 'hotstar', 'sony liv',
-                        'zee5', 'jio cinema', 'spotify', 'apple music', 'youtube', 'gaana', 'game', 'gaming', 'steam', 'playstation',
-                        'xbox', 'park', 'resort', 'club'
-                    ],
-                    HEALTH: [
-                        'health', 'medical', 'medicine', 'medicines', 'pharmacy', 'chemist', 'drug', 'drugs', 'doctor', 'physician',
-                        'clinic', 'hospital', 'lab', 'test', 'blood test', 'scan', 'xray', 'mri', 'apollo', 'medplus', '1mg',
-                        'pharmeasy', 'netmeds', 'gym', 'fitness', 'workout', 'trainer', 'yoga', 'supplement', 'protein', 'vitamins'
-                    ],
-                    FASHION: [
-                        'fashion', 'shopping', 'clothes', 'clothing', 'shirt', 't-shirt', 'tshirt', 'pant', 'jeans', 'trousers',
-                        'dress', 'saree', 'kurti', 'suit', 'jacket', 'coat', 'sweater', 'hoodie', 'shoes', 'sneakers', 'footwear',
-                        'sandals', 'heels', 'bag', 'purse', 'wallet', 'belt', 'watch', 'sunglasses', 'jewelry', 'cosmetics', 'makeup',
-                        'beauty', 'salon', 'parlor', 'haircut', 'spa', 'amazon', 'flipkart', 'myntra', 'ajio', 'meesho', 'nykaa',
-                        'zara', 'h&m', 'uniqlo', 'max', 'pantaloons'
-                    ],
-                    TECH: [
-                        'tech', 'technology', 'electronic', 'electronics', 'mobile', 'phone', 'smartphone', 'iphone', 'samsung',
-                        'laptop', 'computer', 'pc', 'tablet', 'ipad', 'monitor', 'keyboard', 'mouse', 'headphones', 'earphones',
-                        'airpods', 'speaker', 'tv', 'camera', 'charger', 'cable', 'adapter', 'software', 'app', 'subscription',
-                        'cloud', 'icloud', 'chatgpt', 'openai', 'github'
-                    ],
-                    FINANCIAL: [
-                        'bill', 'bills', 'utility', 'utilities', 'electricity', 'power', 'light', 'water', 'gas', 'lpg', 'cylinder',
-                        'broadband', 'wifi', 'internet', 'airtel', 'jio', 'vi', 'recharge', 'dth', 'tata play', 'rent', 'house rent',
-                        'maintenance', 'tax', 'insurance', 'lic', 'emi', 'loan', 'fee', 'charges'
-                    ],
-                    EDUCATION: [
-                        'education', 'school', 'college', 'university', 'tuition', 'coaching', 'class', 'course', 'training',
-                        'exam', 'fees', 'books', 'textbook', 'notebook', 'stationery', 'udemy', 'coursera', 'unacademy'
-                    ],
-                    SALARY: [
-                        'salary', 'paycheck', 'wages', 'stipend', 'payroll', 'employer', 'company', 'monthly pay', 'bonus'
-                    ],
-                    FREELANCE: [
-                        'freelance', 'freelancing', 'client', 'project', 'gig', 'contract', 'consulting', 'upwork', 'fiverr', 'invoice'
-                    ],
-                    INVESTMENT: [
-                        'investment', 'dividend', 'interest', 'stock', 'stocks', 'equity', 'mutual fund', 'sip', 'crypto', 'bitcoin',
-                        'profit', 'capital gain', 'return', 'fd', 'fixed deposit', 'rd', 'bonds'
-                    ]
-                };
-
-                const tokens = normVal.split(/\s+/).filter(Boolean);
-                
-                // First check dictionary keywords
-                for (const catName of availableCats) {
-                    const cKey = catName.toUpperCase();
-                    const kwList = KEYWORD_MAP[cKey];
-                    if (kwList) {
-                        const hasKW = kwList.some(kw => tokens.includes(kw) || normVal.includes(kw) || kw.includes(normVal));
-                        if (hasKW) {
-                            localMatchName = catName;
-                            break;
-                        }
-                    }
-                }
-
-                // If not found in dictionary, fallback to direct substring match on category name
-                if (!localMatchName) {
-                    const directMatch = availableCats.find(cName => {
-                        const cn = cName.toLowerCase();
-                        return normVal.includes(cn) || cn.includes(normVal);
-                    });
-                    if (directMatch) localMatchName = directMatch;
-                }
-            }
-
-            if (localMatchName) {
-                applyCategoryMatch(localMatchName);
-            }
-
-            // 2. GROQ AI PREDICTION: Async refinement if API key is present
-            const runAI = async () => {
-                const key = getGroqKey(true);
-                if (!key) return;
-
-                const exprEl = document.getElementById('calc-amount-expr');
-                const oldExprText = exprEl ? exprEl.textContent : '';
-
-                const prompt = `Given the ${activeType} item/source: "${currentVal}", which of these categories is the best fit? ${availableCats.join(', ')}. Reply ONLY with the exact category name from the list. If none fit perfectly, reply with the closest one.`;
-
-                try {
-                    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.1 })
-                    });
-                    if (resp.ok) {
-                        const json = await resp.json();
-                        let guess = json.choices[0].message.content.trim();
-                        if (guess.startsWith('"') && guess.endsWith('"')) guess = guess.slice(1, -1);
-                        applyCategoryMatch(guess);
-                    }
-                } catch (e) {
-                    console.error('AI Auto-Cat failed', e);
-                }
-            };
-
-            clearTimeout(_autoCatTimer);
-            if (isImmediate) {
-                runAI();
-            } else {
-                _autoCatTimer = setTimeout(runAI, 600);
-            }
+        window.autoCategorizeItem = function () {
+            // AI auto-categorization removed from Add Entry tab
         };
 
         function getFieldOrder(inputId) { for (const [, fields] of Object.entries(FIELD_ORDER)) { const i = fields.indexOf(inputId); if (i >= 0) return fields; } return null; }
@@ -9418,19 +9207,18 @@
                 inp.classList.remove('invalid');
                 if (inputId === 'e-tpl' && inp.value === '') applyExpTpl('');
                 if (inputId === 'i-tpl' && inp.value === '') applyIncTpl('');
-                if (inputId === 'e-item' || inputId === 'i-item') autoCategorizeItem();
                 
-                // Sync calculator inputs and trigger auto-categorization when typing
-                if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
+                // Sync calculator inputs when typing
+                if (['calc-item-input', 'calc-to-input', 'calc-acc-input', 'calc-cat-input', 'calc-to-acc-input'].includes(inputId)) {
                     if (window.syncToOriginalForm) window.syncToOriginalForm();
-                    if (inputId === 'calc-item-input') autoCategorizeItem();
                 }
             };
             inp.onfocus = () => renderDD(inputId, ddId, data);
             inp.onblur = () => {
                 setTimeout(() => { dd.style.display = 'none'; }, 180);
-                if (inputId === 'e-item' || inputId === 'i-item') autoCategorizeItem(true);
-                if (inputId === 'calc-item-input') autoCategorizeItem(true);
+                if (['calc-item-input', 'calc-to-input', 'calc-acc-input', 'calc-cat-input', 'calc-to-acc-input'].includes(inputId)) {
+                    if (window.syncToOriginalForm) window.syncToOriginalForm();
+                }
             };
             inp.onkeydown = e => {
                 const items = [...dd.querySelectorAll('.fd-item')];
@@ -9483,12 +9271,10 @@
             dd.style.display = 'none';
             if (inputId === 'e-tpl') { applyExpTpl(value); }
             else if (inputId === 'i-tpl') { applyIncTpl(value); }
-            if (inputId === 'e-item' || inputId === 'i-item') { autoCategorizeItem(true); }
             
-            // Sync calculator inputs and run auto-categorization immediately on selection
-            if (inputId === 'calc-item-input' || inputId === 'calc-to-input') {
+            // Sync calculator inputs
+            if (['calc-item-input', 'calc-to-input', 'calc-acc-input', 'calc-cat-input', 'calc-to-acc-input'].includes(inputId)) {
                 if (window.syncToOriginalForm) window.syncToOriginalForm();
-                if (inputId === 'calc-item-input') autoCategorizeItem(true);
             } else if (inputId === 'calc-tpl-input') {
                 const currentType = window._activeAddType || 'expense';
                 if (currentType === 'expense') {
